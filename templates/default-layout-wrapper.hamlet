@@ -5,19 +5,17 @@ $doctype 5
     <meta charset="UTF-8">
 
     <title>#{pageTitle pc}
-    <meta name="description" content="">
-    <meta name="author" content="">
-
+    <meta name="description" content="Salon Application">
+    <meta name="author" content="Sergiu Starciuc">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-
-    ^{pageHead pc}
+    <meta name="theme-color" content="#FEDBD0">
     
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.js">
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.0.3/js.cookie.min.js">
-
-    \<!-- Bootstrap-3.3.7 compiled and minified JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous">
-
+    ^{pageHead pc}
+  
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    <script type="text/javascript" src=@{StaticR js_cookie_3_0_5_min_js}>
+    
     <script>
       /* The `defaultCsrfMiddleware` Middleware added in Foundation.hs adds a CSRF token to the request cookies. */
       /* AJAX requests should add that token to a header to be validated by the server. */
@@ -38,9 +36,11 @@ $doctype 5
 
     <script>
       document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/,'js');
-  <body>
+      
+  <body.mdc-typography>
+  
     ^{pageBody pc}
-
+      
     $maybe analytics <- appAnalytics $ appSettings master
       <script>
         if(!window.location.href.match(/localhost/)){

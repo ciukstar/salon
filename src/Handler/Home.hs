@@ -3,22 +3,26 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeFamilies #-}
 
-module Handler.Home (getHomeR, postHomeR) where
-import Foundation (Handler)
+module Handler.Home (getHomeR) where
+
 import Text.Hamlet (Html)
 import Settings (widgetFile)
-import Yesod.Core (Yesod(defaultLayout), setTitle)
+import Yesod.Core (Yesod(defaultLayout), setTitleI)
 
+import Foundation
+    ( Handler
+    , Route (StaticR, ServicesR, AboutR)
+    , AppMessage
+      ( MsgSalon, MsgWelcome, MsgServices, MsgAboutUs
+      , MsgBook
+      )
+    )
+
+import Settings.StaticFiles (img_salon_svg)
 
 getHomeR :: Handler Html
 getHomeR = do
     defaultLayout $ do
-        setTitle "Welcome To Yesod!"
+        setTitleI MsgWelcome
         $(widgetFile "homepage")
 
-
-postHomeR :: Handler Html
-postHomeR = do
-    defaultLayout $ do
-        setTitle "Welcome To Yesod!"
-        $(widgetFile "homepage")

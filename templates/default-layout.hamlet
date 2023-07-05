@@ -1,0 +1,54 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--prominent.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <button.mdc-top-app-bar__navigation-icon.mdc-icon-button #btnMainMenu>
+        <span.mdc-icon-button__ripple>
+        <i.material-symbols-outlined>menu
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
+        $case curr
+          $of Just (ServicesR)
+            _{MsgServices}
+          $of Just (AboutR)
+            _{MsgAboutUs}
+          $of _
+            _{MsgWelcome}
+
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end>
+      <a.mdc-top-app-bar__action-item.mdc-icon-button role=button
+        href=#>
+        <span.mdc-icon-button_ripple>
+        <i.material-symbols-outlined>account_circle
+
+    <div.mdc-touch-target-wrapper #wrapperMainFab>
+      <button.mdc-fab aria-label=_{MsgAdd}>
+        <span.mdc-fab__ripple>
+        <div.mdc-fab__focus-ring>
+        <i.mdc-fab__icon.material-symbols-outlined>add
+        <div.mdc-fab__touch>
+
+<aside.mdc-drawer.mdc-drawer--modal data-mdc-auto-init=MDCDrawer #asideMainMenu>
+  <div.mdc-drawer__header tabindex=0>
+    <h3.mdc-drawer__title>_{MsgSalon}
+    <h6.mdc-drawer__subtitle>welcome
+  <div.mdc-drawer__content>
+    <nav.mdc-deprecated-list>
+      <a.mdc-deprecated-list-item href=@{HomeR}
+        :Just HomeR == curr:.mdc-deprecated-list-item--activated>
+        <span.mdc-deprecated-list-item__ripple>
+        <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>home
+        <span.mdc-deprecated-list-item__text>_{MsgWelcome}
+      <a.mdc-deprecated-list-item href=@{ServicesR}
+        :Just ServicesR == curr:.mdc-deprecated-list-item--activated>
+        <span.mdc-deprecated-list-item__ripple>
+        <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>volunteer_activism
+        <span.mdc-deprecated-list-item__text>_{MsgServices}
+      <a.mdc-deprecated-list-item href=@{AboutR}
+        :Just AboutR == curr:.mdc-deprecated-list-item--activated>
+        <span.mdc-deprecated-list-item__ripple>
+        <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>info
+        <span.mdc-deprecated-list-item__text>_{MsgAboutUs}
+
+<div.mdc-drawer-scrim>
+
+<main.mdc-top-app-bar--prominent-fixed-adjust>
+  ^{widget}

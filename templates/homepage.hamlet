@@ -1,0 +1,13 @@
+<div #wrapper>
+  <figure>
+    <img src=@{StaticR img_salon_svg} #intro>
+    <figcaption>_{MsgSalon}
+  <a.mdc-button href=@{ServicesR}>
+    <span.mdc-button__ripple>
+    <span.mdc-button__label>_{MsgServices}
+  <a.mdc-button href=@{AboutR}>
+    <span.mdc-button__ripple>
+    <span.mdc-button__label>_{MsgAboutUs}
+  <a.mdc-button href=#>
+    <span.mdc-button__ripple>
+    <span.mdc-button__label>_{MsgBook}

@@ -38,15 +38,7 @@ data App = App
     , appLogger      :: Logger
     }
 
-data MenuItem = MenuItem
-    { menuItemLabel :: Text
-    , menuItemRoute :: Route App
-    , menuItemAccessCallback :: Bool
-    }
-
-data MenuTypes
-    = NavbarLeft MenuItem
-    | NavbarRight MenuItem
+mkMessage "App" "messages" "en"
 
 -- This is where we define all of the routes in our application. For a full
 -- explanation of the syntax, please see:
@@ -98,9 +90,9 @@ instance Yesod App where
     yesodMiddleware = defaultYesodMiddleware
 
     defaultLayout :: Widget -> Handler Html
-    defaultLayout _ = do
+    defaultLayout widget = do
         master <- getYesod
-
+        curr <- getCurrentRoute
         -- We break up the default layout into two components:
         -- default-layout is the contents of the body tag, and
         -- default-layout-wrapper is the entire page. Since the final
@@ -108,8 +100,10 @@ instance Yesod App where
         -- you to use normal widget features in default-layout.
 
         pc <- widgetToPageContent $ do
-            addStylesheet $ StaticR css_bootstrap_css
-                                    -- ^ generated from @Settings/StaticFiles.hs@
+
+            addStylesheet $ StaticR material_components_web_min_css
+            addScript     $ StaticR material_components_web_min_js
+
             $(widgetFile "default-layout")
         withUrlRenderer $(hamletFile "templates/default-layout-wrapper.hamlet")
 
@@ -129,6 +123,8 @@ instance Yesod App where
     isAuthorized FaviconR _ = return Authorized
     isAuthorized RobotsR _ = return Authorized
     isAuthorized (StaticR _) _ = return Authorized
+    isAuthorized ServicesR _ = return Authorized
+    isAuthorized AboutR _ = return Authorized
 
     -- This function creates static content files in the static folder
     -- and names them based on a hash of their content. This allows
