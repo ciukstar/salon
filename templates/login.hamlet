@@ -1,0 +1,63 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button 
+        href=#{ult} role=button>
+        <span.mdc-icon-button__ripple>
+        <i.material-symbols-outlined>arrow_back
+
+<main.mdc-top-app-bar--fixed-adjust>
+
+  $forall (_,msg) <- msgs
+    <div.mdc-banner role=banner data-mdc-auto-init=MDCBanner>
+      <div.mdc-banner__content role=alertdialog aria-live=assertive>
+        <div.mdc-banner__graphic-text-wrapper>
+          <div.mdc-banner_graphic role=img>
+            <i.mdc-banner__icon.material-symbols-outlined>warning
+          <div.mdc-banner__text>#{msg}
+        <div.mdc-banner__actions>
+          <button.mdc-banner__primary-action.mdc-icon-button type=button>
+            <span.mdc-icon-button__ripple>
+            <i.material-symbols-outlined>close
+
+  <div #loginFormWrapper>
+    <h4.mdc-typography--headline6>_{MsgSignInToYourAccount}
+    <form method=POST action=@{route} #loginForm>
+      <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--label-floating data-mdc-auto-init=MDCTextField>
+        <span.mdc-text-field__ripple>
+        <span.mdc-floating-label>_{MsgUsername}
+        <input.mdc-text-field__input type=text name=username autocomplete=username>
+        <span.mdc-line-ripple>
+
+      <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--label-floating data-mdc-auto-init=MDCTextField>
+        <span.mdc-text-field__ripple>
+        <span.mdc-floating-label>_{MsgPassword}
+        <input.mdc-text-field__input type=password name=password autocomplete=current-password>
+        <span.mdc-line-ripple>
+
+      <div.mdc-form-field.form-field data-mdc-auto-init=MDCFormField>
+        <button.mdc-switch type=button role=switch #switchKey data-mdc-auto-init=MDCSwitch
+          .mdc-switch--unselected aria-checked=false>
+          <input.mdc-checkbox__native-control type=checkbox value=false>
+          <div.mdc-switch__track>
+          <div.mdc-switch__handle-track>
+            <div.mdc-switch__handle>
+              <div.mdc-switch__shadow>
+                <div.mdc-elevation-overlay>
+              <div.mdc-switch__ripple>
+              <div.mdc-switch__icons>
+                <svg.mdc-switch__icon.mdc-switch__icon--on viewBox="0 0 24 24">
+                  <path d="M19.69,5.23L8.96,15.96l-4.23-4.23L2.96,13.5l6,6L21.46,7L19.69,5.23z">
+                <svg.mdc-switch__icon.mdc-switch__icon--off viewBox="0 0 24 24">
+                  <path d="M20 13H4v-2h16v2z">
+
+        <span.mdc-switch__focus-ring-wrapper>
+          <span.mdc-switch__focus-ring>
+        <label for=switchKey>_{MsgAsAdmin}
+
+      <button.mdc-button.mdc-button--raised type=submit>_{MsgLogin}
+
+  <p>
+    <a.mdc-button href=#>
+      <span.mdc-button__ripple>
+      <span.mdc-button__label>_{MsgCreateAccount}

@@ -1,0 +1,7 @@
+
+header.mdc-top-app-bar
+  #wrapperMainFab
+    position: absolute
+    right: 1rem
+    bottom: 0
+    transform: translateY(50%)

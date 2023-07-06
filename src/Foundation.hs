@@ -6,6 +6,7 @@
 {-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE InstanceSigs #-}
+{-# LANGUAGE QuasiQuotes #-}
 
 module Foundation where
 
@@ -16,15 +17,16 @@ import Text.Hamlet          (hamletFile)
 import Text.Jasmine         (minifym)
 import Control.Monad.Logger (LogSource)
 
--- Used only when in "auth-dummy-login" setting is enabled.
-import Yesod.Auth.Dummy
-
-import Yesod.Auth.OpenId    (authOpenId, IdentifierType (Claimed))
 import Yesod.Default.Util   (addStaticContentExternal)
 import Yesod.Core.Types     (Logger)
 import qualified Yesod.Core.Unsafe as Unsafe
 import qualified Data.CaseInsensitive as CI
 import qualified Data.Text.Encoding as TE
+import Yesod.Auth.HashDB (authHashDBWithForm)
+import Yesod.Auth.Message (AuthMessage(InvalidLogin), englishMessage, frenchMessage, russianMessage, defaultMessage)
+import Yesod.Form.I18n.English (englishFormMessage)
+import Yesod.Form.I18n.French (frenchFormMessage)
+import Yesod.Form.I18n.Russian (russianFormMessage)
 
 -- | The foundation datatype for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
@@ -103,14 +105,12 @@ instance Yesod App where
 
             addStylesheet $ StaticR material_components_web_min_css
             addScript     $ StaticR material_components_web_min_js
-
+            msgs <- getMessages
             $(widgetFile "default-layout")
         withUrlRenderer $(hamletFile "templates/default-layout-wrapper.hamlet")
 
     -- The page to be redirected to when authentication is required.
-    authRoute
-        :: App
-        -> Maybe (Route App)
+    authRoute :: App -> Maybe (Route App)
     authRoute _ = Just $ AuthR LoginR
 
     isAuthorized
@@ -162,17 +162,6 @@ instance Yesod App where
     makeLogger :: App -> IO Logger
     makeLogger = return . appLogger
 
--- Define breadcrumbs.
-instance YesodBreadcrumbs App where
-    -- Takes the route that the user is currently on, and returns a tuple
-    -- of the 'Text' that you want the label to display, and a previous
-    -- breadcrumb route.
-    breadcrumb
-        :: Route App  -- ^ The route the user is visiting currently.
-        -> Handler (Text, Maybe (Route App))
-    breadcrumb HomeR = return ("Home", Nothing)
-    breadcrumb (AuthR _) = return ("Login", Just HomeR)
-    breadcrumb  _ = return ("home", Nothing)
 
 -- How to run database actions.
 instance YesodPersist App where
@@ -192,29 +181,33 @@ instance YesodAuth App where
     -- Where to send a user after successful login
     loginDest :: App -> Route App
     loginDest _ = HomeR
+    
     -- Where to send a user after logout
     logoutDest :: App -> Route App
     logoutDest _ = HomeR
+    
     -- Override the above two destinations when a Referer: header is present
     redirectToReferer :: App -> Bool
     redirectToReferer _ = True
 
-    authenticate :: (MonadHandler m, HandlerSite m ~ App)
-                 => Creds App -> m (AuthenticationResult App)
+    authenticate :: (MonadHandler m, HandlerSite m ~ App) => Creds App -> m (AuthenticationResult App)
     authenticate creds = liftHandler $ runDB $ do
         x <- getBy $ UniqueUser $ credsIdent creds
-        case x of
-            Just (Entity uid _) -> return $ Authenticated uid
-            Nothing -> Authenticated <$> insert User
-                { userIdent = credsIdent creds
-                , userPassword = Nothing
-                }
+        return $ case x of
+            Just (Entity uid _) -> Authenticated uid
+            Nothing -> UserError InvalidLogin
 
     -- You can add other plugins like Google Email, email or OAuth here
     authPlugins :: App -> [AuthPlugin App]
-    authPlugins app = [authOpenId Claimed []] ++ extraAuthPlugins
-        -- Enable authDummy login if enabled.
-        where extraAuthPlugins = [authDummy | appAuthDummyLogin $ appSettings app]
+    authPlugins _ = [authHashDBWithForm formLogin (Just . UniqueUser)]
+
+    renderAuthMessage :: App -> [Text] -> AuthMessage -> Text
+    renderAuthMessage _ [] = defaultMessage
+    renderAuthMessage _ ("en":_) = englishMessage
+    renderAuthMessage _ ("fr":_) = frenchMessage
+    renderAuthMessage _ ("ru":_) = russianMessage
+    renderAuthMessage app (_:xs) = renderAuthMessage app xs
+
 
 -- | Access function to determine if a user is logged in.
 isAuthenticated :: Handler AuthResult
@@ -224,13 +217,26 @@ isAuthenticated = do
         Nothing -> Unauthorized "You must login to access this page"
         Just _ -> Authorized
 
+
+formLogin :: Route App -> Widget
+formLogin route = do
+    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$>  lookupSession "_ULT"
+    msgs <- getMessages
+    $(widgetFile "login")
+
+
 instance YesodAuthPersist App
 
 -- This instance is required to use forms. You can modify renderMessage to
 -- achieve customized and internationalized form validation messages.
 instance RenderMessage App FormMessage where
     renderMessage :: App -> [Lang] -> FormMessage -> Text
-    renderMessage _ _ = defaultFormMessage
+    renderMessage _ [] = defaultFormMessage
+    renderMessage _ ("en":_) = englishFormMessage
+    renderMessage _ ("fr":_) = frenchFormMessage
+    renderMessage _ ("ru":_) = russianFormMessage
+    renderMessage app (_:xs) = renderMessage app xs
+
 
 -- Useful when writing code that is re-usable outside of the Handler context.
 -- An example is background jobs that send email.

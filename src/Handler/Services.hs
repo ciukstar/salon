@@ -3,10 +3,12 @@
 module Handler.Services (getServicesR) where
 
 import Text.Hamlet (Html)
-import Yesod.Core (Yesod(defaultLayout), setTitleI)
+import Yesod.Core (Yesod(defaultLayout), setTitleI, setUltDestCurrent, getMessages)
+import Yesod.Auth (Route (LoginR))
 
 import Foundation
     ( Handler
+    , Route (AuthR)
     , AppMessage
       ( MsgServices, MsgAdd
       )
@@ -15,6 +17,9 @@ import Foundation
 import Settings (widgetFile)
 
 getServicesR :: Handler Html
-getServicesR = defaultLayout $ do
-    setTitleI MsgServices
-    $(widgetFile "services/services")
+getServicesR = do
+    msgs <- getMessages
+    setUltDestCurrent
+    defaultLayout $ do
+        setTitleI MsgServices
+        $(widgetFile "services/services")

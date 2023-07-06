@@ -1,0 +1,12 @@
+
+main
+  #loginFormWrapper
+    display: flex
+    flex-direction: column
+    align-items: center
+    #loginForm
+      width: 100%
+      max-width: 20rem
+      display: flex
+      flex-direction: column
+      gap: 1rem

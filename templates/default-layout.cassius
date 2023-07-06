@@ -12,11 +12,6 @@
   
   --mdc-theme-text-primary-on-light: #442C2E
   --mdc-theme-text-secondary-on-light: #442C2E
-  --mdc-theme-text-hint-on-light: #442C2E
-  --mdc-theme-text-disabled-on-light: #442C2E
-  --mdc-theme-text-icon-on-light: #442C2E
-  
-  --mdc-theme-text-primary-on-dark: red
 
   --mdc-text-button-label-text-color: #442C2E
 
@@ -24,9 +19,3 @@ html
   body
     margin: 0
     padding: 0
-    header.mdc-top-app-bar
-      #wrapperMainFab
-        position: absolute
-        right: 1rem
-        bottom: 0
-        transform: translateY(50%)

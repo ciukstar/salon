@@ -1,30 +1,3 @@
-<header.mdc-top-app-bar.mdc-top-app-bar--prominent.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
-  <div.mdc-top-app-bar__row>
-    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <button.mdc-top-app-bar__navigation-icon.mdc-icon-button #btnMainMenu>
-        <span.mdc-icon-button__ripple>
-        <i.material-symbols-outlined>menu
-      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
-        $case curr
-          $of Just (ServicesR)
-            _{MsgServices}
-          $of Just (AboutR)
-            _{MsgAboutUs}
-          $of _
-            _{MsgWelcome}
-
-    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end>
-      <a.mdc-top-app-bar__action-item.mdc-icon-button role=button
-        href=#>
-        <span.mdc-icon-button_ripple>
-        <i.material-symbols-outlined>account_circle
-
-    <div.mdc-touch-target-wrapper #wrapperMainFab>
-      <button.mdc-fab aria-label=_{MsgAdd}>
-        <span.mdc-fab__ripple>
-        <div.mdc-fab__focus-ring>
-        <i.mdc-fab__icon.material-symbols-outlined>add
-        <div.mdc-fab__touch>
 
 <aside.mdc-drawer.mdc-drawer--modal data-mdc-auto-init=MDCDrawer #asideMainMenu>
   <div.mdc-drawer__header tabindex=0>
@@ -47,8 +20,22 @@
         <span.mdc-deprecated-list-item__ripple>
         <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>info
         <span.mdc-deprecated-list-item__text>_{MsgAboutUs}
+      <a.mdc-deprecated-list-item href=#
+        :False:.mdc-deprecated-list-item--activated>
+        <span.mdc-deprecated-list-item__ripple>
+        <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>book_online
+        <span.mdc-deprecated-list-item__text>_{MsgBook}
 
 <div.mdc-drawer-scrim>
 
-<main.mdc-top-app-bar--prominent-fixed-adjust>
-  ^{widget}
+$forall (_,msg) <- msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
+    <div.mdc-snackbar__surface role=status aria-relevant=additions>
+      <div.mdc-snackbar__label aria-atomic=false>
+        #{msg}
+      <div.mdc-snackbar__actions aria-atomic=true>
+        <button.mdc-snackbar__action.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <i.material-symbols-outlined>close
+    
+^{widget}

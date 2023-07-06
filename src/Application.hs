@@ -6,6 +6,7 @@
 {-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
+
 module Application
     ( getApplicationDev
     , appMain
@@ -38,6 +39,12 @@ import Network.Wai.Middleware.RequestLogger (Destination (Logger),
 import Network.Wai.Middleware.Gzip (gzip, GzipSettings (gzipFiles), GzipFiles (GzipCompress))
 import System.Log.FastLogger                (defaultBufSize, newStdoutLoggerSet,
                                              toLogStr)
+
+import Demo.DemoDataFR (populateFR)
+import Demo.DemoDataRO (populateRO)
+import Demo.DemoDataRU (populateRU)
+import Demo.DemoDataEN (populateEN)
+import System.Environment.Blank (getEnv)
 
 -- Import all relevant handler modules here.
 -- Don't forget to add new modules to your cabal file!
@@ -83,7 +90,14 @@ makeFoundation appSettings = do
         (sqlPoolSize $ appDatabaseConf appSettings)
 
     -- Perform database migration using our application's logging settings.
-    runLoggingT (runSqlPool (runMigration migrateAll) pool) logFunc
+    flip runLoggingT logFunc $ flip runSqlPool pool $ do
+        runMigration migrateAll
+        demo <- liftIO $ getEnv "DEMO_LANG"
+        case demo of
+          Just "FR" -> populateFR
+          Just "RO" -> populateRO
+          Just "RU" -> populateRU
+          _         -> populateEN
 
     -- Return the foundation
     return $ mkFoundation pool

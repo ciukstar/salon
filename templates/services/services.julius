@@ -1,0 +1,6 @@
+
+window.mdc.autoInit();
+
+document.getElementById('btnMainMenu').addEventListener('click',function (e) {
+  document.getElementById('asideMainMenu').MDCDrawer.open = true
+})
