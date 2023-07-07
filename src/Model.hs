@@ -15,6 +15,7 @@
 
 module Model where
 
+import Data.Function ((.))
 import Data.Maybe (Maybe (Just))
 import ClassyPrelude.Yesod
     ( Typeable , Text , ByteString , mkMigrate , mkPersist
@@ -34,7 +35,11 @@ share [mkPersist sqlSettings, mkMigrate "migrateAll"]
 
 instance HashDBUser User where
     userPasswordHash :: User -> Maybe Text
-    userPasswordHash = userPassword
+    userPasswordHash = Just . userPassword
 
     setPasswordHash :: Text -> User -> User
-    setPasswordHash h u = u { userPassword = Just h } 
+    setPasswordHash h u = u { userPassword = h } 
+
+
+sessKeyULT :: Text
+sessKeyULT = "_ULT"

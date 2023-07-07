@@ -105,7 +105,6 @@ instance Yesod App where
 
             addStylesheet $ StaticR material_components_web_min_css
             addScript     $ StaticR material_components_web_min_js
-            msgs <- getMessages
             $(widgetFile "default-layout")
         withUrlRenderer $(hamletFile "templates/default-layout-wrapper.hamlet")
 
@@ -123,6 +122,9 @@ instance Yesod App where
     isAuthorized FaviconR _ = return Authorized
     isAuthorized RobotsR _ = return Authorized
     isAuthorized (StaticR _) _ = return Authorized
+    isAuthorized (AdminR UsersR) _ = return Authorized
+    isAuthorized (AdminR UserCreateFormR) _ = return Authorized
+    isAuthorized AccountR _ = return Authorized
     isAuthorized ServicesR _ = return Authorized
     isAuthorized AboutR _ = return Authorized
 

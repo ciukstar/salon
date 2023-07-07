@@ -5,7 +5,13 @@
 
 /services ServicesR GET
 
+/account AccountR GET
+
 / HomeR GET
+
+/admin AdminR:
+    /form/user UserCreateFormR GET
+    /users     UsersR GET
 
     
 

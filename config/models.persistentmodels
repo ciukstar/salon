@@ -13,7 +13,7 @@ Service
 
 
 User
-  ident Text
-  password Text Maybe
-  UniqueUser ident
+  name Text
+  password Text
+  UniqueUser name
   deriving Typeable

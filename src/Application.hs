@@ -50,7 +50,9 @@ import System.Environment.Blank (getEnv)
 -- Don't forget to add new modules to your cabal file!
 import Handler.About (getAboutR)
 import Handler.Services (getServicesR)
+import Handler.Account (getAccountR)
 import Handler.Home (getHomeR)
+import Handler.Users (getUsersR, getUserCreateFormR)
 import Handler.Common
 
 -- This line actually creates our YesodDispatch instance. It is the second half

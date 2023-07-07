@@ -1,6 +1,11 @@
+Photo: Фото
+Cancel: Отмена
+Account: Учетная запись
+DoNotHaveAnAccount: Нет учетной записи?
 AsAdmin: Как администратор
 CreateAccount: Зарегистрироваться
 SignInToYourAccount: Вход в учетную запись
+SignUp: Зарегистрироваться
 Logout: Выйти
 Login: Войти
 Password: Пароль

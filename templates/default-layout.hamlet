@@ -27,15 +27,5 @@
         <span.mdc-deprecated-list-item__text>_{MsgBook}
 
 <div.mdc-drawer-scrim>
-
-$forall (_,msg) <- msgs
-  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
-    <div.mdc-snackbar__surface role=status aria-relevant=additions>
-      <div.mdc-snackbar__label aria-atomic=false>
-        #{msg}
-      <div.mdc-snackbar__actions aria-atomic=true>
-        <button.mdc-snackbar__action.mdc-icon-button type=button>
-          <span.mdc-icon-button__ripple>
-          <i.material-symbols-outlined>close
     
 ^{widget}

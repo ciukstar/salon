@@ -6,14 +6,19 @@
   --mdc-theme-on-secondary: #442C2E
   
   --mdc-theme-background: #FFFFFF
+  --mdc-theme-on-background: #442C2E
 
-  --mdc-theme-surface: #FEDBD0
+  --mdc-theme-surface: #FFFBFA
   --mdc-theme-on-surface: #442C2E
   
   --mdc-theme-text-primary-on-light: #442C2E
   --mdc-theme-text-secondary-on-light: #442C2E
 
+  --mdc-theme-error: #C5032B
+  --mdc-theme-on-error: #FFFBFA
+
   --mdc-text-button-label-text-color: #442C2E
+  --mdc-outlined-button-label-text-color: #442C2E
 
 html
   body

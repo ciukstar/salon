@@ -1,6 +1,12 @@
 
 window.mdc.autoInit();
 
+Array.from(
+  document.querySelectorAll('aside.mdc-snackbar')
+).map(x => x.MDCSnackbar).forEach(function (x) {
+  x.open();
+});
+
 document.getElementById('btnMainMenu').addEventListener('click',function (e) {
-  document.getElementById('asideMainMenu').MDCDrawer.open = true
-})
+  document.getElementById('asideMainMenu').MDCDrawer.open = true;
+});
