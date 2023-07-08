@@ -121,10 +121,12 @@ instance Yesod App where
     isAuthorized HomeR _ = return Authorized
     isAuthorized FaviconR _ = return Authorized
     isAuthorized RobotsR _ = return Authorized
+    isAuthorized PhotoPlaceholderR _ = return Authorized
     isAuthorized (StaticR _) _ = return Authorized
     isAuthorized (AdminR UsersR) _ = return Authorized
     isAuthorized (AdminR UserCreateFormR) _ = return Authorized
     isAuthorized AccountR _ = return Authorized
+    isAuthorized (AccountPhotoR _) _ = return Authorized
     isAuthorized ServicesR _ = return Authorized
     isAuthorized AboutR _ = return Authorized
 

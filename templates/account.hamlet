@@ -6,9 +6,6 @@
         <i.material-symbols-outlined>arrow_back
 
 <main.mdc-top-app-bar--fixed-adjust>
-  <figure>
-    <i.material-symbols-outlined>account_circle
-    <figcaption>_{MsgPhoto}
   <form method=POST action=@{AccountR} enctype=#{enctype} novalidate>
     ^{widget}
     <p.actions>
@@ -17,4 +14,4 @@
         <span.mdc-button__label>_{MsgCancel}
       <button.mdc-button.mdc-button--raised type=submit>
         <span.mdc-button__ripple>
-        <span.mdc-button__label>_{MsgSignUp}
+        <span.mdc-button__label>_{MsgCreateAccount}

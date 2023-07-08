@@ -1,33 +1,99 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE TypeApplications #-}
 
-module Handler.Account (getAccountR) where
+module Handler.Account
+  ( getAccountR
+  , postAccountR
+  , getAccountPhotoR
+  ) where
 
-import Data.Maybe (fromMaybe)
+import Data.Text (Text)
+import Data.Maybe (fromMaybe, isJust)
 import Text.Hamlet (Html)
 import Settings (widgetFile)
 
 import Yesod.Core
     ( Yesod(defaultLayout)
-    , setTitleI, getUrlRender, lookupSession, whamlet, SomeMessage (SomeMessage)
+    , setTitleI, getUrlRender, lookupSession, whamlet
+    , SomeMessage (SomeMessage), FileInfo (fileContentType), ToWidget (toWidget)
+    , julius, fileSourceByteString, redirect
+    , TypedContent (TypedContent)
+    , ToContent (toContent), emptyContent
     )
+    
+import Yesod.Form.Types
+    ( MForm, FormResult (FormSuccess), FieldView (fvInput, fvLabel, fvId, fvErrors)
+    , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
+    , Field (Field, fieldParse, fieldEnctype, fieldView)
+    , Enctype (UrlEncoded)
+    )
+import Yesod.Form
+    ( generateFormPost, mreq, textField, mopt
+    , fileField, emailField, runFormPost
+    )
+import Yesod.Auth (Route (LoginR))
 
 import Foundation
     ( Handler, Widget
-    , Route (HomeR, AccountR)
+    , Route (HomeR, AccountR, PhotoPlaceholderR, AuthR)
     , AppMessage
-      ( MsgAccount, MsgSignUp, MsgCancel, MsgUsername, MsgPassword
-      , MsgPhoto
+      ( MsgAccount, MsgCancel, MsgUsername, MsgPassword
+      , MsgPhoto, MsgFullName, MsgEmail, MsgCreateAccount
+      , MsgConfirmPassword, MsgYouMustEnterTwoValues
+      , MsgPasswordsDoNotMatch
       )
     )
-import Yesod.Form.Types
-    ( MForm, FormResult, FieldView (fvInput, fvLabel)
-    , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
-    )
-import Yesod.Form (generateFormPost, mreq, textField, passwordField)
 
-import Model (User (userName, User, userPassword), sessKeyULT)
+import Yesod.Auth.HashDB (setPassword)
+import Yesod (YesodPersist(runDB))
+import Database.Persist (Entity (Entity), insert, insert_)
+
+import Model
+    ( sessKeyULT
+    , User (userName, User, userPassword, userFullName), UserId
+    , UserPhoto (UserPhoto, userPhotoUser, userPhotoPhoto, userPhotoMime), EntityField (UserPhotoUser)
+    )
+
+import Database.Esqueleto.Experimental
+    (selectOne, from, table, where_
+    , (^.), (==.), val
+    )
+import ClassyPrelude (Utf8(encodeUtf8))
+
+
+getAccountPhotoR :: UserId -> Handler TypedContent
+getAccountPhotoR uid = do
+    photo <- runDB $ selectOne $ do
+        x <- from $ table @UserPhoto
+        where_ $ x ^. UserPhotoUser ==. val uid
+        return x
+    return $ case photo of
+      Just (Entity _ (UserPhoto _ bs mime)) -> TypedContent (encodeUtf8 mime) $ toContent bs 
+      Nothing -> TypedContent "image/avif" emptyContent
+
+
+postAccountR :: Handler Html
+postAccountR = do
+    ((fr,widget),enctype) <- runFormPost $ formAccount Nothing
+    case fr of
+      FormSuccess (user,mfi) -> do
+          uid <- setPassword (userPassword user) user >>= \u -> runDB $ insert u
+          case mfi of
+            Just fi -> do
+                bs <- fileSourceByteString fi
+                runDB $ insert_ UserPhoto
+                    { userPhotoUser = uid
+                    , userPhotoPhoto = bs 
+                    , userPhotoMime = fileContentType fi
+                    }
+            Nothing -> return ()
+          redirect $ AuthR LoginR
+      _ -> defaultLayout $ do
+          ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupSession sessKeyULT
+          setTitleI MsgAccount
+          $(widgetFile "account")
 
 
 getAccountR :: Handler Html
@@ -39,26 +105,112 @@ getAccountR = do
         $(widgetFile "account")
 
 
-formAccount :: Maybe User -> Html -> MForm Handler (FormResult User, Widget)
+formAccount :: Maybe User -> Html -> MForm Handler (FormResult (User, Maybe FileInfo), Widget)
 formAccount user extra = do
     (nameR,nameV) <- mreq textField FieldSettings
         { fsLabel = SomeMessage MsgUsername
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (userName <$> user)
-    (passR,passV) <- mreq passwordField FieldSettings
+    (passR,passV) <- mreq passwordConfirmField FieldSettings
         { fsLabel = SomeMessage MsgPassword
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (userPassword <$> user)
-    let r = User <$> nameR <*> passR
-    let w = [whamlet|
+    (fnameR,fnameV) <- mopt textField FieldSettings
+        { fsLabel = SomeMessage MsgFullName
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (userFullName <$> user)
+    (emailR,emailV) <- mopt emailField FieldSettings
+        { fsLabel = SomeMessage MsgEmail
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (userFullName <$> user)
+    (photoR,photoV) <- mopt fileField FieldSettings
+        { fsLabel = SomeMessage MsgPhoto
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("style","display:none")]
+        } Nothing
+
+    let r = (,) <$> (User <$> nameR <*> passR <*> fnameR <*> emailR) <*> photoR
+
+    let w = do
+            toWidget [julius|
+document.getElementById(#{fvId photoV}).addEventListener('change',function (e) {
+  if (this.files && this.files[0]) {
+    let fr = new FileReader();
+    fr.onload = function (e) {
+      document.getElementById('imgPhoto').setAttribute('src',e.target.result);
+    }
+    fr.readAsDataURL(this.files[0]);
+  }
+});
+|]
+            [whamlet|
 #{extra}
-$forall v <- [nameV,passV]
-  <label.mdc-text-field.mdc-text-field--filled>
+
+<figure>
+  <label for=#{fvId photoV}>
+    <img src=@{PhotoPlaceholderR} #imgPhoto height=64 style="clip-path:circle(50%)" alt=_{MsgPhoto}>
+  <figcaption>_{MsgPhoto}
+^{fvInput photoV}
+
+<div.form-field>
+  <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
+    :isJust (fvErrors nameV):.mdc-text-field--invalid>
     <span.mdc-text-field__ripple>
-    <span.mdc-floating-label>#{fvLabel v}
-    ^{fvInput v}
+    <span.mdc-floating-label>#{fvLabel nameV}
+    ^{fvInput nameV}
     <span.mdc-line-ripple>
+  $maybe errs <- fvErrors nameV
+    <div.mdc-text-field-helper-line>
+      <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+        #{errs}
+          
+<div.form-field>
+  ^{fvInput passV}
+  $maybe err <- fvErrors passV
+    <label.mdc-text-field--invalid>
+    <div.mdc-text-field-helper-line>
+      <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+        #{err}
+        
+$forall v <- [fnameV,emailV]
+  <div.form-field>
+    <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
+      :isJust (fvErrors v):.mdc-text-field--invalid>
+      <span.mdc-text-field__ripple>
+      <span.mdc-floating-label>#{fvLabel v}
+      ^{fvInput v}
+      <span.mdc-line-ripple>
+    $maybe errs <- fvErrors v
+      <div.mdc-text-field-helper-line>
+        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+          #{errs}
 |]
     return (r, w)
+
+
+passwordConfirmField :: Field Handler Text
+passwordConfirmField = Field
+    { fieldParse = \rawVals _ -> return $ case rawVals of
+        [a,b] | a == b -> Right $ Just a
+              | otherwise -> Left (SomeMessage MsgPasswordsDoNotMatch)
+        [] -> Right Nothing
+        _ -> Left (SomeMessage MsgYouMustEnterTwoValues)
+    , fieldView = \ident name attrs _ req -> [whamlet|
+<label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField>
+  <span.mdc-text-field__ripple>
+  <span.mdc-floating-label>_{MsgPassword}
+  <input ##{ident} name=#{name} *{attrs} type=password :req:required>
+  <span.mdc-line-ripple>
+  
+<label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField style="margin-top:1rem">
+  <span.mdc-text-field__ripple>
+  <span.mdc-floating-label>_{MsgConfirmPassword}
+  <input ##{ident}Confirm name=#{name} *{attrs} type=password :req:required>
+  <span.mdc-line-ripple>
+|]
+    , fieldEnctype = UrlEncoded
+    }

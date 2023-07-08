@@ -1,4 +1,9 @@
+PasswordsDoNotMatch: Passwords don't match
+YouMustEnterTwoValues: You must enter two values
+Email: Email
+FullName: Full name
 Photo: Photo
+Save: Save
 Cancel: Cancel
 Account: Account
 DoNotHaveAnAccount: Don't have an account?
@@ -8,6 +13,7 @@ SignInToYourAccount: Sign in to your account
 SignUp: Sign up
 Logout: Logout
 Login: Login
+ConfirmPassword: Confirm password
 Password: Password
 Username: Username
 Book: Book

@@ -8,11 +8,15 @@ import ClassyPrelude.Yesod (ReaderT)
 import Database.Persist.Sql (SqlBackend)
 import Database.Persist ( PersistStoreWrite(insert_) )
 
-import Model (User(User, userName, userPassword))
+import Model (User(User, userName, userPassword, userEmail, userFullName))
 import Yesod.Auth.Util.PasswordStore (makePassword)
 
 populateRU :: MonadIO m => ReaderT SqlBackend m ()
 populateRU = do
     pass <- liftIO $ makePassword "root" 17
-    insert_ $ User { userName = "root", userPassword = decodeUtf8 pass}
+    insert_ $ User { userName = "root"
+                   , userPassword = decodeUtf8 pass
+                   , userFullName = Just "Иванов Иван Иванович"
+                   , userEmail = Just "iiivanov@mail.ru"
+                   }
     return ()

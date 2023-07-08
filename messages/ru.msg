@@ -1,13 +1,19 @@
+PasswordsDoNotMatch: Пароли не совпадают
+YouMustEnterTwoValues: Вы должны ввести два значения
+Email: Электронная почта
+FullName: ФИО
 Photo: Фото
+Save: Сохранить
 Cancel: Отмена
 Account: Учетная запись
 DoNotHaveAnAccount: Нет учетной записи?
 AsAdmin: Как администратор
-CreateAccount: Зарегистрироваться
+CreateAccount: Создать учётную запись
 SignInToYourAccount: Вход в учетную запись
 SignUp: Зарегистрироваться
 Logout: Выйти
 Login: Войти
+ConfirmPassword: Подтвердить пароль
 Password: Пароль
 Username: Имя пользователя
 Book: Бронировать

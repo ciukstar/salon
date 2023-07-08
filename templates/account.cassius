@@ -4,6 +4,11 @@ main
     display: flex
     flex-direction: column
     gap: 1rem
+    figure
+      text-align: center
+    div.form-field
+      display: flex
+      flex-direction: column      
     p.actions
       display: flex
       flex-direction: row

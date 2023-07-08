@@ -50,10 +50,10 @@ import System.Environment.Blank (getEnv)
 -- Don't forget to add new modules to your cabal file!
 import Handler.About (getAboutR)
 import Handler.Services (getServicesR)
-import Handler.Account (getAccountR)
+import Handler.Account (getAccountR, postAccountR, getAccountPhotoR)
 import Handler.Home (getHomeR)
 import Handler.Users (getUsersR, getUserCreateFormR)
-import Handler.Common
+import Handler.Common ( getFaviconR, getRobotsR, getPhotoPlaceholderR )
 
 -- This line actually creates our YesodDispatch instance. It is the second half
 -- of the call to mkYesodData which occurs in Foundation.hs. Please see the

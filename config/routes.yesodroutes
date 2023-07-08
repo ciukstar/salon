@@ -5,7 +5,8 @@
 
 /services ServicesR GET
 
-/account AccountR GET
+/account/#UserId/photo AccountPhotoR GET
+/account               AccountR GET POST
 
 / HomeR GET
 
@@ -18,6 +19,7 @@
 /static StaticR Static appStatic
 /auth   AuthR   Auth   getAuth
 
+/photo-placeholder PhotoPlaceholderR GET
 /favicon.ico FaviconR GET
 /robots.txt RobotsR GET
 

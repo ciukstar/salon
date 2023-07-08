@@ -11,9 +11,17 @@ Service
   price Centi
   UniqueService name
 
+UserPhoto
+  user UserId OnDeleteCascade
+  photo ByteString
+  mime Text
+  UniqueUserPhoto user
+
 
 User
   name Text
   password Text
+  fullName Text Maybe
+  email Text Maybe
   UniqueUser name
   deriving Typeable
