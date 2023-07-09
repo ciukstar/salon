@@ -9,6 +9,7 @@ dependencies:
 - yesod-auth
 - yesod-static
 - yesod-form
+- yesod-persistent
 - classy-prelude
 - classy-prelude-conduit
 - classy-prelude-yesod

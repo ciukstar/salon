@@ -3,6 +3,7 @@
 
 /about AboutR GET
 
+/form/service ServiceCreateFormR GET
 /services ServicesR GET
 
 /account/#UserId/photo AccountPhotoR GET

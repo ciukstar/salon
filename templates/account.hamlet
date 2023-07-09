@@ -14,4 +14,4 @@
         <span.mdc-button__label>_{MsgCancel}
       <button.mdc-button.mdc-button--raised type=submit>
         <span.mdc-button__ripple>
-        <span.mdc-button__label>_{MsgCreateAccount}
+        <span.mdc-button__label>_{MsgSignUp}

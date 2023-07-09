@@ -10,6 +10,7 @@ DoNotHaveAnAccount: Nu aveți cont?
 AsAdmin: Ca administrator
 CreateAccount: Creează cont
 SignInToYourAccount: Conectați-vă la contul dvs
+SignIn: Conectați-vă
 SignUp: Înscriere
 Logout: Deconectare
 Login: Autentificare
@@ -21,5 +22,6 @@ Add: Adăuga
 Data: Date
 Welcome: Bine ați venit
 AboutUs: Despre noi
+Service: Serviciu
 Services: Servicii
 Salon: Salon

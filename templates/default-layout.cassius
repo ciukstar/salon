@@ -20,6 +20,36 @@
   --mdc-text-button-label-text-color: #442C2E
   --mdc-outlined-button-label-text-color: #442C2E
 
+  --mdc-switch-selected-handle-color: #FEDBD0
+  --mdc-switch-unselected-handle-color: #FEEAE6
+
+  --mdc-switch-selected-icon-color: #442C2E
+  --mdc-switch-unselected-icon-color: #442C2E
+  
+  --mdc-switch-selected-hover-handle-color: #FEDBD0
+  --mdc-switch-unselected-hover-handle-color: #FEEAE6
+
+  --mdc-switch-selected-focus-handle-color: #FEDBD0
+  --mdc-switch-unselected-focus-handle-color: #FEEAE6
+
+  --mdc-switch-selected-pressed-handle-color: #FEDBD0
+  --mdc-switch-unselected-pressed-handle-color: #FEEAE6
+
+  --mdc-switch-selected-track-color: #FEEAE6
+  --mdc-switch-unselected-track-color: #FEEAE6
+  
+  --mdc-switch-selected-track-color: #FEEAE6
+  --mdc-switch-unselected-track-color: #FEEAE6
+  
+  --mdc-switch-selected-focus-track-color: #FEEAE6
+  --mdc-switch-unselected-focus-track-color: #FEEAE6
+  
+  --mdc-switch-selected-hover-track-color: #FEEAE6
+  --mdc-switch-unselected-hover-track-color: #FEEAE6
+  
+  --mdc-switch-selected-pressed-track-color: #FEEAE6
+  --mdc-switch-unselected-pressed-track-color: #FEEAE6
+
 html
   body
     margin: 0

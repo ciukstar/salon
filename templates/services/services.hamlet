@@ -7,14 +7,19 @@
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
         _{MsgServices}
 
-    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end>
-      <a.mdc-top-app-bar__action-item.mdc-icon-button role=button
-        href=@{AuthR LoginR}>
-        <span.mdc-icon-button__ripple>
-        <i.material-symbols-outlined>account_circle
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
+      $maybe Entity uid _ <- muid
+        <button.mdc-top-app-bar__action-item.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <img src=@{AccountPhotoR uid} alt=_{MsgPhoto} onerror="this.src = '@{PhotoPlaceholderR}'">
+      $nothing
+        <a.mdc-top-app-bar__action-item.mdc-icon-button role=button
+          href=@{AuthR LoginR}>
+          <span.mdc-icon-button__ripple>
+          <i.material-symbols-outlined>login
 
     <div.mdc-touch-target-wrapper #wrapperMainFab>
-      <button.mdc-fab aria-label=_{MsgAdd}>
+      <a.mdc-fab href=@{ServiceCreateFormR} aria-label=_{MsgAdd}>
         <span.mdc-fab__ripple>
         <div.mdc-fab__focus-ring>
         <i.mdc-fab__icon.material-symbols-outlined>add
@@ -22,4 +27,16 @@
 
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
-  <p>Services ...
+  $forall Entity sid (Service name descr price) <- services
+    #{name}
+
+$forall (_,msg) <- msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
+    <div.mdc-snackbar__surface role=status aria-relevant=additions>
+      <div.mdc-snackbar__label aria-atomic=false>
+        #{msg}
+      <div.mdc-snackbar__actions aria-atomic=true>
+        <button.mdc-snackbar__dismiss.mdc-icon-button>
+          <span.mdc-icon-button__ripple>
+          <i.mateial-symbols-outlined>close
+        

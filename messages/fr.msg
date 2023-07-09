@@ -10,6 +10,7 @@ DoNotHaveAnAccount: Vous n'avez pas de compte ?
 AsAdmin: Comme administrateur
 CreateAccount: Créer un compte
 SignInToYourAccount: Connectez-vous à votre compte
+SignIn: Connectez-vous
 SignUp: S'inscrire
 Logout: Se déconnecter
 Login: Connexion
@@ -21,5 +22,6 @@ Add: Ajouter
 Data: Donnés
 Welcome: Bienvenue
 AboutUs: À propos de nous
+Service: Service
 Services: Services
 Salon: Salon

@@ -10,6 +10,7 @@ module Handler.Account
   ) where
 
 import Data.Text (Text)
+import qualified Data.Text as T (null)
 import Data.Maybe (fromMaybe, isJust)
 import Text.Hamlet (Html)
 import Settings (widgetFile)
@@ -27,7 +28,7 @@ import Yesod.Form.Types
     ( MForm, FormResult (FormSuccess), FieldView (fvInput, fvLabel, fvId, fvErrors)
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
     , Field (Field, fieldParse, fieldEnctype, fieldView)
-    , Enctype (UrlEncoded)
+    , Enctype (UrlEncoded), FormMessage (MsgValueRequired)
     )
 import Yesod.Form
     ( generateFormPost, mreq, textField, mopt
@@ -40,7 +41,7 @@ import Foundation
     , Route (HomeR, AccountR, PhotoPlaceholderR, AuthR)
     , AppMessage
       ( MsgAccount, MsgCancel, MsgUsername, MsgPassword
-      , MsgPhoto, MsgFullName, MsgEmail, MsgCreateAccount
+      , MsgPhoto, MsgFullName, MsgEmail, MsgSignUp
       , MsgConfirmPassword, MsgYouMustEnterTwoValues
       , MsgPasswordsDoNotMatch
       )
@@ -53,7 +54,8 @@ import Database.Persist (Entity (Entity), insert, insert_)
 import Model
     ( sessKeyULT
     , User (userName, User, userPassword, userFullName), UserId
-    , UserPhoto (UserPhoto, userPhotoUser, userPhotoPhoto, userPhotoMime), EntityField (UserPhotoUser)
+    , UserPhoto (UserPhoto, userPhotoUser, userPhotoPhoto, userPhotoMime)
+    , EntityField (UserPhotoUser)
     )
 
 import Database.Esqueleto.Experimental
@@ -195,21 +197,22 @@ $forall v <- [fnameV,emailV]
 passwordConfirmField :: Field Handler Text
 passwordConfirmField = Field
     { fieldParse = \rawVals _ -> return $ case rawVals of
-        [a,b] | a == b -> Right $ Just a
+        [a,b] | T.null a || T.null b -> Left (SomeMessage MsgValueRequired)
+              | a == b -> Right $ Just a
               | otherwise -> Left (SomeMessage MsgPasswordsDoNotMatch)
         [] -> Right Nothing
         _ -> Left (SomeMessage MsgYouMustEnterTwoValues)
-    , fieldView = \ident name attrs _ req -> [whamlet|
+    , fieldView = \theId name attrs _ isReq -> [whamlet|
 <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField>
   <span.mdc-text-field__ripple>
   <span.mdc-floating-label>_{MsgPassword}
-  <input ##{ident} name=#{name} *{attrs} type=password :req:required>
+  <input ##{theId} name=#{name} *{attrs} type=password :isReq:required>
   <span.mdc-line-ripple>
   
 <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField style="margin-top:1rem">
   <span.mdc-text-field__ripple>
   <span.mdc-floating-label>_{MsgConfirmPassword}
-  <input ##{ident}Confirm name=#{name} *{attrs} type=password :req:required>
+  <input ##{theId}Confirm name=#{name} *{attrs} type=password :isReq:required>
   <span.mdc-line-ripple>
 |]
     , fieldEnctype = UrlEncoded

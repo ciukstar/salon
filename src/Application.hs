@@ -49,7 +49,7 @@ import System.Environment.Blank (getEnv)
 -- Import all relevant handler modules here.
 -- Don't forget to add new modules to your cabal file!
 import Handler.About (getAboutR)
-import Handler.Services (getServicesR)
+import Handler.Services (getServicesR, getServiceCreateFormR)
 import Handler.Account (getAccountR, postAccountR, getAccountPhotoR)
 import Handler.Home (getHomeR)
 import Handler.Users (getUsersR, getUserCreateFormR)

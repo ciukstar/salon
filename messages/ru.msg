@@ -10,6 +10,7 @@ DoNotHaveAnAccount: Нет учетной записи?
 AsAdmin: Как администратор
 CreateAccount: Создать учётную запись
 SignInToYourAccount: Вход в учетную запись
+SignIn: Вход
 SignUp: Зарегистрироваться
 Logout: Выйти
 Login: Войти
@@ -21,5 +22,6 @@ Add: Добавить
 Data: Данные
 Welcome: Добро пожаловать
 AboutUs: О нас
+Service: Услуга
 Services: Услуги
 Salon: Салон

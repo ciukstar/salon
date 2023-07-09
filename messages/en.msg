@@ -10,6 +10,7 @@ DoNotHaveAnAccount: Don't have an account?
 AsAdmin: As admin
 CreateAccount: Create account
 SignInToYourAccount: Sign in to your account
+SignIn: Sign in
 SignUp: Sign up
 Logout: Logout
 Login: Login
@@ -21,5 +22,6 @@ Add: Add
 Data: Data
 Welcome: Welcome
 AboutUs: About Us
+Service: Service
 Services: Services
 Salon: Salon

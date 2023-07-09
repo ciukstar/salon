@@ -7,7 +7,7 @@ Thumbnail
 
 Service
   name Text
-  descr Textarea
+  descr Textarea Maybe
   price Centi
   UniqueService name
 
