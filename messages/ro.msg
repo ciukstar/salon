@@ -1,3 +1,9 @@
+RecordAdded: Înregistrare adăugată
+Thumbnail: Miniatură
+Price: Preț
+Description: Descriere
+TheName: Nume
+Name: Nume
 PasswordsDoNotMatch: Parolele nu se potrivesc
 YouMustEnterTwoValues: Trebuie să introduceți două valori
 Email: E-mail

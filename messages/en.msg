@@ -1,3 +1,9 @@
+RecordAdded: Record added
+Thumbnail: Thumbnail
+Price: Price
+Description: Description
+TheName: Name
+Name: Name
 PasswordsDoNotMatch: Passwords don't match
 YouMustEnterTwoValues: You must enter two values
 Email: Email

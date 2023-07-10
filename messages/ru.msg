@@ -1,3 +1,9 @@
+RecordAdded: Запись добавлена
+Thumbnail: Миниатюра
+Price: Цена
+Description: Описание
+TheName: Наименование
+Name: Имя
 PasswordsDoNotMatch: Пароли не совпадают
 YouMustEnterTwoValues: Вы должны ввести два значения
 Email: Электронная почта

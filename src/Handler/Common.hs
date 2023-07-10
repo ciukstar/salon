@@ -13,6 +13,13 @@ import Yesod.Core
     )
 
 
+getImagePlaceholderR :: Handler TypedContent
+getImagePlaceholderR = do
+    cacheSeconds $ 60 * 60 * 24 * 30 -- cache for a month
+    return $ TypedContent typeSvg
+           $ toContent $(embedFile "static/img/add_photo_alternate_FILL0_wght400_GRAD0_opsz48.svg")
+
+
 getPhotoPlaceholderR :: Handler TypedContent
 getPhotoPlaceholderR = do
     cacheSeconds $ 60 * 60 * 24 * 30 -- cache for a month

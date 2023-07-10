@@ -1,3 +1,9 @@
+RecordAdded: Enregistrement ajouté
+Thumbnail: Vignette
+Price: Prix
+Description: Description
+TheName: Nom
+Name: Nom
 PasswordsDoNotMatch: Les mots de passe ne correspondent pas
 YouMustEnterTwoValues: Vous devez entrer deux valeurs
 Email: E-mail

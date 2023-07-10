@@ -1,12 +1,13 @@
 <header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row.mdc-theme--background>
-    <section.mdc-top-app-bar__section.mdc-top-app-bar__section-align-start>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
       <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=@{ServicesR} role=button>
         <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
-
+        
 <main.mdc-top-app-bar--fixed-adjust>
-  <form method=POST action=@{ServicesR} enctype=#{enctype} novalidate>
+  <form method=POST action=@{ServiceR sid} enctype=#{enctype} novalidate>
     ^{widget}
     <div.actions>
       <a.mdc-button href=@{ServicesR} role=button>
@@ -17,3 +18,4 @@
         <span.mdc-button__ripple>
         <span.mdc-button__focus-ring>
         <span.mdc-button__label>_{MsgSave}
+        

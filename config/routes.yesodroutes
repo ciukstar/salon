@@ -3,8 +3,11 @@
 
 /about AboutR GET
 
-/form/service ServiceCreateFormR GET
-/services ServicesR GET
+/form/services/#ServiceId      ServiceEditFormR   GET
+/form/service                  ServiceCreateFormR GET
+/services/#ServiceId/thumbnail ServiceThumbnailR  GET
+/services/#ServiceId 	       ServiceR		  GET POST
+/services 		       ServicesR	  GET POST
 
 /account/#UserId/photo AccountPhotoR GET
 /account               AccountR GET POST
@@ -20,6 +23,7 @@
 /static StaticR Static appStatic
 /auth   AuthR   Auth   getAuth
 
+/image-placeholder ImagePlaceholderR GET
 /photo-placeholder PhotoPlaceholderR GET
 /favicon.ico FaviconR GET
 /robots.txt RobotsR GET
