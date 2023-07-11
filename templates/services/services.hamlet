@@ -27,20 +27,27 @@
 
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
-  <nav.mdc-list data-mdc-auto-init=MDCList>
-  $forall Entity sid (Service name _ price) <- services
-    <a.mdc-list-item.mdc-list-item--with-two-lines.mdc-list-item--with-leading-thumbnail.mdc-list-item--with-trailing-icon
-      href=@{ServiceR sid}>
-      <span.mdc-list-item__ripple>
-      <span.mdc-list-item__start>
-        <img src=@{ServiceThumbnailR sid} height=40 width=40 alt=_{MsgThumbnail} 
-          onerror="this.src = '@{ImagePlaceholderR}'">
-      <span.mdc-list-item__content>
-        <div.mdc-list-item__primary-text>#{name}
-        <div.mdc-list-item__secondary-text>#{show price}
-      <span.mdc-list-item__end>
-        <i.material-symbols-outlined>arrow_forward_ios
-    <div.mdc-list-divider role=separator>
+  $if null services
+    <figure style="display:flex;flex-direction:column;align-items:center">
+      <img src=@{StaticR img_spark_svg}>
+      <figcaption>
+        _{MsgNoServicesYet}.
+  $else
+    <ul.mdc-list data-mdc-auto-init=MDCList>
+      $forall Entity sid (Service name price mu _) <- services
+        <a.mdc-list-item.mdc-list-item--with-three-lines.mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon
+          href=@{ServiceR sid}>
+          <span.mdc-list-item__ripple>
+          <span.mdc-list-item__start>
+            <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail} 
+              onerror="this.src = '@{StaticR img_photo_FILL0_wght400_GRAD0_opsz48_svg}'">
+          <span.mdc-list-item__content>
+            <div.mdc-list-item__primary-text>#{name}
+            <div.mdc-list-item__secondary-text>#{mu} #{show price}
+            <div.mdc-list-item__secondary-text>
+          <span.mdc-list-item__end>
+            <i.material-symbols-outlined>arrow_forward_ios
+        <li.mdc-list-divider role=separator>
 
 $forall (_,msg) <- msgs
   <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
@@ -50,5 +57,5 @@ $forall (_,msg) <- msgs
       <div.mdc-snackbar__actions aria-atomic=true>
         <button.mdc-snackbar__dismiss.mdc-icon-button>
           <span.mdc-icon-button__ripple>
-          <i.mateial-symbols-outlined>close
+          <i.material-symbols-outlined>close
         

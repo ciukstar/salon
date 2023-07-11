@@ -7,8 +7,9 @@ Thumbnail
 
 Service
   name Text
-  descr Textarea Maybe
   price Centi
+  mu Text
+  descr Textarea Maybe
   UniqueService name
 
 UserPhoto

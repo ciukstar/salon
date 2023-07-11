@@ -59,7 +59,6 @@ import Handler.Home (getHomeR)
 import Handler.Users (getUsersR, getUserCreateFormR)
 import Handler.Common
     ( getFaviconR, getRobotsR, getPhotoPlaceholderR
-    , getImagePlaceholderR
     )
 
 -- This line actually creates our YesodDispatch instance. It is the second half

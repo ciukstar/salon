@@ -15,9 +15,10 @@ module Handler.Services
 
 import Data.Maybe (isJust)
 import Text.Hamlet (Html)
+import Data.Text.Encoding (encodeUtf8)
 import Yesod.Core
     ( Yesod(defaultLayout), setTitleI, setUltDestCurrent
-    , getMessages, whamlet, SomeMessage (SomeMessage), redirect
+    , getMessages, SomeMessage (SomeMessage), redirect
     , FileInfo (fileContentType), fileSourceByteString
     , TypedContent (TypedContent), notFound, ToContent (toContent), addMessageI
     )
@@ -36,12 +37,13 @@ import Foundation
     ( Handler
     , Route
       ( AuthR, AccountPhotoR, PhotoPlaceholderR, ServicesR
-      , ServiceCreateFormR, ImagePlaceholderR, ServiceThumbnailR
-      , ServiceR
+      , ServiceCreateFormR, ServiceThumbnailR
+      , ServiceR, StaticR
       )
     , AppMessage
       ( MsgServices, MsgAdd, MsgPhoto, MsgService, MsgTheName
       , MsgDescription, MsgPrice, MsgCancel, MsgSave, MsgThumbnail, MsgRecordAdded
+      , MsgNoServicesYet, MsgImage, MsgRecordEdited, MsgMonetaryUnit
       ), Widget
     )
 
@@ -54,15 +56,20 @@ import Database.Persist
 import Database.Esqueleto.Experimental
     (selectOne, from, table, orderBy, asc
     , (^.), (==.), (=.)
-    , where_, val, update, set
+    , where_, val, update, set, select
     )
     
 import Model
-    ( Service(Service, serviceName, serviceDescr, servicePrice), ServiceId
+    ( Service(Service, serviceName, serviceDescr, servicePrice, serviceMu), ServiceId
     , EntityField (ServiceId, ThumbnailService, ThumbnailPhoto, ThumbnailMime)
     , Thumbnail (Thumbnail, thumbnailService, thumbnailPhoto, thumbnailMime)
     )
-import Data.Text.Encoding (encodeUtf8)
+
+import Settings.StaticFiles
+    ( img_spark_svg
+    , img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg
+    , img_photo_FILL0_wght400_GRAD0_opsz48_svg
+    )
 
 
 getServiceR :: ServiceId -> Handler Html
@@ -86,7 +93,7 @@ postServiceR sid = do
     case fr of
       FormSuccess (s,mfi) -> do
           _ <- runDB $ replace sid s
-          addMessageI "info" MsgRecordAdded
+          addMessageI "info" MsgRecordEdited
           case mfi of
             Just fi -> do
                 bs <- fileSourceByteString fi
@@ -126,6 +133,7 @@ postServicesR = do
     case fr of
       FormSuccess (s,mfi) -> do
           sid <- runDB $ insert s
+          addMessageI "info" MsgRecordAdded
           case mfi of
             Just fi -> do
                 bs <- fileSourceByteString fi
@@ -142,7 +150,7 @@ postServicesR = do
 
 getServicesR :: Handler Html
 getServicesR = do
-    services <- runDB $ selectOne $ do
+    services <- runDB $ select $ do
         x <- from $ table @Service
         orderBy [asc (x ^. ServiceId)]
         return x
@@ -172,46 +180,28 @@ formService service extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (serviceName . entityVal <$> service)
-    (descrR,descrV) <- mopt textareaField FieldSettings
-        { fsLabel = SomeMessage MsgDescription
-        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
-        , fsAttrs = [("class","mdc-text-field__input")]
-        } (serviceDescr . entityVal <$> service)
     (priceR,priceV) <- mreq doubleField FieldSettings
         { fsLabel = SomeMessage MsgPrice
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (realToFrac . servicePrice . entityVal <$> service)
+    (muR,muV) <- mreq textField FieldSettings
+        { fsLabel = SomeMessage MsgMonetaryUnit
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (serviceMu . entityVal <$> service)
+    (descrR,descrV) <- mopt textareaField FieldSettings
+        { fsLabel = SomeMessage MsgDescription
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (serviceDescr . entityVal <$> service)
     (thumbnailR,thumbnailV) <- mopt fileField  FieldSettings
         { fsLabel = SomeMessage MsgPrice
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("style","display:none")]
         } Nothing
 
-    let r = (,) <$> (Service <$> nameR <*> descrR <*> (realToFrac <$> priceR)) <*> thumbnailR
-    let w = [whamlet|
-#{extra}
-<div.form-field>
-  <label for=#{fvId thumbnailV}>
-    $maybe Entity sid _ <- service
-      <img.thumbnail src=@{ServiceThumbnailR sid} onerror="this.src = '@{ImagePlaceholderR}'" alt=_{MsgPhoto}>
-    $nothing
-      <i.material-symbols-outlined style="font-size:48px">add_photo_alternate
-    _{MsgThumbnail}
-
-  ^{fvInput thumbnailV}
-$forall v <- [nameV,descrV,priceV]
-  <div.form-field>
-    <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
-      :isJust (fvErrors v):.mdc-text-field--invalid>
-      <span.mdc-text-field__ripple>
-      <span.mdc-floating-label>#{fvLabel v}
-      ^{fvInput v}
-      <span.mdc-line-ripple>
-    $maybe errs <- fvErrors v 
-      <div.mdc-text-field-helper-line>
-        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
-          #{errs}
-|]
+    let r = (,) <$> (Service <$> nameR <*> (realToFrac <$> priceR) <*> muR <*> descrR) <*> thumbnailR
+    let w = $(widgetFile "services/form")
     return (r,w)
 

@@ -1,3 +1,8 @@
+MonetaryUnit: Unitate monetara
+Image: Imagine
+NoServicesYet: Nu există încă servicii
+RecordDeleted: Înregistrarea a fost ștearsă
+RecordEdited: Înregistrarea a fost editată
 RecordAdded: Înregistrare adăugată
 Thumbnail: Miniatură
 Price: Preț

@@ -1,3 +1,8 @@
+MonetaryUnit: Unité monétaire
+Image: Image
+NoServicesYet: Il n'y a pas encore de services
+RecordDeleted: L'enregistrement a été supprimé
+RecordEdited: L'enregistrement a été modifié
 RecordAdded: Enregistrement ajouté
 Thumbnail: Vignette
 Price: Prix

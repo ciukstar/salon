@@ -1,3 +1,8 @@
+MonetaryUnit: Monetary unit
+Image: Image
+NoServicesYet: There are not services yet
+RecordDeleted: Record deleted
+RecordEdited: Record edited
 RecordAdded: Record added
 Thumbnail: Thumbnail
 Price: Price

@@ -16,7 +16,7 @@
         <i.material-symbols-outlined>edit
         
 <main.mdc-top-app-bar--fixed-adjust>
-  $maybe Entity sid (Service name descr price) <- service
+  $maybe Entity sid (Service name price mu descr) <- service
     <div>#{name}
     <div>
       $maybe descr <- descr 

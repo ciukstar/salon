@@ -1,3 +1,8 @@
+MonetaryUnit: Денежная единица
+Image: Изображение
+NoServicesYet: Услуг пока нет
+RecordDeleted: Запись удалена
+RecordEdited: Запись отредактирована
 RecordAdded: Запись добавлена
 Thumbnail: Миниатюра
 Price: Цена
