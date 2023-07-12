@@ -10,14 +10,24 @@ Service
   price Centi
   mu Text
   descr Textarea Maybe
+  group ServiceId Maybe OnDeleteCascade
   UniqueService name
+
+Category
+  name Text
+  descr Textarea Maybe
+  image ImageId Maybe
+  UniqueCategory name
+
+Image
+  content ByteString
+  mime Text
 
 UserPhoto
   user UserId OnDeleteCascade
   photo ByteString
   mime Text
   UniqueUserPhoto user
-
 
 User
   name Text

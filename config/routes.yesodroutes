@@ -3,11 +3,9 @@
 
 /about AboutR GET
 
-/form/services/#ServiceId      ServiceEditFormR   GET
-/form/service                  ServiceCreateFormR GET
 /services/#ServiceId/thumbnail ServiceThumbnailR  GET
-/services/#ServiceId 	       ServiceR		  GET POST
-/services 		       ServicesR	  GET POST
+/services/#ServiceId 	       ServiceR		  GET
+/services 		       ServicesR	  GET
 
 /account/#UserId/photo AccountPhotoR GET
 /account               AccountR GET POST
@@ -15,6 +13,11 @@
 / HomeR GET
 
 /admin AdminR:
+    /form/services/#ServiceId AdmServiceEditFormR   GET
+    /form/service 	      AdmServiceCreateFormR GET
+    /services/#ServiceId      AdmServiceR	    GET POST
+    /services     	      AdmServicesR    	    GET POST
+
     /form/user UserCreateFormR GET
     /users     UsersR GET
 

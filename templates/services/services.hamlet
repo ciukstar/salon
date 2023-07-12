@@ -9,45 +9,66 @@
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
       $maybe Entity uid _ <- muid
-        <button.mdc-top-app-bar__action-item.mdc-icon-button type=button>
+        <button.mdc-top-app-bar__action-item.mdc-icon-button type=button #buttonProfile>
           <span.mdc-icon-button__ripple>
-          <img src=@{AccountPhotoR uid} alt=_{MsgPhoto} onerror="this.src = '@{PhotoPlaceholderR}'">
+          <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" alt=_{MsgPhoto}
+            onerror="this.src = '@{PhotoPlaceholderR}'">
+          
+          <div.mdc-menu-surface--anchor>
+            <div.mdc-menu.mdc-menu-surface data-mdc-auto-init=MDCMenuSurface>
+              <ul.mdc-deprecated-list.mdc-deprecated-list--icon-list
+                role=menu aria-hidden=true aria-orientation=vertical tabindex=-1>
+
+                <a.mdc-deprecated-list-item role=menuitem href=@{AuthR LogoutR}>
+                  <span.mdc-deprecated-list-item__ripple>
+                  <i.material-symbols-outlined style="margin-right:1rem">logout
+                  <span.mdc-deprecated-list-item__text>_{MsgLogout}
       $nothing
         <a.mdc-top-app-bar__action-item.mdc-icon-button role=button
           href=@{AuthR LoginR}>
           <span.mdc-icon-button__ripple>
           <i.material-symbols-outlined>login
 
-    <div.mdc-touch-target-wrapper #wrapperMainFab>
-      <a.mdc-fab href=@{ServiceCreateFormR} aria-label=_{MsgAdd}>
-        <span.mdc-fab__ripple>
-        <div.mdc-fab__focus-ring>
-        <i.mdc-fab__icon.material-symbols-outlined>add
-        <div.mdc-fab__touch>
-
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
+
+  <ul.mdc-list data-mdc-auto-init=MDCList>
+    $forall Entity cid (Service name _ _ _ _) <- categories
+      <details role=listitem #details#{fromSqlKey cid} data-id=#{fromSqlKey cid}>
+        <summary.mdc-list-item
+          .mdc-list-item--with-one-line
+          .mdc-list-item--with-leading-image
+          .mdc-list-item--with-trailing-icon>
+          <span.mdc-list-item__ripple>
+          <span.mdc-list-item__start>
+            <img src=@{StaticR img_photo_FILL0_wght400_GRAD0_opsz48_svg} height=56 width=56 alt=_{MsgThumbnail} 
+              onerror="this.src = '@{StaticR img_photo_FILL0_wght400_GRAD0_opsz48_svg}'">
+          <span.mdc-list-item__content>
+            <div.mdc-list-item__primary-text>#{name}
+          <span.mdc-list-item__end>
+            <i.material-symbols-outlined #iconExpand#{fromSqlKey cid}>expand_more
+        
+        <ul.mdc-list data-mdc-auto-init=MDCList>
+          $forall Entity sid (Service name price mu _ _) <- services
+            <a.mdc-list-item href=@{ServiceR sid}
+              .mdc-list-item--with-two-lines
+              .mdc-list-item--with-leading-image
+              .mdc-list-item--with-trailing-icon>
+              <span.mdc-list-item__ripple>
+              <span.mdc-list-item__start>
+              <span.mdc-list-item__content>
+                <div.mdc-list-item__primary-text>#{name}
+                <div.mdc-list-item__secondary-text>#{mu} #{show price}
+              <span.mdc-list-item__end>
+                <i.material-symbols-outlined>arrow_forward_ios
+      <li.mdc-list-divider role=separator>
+
   $if null services
     <figure style="display:flex;flex-direction:column;align-items:center">
       <img src=@{StaticR img_spark_svg}>
       <figcaption>
         _{MsgNoServicesYet}.
   $else
-    <ul.mdc-list data-mdc-auto-init=MDCList>
-      $forall Entity sid (Service name price mu _) <- services
-        <a.mdc-list-item.mdc-list-item--with-three-lines.mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon
-          href=@{ServiceR sid}>
-          <span.mdc-list-item__ripple>
-          <span.mdc-list-item__start>
-            <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail} 
-              onerror="this.src = '@{StaticR img_photo_FILL0_wght400_GRAD0_opsz48_svg}'">
-          <span.mdc-list-item__content>
-            <div.mdc-list-item__primary-text>#{name}
-            <div.mdc-list-item__secondary-text>#{mu} #{show price}
-            <div.mdc-list-item__secondary-text>
-          <span.mdc-list-item__end>
-            <i.material-symbols-outlined>arrow_forward_ios
-        <li.mdc-list-divider role=separator>
 
 $forall (_,msg) <- msgs
   <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>

@@ -50,13 +50,21 @@ import System.Environment.Blank (getEnv)
 -- Don't forget to add new modules to your cabal file!
 import Handler.About (getAboutR)
 import Handler.Services
-    ( getServicesR, postServicesR, getServiceCreateFormR
-    , getServiceThumbnailR, getServiceEditFormR, postServiceR
+    ( getServicesR
+    , getServiceThumbnailR
     , getServiceR
     )
 import Handler.Account (getAccountR, postAccountR, getAccountPhotoR)
 import Handler.Home (getHomeR)
 import Handler.Users (getUsersR, getUserCreateFormR)
+import Admin.Services
+    ( getAdmServicesR
+    , getAdmServiceCreateFormR
+    , postAdmServiceR
+    , getAdmServiceEditFormR
+    , postAdmServicesR
+    , getAdmServiceR
+    )
 import Handler.Common
     ( getFaviconR, getRobotsR, getPhotoPlaceholderR
     )
