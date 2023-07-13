@@ -7,17 +7,11 @@ Thumbnail
 
 Service
   name Text
-  price Centi
-  mu Text
+  price Centi Maybe
+  mu Text Maybe
   descr Textarea Maybe
   group ServiceId Maybe OnDeleteCascade
   UniqueService name
-
-Category
-  name Text
-  descr Textarea Maybe
-  image ImageId Maybe
-  UniqueCategory name
 
 Image
   content ByteString

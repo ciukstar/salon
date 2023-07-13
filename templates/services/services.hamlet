@@ -58,7 +58,11 @@
               <span.mdc-list-item__start>
               <span.mdc-list-item__content>
                 <div.mdc-list-item__primary-text>#{name}
-                <div.mdc-list-item__secondary-text>#{mu} #{show price}
+                <div.mdc-list-item__secondary-text>
+                  $maybe price <- price
+                    $maybe mu <- mu
+                      #{mu} #
+                    #{show price}
               <span.mdc-list-item__end>
                 <i.material-symbols-outlined>arrow_forward_ios
       <li.mdc-list-divider role=separator>

@@ -46,8 +46,8 @@ import Database.Esqueleto.Experimental
     
 import Model
     ( Service(Service), ServiceId
-    , EntityField (ServiceId, ThumbnailService, CategoryId, ServiceGroup)
-    , Thumbnail (Thumbnail), Category (Category)
+    , EntityField (ServiceId, ThumbnailService, ServiceGroup)
+    , Thumbnail (Thumbnail)
     )
 
 import Settings.StaticFiles

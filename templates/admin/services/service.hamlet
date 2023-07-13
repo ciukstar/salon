@@ -1,10 +1,16 @@
 <header.mdc-top-app-bar.mdc-top-app-bar--fixed mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=@{AdminR AdmServicesR} role=button>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=@{AdminR $ AdmServicesR (Services [])} role=button>
         <span.mdc-icon-button__ripple>
         <spam.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
+        $maybe (_,n) <- service
+          $if n > 0
+            _{MsgCategory}
+          $else
+            _{MsgService}
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
       <a.mdc-top-app-bar__action-item.mdc-icon-button href=#>
         <span.mdc-icon-button__ripple>
@@ -16,9 +22,40 @@
         <i.material-symbols-outlined>edit
         
 <main.mdc-top-app-bar--fixed-adjust>
-  $maybe Entity sid (Service name price mu descr _) <- service
-    <div>#{name}
-    <div>
-      $maybe descr <- descr 
-        #{descr}
-    <div>#{show price}
+  $maybe (Entity sid (Service name price mu descr _), n) <- service
+    <figure>
+      <img src=@{ServiceThumbnailR sid} height=56 width=56 
+        onerror="this.src = '@{StaticR img_photo_FILL0_wght400_GRAD0_opsz48_svg}'">
+      <figcaption>
+        _{MsgImage}
+        
+    <div.mdc-data-table>
+      <div.mdc-data-table__table-container>
+        <table.mdc-data-table__table>
+          <tbody.mdc-data-table__content>
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgTheName}
+              <td.mdc-data-table__cell>#{name}
+            $maybe price <- price
+              <tr.mdc-data-table__row>
+                <th.mdc-data-table__cell scope=row>_{MsgPrice}
+                <td.mdc-data-table__cell>
+                  $maybe mu <- mu
+                    #{mu}&nbsp;
+                  #{show price}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgDescription}
+              <td.mdc-data-table__cell>
+                $maybe descr <- descr
+                  #{descr}
+
+    <nav.mdc-list data-mdc-auto-init=MDCList>
+      <a.mdc-list-item href=@{AdminR $ AdmServicesR (Services [sid])}
+        .mdc-list-item--with-two-lines.mdc-list-item--with-trailing-icon>
+        <span.mdc-list-item__ripple>
+        <span.mdc-list-item__content>
+          <div.mdc-list-item__primary-text>_{MsgServices}
+          <div.mdc-list-item__secondary-text>#{n}
+        <span.mdc-list-item__end>
+          <i.material-symbols-outlined>arrow_forward_ios
+              

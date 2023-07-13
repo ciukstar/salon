@@ -1,0 +1,12 @@
+
+main
+  display: flex
+  flex-direction: column
+  figure
+    text-align: center
+  div.mdc-data-table
+    border-right: 0
+    border-left: 0
+    border-radius: 0
+    table tbody tr th
+      font-weight: 500

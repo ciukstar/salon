@@ -1,3 +1,4 @@
+Category: Категория
 MonetaryUnit: Денежная единица
 Image: Изображение
 NoServicesYet: Услуг пока нет

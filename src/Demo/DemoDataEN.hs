@@ -11,7 +11,7 @@ import Database.Persist ( PersistStoreWrite(insert_, insert) )
 
 import Model
     ( User (User, userName, userPassword, userEmail, userFullName)
-    , Service (Service, serviceName, servicePrice, serviceMu, serviceDescr, serviceGroup), Category (Category, categoryName, categoryImage, categoryDescr)
+    , Service (Service, serviceName, servicePrice, serviceMu, serviceDescr, serviceGroup)
     )
 
 populateEN :: MonadIO m => ReaderT SqlBackend m ()
@@ -23,100 +23,184 @@ populateEN = do
                    , userEmail = Just "jsmith@mail.en"
                    }
 
-    s0001 <- insert $ Service { serviceName = "Hair care"
-                             , servicePrice = 26
-                             , serviceMu = "$"
+    s1 <- insert $ Service { serviceName = "Hair care"
+                             , servicePrice = Nothing
+                             , serviceMu = Nothing
                              , serviceDescr = Just "Hair Care"
                              , serviceGroup = Nothing
                              }
 
-    s0011 <- insert $ Service { serviceName = "Men hair cuts"
-                             , servicePrice = 26
-                             , serviceMu = "$"
+    s11 <- insert $ Service { serviceName = "Men hair cuts"
+                             , servicePrice = Just 26
+                             , serviceMu = Just "$"
                              , serviceDescr = Just "Hair cuts for men"
-                             , serviceGroup = Just s0001
+                             , serviceGroup = Just s1
                              }
 
-    s0012 <- insert $ Service { serviceName = "Women hair cuts (above shoulders)"
-                             , servicePrice = 28
-                             , serviceMu = "$"
+    s12 <- insert $ Service { serviceName = "Women hair cuts (above shoulders)"
+                             , servicePrice = Just 28
+                             , serviceMu = Just "$"
                              , serviceDescr = Just "Hair cuts above shoulders for women"
-                             , serviceGroup = Just s0001
+                             , serviceGroup = Just s1
                              }
 
-    s0013 <- insert $ Service { serviceName = "Women hair cuts (below shoulders)"
-                             , servicePrice = 35
-                             , serviceMu = "$"
+    s13 <- insert $ Service { serviceName = "Women hair cuts (below shoulders)"
+                             , servicePrice = Just 35
+                             , serviceMu = Just "$"
                              , serviceDescr = Just "Hair cuts below shoulders for women"
-                             , serviceGroup = Just s0001
+                             , serviceGroup = Just s1
                              }
 
-    s0014 <- insert $ Service { serviceName = "Children hair cuts"
-                             , servicePrice = 16
-                             , serviceMu = "$"
+    s14 <- insert $ Service { serviceName = "Children hair cuts"
+                             , servicePrice = Just 16
+                             , serviceMu = Just "$"
                              , serviceDescr = Just "Hair cuts for children"
-                             , serviceGroup = Just s0001
+                             , serviceGroup = Just s1
                              }
 
-    s0002 <- insert $ Service { serviceName = "Facial Treatments"
-                             , servicePrice = 26
-                             , serviceMu = "$"
+    s15 <- insert $ Service { serviceName = "Chemical services"
+                             , servicePrice = Nothing
+                             , serviceMu = Nothing
+                             , serviceDescr = Just "Prices will vary depending on the length of the client’s hair"
+                             , serviceGroup = Just s1
+                             }
+
+    s151 <- insert $ Service { serviceName = "Conditioning"
+                             , servicePrice = Nothing
+                             , serviceMu = Nothing
+                             , serviceDescr = Just "Conditioning"
+                             , serviceGroup = Just s15
+                             }
+
+    s1511 <- insert $ Service { serviceName = "After Perm Conditioner"
+                              , servicePrice = Just 99
+                              , serviceMu = Just "$"
+                              , serviceDescr = Just "After Perm Conditioner"
+                              , serviceGroup = Just s151
+                              }
+
+    s1512 <- insert $ Service { serviceName = "Before Perm Conditioner"
+                              , servicePrice = Just 110
+                              , serviceMu = Just "$"
+                              , serviceDescr = Just "Before Perm Conditioner"
+                              , serviceGroup = Just s151
+                              }
+
+    s152 <- insert $ Service { serviceName = "Highlights & Color"
+                             , servicePrice = Nothing
+                             , serviceMu = Nothing
+                             , serviceDescr = Just "Highlights & Color"
+                             , serviceGroup = Just s15
+                             }
+
+    s1521 <- insert $ Service { serviceName = "Full"
+                              , servicePrice = Just 130
+                              , serviceMu = Just "$"
+                              , serviceDescr = Just "Full"
+                              , serviceGroup = Just s152
+                              }
+
+    s1522 <- insert $ Service { serviceName = "Partial"
+                              , servicePrice = Just 68
+                              , serviceMu = Just "$"
+                              , serviceDescr = Just "Partial"
+                              , serviceGroup = Just s152
+                              }
+
+    s1523 <- insert $ Service { serviceName = "Permanent Color"
+                              , servicePrice = Just 68
+                              , serviceMu = Just "$"
+                              , serviceDescr = Just "Permanent Color"
+                              , serviceGroup = Just s152
+                              }
+
+    s153 <- insert $ Service { serviceName = "Perm"
+                             , servicePrice = Nothing
+                             , serviceMu = Nothing
+                             , serviceDescr = Just "Perm"
+                             , serviceGroup = Just s15
+                             }
+
+    s1531 <- insert $ Service { serviceName = "Full Perm"
+                              , servicePrice = Just 79
+                              , serviceMu = Just "$"
+                              , serviceDescr = Just "Full Perm"
+                              , serviceGroup = Just s153
+                              }
+
+    s1532 <- insert $ Service { serviceName = "Acid Repair Perm"
+                              , servicePrice = Just 89
+                              , serviceMu = Just "$"
+                              , serviceDescr = Just "Acid Repair Perm"
+                              , serviceGroup = Just s153
+                              }
+
+    s1533 <- insert $ Service { serviceName = "Japanese Straightening Perm"
+                              , servicePrice = Just 250
+                              , serviceMu = Just "$"
+                              , serviceDescr = Just "Japanese Straightening Perm"
+                              , serviceGroup = Just s153
+                              }
+
+    s2 <- insert $ Service { serviceName = "Facial Treatments"
+                             , servicePrice = Nothing
+                             , serviceMu = Nothing
                              , serviceDescr = Just "Facial Treatments"
                              , serviceGroup = Nothing
                              }
 
-    s0003 <- insert $ Service { serviceName = "Advanced Facial Treatments"
-                             , servicePrice = 26
-                             , serviceMu = "$"
+    s3 <- insert $ Service { serviceName = "Advanced Facial Treatments"
+                             , servicePrice = Nothing
+                             , serviceMu = Nothing
                              , serviceDescr = Just "Advanced Facial Treatments"
                              , serviceGroup = Nothing
                              }
 
-    s0004 <- insert $ Service { serviceName = "Anti-Aging Treatments"
-                             , servicePrice = 26
-                             , serviceMu = "$"
+    s4 <- insert $ Service { serviceName = "Anti-Aging Treatments"
+                             , servicePrice = Nothing
+                             , serviceMu = Nothing
                              , serviceDescr = Just "Anti-Aging Treatments"
                              , serviceGroup = Nothing
                              }
 
-    s0005 <- insert $ Service { serviceName = "Eye Treatment Center"
-                             , servicePrice = 26
-                             , serviceMu = "$"
+    s5 <- insert $ Service { serviceName = "Eye Treatment Center"
+                             , servicePrice = Nothing
+                             , serviceMu = Nothing
                              , serviceDescr = Just "Eye Treatment Center"
                              , serviceGroup = Nothing
                              }
 
-    s0006 <- insert $ Service { serviceName = "Body Massage"
-                             , servicePrice = 26
-                             , serviceMu = "$"
+    s6 <- insert $ Service { serviceName = "Body Massage"
+                             , servicePrice = Nothing
+                             , serviceMu = Nothing
                              , serviceDescr = Just "Body Massage"
                              , serviceGroup = Nothing
                              }
 
-    s0007 <- insert $ Service { serviceName = "Makeup Services"
-                             , servicePrice = 26
-                             , serviceMu = "$"
+    s7 <- insert $ Service { serviceName = "Makeup Services"
+                             , servicePrice = Nothing
+                             , serviceMu = Nothing
                              , serviceDescr = Just "Makeup Services"
                              , serviceGroup = Nothing
                              }
 
-    s0008 <- insert $ Service { serviceName = "Waxing"
-                             , servicePrice = 26
-                             , serviceMu = "$"
+    s8 <- insert $ Service { serviceName = "Waxing"
+                             , servicePrice = Nothing
+                             , serviceMu = Nothing
                              , serviceDescr = Just "Waxing"
                              , serviceGroup = Nothing
                              }
 
-    s0009 <- insert $ Service { serviceName = "Nail Care"
-                             , servicePrice = 26
-                             , serviceMu = "$"
+    s9 <- insert $ Service { serviceName = "Nail Care"
+                             , servicePrice = Nothing
+                             , serviceMu = Nothing
                              , serviceDescr = Just "Nail Care"
                              , serviceGroup = Nothing
                              }
 
-    s0010 <- insert $ Service { serviceName = "Body Shaping & Fitness"
-                             , servicePrice = 26
-                             , serviceMu = "$"
+    s10 <- insert $ Service { serviceName = "Body Shaping & Fitness"
+                             , servicePrice = Nothing
+                             , serviceMu = Nothing
                              , serviceDescr = Just "Body Shaping & Fitness"
                              , serviceGroup = Nothing
                              }

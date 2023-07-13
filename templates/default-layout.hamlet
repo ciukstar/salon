@@ -29,8 +29,8 @@
       <hr.mdc-deprecated-list-divider role=separator>
       <h3.mdc-deprecated-list-group__subheader>_{MsgData}
       <nav.mdc-deprecated-list>
-        <a.mdc-deprecated-list-item href=@{AdminR AdmServicesR}
-          :Just (AdminR AdmServicesR) == curr:.mdc-deprecated-list-item--activated>
+        <a.mdc-deprecated-list-item href=@{AdminR $ AdmServicesR (Services [])}
+          :Just (AdminR $ AdmServicesR (Services [])) == curr:.mdc-deprecated-list-item--activated>
           <span.mdc-deprecated-list-item__ripple>
           <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>edit_note
           <span.mdc-deprecated-list-item__text>_{MsgServices}

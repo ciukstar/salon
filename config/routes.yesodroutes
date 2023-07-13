@@ -16,7 +16,7 @@
     /form/services/#ServiceId AdmServiceEditFormR   GET
     /form/service 	      AdmServiceCreateFormR GET
     /services/#ServiceId      AdmServiceR	    GET POST
-    /services     	      AdmServicesR    	    GET POST
+    /srvs/+Services           AdmServicesR    	    GET POST
 
     /form/user UserCreateFormR GET
     /users     UsersR GET

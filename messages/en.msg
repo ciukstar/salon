@@ -1,3 +1,4 @@
+Category: Category
 MonetaryUnit: Monetary unit
 Image: Image
 NoServicesYet: There are not services yet

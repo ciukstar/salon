@@ -1,3 +1,4 @@
+Category: Categorie
 MonetaryUnit: Unitate monetara
 Image: Imagine
 NoServicesYet: Nu există încă servicii

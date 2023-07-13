@@ -1,3 +1,4 @@
+Category: Catégorie
 MonetaryUnit: Unité monétaire
 Image: Image
 NoServicesYet: Il n'y a pas encore de services

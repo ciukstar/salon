@@ -1,6 +1,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ViewPatterns #-}
 
 module Admin.Services
   ( getAdmServicesR
@@ -11,7 +12,8 @@ module Admin.Services
   , getAdmServiceR
   ) where
 
-import Data.Maybe (isJust)
+import Data.Bifunctor (Bifunctor(second))
+import Data.Maybe (isJust, fromMaybe)
 import Text.Hamlet (Html)
 import Yesod.Core
     ( Yesod(defaultLayout), setTitleI, setUltDestCurrent
@@ -20,7 +22,9 @@ import Yesod.Core
     )
 import Settings (widgetFile)
 import Settings.StaticFiles
-    ( img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg )
+    ( img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg
+    , img_photo_FILL0_wght400_GRAD0_opsz48_svg
+    )
 
 import Yesod.Auth (Route (LoginR, LogoutR), maybeAuth)
 import Foundation
@@ -31,6 +35,7 @@ import Foundation
       ( MsgServices, MsgPhoto, MsgLogout, MsgAdd, MsgTheName
       , MsgPrice, MsgMonetaryUnit, MsgDescription, MsgRecordEdited
       , MsgService, MsgSave, MsgCancel, MsgRecordAdded, MsgImage
+      , MsgCategory
       )
     )
 
@@ -38,28 +43,37 @@ import Database.Persist (Entity (Entity, entityVal), PersistStoreWrite (replace,
 import Model
     ( ServiceId, Service (Service, serviceName, servicePrice, serviceMu, serviceDescr)
     , Thumbnail (Thumbnail, thumbnailService, thumbnailPhoto, thumbnailMime)
-    , EntityField (ServiceId, ThumbnailPhoto, ThumbnailMime, ThumbnailService, ServiceGroup)
+    , EntityField (ServiceId, ThumbnailPhoto, ThumbnailMime, ThumbnailService, ServiceGroup), Services (Services)
     )
 import Yesod.Form
     ( FormResult(FormSuccess), runFormPost, MForm
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
     , mreq, textField, doubleField, mopt, textareaField, fileField, generateFormPost
-    , FieldView (fvId, fvErrors, fvInput, fvLabel)
+    , FieldView (fvId, fvErrors, fvInput, fvLabel), runInputGet, iopt, intField
     )
 
 import Yesod.Persist (YesodPersist(runDB))
+import Database.Persist.Sql (toSqlKey, fromSqlKey)
 import Database.Esqueleto.Experimental
-    ( selectOne, from, table, where_, val, update, set
-    , (^.), (==.), (=.), isNothing, select, orderBy, asc
+    ( SqlExpr, selectOne, from, table, where_, val, update, set
+    , (^.), (==.), (=.), (:&)((:&))
+    , isNothing, select, orderBy, asc, selectQuery, just
+    , on, groupBy, countRows, Value (unValue), leftJoin
     )
 
 
 getAdmServiceR :: ServiceId -> Handler Html
 getAdmServiceR sid = do
-    service <- runDB $ selectOne $ do
-        x <- from $ table @Service
+    service <- (second (fromMaybe 0 . unValue) <$>) <$> runDB ( selectOne $ do
+        (x :& (_,n)) <- from $ table @Service
+            `leftJoin` selectQuery ( do
+                                          y <- from $ table @Service
+                                          where_ $ y ^. ServiceGroup ==. just (val sid)
+                                          groupBy (y ^. ServiceGroup)
+                                          return (y ^. ServiceGroup, countRows :: SqlExpr (Value Int))
+                                    ) `on` (\(x :& (yid,_)) -> just (x ^. ServiceId) ==. yid)
         where_ $ x ^. ServiceId ==. val sid
-        return x
+        return (x,n) )
     defaultLayout $ do
         setTitleI MsgService
         $(widgetFile "admin/services/service")
@@ -82,8 +96,8 @@ postAdmServiceR sid = do
                 _ <- runDB $ update $ \img -> do
                     set img [ThumbnailPhoto =. val bs, ThumbnailMime =. val (fileContentType fi)]
                     where_ $ img ^. ThumbnailService ==. val sid
-                redirect $ AdminR AdmServicesR
-            Nothing -> redirect $ AdminR AdmServicesR
+                redirect $ AdminR $ AdmServicesR (Services [])
+            Nothing -> redirect $ AdminR $ AdmServicesR (Services [])
       _ -> defaultLayout $ do
           setTitleI MsgService
           $(widgetFile "admin/services/edit")
@@ -109,8 +123,8 @@ getAdmServiceCreateFormR = do
         $(widgetFile "admin/services/create")
 
 
-postAdmServicesR :: Handler Html
-postAdmServicesR = do
+postAdmServicesR :: Services -> Handler Html
+postAdmServicesR (Services sids) = do
     ((fr,widget),enctype) <- runFormPost $ formService Nothing
     case fr of
       FormSuccess (s,mfi) -> do
@@ -124,18 +138,26 @@ postAdmServicesR = do
                                           , thumbnailMime = fileContentType fi
                                           }
             Nothing -> return ()
-          redirect (AdminR AdmServicesR)
+          redirect (AdminR $ AdmServicesR (Services []))
       _ -> defaultLayout $ do
           setTitleI MsgService
           $(widgetFile "admin/services/create")
 
 
-getAdmServicesR :: Handler Html
-getAdmServicesR = do
+getAdmServicesR :: Services -> Handler Html
+getAdmServicesR (Services sids) = do
     muid <- maybeAuth
+    service <- case sids of
+      [] -> return Nothing
+      (last -> sid) -> runDB $ selectOne $ do
+          x <- from $ table @Service
+          where_ $ x ^. ServiceId ==. val sid
+          return x
     services <- runDB $ select $ do
         x <- from $ table @Service
-        where_ $ isNothing $ x ^. ServiceGroup
+        case sids of
+          [] -> where_ $ isNothing $ x ^. ServiceGroup
+          (last -> y) -> where_ $ x ^. ServiceGroup ==. just (val y)
         orderBy [asc (x ^. ServiceId)]
         return x
     setUltDestCurrent
@@ -151,12 +173,12 @@ formService service extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (serviceName . entityVal <$> service)
-    (priceR,priceV) <- mreq doubleField FieldSettings
+    (priceR,priceV) <- mopt doubleField FieldSettings
         { fsLabel = SomeMessage MsgPrice
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
-        } (realToFrac . servicePrice . entityVal <$> service)
-    (muR,muV) <- mreq textField FieldSettings
+        } ((realToFrac <$>) . servicePrice . entityVal <$> service)
+    (muR,muV) <- mopt textField FieldSettings
         { fsLabel = SomeMessage MsgMonetaryUnit
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
@@ -173,7 +195,13 @@ formService service extra = do
         } Nothing
 
     let r = (,)
-            <$> (Service <$> nameR <*> (realToFrac <$> priceR) <*> muR <*> descrR <*> FormSuccess Nothing)
+            <$> ( Service
+                  <$> nameR
+                  <*> ((realToFrac <$>) <$> priceR)
+                  <*> muR
+                  <*> descrR
+                  <*> FormSuccess Nothing
+                )
             <*> thumbnailR
     let w = $(widgetFile "admin/services/form")
     return (r,w)
