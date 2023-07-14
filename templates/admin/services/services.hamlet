@@ -1,40 +1,51 @@
 <header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
-  <div.mdc-top-app-bar__row>
+  <div.mdc-top-app-bar__row :not $ null sids:.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <button.mdc-top-app-bar__navigation-icon.mdc-icon-button #btnMainMenu>
-        <span.mdc-icon-button__ripple>
-        <i.material-symbols-outlined>menu
+      $if null sids
+        <button.mdc-top-app-bar__navigation-icon.mdc-icon-button #btnMainMenu>
+          <span.mdc-icon-button__ripple>
+          <i.material-symbols-outlined>menu
+      $else
+        <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=@{AdminR $ AdmServicesR (Services (init sids))}>
+          <span.mdc-icon-button__ripple>
+          <i.material-symbols-outlined>arrow_back
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
-        _{MsgServices}
+        $if null sids
+          _{MsgServices}
+        $else
+          _{MsgService}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
-      $maybe Entity uid _ <- muid
-        <button.mdc-top-app-bar__action-item.mdc-icon-button type=button #buttonProfile>
-          <span.mdc-icon-button__ripple>
-          <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" alt=_{MsgPhoto}
-            onerror="this.src = '@{PhotoPlaceholderR}'">
-          
-          <div.mdc-menu-surface--anchor>
-            <div.mdc-menu.mdc-menu-surface data-mdc-auto-init=MDCMenuSurface>
-              <ul.mdc-deprecated-list.mdc-deprecated-list--icon-list
-                role=menu aria-hidden=true aria-orientation=vertical tabindex=-1>
+      $if null sids
+        $maybe Entity uid _ <- muid
+          <button.mdc-top-app-bar__action-item.mdc-icon-button type=button #buttonProfile>
+            <span.mdc-icon-button__ripple>
+            <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" alt=_{MsgPhoto}
+              onerror="this.src = '@{PhotoPlaceholderR}'">
 
-                <a.mdc-deprecated-list-item role=menuitem href=@{AuthR LogoutR}>
-                  <span.mdc-deprecated-list-item__ripple>
-                  <i.material-symbols-outlined style="margin-right:1rem">logout
-                  <span.mdc-deprecated-list-item__text>_{MsgLogout}
-      $nothing
-        <a.mdc-top-app-bar__action-item.mdc-icon-button role=button
-          href=@{AuthR LoginR}>
-          <span.mdc-icon-button__ripple>
-          <i.material-symbols-outlined>login
+            <div.mdc-menu-surface--anchor>
+              <div.mdc-menu.mdc-menu-surface data-mdc-auto-init=MDCMenuSurface>
+                <ul.mdc-deprecated-list.mdc-deprecated-list--icon-list
+                  role=menu aria-hidden=true aria-orientation=vertical tabindex=-1>
 
-    <div.mdc-touch-target-wrapper #wrapperMainFab>
-      <a.mdc-fab.mdc-fab--mini href=@{AdminR AdmServiceCreateFormR} aria-label=_{MsgAdd}>
-        <span.mdc-fab__ripple>
-        <div.mdc-fab__focus-ring>
-        <i.mdc-fab__icon.material-symbols-outlined>add
-        <div.mdc-fab__touch>
+                  <a.mdc-deprecated-list-item role=menuitem href=@{AuthR LogoutR}>
+                    <span.mdc-deprecated-list-item__ripple>
+                    <i.material-symbols-outlined style="margin-right:1rem">logout
+                    <span.mdc-deprecated-list-item__text>_{MsgLogout}
+        $nothing
+          <a.mdc-top-app-bar__action-item.mdc-icon-button role=button
+            href=@{AuthR LoginR}>
+            <span.mdc-icon-button__ripple>
+            <i.material-symbols-outlined>login
+      $else
+        <button.mdc-top-app-bar__action-item.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>delete
+        <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{AdminR $ AdmServiceEditFormR (last sids)}>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>edit
 
 <main.mdc-top-app-bar--fixed-adjust>
 
@@ -65,25 +76,25 @@
                 $maybe descr <- descr
                   #{descr}
 
-  $if not (null services)
-    <p>
-    <nav.mdc-list data-mdc-auto-init=MDCList>
-      $forall Entity sid (Service name price mu _ _) <- services
-        <a.mdc-list-item href=@{AdminR $ AdmServicesR $ Services (sids ++ [sid])}
-          .mdc-list-item--with-three-lines
-          .mdc-list-item--with-leading-image
-          .mdc-list-item--with-trailing-icon>
-          <span.mdc-list-item__ripple>
-          <span.mdc-list-item__start>
-            <img src=@{ServiceThumbnailR sid} height=56 width=56
-              onerror="this.src = '@{StaticR img_photo_FILL0_wght400_GRAD0_opsz48_svg}'">
-          <span.mdc-list-item__content>
-            <div.mdc-list-item__primary-text>#{name}
-            <div.mdc-list-item__secondary-text>
-              $maybe price <- price
-                $maybe mu <- mu
-                  #{mu}&nbsp; 
-                #{show price}
-          <span.mdc-list-item__end>
-            <i.material-symbols-outlined>arrow_forward_ios
-        <div.mdc-list-divider role=separator>
+  $if not (null sids)
+    <details #detailsSubservices>
+      <summary style="list-style:none">
+        <ul.mdc-list data-mdc-auto-init=MDCList>
+          <li.mdc-list-item
+            .mdc-list-item--with-one-line
+            .mdc-list-item--with-leading-icon
+            .mdc-list-item--with-trailing-icon>
+            <span.mdc-list-item__ripple>
+            <span.mdc-list-item__start>
+              <i.material-symbols-outlined>unfold_more
+            <span.mdc-list-item__content>
+              <div.mdc-list-item__primary-text>
+                _{MsgSubservices}
+                <sup style="padding:2px 6px;background-color:var(--mdc-theme-primary);border-radius:50%">3
+            <span.mdc-list-item__end>
+              <i.material-symbols-outlined>expand_more
+            
+      ^{subservices services sids}
+  $else
+    $if not (null services)
+      ^{subservices services sids}

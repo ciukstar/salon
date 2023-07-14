@@ -1,14 +1,30 @@
 
 window.mdc.autoInit();
 
+[document.getElementById('detailsSubservices')].filter(x => !!x).forEach(function (x) {
+  const startIcon = x.querySelector('.mdc-list-item__start > .material-symbols-outlined');
+  const endIcon = x.querySelector('.mdc-list-item__end > .material-symbols-outlined');
+  x.addEventListener('toggle',function (e) {
+    if (x.open) {
+      startIcon.textContent = 'unfold_less';
+      endIcon.textContent = 'expand_less';
+    } else {
+      startIcon.textContent = 'unfold_more';
+      endIcon.textContent = 'expand_more';
+    }
+  });
+});
+
 Array.from(
   document.querySelectorAll('aside.mdc-snackbar')
 ).map(x => x.MDCSnackbar).forEach(function (x) {
   x.open();
 });
 
-document.getElementById('btnMainMenu').addEventListener('click',function (e) {
-  document.getElementById('asideMainMenu').MDCDrawer.open = true;
+[document.getElementById('btnMainMenu')].filter(x => !!x).forEach(function (x) {
+  x.addEventListener('click',function (e) {
+    document.getElementById('asideMainMenu').MDCDrawer.open = true;
+  })
 });
 
 const menuElem = document.querySelector('div.mdc-menu.mdc-menu-surface');

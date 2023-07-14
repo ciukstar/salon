@@ -52,7 +52,7 @@ import Yesod (YesodPersist(runDB))
 import Database.Persist (Entity (Entity), insert, insert_)
 
 import Model
-    ( sessKeyULT
+    ( ultDestKey
     , User (userName, User, userPassword, userFullName), UserId
     , UserPhoto (UserPhoto, userPhotoUser, userPhotoPhoto, userPhotoMime)
     , EntityField (UserPhotoUser)
@@ -93,7 +93,7 @@ postAccountR = do
             Nothing -> return ()
           redirect $ AuthR LoginR
       _ -> defaultLayout $ do
-          ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupSession sessKeyULT
+          ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupSession ultDestKey
           setTitleI MsgAccount
           $(widgetFile "account")
 
@@ -101,7 +101,7 @@ postAccountR = do
 getAccountR :: Handler Html
 getAccountR = do
     (widget,enctype) <- generateFormPost $ formAccount Nothing
-    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupSession sessKeyULT
+    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupSession ultDestKey
     defaultLayout $ do
         setTitleI MsgAccount
         $(widgetFile "account")

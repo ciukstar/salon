@@ -60,5 +60,5 @@ instance HashDBUser User where
     setPasswordHash h u = u { userPassword = h } 
 
 
-sessKeyULT :: Text
-sessKeyULT = "_ULT"
+ultDestKey :: Text
+ultDestKey = "_ULT"

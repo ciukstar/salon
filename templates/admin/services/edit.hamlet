@@ -5,12 +5,13 @@
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgService}
         
 <main.mdc-top-app-bar--fixed-adjust>
   <form method=POST action=@{AdminR (AdmServiceR sid)} enctype=#{enctype} novalidate>
     ^{widget}
     <div.actions>
-      <a.mdc-button href=@{AdminR $ AdmServicesR (Services [])} role=button>
+      <a.mdc-button href=#{ult} role=button>
         <span.mdc-button__ripple>
         <span.mdc-button__focus-ring>
         <span.mdc-button__label>_{MsgCancel}

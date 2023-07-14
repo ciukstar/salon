@@ -1,3 +1,6 @@
+AddService: Add service
+AddSubservice: Add subservice
+Subservices: Subservices
 Category: Category
 MonetaryUnit: Monetary unit
 Image: Image

@@ -1,3 +1,6 @@
+AddService: Ajouter service
+AddSubservice: Ajouter sous-service
+Subservices: Sous-services
 Category: Catégorie
 MonetaryUnit: Unité monétaire
 Image: Image

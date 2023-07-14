@@ -1,3 +1,6 @@
+AddService: Adaugă serviciu
+AddSubservice: Adaugă subserviciu
+Subservices: Subservicii
 Category: Categorie
 MonetaryUnit: Unitate monetara
 Image: Imagine

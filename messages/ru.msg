@@ -1,3 +1,6 @@
+AddService: Добавить услугу
+AddSubservice: Добавить подсервис
+Subservices: Подсервисы
 Category: Категория
 MonetaryUnit: Денежная единица
 Image: Изображение

@@ -40,3 +40,5 @@ $forall v <- [nameV,priceV,muV]
     <div.mdc-text-field-helper-line>
       <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
         #{errs}
+
+^{fvInput groupV}

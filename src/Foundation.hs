@@ -127,7 +127,7 @@ instance Yesod App where
     isAuthorized (AdminR UserCreateFormR) _ = return Authorized
     isAuthorized (AdminR (AdmServicesR _)) _ = return Authorized
     isAuthorized (AdminR (AdmServiceR _)) _ = return Authorized
-    isAuthorized (AdminR AdmServiceCreateFormR) _ = return Authorized
+    isAuthorized (AdminR (AdmServiceCreateFormR _)) _ = return Authorized
     isAuthorized (AdminR (AdmServiceEditFormR _)) _ = return Authorized
     
     isAuthorized AccountR _ = return Authorized
