@@ -1,29 +1,42 @@
 
 <nav.mdc-list data-mdc-auto-init=MDCList>
-  $forall Entity sid (Service name price mu _ _) <- services
-    <a.mdc-list-item href=@{AdminR $ AdmServicesR $ Services (sids ++ [sid])}
-      .mdc-list-item--with-three-lines
-      .mdc-list-item--with-leading-image
-      .mdc-list-item--with-trailing-icon>
-      <span.mdc-list-item__ripple>
-      <span.mdc-list-item__start>
-        <img src=@{ServiceThumbnailR sid} height=56 width=56
-          onerror="this.src = '@{StaticR img_photo_FILL0_wght400_GRAD0_opsz48_svg}'">
-      <span.mdc-list-item__content>
-        <div.mdc-list-item__primary-text>#{name}
-        <div.mdc-list-item__secondary-text>
-          $maybe price <- price
-            $maybe mu <- mu
-              #{mu}&nbsp; 
-            #{show price}
-      <span.mdc-list-item__end>
-        <i.material-symbols-outlined>arrow_forward_ios
-    <div.mdc-list-divider role=separator>
-    
+  $if null services
+    <figure>
+      <img src=@{StaticR img_spark_svg} height=80>
+      <figcaption>
+        _{MsgNoServicesYet}.
+  $else
+    $forall Entity sid (Service name price pref suff _ _) <- services
+      <a.mdc-list-item href=@{AdminR $ AdmServicesR $ Services (sids ++ [sid])}
+        .mdc-list-item--with-one-line
+        .mdc-list-item--with-leading-image
+        .mdc-list-item--with-trailing-icon>
+        <span.mdc-list-item__ripple>
+        <span.mdc-list-item__start>
+          <img src=@{ServiceThumbnailR sid} height=56 width=56
+            onerror="this.src = '@{StaticR img_photo_FILL0_wght400_GRAD0_opsz48_svg}'">
+        <span.mdc-list-item__content>
+          <div.mdc-list-item__primary-text>#{name}
+          $if not ((&&) ((&&) (M.isNothing pref) (M.isNothing price)) (M.isNothing suff))
+            <div.mdc-list-item__secondary-text>
+              $maybe pref <- pref
+                #{pref}
+              $maybe price <- price
+                #{show price}
+              $maybe suff <- suff
+                #{suff}
+        <span.mdc-list-item__end>
+          <i.material-symbols-outlined>arrow_forward_ios
+      <div.mdc-list-divider role=separator>
+
   <div.mdc-touch-target-wrapper #fabAddSubservice>
     <a.mdc-fab.mdc-fab--extended.mdc-fab--touch href=@{AdminR $ AdmServiceCreateFormR (Services sids)}>
       <span.mdc-fab__ripple>
       <span.mdc-fab__focus-ring>
       <span.mdc-fab__icon.material-symbols-outlined>add
-      <span.mdc-fab__label>_{MsgAddService}
+      <span.mdc-fab__label>
+        $if null sids
+          _{MsgAddService}
+        $else
+          _{MsgAddSubservice}
       <span.mdc-fab__touch>

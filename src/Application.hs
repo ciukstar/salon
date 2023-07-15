@@ -63,6 +63,7 @@ import Admin.Services
     , postAdmServiceR
     , getAdmServiceEditFormR
     , postAdmServicesR
+    , postAdmServiceDeleteR
     )
 import Handler.Common
     ( getFaviconR, getRobotsR, getPhotoPlaceholderR

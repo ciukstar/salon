@@ -1,8 +1,12 @@
+Suffix: Суффикс
+Prefix: Префикс
+PleaseConfirm: Пожалуйста подтвердите
+YesDelete: Удалить
+DeleteAreYouSure: Вы уверены, что хотите удалить?
 AddService: Добавить услугу
-AddSubservice: Добавить подсервис
+AddSubservice: Добавить подуслугу
 Subservices: Подсервисы
 Category: Категория
-MonetaryUnit: Денежная единица
 Image: Изображение
 NoServicesYet: Услуг пока нет
 RecordDeleted: Запись удалена

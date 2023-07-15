@@ -1,6 +1,12 @@
 
 window.mdc.autoInit();
 
+[document.getElementById('btnDelete')].filter(x => !!x).forEach(function (x) {
+  x.addEventListener('click',function (e) {
+    document.getElementById('dlgDelete').MDCDialog.open();
+  });
+});
+
 [document.getElementById('detailsSubservices')].filter(x => !!x).forEach(function (x) {
   const startIcon = x.querySelector('.mdc-list-item__start > .material-symbols-outlined');
   const endIcon = x.querySelector('.mdc-list-item__end > .material-symbols-outlined');

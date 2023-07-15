@@ -13,10 +13,11 @@
 / HomeR GET
 
 /admin AdminR:
-    /form/services/#ServiceId AdmServiceEditFormR   GET
-    /form/service/+Services   AdmServiceCreateFormR GET
-    /edit/services/#ServiceId AdmServiceR	    POST
-    /services/+Services       AdmServicesR    	    GET POST
+    /form/services/+Services   AdmServiceEditFormR   GET
+    /form/service/+Services    AdmServiceCreateFormR GET
+    /delete/services/+Services AdmServiceDeleteR     POST
+    /edit/services/+Services   AdmServiceR	     POST
+    /services/+Services        AdmServicesR          GET POST
 
     /form/user UserCreateFormR GET
     /users     UsersR GET

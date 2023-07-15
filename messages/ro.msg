@@ -1,8 +1,12 @@
+Suffix: Sufix
+Prefix: Prefix
+PleaseConfirm: Vă rugăm să confirmați
+YesDelete: Șterge
+DeleteAreYouSure: Sigur doriți să ștergeți?
 AddService: Adaugă serviciu
 AddSubservice: Adaugă subserviciu
 Subservices: Subservicii
 Category: Categorie
-MonetaryUnit: Unitate monetara
 Image: Imagine
 NoServicesYet: Nu există încă servicii
 RecordDeleted: Înregistrarea a fost ștearsă

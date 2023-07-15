@@ -1,8 +1,12 @@
+Suffix: Suffix
+Prefix: Prefix
+PleaseConfirm: Please confirm
+YesDelete: Delete
+DeleteAreYouSure: Are you sure you want to delete?
 AddService: Add service
 AddSubservice: Add subservice
 Subservices: Subservices
 Category: Category
-MonetaryUnit: Monetary unit
 Image: Image
 NoServicesYet: There are not services yet
 RecordDeleted: Record deleted
