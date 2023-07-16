@@ -87,8 +87,9 @@
                 <td.mdc-data-table__cell>
                   $maybe pref <- pref
                     #{pref}
-                  $maybe price <- price
-                    #{show price}
+                  $maybe price <- show <$> price
+                    <span.numeric-format data-value=#{price} data-minFracDigits=0 data-maxFracDigits=2>
+                      #{price}
                   $maybe suff <- suff
                     #{suff}
             <tr.mdc-data-table__row>

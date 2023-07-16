@@ -1,2 +1,8 @@
 
 window.mdc.autoInit();
+
+[document.getElementById('drawerHeader')].filter(x => !!x).forEach(function (x) {
+  x.addEventListener('click',function (e) {
+    document.getElementById('asideMainMenu').MDCDrawer.open = false;
+  });
+});

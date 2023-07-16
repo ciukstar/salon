@@ -1,6 +1,17 @@
 
 window.mdc.autoInit();
 
+Array.from(
+  document.querySelectorAll('span.numeric-format')
+).forEach(function (x) {
+  x.textContent = Number(x.dataset.value).toLocaleString(
+    navigator.language,
+    { minimumFractionDigits: x.dataset.minFracDigits,
+      maximumFractionDigits: x.dataset.maxFracDigits
+    }
+  );
+});
+
 window.onscroll = function (e) {
   if (document.body.scrollTop > 128 || document.documentElement.scrollTop > 128) {
     document.querySelector('header.mdc-top-app-bar').classList.remove('mdc-top-app-bar--prominent');
