@@ -8,12 +8,12 @@
   $else
     $forall Entity sid (Service name price pref suff _ _) <- services
       <a.mdc-list-item href=@{AdminR $ AdmServicesR $ Services (sids ++ [sid])}
-        .mdc-list-item--with-one-line
-        .mdc-list-item--with-leading-image
-        .mdc-list-item--with-trailing-icon>
+        :Just sid == msid:.mdc-list-item--activated
+        .mdc-list-item--with-one-line.mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon
+        onclick="this.href = `${this.href}?scrollY=${window.scrollY}`">
         <span.mdc-list-item__ripple>
         <span.mdc-list-item__start>
-          <img src=@{ServiceThumbnailR sid} height=56 width=56
+          <img src=@{AdminR $ AdmServiceImageR sid} height=56 width=56
             onerror="this.src = '@{StaticR img_photo_FILL0_wght400_GRAD0_opsz48_svg}'">
         <span.mdc-list-item__content>
           <div.mdc-list-item__primary-text>#{name}
@@ -31,7 +31,8 @@
       <div.mdc-list-divider role=separator>
 
   <div.mdc-touch-target-wrapper #fabAddSubservice>
-    <a.mdc-fab.mdc-fab--extended.mdc-fab--touch href=@{AdminR $ AdmServiceCreateFormR (Services sids)}>
+    <a.mdc-fab.mdc-fab--extended.mdc-fab--touch href=@{AdminR $ AdmServiceCreateFormR (Services sids)}
+      onclick="this.href = `${this.href}?scrollY=${window.scrollY}`">
       <span.mdc-fab__ripple>
       <span.mdc-fab__focus-ring>
       <span.mdc-fab__icon.material-symbols-outlined>add

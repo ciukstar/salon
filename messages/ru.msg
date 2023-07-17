@@ -1,3 +1,5 @@
+ServisAlreadyInTheList: Эта услуга уже есть в списке
+DuplicateValue: Дублированное значение
 Suffix: Суффикс
 Prefix: Префикс
 PleaseConfirm: Пожалуйста подтвердите
@@ -5,7 +7,7 @@ YesDelete: Удалить
 DeleteAreYouSure: Вы уверены, что хотите удалить?
 AddService: Добавить услугу
 AddSubservice: Добавить подуслугу
-Subservices: Подсервисы
+Subservices: Подуслуги
 Category: Категория
 Image: Изображение
 NoServicesYet: Услуг пока нет

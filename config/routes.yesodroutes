@@ -17,6 +17,7 @@
     /form/service/+Services    AdmServiceCreateFormR GET
     /delete/services/+Services AdmServiceDeleteR     POST
     /edit/services/+Services   AdmServiceR	     POST
+    /image/services/#ServiceId AdmServiceImageR	     GET
     /services/+Services        AdmServicesR          GET POST
 
     /form/user UserCreateFormR GET

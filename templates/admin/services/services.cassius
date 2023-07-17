@@ -14,3 +14,20 @@ main
       white-space: normal
     table tbody tr td
       white-space: normal
+  div.label-with-badge
+    display: flex
+    flex-direction: row
+    justify-content: flex-start
+    align-items: center
+    gap: 0.5rem
+    div.label
+      font-weight: 500
+    div.badge
+      height: 1rem
+      width: 1rem
+      line-height: 1rem
+      font-size: 0.8em
+      padding: 2px
+      border-radius: 50%
+      background-color: var(--mdc-theme-primary)
+      text-align: center

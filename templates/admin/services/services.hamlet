@@ -6,7 +6,8 @@
           <span.mdc-icon-button__ripple>
           <i.material-symbols-outlined>menu
       $else
-        <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=@{AdminR $ AdmServicesR (Services (init sids))}>
+        <a.mdc-top-app-bar__navigation-icon.mdc-icon-button 
+          href="@{AdminR $ AdmServicesR (Services (init sids))}?sid=#{fromSqlKey $ last sids}&scrollY=#{scrollY}">
           <span.mdc-icon-button__ripple>
           <i.material-symbols-outlined>arrow_back
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
@@ -99,30 +100,27 @@
                   #{descr}
 
   $if not (null sids)
-    <details #detailsSubservices>
+    <details open #detailsSubservices>
       <summary style="list-style:none">
         <ul.mdc-list data-mdc-auto-init=MDCList>
           <li.mdc-list-item
             .mdc-list-item--with-one-line
-            .mdc-list-item--with-leading-icon
             .mdc-list-item--with-trailing-icon>
             <span.mdc-list-item__ripple>
-            <span.mdc-list-item__start>
-              <i.material-symbols-outlined>unfold_more
             <span.mdc-list-item__content>
               <div.mdc-list-item__primary-text>
-                <span style="font-weight:500">_{MsgSubservices}
-                <sup style="padding:2px 6px;background-color:var(--mdc-theme-primary);border-radius:50%">
-                  #{length services}
+                <div.label-with-badge>
+                  <div.label>_{MsgSubservices}
+                  <div.badge>#{length services}
             <span.mdc-list-item__end>
-              <i.material-symbols-outlined>expand_more
+              <i.material-symbols-outlined>expand_less
             
-      ^{subservices services sids}
+      ^{subservices services sids msid}
   $else
-    ^{subservices services sids}
+    ^{subservices services sids msid}
 
 $forall (_,msg) <- msgs
-  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar #snackbarInfo>
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
     <div.mdc-snackbar__surface role=status aria-relevant=additions>
       <div.mdc-snackbar__label aria-atomic=false>
         #{msg}

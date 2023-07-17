@@ -1,3 +1,5 @@
+ServisAlreadyInTheList: Ce service est déjà dans la liste
+DuplicateValue: Valeur en double
 Suffix: Suffixe
 Prefix: Préfixe
 PleaseConfirm: Veuillez confirmer

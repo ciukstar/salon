@@ -1,4 +1,6 @@
 
+window.scroll(0,#{scrollY})
+
 window.mdc.autoInit();
 
 [document.getElementById('btnDelete')].filter(x => !!x).forEach(function (x) {
@@ -8,14 +10,11 @@ window.mdc.autoInit();
 });
 
 [document.getElementById('detailsSubservices')].filter(x => !!x).forEach(function (x) {
-  const startIcon = x.querySelector('.mdc-list-item__start > .material-symbols-outlined');
   const endIcon = x.querySelector('.mdc-list-item__end > .material-symbols-outlined');
   x.addEventListener('toggle',function (e) {
     if (x.open) {
-      startIcon.textContent = 'unfold_less';
       endIcon.textContent = 'expand_less';
     } else {
-      startIcon.textContent = 'unfold_more';
       endIcon.textContent = 'expand_more';
     }
   });
@@ -24,6 +23,16 @@ window.mdc.autoInit();
 Array.from(
   document.querySelectorAll('aside.mdc-snackbar')
 ).map(x => x.MDCSnackbar).forEach(function (x) {
+  x.listen('MDCSnackbar:opening',function (e) {
+    [document.getElementById('fabAddSubservice')].filter(x => !!x).forEach(function (x) {
+      x.style.bottom = '4rem';
+    });
+  });
+  x.listen('MDCSnackbar:closing',function (e) {
+    [document.getElementById('fabAddSubservice')].filter(x => !!x).forEach(function (x) {
+      x.style.bottom = '1rem';
+    });
+  });
   x.open();
 });
 

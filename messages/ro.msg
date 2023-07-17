@@ -1,3 +1,5 @@
+ServisAlreadyInTheList: Acest serviciu este deja în listă
+DuplicateValue: Valoarea duplicată
 Suffix: Sufix
 Prefix: Prefix
 PleaseConfirm: Vă rugăm să confirmați
@@ -22,8 +24,8 @@ YouMustEnterTwoValues: Trebuie să introduceți două valori
 Email: E-mail
 FullName: Numele complet
 Photo: Foto
-Save: Salvați
-Cancel: Anulează
+Save: Salvează
+Cancel: Renunță
 Account: Cont
 DoNotHaveAnAccount: Nu aveți cont?
 AsAdmin: Ca administrator

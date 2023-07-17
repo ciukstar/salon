@@ -130,7 +130,8 @@ instance Yesod App where
     isAuthorized (AdminR (AdmServiceDeleteR _)) _ = return Authorized
     isAuthorized (AdminR (AdmServiceCreateFormR _)) _ = return Authorized
     isAuthorized (AdminR (AdmServiceEditFormR _)) _ = return Authorized
-    
+    isAuthorized (AdminR (AdmServiceImageR _)) _ = return Authorized
+        
     isAuthorized AccountR _ = return Authorized
     isAuthorized (AccountPhotoR _) _ = return Authorized
     isAuthorized ServicesR _ = return Authorized
