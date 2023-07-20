@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="56.0px"
+   height="56.0px"
+   viewBox="0 0 56.0 56.0"
+   version="1.1"
+   id="SVGRoot"
+   sodipodi:docname="facial-treatments.svg"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview36861"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="px"
+     showgrid="true"
+     inkscape:zoom="10.12009"
+     inkscape:cx="28.557059"
+     inkscape:cy="25.889098"
+     inkscape:window-width="1920"
+     inkscape:window-height="1003"
+     inkscape:window-x="0"
+     inkscape:window-y="40"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid36924" />
+  </sodipodi:namedview>
+  <defs
+     id="defs36856" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g36826"
+       transform="matrix(0.52423955,0,0,0.52423955,1632.329,406.68507)">
+      <ellipse
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:3.40167;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;stop-color:#000000"
+         id="path36387"
+         cx="-2521.9619"
+         cy="1441.2955"
+         rx="36.160553"
+         ry="33.428726"
+         transform="matrix(0.76329889,0.64604551,-0.78865192,0.61483994,0,0)" />
+      <ellipse
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2.83707;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;stop-color:#000000"
+         id="circle36471"
+         cx="-3056.9155"
+         cy="-737.95612"
+         rx="37.729115"
+         ry="31.022381" />
+      <ellipse
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;stop-color:#000000"
+         id="circle36389"
+         cx="-3063.4331"
+         cy="-725.12128"
+         rx="37.894249"
+         ry="38.809422" />
+      <rect
+         style="fill:#00ff00;fill-opacity:1;stroke:#000000;stroke-width:1.88813;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;stop-color:#000000"
+         id="rect36265"
+         width="71.352524"
+         height="84.302925"
+         x="-3096.9338"
+         y="-754.1875"
+         rx="128.31625"
+         ry="84.302925" />
+      <circle
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;stop-color:#000000"
+         id="path36549"
+         cx="-3077.9229"
+         cy="-712.03601"
+         r="6.1219554" />
+      <circle
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;stop-color:#000000"
+         id="circle36633"
+         cx="-3044.5925"
+         cy="-712.03601"
+         r="6.1219554" />
+      <path
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;stop-color:#000000"
+         id="path36657"
+         sodipodi:type="arc"
+         sodipodi:cx="-3061.1042"
+         sodipodi:cy="-693.51813"
+         sodipodi:rx="10.879171"
+         sodipodi:ry="11.494885"
+         sodipodi:start="0"
+         sodipodi:end="3.1412059"
+         sodipodi:arc-type="slice"
+         d="m -3050.2251,-693.51813 a 10.879171,11.494885 0 0 1 -10.877,11.49489 10.879171,11.494885 0 0 1 -10.8813,-11.49044 l 10.8792,-0.004 z" />
+    </g>
+  </g>
+</svg>

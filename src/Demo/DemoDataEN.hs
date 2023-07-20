@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module Demo.DemoDataEN (populateEN) where
 
@@ -11,8 +12,12 @@ import Database.Persist ( PersistStoreWrite(insert_, insert) )
 
 import Model
     ( User (User, userName, userPassword, userEmail, userFullName)
-    , Service (Service, serviceName, servicePrice, serviceDescr, serviceGroup, servicePricePrefix, servicePriceSuffix)
+    , Service
+      ( Service, serviceName, servicePrice, serviceDescr, serviceGroup
+      , servicePricePrefix, servicePriceSuffix
+      ), Thumbnail (Thumbnail, thumbnailService, thumbnailPhoto, thumbnailMime)
     )
+import Data.FileEmbed (embedFile)
 
 populateEN :: MonadIO m => ReaderT SqlBackend m ()
 populateEN = do
@@ -31,6 +36,11 @@ populateEN = do
                              , serviceGroup = Nothing
                              }
 
+    insert_ $ Thumbnail { thumbnailService = s1
+                        , thumbnailPhoto = $(embedFile "static/img/hair-care.svg")
+                        , thumbnailMime = "image/svg+xml"
+                        }
+
     s11 <- insert $ Service { serviceName = "Men hair cuts"
                              , servicePrice = Just 26
                              , servicePricePrefix = Just "$"
@@ -38,6 +48,11 @@ populateEN = do
                              , serviceDescr = Just "Hair cuts for men"
                              , serviceGroup = Just s1
                              }
+
+    insert_ $ Thumbnail { thumbnailService = s11
+                        , thumbnailPhoto = $(embedFile "static/img/men-haircuats.svg")
+                        , thumbnailMime = "image/svg+xml"
+                        }
 
     s12 <- insert $ Service { serviceName = "Women hair cuts (above shoulders)"
                              , servicePrice = Just 28
@@ -47,6 +62,11 @@ populateEN = do
                              , serviceGroup = Just s1
                              }
 
+    insert_ $ Thumbnail { thumbnailService = s12
+                        , thumbnailPhoto = $(embedFile "static/img/women-above-haircuts.svg")
+                        , thumbnailMime = "image/svg+xml"
+                        }
+
     s13 <- insert $ Service { serviceName = "Women hair cuts (below shoulders)"
                              , servicePrice = Just 35
                              , servicePricePrefix = Just "$"
@@ -54,6 +74,11 @@ populateEN = do
                              , serviceDescr = Just "Hair cuts below shoulders for women"
                              , serviceGroup = Just s1
                              }
+
+    insert_ $ Thumbnail { thumbnailService = s13
+                        , thumbnailPhoto = $(embedFile "static/img/women-below-aircuts.svg")
+                        , thumbnailMime = "image/svg+xml"
+                        }
 
     s14 <- insert $ Service { serviceName = "Children hair cuts"
                              , servicePrice = Just 16
@@ -167,6 +192,11 @@ populateEN = do
                              , serviceGroup = Nothing
                              }
 
+    insert_ $ Thumbnail { thumbnailService = s2
+                        , thumbnailPhoto = $(embedFile "static/img/facial-treatments.svg")
+                        , thumbnailMime = "image/svg+xml"
+                        }
+
     s3 <- insert $ Service { serviceName = "Advanced Facial Treatments"
                              , servicePrice = Nothing
                              , servicePricePrefix = Nothing
@@ -175,6 +205,11 @@ populateEN = do
                              , serviceGroup = Nothing
                              }
 
+    insert_ $ Thumbnail { thumbnailService = s3
+                        , thumbnailPhoto = $(embedFile "static/img/advanced-facial-treatments.svg")
+                        , thumbnailMime = "image/svg+xml"
+                        }
+
     s4 <- insert $ Service { serviceName = "Anti-Aging Treatments"
                              , servicePrice = Nothing
                              , servicePricePrefix = Nothing
@@ -182,6 +217,11 @@ populateEN = do
                              , serviceDescr = Just "Anti-Aging Treatments"
                              , serviceGroup = Nothing
                              }
+
+    insert_ $ Thumbnail { thumbnailService = s4
+                        , thumbnailPhoto = $(embedFile "static/img/anti-aging-treatments.svg")
+                        , thumbnailMime = "image/svg+xml"
+                        }
 
     s5 <- insert $ Service { serviceName = "Eye Treatment Center"
                              , servicePrice = Nothing
