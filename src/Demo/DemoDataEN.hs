@@ -1,3 +1,4 @@
+
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 
@@ -50,7 +51,7 @@ populateEN = do
                              }
 
     insert_ $ Thumbnail { thumbnailService = s11
-                        , thumbnailPhoto = $(embedFile "static/img/men-haircuats.svg")
+                        , thumbnailPhoto = $(embedFile "static/img/man-haircut.svg")
                         , thumbnailMime = "image/svg+xml"
                         }
 
@@ -63,7 +64,7 @@ populateEN = do
                              }
 
     insert_ $ Thumbnail { thumbnailService = s12
-                        , thumbnailPhoto = $(embedFile "static/img/women-above-haircuts.svg")
+                        , thumbnailPhoto = $(embedFile "static/img/women-profile-hair-short.svg")
                         , thumbnailMime = "image/svg+xml"
                         }
 
@@ -76,7 +77,7 @@ populateEN = do
                              }
 
     insert_ $ Thumbnail { thumbnailService = s13
-                        , thumbnailPhoto = $(embedFile "static/img/women-below-aircuts.svg")
+                        , thumbnailPhoto = $(embedFile "static/img/women-profile-hair-long.svg")
                         , thumbnailMime = "image/svg+xml"
                         }
 
@@ -88,6 +89,11 @@ populateEN = do
                              , serviceGroup = Just s1
                              }
 
+    insert_ $ Thumbnail { thumbnailService = s14
+                        , thumbnailPhoto = $(embedFile "static/img/child-haircut.svg")
+                        , thumbnailMime = "image/svg+xml"
+                        }
+
     s15 <- insert $ Service { serviceName = "Chemical services"
                              , servicePrice = Nothing
                              , servicePricePrefix = Nothing
@@ -96,6 +102,11 @@ populateEN = do
                              , serviceGroup = Just s1
                              }
 
+    insert_ $ Thumbnail { thumbnailService = s15
+                        , thumbnailPhoto = $(embedFile "static/img/conditioning.svg")
+                        , thumbnailMime = "image/svg+xml"
+                        }
+
     s151 <- insert $ Service { serviceName = "Conditioning"
                              , servicePrice = Nothing
                              , servicePricePrefix = Nothing
@@ -103,6 +114,11 @@ populateEN = do
                              , serviceDescr = Just "Conditioning"
                              , serviceGroup = Just s15
                              }
+
+    insert_ $ Thumbnail { thumbnailService = s151
+                        , thumbnailPhoto = $(embedFile "static/img/chemical-services.svg")
+                        , thumbnailMime = "image/svg+xml"
+                        }
 
     s1511 <- insert $ Service { serviceName = "After Perm Conditioner"
                               , servicePrice = Just 99
@@ -122,11 +138,16 @@ populateEN = do
 
     s152 <- insert $ Service { serviceName = "Highlights & Color"
                              , servicePrice = Nothing
-                              , servicePricePrefix = Nothing
-                              , servicePriceSuffix = Nothing
+                             , servicePricePrefix = Nothing
+                             , servicePriceSuffix = Nothing
                              , serviceDescr = Just "Highlights & Color"
                              , serviceGroup = Just s15
                              }
+
+    insert_ $ Thumbnail { thumbnailService = s152
+                        , thumbnailPhoto = $(embedFile "static/img/hair-highlights-color.svg")
+                        , thumbnailMime = "image/svg+xml"
+                        }
 
     s1521 <- insert $ Service { serviceName = "Full"
                               , servicePrice = Just 130
@@ -192,10 +213,34 @@ populateEN = do
                              , serviceGroup = Nothing
                              }
 
-    insert_ $ Thumbnail { thumbnailService = s2
-                        , thumbnailPhoto = $(embedFile "static/img/facial-treatments.svg")
-                        , thumbnailMime = "image/svg+xml"
-                        }
+    i21 <- insert $ Thumbnail { thumbnailService = s2
+                              , thumbnailPhoto = $(embedFile "static/img/facial-treatments.svg")
+                              , thumbnailMime = "image/svg+xml"
+                              }
+
+    s21 <- insert $ Service { serviceName = "Basic Facial (60 min)"
+                            , servicePrice = Just 55
+                            , servicePricePrefix = Just "$"
+                            , servicePriceSuffix = Nothing
+                            , serviceDescr = Just "Free Deep cleansing, exfoliation with steam treatment, followed by extractions, then eyebrow shaping; a de-stressing massage for the face, neck & shoulders. A custom mask, plus regular eye treatment, followed by moisturizer/sunscreen application. This relaxing but serious cleansing treatment will leave you with a clean, fresh, & glowing complexion."
+                            , serviceGroup = Just s2
+                            }
+
+    s22 <- insert $ Service { serviceName = "Deluxe Facial"
+                            , servicePrice = Just 75
+                            , servicePricePrefix = Just "$"
+                            , servicePriceSuffix = Nothing
+                            , serviceDescr = Just "This special facial can be customized to the client’s skin situation (ie. dry, oily, sensitive, etc.) It is created to smooth and soften your complexion while it de-stresses your entire body. Our deluxe facial will make you feel and look healthier."
+                            , serviceGroup = Just s2
+                            }
+
+    s23 <- insert $ Service { serviceName = "Pampering Facial (90 min)"
+                            , servicePrice = Just 90
+                            , servicePricePrefix = Just "$"
+                            , servicePriceSuffix = Nothing
+                            , serviceDescr = Just "A hydrating clinical treatment, creating a cooling effect on the skin to revitalize, moisturize, and soothe. Its thermo-cooling effect on the skin makes it a remarkable revitalizing treatment particularly for reducing redness. ALGOMASK+ offers instant radiance and long-lasting hydration."
+                            , serviceGroup = Just s2
+                            }
 
     s3 <- insert $ Service { serviceName = "Advanced Facial Treatments"
                              , servicePrice = Nothing
