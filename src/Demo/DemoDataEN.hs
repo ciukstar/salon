@@ -269,12 +269,17 @@ populateEN = do
                         }
 
     s5 <- insert $ Service { serviceName = "Eye Treatment Center"
-                             , servicePrice = Nothing
-                             , servicePricePrefix = Nothing
-                             , servicePriceSuffix = Nothing
-                             , serviceDescr = Just "Eye Treatment Center"
-                             , serviceGroup = Nothing
-                             }
+                           , servicePrice = Nothing
+                           , servicePricePrefix = Nothing
+                           , servicePriceSuffix = Nothing
+                           , serviceDescr = Just "Eye Treatment Center"
+                           , serviceGroup = Nothing
+                           }
+
+    insert_ $ Thumbnail { thumbnailService = s5
+                        , thumbnailPhoto = $(embedFile "static/img/eye-treatment-center.svg")
+                        , thumbnailMime = "image/svg+xml"
+                        }
 
     s6 <- insert $ Service { serviceName = "Body Massage"
                              , servicePrice = Nothing
