@@ -282,43 +282,68 @@ populateEN = do
                         }
 
     s6 <- insert $ Service { serviceName = "Body Massage"
-                             , servicePrice = Nothing
-                             , servicePricePrefix = Nothing
-                             , servicePriceSuffix = Nothing
-                             , serviceDescr = Just "Body Massage"
-                             , serviceGroup = Nothing
-                             }
+                           , servicePrice = Nothing
+                           , servicePricePrefix = Nothing
+                           , servicePriceSuffix = Nothing
+                           , serviceDescr = Just "Body Massage"
+                           , serviceGroup = Nothing
+                           }
+
+    insert_ $ Thumbnail { thumbnailService = s6
+                        , thumbnailPhoto = $(embedFile "static/img/body-massage.svg")
+                        , thumbnailMime = "image/svg+xml"
+                        }
 
     s7 <- insert $ Service { serviceName = "Makeup Services"
-                             , servicePrice = Nothing
-                             , servicePricePrefix = Nothing
-                             , servicePriceSuffix = Nothing
-                             , serviceDescr = Just "Makeup Services"
-                             , serviceGroup = Nothing
-                             }
+                           , servicePrice = Nothing
+                           , servicePricePrefix = Nothing
+                           , servicePriceSuffix = Nothing
+                           , serviceDescr = Just "Makeup Services"
+                           , serviceGroup = Nothing
+                           }
+
+    insert_ $ Thumbnail { thumbnailService = s7
+                        , thumbnailPhoto = $(embedFile "static/img/makeup-services.svg")
+                        , thumbnailMime = "image/svg+xml"
+                        }
 
     s8 <- insert $ Service { serviceName = "Waxing"
-                             , servicePrice = Nothing
-                             , servicePricePrefix = Nothing
-                             , servicePriceSuffix = Nothing
-                             , serviceDescr = Just "Waxing"
-                             , serviceGroup = Nothing
-                             }
+                           , servicePrice = Nothing
+                           , servicePricePrefix = Nothing
+                           , servicePriceSuffix = Nothing
+                           , serviceDescr = Just "Waxing"
+                           , serviceGroup = Nothing
+                           }
+
+    insert_ $ Thumbnail { thumbnailService = s8
+                        , thumbnailPhoto = $(embedFile "static/img/waxing.svg")
+                        , thumbnailMime = "image/svg+xml"
+                        }
 
     s9 <- insert $ Service { serviceName = "Nail Care"
-                             , servicePrice = Nothing
-                             , servicePricePrefix = Nothing
-                             , servicePriceSuffix = Nothing
-                             , serviceDescr = Just "Nail Care"
-                             , serviceGroup = Nothing
-                             }
+                           , servicePrice = Nothing
+                           , servicePricePrefix = Nothing
+                           , servicePriceSuffix = Nothing
+                           , serviceDescr = Just "Nail Care"
+                           , serviceGroup = Nothing
+                           }
+
+    insert_ $ Thumbnail { thumbnailService = s9
+                        , thumbnailPhoto = $(embedFile "static/img/nail-care.svg")
+                        , thumbnailMime = "image/svg+xml"
+                        }
 
     s10 <- insert $ Service { serviceName = "Body Shaping & Fitness"
-                             , servicePrice = Nothing
-                             , servicePricePrefix = Nothing
-                             , servicePriceSuffix = Nothing
-                             , serviceDescr = Just "Body Shaping & Fitness"
-                             , serviceGroup = Nothing
-                             }
+                            , servicePrice = Nothing
+                            , servicePricePrefix = Nothing
+                            , servicePriceSuffix = Nothing
+                            , serviceDescr = Just "Body Shaping & Fitness"
+                            , serviceGroup = Nothing
+                            }
+
+    insert_ $ Thumbnail { thumbnailService = s10
+                        , thumbnailPhoto = $(embedFile "static/img/body-shaping-fitness.svg")
+                        , thumbnailMime = "image/svg+xml"
+                        }
         
     return ()
