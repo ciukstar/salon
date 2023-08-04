@@ -31,3 +31,7 @@ main
       border-radius: 50%
       background-color: var(--mdc-theme-primary)
       text-align: center
+  #fabAddPrice
+    position: fixed
+    bottom: 1rem
+    right: 1rem

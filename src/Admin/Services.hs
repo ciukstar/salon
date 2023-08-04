@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ViewPatterns #-}
@@ -11,6 +12,8 @@ module Admin.Services
   , postAdmServicesR
   , postAdmServiceDeleteR
   , getAdmServiceImageR
+  , getAdmPricelistCreateR
+  , postAdmPricelistR
   ) where
 
 import Control.Applicative ((<|>))
@@ -25,7 +28,7 @@ import Yesod.Core
     ( Yesod(defaultLayout), setTitleI, setUltDestCurrent
     , FileInfo (fileContentType), SomeMessage (SomeMessage)
     , addMessageI, fileSourceByteString, redirect, getMessages
-    , TypedContent (TypedContent), ToContent (toContent), typeSvg
+    , TypedContent (TypedContent), ToContent (toContent), typeSvg, whamlet
     )
 import Settings (widgetFile)
 import Settings.StaticFiles
@@ -49,7 +52,7 @@ import Foundation
     , Route (StaticR, AuthR, PhotoPlaceholderR, AdminR, AccountPhotoR, ServiceThumbnailR)
     , AdminR
       ( AdmServiceCreateFormR, AdmServiceEditFormR, AdmServicesR, AdmServiceR
-      , AdmServiceDeleteR, AdmServiceImageR
+      , AdmServiceDeleteR, AdmServiceImageR, AdmPricelistCreateR, AdmPricelistR
       )
     , AppMessage
       ( MsgServices, MsgPhoto, MsgLogout, MsgTheName
@@ -57,7 +60,8 @@ import Foundation
       , MsgService, MsgSave, MsgCancel, MsgRecordAdded, MsgImage
       , MsgSubservices, MsgAddService, MsgAddSubservice, MsgNoServicesYet
       , MsgDeleteAreYouSure, MsgYesDelete, MsgPleaseConfirm, MsgRecordDeleted
-      , MsgPrefix, MsgSuffix, MsgServisAlreadyInTheList
+      , MsgPrefix, MsgSuffix, MsgServisAlreadyInTheList, MsgPricelist, MsgAddPrice
+      , MsgNoPriceSetYet
       )
     )
 
@@ -68,12 +72,15 @@ import Database.Persist
 import Model
     ( ServiceId
     , Service
-      ( Service, serviceName, servicePrice, serviceDescr, serviceGroup
-      , servicePricePrefix, servicePriceSuffix
+      ( Service, serviceName, serviceDescr, serviceGroup
       )
     , Thumbnail (Thumbnail, thumbnailService, thumbnailPhoto, thumbnailMime)
     , Services (Services)
-    , EntityField (ServiceId, ThumbnailPhoto, ThumbnailMime, ServiceGroup, ThumbnailService, ServiceName)
+    , EntityField
+      ( ServiceId, ThumbnailPhoto, ThumbnailMime, ServiceGroup, ThumbnailService
+      , ServiceName, PricelistService, PricelistId, PricelistName
+      )
+    , Pricelist (Pricelist, pricelistName, pricelistPrice, pricelistPrefix, pricelistSuffix, pricelistDescr)
     )
 
 import Yesod.Persist (YesodPersist(runDB), (=.), PersistUniqueWrite (upsert))
@@ -83,6 +90,109 @@ import Database.Esqueleto.Experimental
     , (^.), (==.)
     , isNothing, select, orderBy, asc, just
     )
+
+
+postAdmPricelistR :: Services -> Handler Html
+postAdmPricelistR (Services sids) = do
+    ((fr,widget),enctype) <- runFormPost $ formPrice (last sids) Nothing
+    case fr of
+      FormSuccess r -> runDB $ do
+          insert_ r
+          addMessageI "info" MsgRecordAdded
+          redirect $ AdminR $ AdmServicesR (Services sids)
+      _ -> defaultLayout $ do
+          setTitleI MsgPrice
+          $(widgetFile "admin/services/price")
+
+
+getAdmPricelistCreateR :: Services -> Handler Html
+getAdmPricelistCreateR (Services sids) = do
+    (widget,enctype) <- generateFormPost $ formPrice (last sids) Nothing
+    defaultLayout $ do
+        setTitleI MsgPrice
+        $(widgetFile "admin/services/price")
+
+
+formPrice :: ServiceId -> Maybe (Entity Pricelist)
+          -> Html -> MForm Handler (FormResult Pricelist, Widget)
+formPrice sid pricelist extra = do
+    (nameR,nameV) <- mreq textField FieldSettings
+        { fsLabel = SomeMessage MsgTheName
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (pricelistName . entityVal <$> pricelist)
+    (priceR,priceV) <- mreq doubleField FieldSettings
+        { fsLabel = SomeMessage MsgPrice
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (realToFrac . pricelistPrice . entityVal <$> pricelist)
+    (prefR,prefV) <- mopt textField FieldSettings
+        { fsLabel = SomeMessage MsgPrefix
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (pricelistPrefix . entityVal <$> pricelist)
+    (suffR,suffV) <- mopt textField FieldSettings
+        { fsLabel = SomeMessage MsgSuffix
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (pricelistSuffix . entityVal <$> pricelist)
+    (descrR,descrV) <- mopt textareaField FieldSettings
+        { fsLabel = SomeMessage MsgDescription
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (pricelistDescr . entityVal <$> pricelist)
+
+    let r = Pricelist sid <$> nameR <*> (realToFrac <$> priceR) <*> prefR <*> suffR <*> descrR
+    let w = [whamlet|
+#{extra}
+
+$forall v <- [nameV,priceV,prefV,suffV]
+  <div.form-field>
+    <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
+      :isJust (fvErrors v):.mdc-text-field--invalid
+      :isJust (fvErrors v):.mdc-text-field--with-trailing-icon>
+      <span.mdc-text-field__ripple>
+      <span.mdc-floating-label>#{fvLabel v}
+      ^{fvInput v}
+      $maybe _ <- fvErrors v
+        <i.mdc-text-field__icon.mdc-text-field__icon--trailing.material-symbols-outlined>error
+      <span.mdc-line-ripple>
+    $maybe errs <- fvErrors v 
+      <div.mdc-text-field-helper-line>
+        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+          #{errs}
+
+<div.form-field>
+  <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--textarea data-mdc-auto-init=MDCTextField
+    :isJust (fvErrors descrV):.mdc-text-field--invalid>
+    <span.mdc-text-field__ripple>
+    <span.mdc-floating-label>#{fvLabel descrV}
+    <span.mdc-text-field__resizer>
+      ^{fvInput descrV}
+    <span.mdc-line-ripple>
+  $maybe errs <- fvErrors descrV 
+    <div.mdc-text-field-helper-line>
+      <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+        #{errs}
+|]
+    return (r,w)
+  where
+      uniqueNameField :: Field Handler Text
+      uniqueNameField = checkM uniqueName textField
+
+      uniqueName :: Text -> Handler (Either AppMessage Text)
+      uniqueName name = do
+          mx <- runDB $ selectOne $ do
+              x <- from $ table @Pricelist
+              where_ $ x ^. PricelistService ==. val sid
+              where_ $ x ^. PricelistName ==. val name
+              return x
+          return $ case mx of
+            Nothing -> Right name
+            Just (Entity pid _) -> case pricelist of
+              Nothing -> Left MsgServisAlreadyInTheList
+              Just (Entity pid' _) | pid == pid' -> Right name
+                                   | otherwise -> Left MsgServisAlreadyInTheList
 
 
 getAdmServiceImageR :: ServiceId -> Handler TypedContent
@@ -188,6 +298,13 @@ getAdmServicesR (Services sids) = do
           x <- from $ table @Service
           where_ $ x ^. ServiceId ==. val sid
           return x
+    pricelist <- case service of
+      Just (Entity sid _) -> runDB $ select $ do
+          x <- from $ table @Pricelist
+          where_ $ x ^. PricelistService ==. val sid
+          orderBy [asc (x ^. PricelistId)]
+          return x
+      Nothing -> return []
     services <- runDB $ select $ do
         x <- from $ table @Service
         case sids of
@@ -214,21 +331,6 @@ formService service group extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (serviceName . entityVal <$> service)
-    (priceR,priceV) <- mopt doubleField FieldSettings
-        { fsLabel = SomeMessage MsgPrice
-        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
-        , fsAttrs = [("class","mdc-text-field__input")]
-        } ((realToFrac <$>) . servicePrice . entityVal <$> service)
-    (prefR,prefV) <- mopt textField FieldSettings
-        { fsLabel = SomeMessage MsgPrefix
-        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
-        , fsAttrs = [("class","mdc-text-field__input")]
-        } (servicePricePrefix . entityVal <$> service)
-    (suffR,suffV) <- mopt textField FieldSettings
-        { fsLabel = SomeMessage MsgSuffix
-        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
-        , fsAttrs = [("class","mdc-text-field__input")]
-        } (servicePriceSuffix . entityVal <$> service)
     (descrR,descrV) <- mopt textareaField FieldSettings
         { fsLabel = SomeMessage MsgDescription
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
@@ -247,9 +349,6 @@ formService service group extra = do
     let r = (,)
             <$> ( Service
                   <$> nameR
-                  <*> ((realToFrac <$>) <$> priceR)
-                  <*> prefR
-                  <*> suffR
                   <*> descrR
                   <*> ((toSqlKey <$>) <$> groupR)
                 )
@@ -272,3 +371,5 @@ formService service group extra = do
               Nothing -> Left MsgServisAlreadyInTheList
               Just (Entity sid' _) | sid == sid' -> Right name
                                    | otherwise -> Left MsgServisAlreadyInTheList
+
+

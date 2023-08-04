@@ -68,7 +68,7 @@
   
 <main.mdc-top-app-bar--fixed-adjust>
 
-  $maybe Entity sid (Service name price pref suff descr _) <- service
+  $maybe Entity sid (Service name descr _) <- service
     <figure>
       <img src=@{ServiceThumbnailR sid} height=56 width=56 
         onerror="this.src = '@{StaticR img_photo_FILL0_wght400_GRAD0_opsz48_svg}'">
@@ -82,25 +82,64 @@
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgTheName}
               <td.mdc-data-table__cell>#{name}
-            $if not ((&&) ((&&) (M.isNothing pref) (M.isNothing price)) (M.isNothing suff))
-              <tr.mdc-data-table__row>
-                <th.mdc-data-table__cell scope=row>_{MsgPrice}
-                <td.mdc-data-table__cell>
-                  $maybe pref <- pref
-                    #{pref}
-                  $maybe price <- show <$> price
-                    <span.numeric-format data-value=#{price} data-minFracDigits=0 data-maxFracDigits=2>
-                      #{price}
-                  $maybe suff <- suff
-                    #{suff}
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgDescription}
               <td.mdc-data-table__cell>
                 $maybe descr <- descr
                   #{descr}
 
+  
+  <details #detailsPricelist>
+    <summary style="list-style:none">
+      <ul.mdc-list data-mdc-auto-init=MDCList>
+        <li.mdc-list-item
+          .mdc-list-item--with-one-line
+          .mdc-list-item--with-trailing-icon>
+          <span.mdc-list-item__ripple>
+          <span.mdc-list-item__content>
+            <div.mdc-list-item__primary-text>
+              <div.label-with-badge>
+                <div.label>_{MsgPricelist}
+                <div.badge>#{length pricelist}
+          <span.mdc-list-item__end>
+            <i.material-symbols-outlined>expand_more
+
+    $if null pricelist
+      <figure>
+        <img src=@{StaticR img_spark_svg} height=80>
+        <figcaption>
+          _{MsgNoPriceSetYet}.
+    $else
+      <nav.mdc-list data-mdc-auto-init=MDCList>
+        $forall Entity _ (Pricelist _ name price prefix suffix _) <- pricelist
+          <a.mdc-list-item href=#
+            .mdc-list-item--activated
+            .mdc-list-item--with-two-lines.mdc-list-item--with-trailing-icon>
+            <span.mdc-list-item__ripple>
+            <span.mdc-list-item__content>
+              <div.mdc-list-item__primary-text>#{name}
+              <div.mdc-list-item__secondary-text>
+                $maybe prefix <- prefix
+                  #{prefix}
+                $with price <- show price
+                  <span.numeric-format data-value=#{price} data-minFracDigits=0 data-maxFracDigits=2>
+                    #{price}
+                $maybe suffix <- suffix
+                  #{suffix}
+            <span.mdc-list-item__end>
+              <i.material-symbols-outlined>arrow_forward_ios
+          <div.mdc-list-divider role=separator>
+
+    <div.mdc-touch-target-wrapper #fabAddPrice>
+      <a.mdc-fab.mdc-fab--extended.mdc-fab--touch href=@{AdminR $ AdmPricelistCreateR (Services sids)}>
+        <span.mdc-fab__ripple>
+        <span.mdc-fab__focus-ring>
+        <span.mdc-fab__icon.material-symbols-outlined>add
+        <span.mdc-fab__label>_{MsgAddPrice}
+        <span.mdc-fab__touch>
+            
   $if not (null sids)
-    <details open #detailsSubservices>
+    <details #detailsSubservices>
       <summary style="list-style:none">
         <ul.mdc-list data-mdc-auto-init=MDCList>
           <li.mdc-list-item
@@ -113,7 +152,7 @@
                   <div.label>_{MsgSubservices}
                   <div.badge>#{length services}
             <span.mdc-list-item__end>
-              <i.material-symbols-outlined>expand_less
+              <i.material-symbols-outlined>expand_more
             
       ^{subservices services sids msid}
   $else

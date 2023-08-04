@@ -13,6 +13,8 @@
 / HomeR GET
 
 /admin AdminR:
+    /form/pricelist/+Services  AdmPricelistCreateR   GET
+    /pricelist/+Services       AdmPricelistR	     POST
     /form/services/+Services   AdmServiceEditFormR   GET
     /form/service/+Services    AdmServiceCreateFormR GET
     /delete/services/+Services AdmServiceDeleteR     POST

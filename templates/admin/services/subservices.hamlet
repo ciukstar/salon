@@ -6,7 +6,7 @@
       <figcaption>
         _{MsgNoServicesYet}.
   $else
-    $forall Entity sid (Service name price pref suff _ _) <- services
+    $forall Entity sid (Service name _ _) <- services
       <a.mdc-list-item href=@{AdminR $ AdmServicesR $ Services (sids ++ [sid])}
         :Just sid == msid:.mdc-list-item--activated
         .mdc-list-item--with-one-line.mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon
@@ -17,15 +17,6 @@
             onerror="this.src = '@{StaticR img_photo_FILL0_wght400_GRAD0_opsz48_svg}'">
         <span.mdc-list-item__content>
           <div.mdc-list-item__primary-text>#{name}
-          $if not ((&&) ((&&) (M.isNothing pref) (M.isNothing price)) (M.isNothing suff))
-            <div.mdc-list-item__secondary-text>
-              $maybe pref <- pref
-                #{pref}
-              $maybe price <- show <$> price
-                <span.numeric-format data-value=#{price} data-minFracDigits=0 data-maxFracDigits=2>
-                  #{price}
-              $maybe suff <- suff
-                #{suff}
         <span.mdc-list-item__end>
           <i.material-symbols-outlined>arrow_forward_ios
       <div.mdc-list-divider role=separator>

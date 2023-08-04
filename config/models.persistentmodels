@@ -5,11 +5,17 @@ Thumbnail
   mime Text
   UniqueThumbnail service
 
+Pricelist
+  service ServiceId OnDeleteCascade
+  name Text
+  price Centi
+  prefix Text Maybe
+  suffix Text Maybe
+  descr Textarea Maybe
+  UniquePricelist service name 
+
 Service
   name Text
-  price Centi Maybe
-  pricePrefix Text Maybe
-  priceSuffix Text Maybe
   descr Textarea Maybe
   group ServiceId Maybe OnDeleteCascade
   UniqueService name

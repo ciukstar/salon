@@ -33,7 +33,7 @@
 <main.mdc-top-app-bar--prominent-fixed-adjust>
 
   <ul.mdc-list data-mdc-auto-init=MDCList>
-    $forall Entity cid (Service name _ _ _ _ _) <- categories
+    $forall Entity cid (Service name _ _) <- categories
       <details role=listitem #details#{fromSqlKey cid} data-id=#{fromSqlKey cid}>
         <summary.mdc-list-item
           .mdc-list-item--with-one-line
@@ -49,7 +49,7 @@
             <i.material-symbols-outlined #iconExpand#{fromSqlKey cid}>expand_more
         
         <ul.mdc-list data-mdc-auto-init=MDCList>
-          $forall Entity sid (Service name price pref suff _ _) <- services
+          $forall Entity sid (Service name _ _) <- services
             <a.mdc-list-item href=@{ServiceR sid}
               .mdc-list-item--with-two-lines
               .mdc-list-item--with-leading-image
@@ -59,13 +59,6 @@
               <span.mdc-list-item__content>
                 <div.mdc-list-item__primary-text>#{name}
                 <div.mdc-list-item__secondary-text>
-                  $maybe pref <- pref
-                    #{pref}
-                  $maybe price <- show <$> price
-                    <span.numeric-format data-value=#{price} data-minFracDigits=0 data-maxFracDigits=2>
-                      #{price}
-                  $maybe suff <- suff
-                    #{suff}
               <span.mdc-list-item__end>
                 <i.material-symbols-outlined>arrow_forward_ios
       <li.mdc-list-divider role=separator>

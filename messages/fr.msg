@@ -1,3 +1,6 @@
+NoPriceSetYet: Aucun prix n'a été fixé pour le service
+AddPrice: Ajouter prix
+Pricelist: Liste de prix
 ServisAlreadyInTheList: Ce service est déjà dans la liste
 DuplicateValue: Valeur en double
 Suffix: Suffixe

@@ -1,3 +1,6 @@
+NoPriceSetYet: Nu a fost stabilit niciun preț pentru serviciu
+AddPrice: Adaugă preț
+Pricelist: Lista de prețuri
 ServisAlreadyInTheList: Acest serviciu este deja în listă
 DuplicateValue: Valoarea duplicată
 Suffix: Sufix

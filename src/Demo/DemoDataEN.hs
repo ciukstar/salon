@@ -1,4 +1,3 @@
-
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 
@@ -14,9 +13,13 @@ import Database.Persist ( PersistStoreWrite(insert_, insert) )
 import Model
     ( User (User, userName, userPassword, userEmail, userFullName)
     , Service
-      ( Service, serviceName, servicePrice, serviceDescr, serviceGroup
-      , servicePricePrefix, servicePriceSuffix
-      ), Thumbnail (Thumbnail, thumbnailService, thumbnailPhoto, thumbnailMime)
+      ( Service, serviceName, serviceDescr, serviceGroup
+      )
+    , Thumbnail (Thumbnail, thumbnailService, thumbnailPhoto, thumbnailMime)
+    , Pricelist
+      ( Pricelist, pricelistName, pricelistPrice, pricelistPrefix
+      , pricelistSuffix, pricelistDescr, pricelistService
+      )
     )
 import Data.FileEmbed (embedFile)
 
@@ -30,9 +33,6 @@ populateEN = do
                    }
 
     s1 <- insert $ Service { serviceName = "Hair care"
-                             , servicePrice = Nothing
-                             , servicePricePrefix = Nothing
-                             , servicePriceSuffix = Nothing
                              , serviceDescr = Just "Hair Care"
                              , serviceGroup = Nothing
                              }
@@ -43,12 +43,17 @@ populateEN = do
                         }
 
     s11 <- insert $ Service { serviceName = "Men hair cuts"
-                             , servicePrice = Just 26
-                             , servicePricePrefix = Just "$"
-                             , servicePriceSuffix = Nothing
                              , serviceDescr = Just "Hair cuts for men"
                              , serviceGroup = Just s1
                              }
+
+    insert_ $ Pricelist { pricelistService = s11
+                        , pricelistName = "Price"
+                        , pricelistPrice = 26
+                        , pricelistPrefix = Just "$"
+                        , pricelistSuffix = Nothing
+                        , pricelistDescr = Nothing
+                        }
 
     insert_ $ Thumbnail { thumbnailService = s11
                         , thumbnailPhoto = $(embedFile "static/img/man-haircut.svg")
@@ -56,12 +61,17 @@ populateEN = do
                         }
 
     s12 <- insert $ Service { serviceName = "Women hair cuts (above shoulders)"
-                             , servicePrice = Just 28
-                             , servicePricePrefix = Just "$"
-                             , servicePriceSuffix = Nothing
                              , serviceDescr = Just "Hair cuts above shoulders for women"
                              , serviceGroup = Just s1
                              }
+
+    insert_ $ Pricelist { pricelistService = s12
+                        , pricelistName = "Price"
+                        , pricelistPrice = 28
+                        , pricelistPrefix = Just "$"
+                        , pricelistSuffix = Nothing
+                        , pricelistDescr = Nothing
+                        }
 
     insert_ $ Thumbnail { thumbnailService = s12
                         , thumbnailPhoto = $(embedFile "static/img/women-profile-hair-short.svg")
@@ -69,12 +79,17 @@ populateEN = do
                         }
 
     s13 <- insert $ Service { serviceName = "Women hair cuts (below shoulders)"
-                             , servicePrice = Just 35
-                             , servicePricePrefix = Just "$"
-                             , servicePriceSuffix = Nothing
                              , serviceDescr = Just "Hair cuts below shoulders for women"
                              , serviceGroup = Just s1
                              }
+
+    insert_ $ Pricelist { pricelistService = s13
+                        , pricelistName = "Price"
+                        , pricelistPrice = 35
+                        , pricelistPrefix = Just "$"
+                        , pricelistSuffix = Nothing
+                        , pricelistDescr = Nothing
+                        }
 
     insert_ $ Thumbnail { thumbnailService = s13
                         , thumbnailPhoto = $(embedFile "static/img/women-profile-hair-long.svg")
@@ -82,12 +97,17 @@ populateEN = do
                         }
 
     s14 <- insert $ Service { serviceName = "Children hair cuts"
-                             , servicePrice = Just 16
-                             , servicePricePrefix = Just "$"
-                             , servicePriceSuffix = Just "-$20 (depending on the length of their hair)"
                              , serviceDescr = Just "Hair cuts for children"
                              , serviceGroup = Just s1
                              }
+
+    insert_ $ Pricelist { pricelistService = s14
+                        , pricelistName = "Price"
+                        , pricelistPrice = 16
+                        , pricelistPrefix = Just "$"
+                        , pricelistSuffix = Just "-$20 (depending on the length of their hair)"
+                        , pricelistDescr = Nothing
+                        }
 
     insert_ $ Thumbnail { thumbnailService = s14
                         , thumbnailPhoto = $(embedFile "static/img/child-haircut.svg")
@@ -95,9 +115,6 @@ populateEN = do
                         }
 
     s15 <- insert $ Service { serviceName = "Chemical services"
-                             , servicePrice = Nothing
-                             , servicePricePrefix = Nothing
-                             , servicePriceSuffix = Nothing
                              , serviceDescr = Just "Prices will vary depending on the length of the client’s hair"
                              , serviceGroup = Just s1
                              }
@@ -108,9 +125,6 @@ populateEN = do
                         }
 
     s151 <- insert $ Service { serviceName = "Conditioning"
-                             , servicePrice = Nothing
-                             , servicePricePrefix = Nothing
-                             , servicePriceSuffix = Nothing
                              , serviceDescr = Just "Conditioning"
                              , serviceGroup = Just s15
                              }
@@ -121,25 +135,32 @@ populateEN = do
                         }
 
     s1511 <- insert $ Service { serviceName = "After Perm Conditioner"
-                              , servicePrice = Just 99
-                              , servicePricePrefix = Just "$"
-                              , servicePriceSuffix = Just " & up"
                               , serviceDescr = Just "After Perm Conditioner"
                               , serviceGroup = Just s151
                               }
 
+    insert_ $ Pricelist { pricelistService = s1511
+                        , pricelistName = "Price"
+                        , pricelistPrice = 99
+                        , pricelistPrefix = Just "$"
+                        , pricelistSuffix = Just " & up"
+                        , pricelistDescr = Nothing
+                        }
+
     s1512 <- insert $ Service { serviceName = "Before Perm Conditioner"
-                              , servicePrice = Just 110
-                              , servicePricePrefix = Just "$"
-                              , servicePriceSuffix = Just " & up"
                               , serviceDescr = Just "Before Perm Conditioner"
                               , serviceGroup = Just s151
                               }
 
+    insert_ $ Pricelist { pricelistService = s1512
+                        , pricelistName = "Price"
+                        , pricelistPrice = 110
+                        , pricelistPrefix = Just "$"
+                        , pricelistSuffix = Just " & up"
+                        , pricelistDescr = Nothing
+                        }
+
     s152 <- insert $ Service { serviceName = "Highlights & Color"
-                             , servicePrice = Nothing
-                             , servicePricePrefix = Nothing
-                             , servicePriceSuffix = Nothing
                              , serviceDescr = Just "Highlights & Color"
                              , serviceGroup = Just s15
                              }
@@ -150,102 +171,138 @@ populateEN = do
                         }
 
     s1521 <- insert $ Service { serviceName = "Full"
-                              , servicePrice = Just 130
-                              , servicePricePrefix = Just "$"
-                              , servicePriceSuffix = Nothing
                               , serviceDescr = Just "Full"
                               , serviceGroup = Just s152
                               }
 
+    insert_ $ Pricelist { pricelistService = s1521
+                        , pricelistName = "Price"
+                        , pricelistPrice = 130
+                        , pricelistPrefix = Just "$"
+                        , pricelistSuffix = Nothing
+                        , pricelistDescr = Nothing
+                        }
+
     s1522 <- insert $ Service { serviceName = "Partial"
-                              , servicePrice = Just 68
-                              , servicePricePrefix = Just "$"
-                              , servicePriceSuffix = Just " & up"
                               , serviceDescr = Just "Partial"
                               , serviceGroup = Just s152
                               }
 
+    insert_ $ Pricelist { pricelistService = s1522
+                        , pricelistName = "Price"
+                        , pricelistPrice = 68
+                        , pricelistPrefix = Just "$"
+                        , pricelistSuffix = Just " & up"
+                        , pricelistDescr = Nothing
+                        }
+
     s1523 <- insert $ Service { serviceName = "Permanent Color"
-                              , servicePrice = Just 68
-                              , servicePricePrefix = Just "$"
-                              , servicePriceSuffix = Just " & up"
                               , serviceDescr = Just "Permanent Color"
                               , serviceGroup = Just s152
                               }
 
+    insert_ $ Pricelist { pricelistService = s1523
+                        , pricelistName = "Price"
+                        , pricelistPrice = 68
+                        , pricelistPrefix = Just "$"
+                        , pricelistSuffix = Just " & up"
+                        , pricelistDescr = Nothing
+                        }
+
     s153 <- insert $ Service { serviceName = "Perm"
-                             , servicePrice = Nothing
-                              , servicePricePrefix = Nothing
-                              , servicePriceSuffix = Nothing
                              , serviceDescr = Just "Perm"
                              , serviceGroup = Just s15
                              }
 
     s1531 <- insert $ Service { serviceName = "Full Perm"
-                              , servicePrice = Just 79
-                              , servicePricePrefix = Just "$"
-                              , servicePriceSuffix = Just " & up"
                               , serviceDescr = Just "Full Perm"
                               , serviceGroup = Just s153
                               }
 
+    insert_ $ Pricelist { pricelistService = s1531
+                        , pricelistName = "Price"
+                        , pricelistPrice = 79
+                        , pricelistPrefix = Just "$"
+                        , pricelistSuffix = Just " & up"
+                        , pricelistDescr = Nothing
+                        }
+
     s1532 <- insert $ Service { serviceName = "Acid Repair Perm"
-                              , servicePrice = Just 89
-                              , servicePricePrefix = Just "$"
-                              , servicePriceSuffix = Just " & up"
                               , serviceDescr = Just "Acid Repair Perm"
                               , serviceGroup = Just s153
                               }
 
+    insert_ $ Pricelist { pricelistService = s1532
+                        , pricelistName = "Price"
+                        , pricelistPrice = 89
+                        , pricelistPrefix = Just "$"
+                        , pricelistSuffix = Just " & up"
+                        , pricelistDescr = Nothing
+                        }
+
     s1533 <- insert $ Service { serviceName = "Japanese Straightening Perm"
-                              , servicePrice = Just 250
-                              , servicePricePrefix = Just "$"
-                              , servicePriceSuffix = Just " & up"
                               , serviceDescr = Just "Japanese Straightening Perm"
                               , serviceGroup = Just s153
                               }
 
+    insert_ $ Pricelist { pricelistService = s1533
+                        , pricelistName = "Price"
+                        , pricelistPrice = 250
+                        , pricelistPrefix = Just "$"
+                        , pricelistSuffix = Just " & up"
+                        , pricelistDescr = Nothing
+                        }
+
     s2 <- insert $ Service { serviceName = "Facial Treatments"
-                             , servicePrice = Nothing
-                             , servicePricePrefix = Nothing
-                             , servicePriceSuffix = Nothing
-                             , serviceDescr = Just "Facial Treatments"
+                             , serviceDescr = Just "Your face is an expressive canvass that shows experience and emotion. At one of the best salons around, our palette holds nourishing treatments, which enhances, emphasizes beauty, youth and color for your body. Before any facial, our professional esthetician will give you a consolidation and work from there You won’t believe the difference!"
                              , serviceGroup = Nothing
                              }
 
-    i21 <- insert $ Thumbnail { thumbnailService = s2
-                              , thumbnailPhoto = $(embedFile "static/img/facial-treatments.svg")
-                              , thumbnailMime = "image/svg+xml"
-                              }
+    insert_ $ Thumbnail { thumbnailService = s2
+                        , thumbnailPhoto = $(embedFile "static/img/facial-treatments.svg")
+                        , thumbnailMime = "image/svg+xml"
+                        }
 
     s21 <- insert $ Service { serviceName = "Basic Facial (60 min)"
-                            , servicePrice = Just 55
-                            , servicePricePrefix = Just "$"
-                            , servicePriceSuffix = Nothing
                             , serviceDescr = Just "Free Deep cleansing, exfoliation with steam treatment, followed by extractions, then eyebrow shaping; a de-stressing massage for the face, neck & shoulders. A custom mask, plus regular eye treatment, followed by moisturizer/sunscreen application. This relaxing but serious cleansing treatment will leave you with a clean, fresh, & glowing complexion."
                             , serviceGroup = Just s2
                             }
 
+    insert_ $ Pricelist { pricelistService = s21
+                        , pricelistName = "Price"
+                        , pricelistPrice = 55
+                        , pricelistPrefix = Just "$"
+                        , pricelistSuffix = Nothing
+                        , pricelistDescr = Nothing
+                        }
+
+    insert_ $ Pricelist { pricelistService = s21
+                        , pricelistName = "Package"
+                        , pricelistPrice = 250
+                        , pricelistPrefix = Just "$"
+                        , pricelistSuffix = Just "/5 sessions"
+                        , pricelistDescr = Nothing
+                        }
+
     s22 <- insert $ Service { serviceName = "Deluxe Facial"
-                            , servicePrice = Just 75
-                            , servicePricePrefix = Just "$"
-                            , servicePriceSuffix = Nothing
                             , serviceDescr = Just "This special facial can be customized to the client’s skin situation (ie. dry, oily, sensitive, etc.) It is created to smooth and soften your complexion while it de-stresses your entire body. Our deluxe facial will make you feel and look healthier."
                             , serviceGroup = Just s2
                             }
 
     s23 <- insert $ Service { serviceName = "Pampering Facial (90 min)"
-                            , servicePrice = Just 90
-                            , servicePricePrefix = Just "$"
-                            , servicePriceSuffix = Nothing
                             , serviceDescr = Just "A hydrating clinical treatment, creating a cooling effect on the skin to revitalize, moisturize, and soothe. Its thermo-cooling effect on the skin makes it a remarkable revitalizing treatment particularly for reducing redness. ALGOMASK+ offers instant radiance and long-lasting hydration."
                             , serviceGroup = Just s2
                             }
 
+    insert_ $ Pricelist { pricelistService = s23
+                        , pricelistName = "Price"
+                        , pricelistPrice = 75
+                        , pricelistPrefix = Just "$"
+                        , pricelistSuffix = Just " & up"
+                        , pricelistDescr = Nothing
+                        }
+
     s3 <- insert $ Service { serviceName = "Advanced Facial Treatments"
-                             , servicePrice = Nothing
-                             , servicePricePrefix = Nothing
-                             , servicePriceSuffix = Nothing
                              , serviceDescr = Just "Advanced Facial Treatments"
                              , serviceGroup = Nothing
                              }
@@ -256,9 +313,6 @@ populateEN = do
                         }
 
     s4 <- insert $ Service { serviceName = "Anti-Aging Treatments"
-                             , servicePrice = Nothing
-                             , servicePricePrefix = Nothing
-                             , servicePriceSuffix = Nothing
                              , serviceDescr = Just "Anti-Aging Treatments"
                              , serviceGroup = Nothing
                              }
@@ -269,9 +323,6 @@ populateEN = do
                         }
 
     s5 <- insert $ Service { serviceName = "Eye Treatment Center"
-                           , servicePrice = Nothing
-                           , servicePricePrefix = Nothing
-                           , servicePriceSuffix = Nothing
                            , serviceDescr = Just "Eye Treatment Center"
                            , serviceGroup = Nothing
                            }
@@ -282,9 +333,6 @@ populateEN = do
                         }
 
     s6 <- insert $ Service { serviceName = "Body Massage"
-                           , servicePrice = Nothing
-                           , servicePricePrefix = Nothing
-                           , servicePriceSuffix = Nothing
                            , serviceDescr = Just "Body Massage"
                            , serviceGroup = Nothing
                            }
@@ -295,9 +343,6 @@ populateEN = do
                         }
 
     s7 <- insert $ Service { serviceName = "Makeup Services"
-                           , servicePrice = Nothing
-                           , servicePricePrefix = Nothing
-                           , servicePriceSuffix = Nothing
                            , serviceDescr = Just "Makeup Services"
                            , serviceGroup = Nothing
                            }
@@ -308,9 +353,6 @@ populateEN = do
                         }
 
     s8 <- insert $ Service { serviceName = "Waxing"
-                           , servicePrice = Nothing
-                           , servicePricePrefix = Nothing
-                           , servicePriceSuffix = Nothing
                            , serviceDescr = Just "Waxing"
                            , serviceGroup = Nothing
                            }
@@ -321,9 +363,6 @@ populateEN = do
                         }
 
     s9 <- insert $ Service { serviceName = "Nail Care"
-                           , servicePrice = Nothing
-                           , servicePricePrefix = Nothing
-                           , servicePriceSuffix = Nothing
                            , serviceDescr = Just "Nail Care"
                            , serviceGroup = Nothing
                            }
@@ -334,9 +373,6 @@ populateEN = do
                         }
 
     s10 <- insert $ Service { serviceName = "Body Shaping & Fitness"
-                            , servicePrice = Nothing
-                            , servicePricePrefix = Nothing
-                            , servicePriceSuffix = Nothing
                             , serviceDescr = Just "Body Shaping & Fitness"
                             , serviceGroup = Nothing
                             }

@@ -1,3 +1,6 @@
+NoPriceSetYet: Цена за услугу не установлена
+AddPrice: Добавить цену
+Pricelist: Прейскурант
 ServisAlreadyInTheList: Эта услуга уже есть в списке
 DuplicateValue: Дублированное значение
 Suffix: Суффикс
