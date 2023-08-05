@@ -3,6 +3,7 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ViewPatterns #-}
+{-# LANGUAGE TupleSections #-}
 
 module Admin.Services
   ( getAdmServicesR
@@ -14,14 +15,16 @@ module Admin.Services
   , getAdmServiceImageR
   , getAdmPricelistCreateR
   , postAdmPricelistR
+  , getAdmPriceR
+  , postAdmPriceR
+  , getAdmPriceEditR
   ) where
 
 import Control.Applicative ((<|>))
 import Data.Text (Text, pack)
-import Data.Maybe (isJust, fromMaybe)
+import Data.Maybe (isJust, fromMaybe, catMaybes)
 import Data.Text.Encoding (encodeUtf8)
 import Data.FileEmbed (embedFile)
-import qualified Data.Maybe as M (isNothing)
 import qualified Data.List.Safe as LS (last)
 import Text.Hamlet (Html)
 import Yesod.Core
@@ -52,7 +55,7 @@ import Foundation
     , Route (StaticR, AuthR, PhotoPlaceholderR, AdminR, AccountPhotoR, ServiceThumbnailR)
     , AdminR
       ( AdmServiceCreateFormR, AdmServiceEditFormR, AdmServicesR, AdmServiceR
-      , AdmServiceDeleteR, AdmServiceImageR, AdmPricelistCreateR, AdmPricelistR
+      , AdmServiceDeleteR, AdmServiceImageR, AdmPricelistCreateR, AdmPricelistR, AdmPriceR, AdmPriceEditR
       )
     , AppMessage
       ( MsgServices, MsgPhoto, MsgLogout, MsgTheName
@@ -61,7 +64,7 @@ import Foundation
       , MsgSubservices, MsgAddService, MsgAddSubservice, MsgNoServicesYet
       , MsgDeleteAreYouSure, MsgYesDelete, MsgPleaseConfirm, MsgRecordDeleted
       , MsgPrefix, MsgSuffix, MsgServisAlreadyInTheList, MsgPricelist, MsgAddPrice
-      , MsgNoPriceSetYet
+      , MsgNoPriceSetYet, MsgPriceAlreadyInTheList
       )
     )
 
@@ -80,7 +83,11 @@ import Model
       ( ServiceId, ThumbnailPhoto, ThumbnailMime, ServiceGroup, ThumbnailService
       , ServiceName, PricelistService, PricelistId, PricelistName
       )
-    , Pricelist (Pricelist, pricelistName, pricelistPrice, pricelistPrefix, pricelistSuffix, pricelistDescr)
+    , Pricelist
+      ( Pricelist, pricelistName, pricelistPrice, pricelistPrefix, pricelistSuffix
+      , pricelistDescr
+      )
+    , PricelistId
     )
 
 import Yesod.Persist (YesodPersist(runDB), (=.), PersistUniqueWrite (upsert))
@@ -92,31 +99,86 @@ import Database.Esqueleto.Experimental
     )
 
 
-postAdmPricelistR :: Services -> Handler Html
-postAdmPricelistR (Services sids) = do
-    ((fr,widget),enctype) <- runFormPost $ formPrice (last sids) Nothing
+getAdmPriceEditR :: PricelistId -> Services -> Handler Html
+getAdmPriceEditR pid (Services sids) = do
+    scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
+    open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
+    price <- runDB $ selectOne $ do
+        x <- from $ table @Pricelist
+        where_ $ x ^. PricelistId ==. val pid
+        return x
+    (widget,enctype) <- generateFormPost $ formPrice (last sids) price
+    defaultLayout $ do
+        setTitleI MsgPrice
+        $(widgetFile "admin/services/edit-price")
+
+
+postAdmPriceR :: PricelistId -> Services -> Handler Html
+postAdmPriceR pid (Services sids) = do
+    scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
+    open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
+    price <- runDB $ selectOne $ do
+        x <- from $ table @Pricelist
+        where_ $ x ^. PricelistId ==. val pid
+        return x
+    ((fr,widget),enctype) <- runFormPost $ formPrice (last sids) price
     case fr of
-      FormSuccess r -> runDB $ do
-          insert_ r
-          addMessageI "info" MsgRecordAdded
-          redirect $ AdminR $ AdmServicesR (Services sids)
+      FormSuccess r -> do
+          runDB $ replace pid r
+          addMessageI "info" MsgRecordEdited
+          redirect ( AdminR $ AdmPriceR pid (Services sids)
+                   , catMaybes [scrollY,open,Just ("pid",pack $ show $ fromSqlKey pid)]
+                   )
       _ -> defaultLayout $ do
           setTitleI MsgPrice
-          $(widgetFile "admin/services/price")
+          $(widgetFile "admin/services/edit-price")
 
 
-getAdmPricelistCreateR :: Services -> Handler Html
-getAdmPricelistCreateR (Services sids) = do
-    (widget,enctype) <- generateFormPost $ formPrice (last sids) Nothing
+getAdmPriceR :: PricelistId -> Services -> Handler Html
+getAdmPriceR pid sids = do
+    scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
+    open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
+    price <- runDB $ selectOne $ do
+        x <- from $ table @Pricelist
+        where_ $ x ^. PricelistId ==. val pid
+        return x
+    msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgPrice
         $(widgetFile "admin/services/price")
 
 
+postAdmPricelistR :: Services -> Handler Html
+postAdmPricelistR (Services sids) = do
+    scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
+    open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
+    ((fr,widget),enctype) <- runFormPost $ formPrice (last sids) Nothing
+    case fr of
+      FormSuccess r -> do
+          pid <- runDB $ insert r
+          addMessageI "info" MsgRecordAdded
+          redirect ( AdminR $ AdmServicesR (Services sids)
+                   , catMaybes [scrollY,open,Just ("pid",pack $ show $ fromSqlKey pid)]
+                   )
+      _ -> defaultLayout $ do
+          setTitleI MsgPrice
+          $(widgetFile "admin/services/create-price")
+
+
+getAdmPricelistCreateR :: Services -> Handler Html
+getAdmPricelistCreateR (Services sids) = do
+    scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
+    open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
+    (widget,enctype) <- generateFormPost $ formPrice (last sids) Nothing
+    defaultLayout $ do
+        setTitleI MsgPrice
+        $(widgetFile "admin/services/create-price")
+
+
 formPrice :: ServiceId -> Maybe (Entity Pricelist)
           -> Html -> MForm Handler (FormResult Pricelist, Widget)
 formPrice sid pricelist extra = do
-    (nameR,nameV) <- mreq textField FieldSettings
+    (nameR,nameV) <- mreq uniqueNameField FieldSettings
         { fsLabel = SomeMessage MsgTheName
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
@@ -190,9 +252,9 @@ $forall v <- [nameV,priceV,prefV,suffV]
           return $ case mx of
             Nothing -> Right name
             Just (Entity pid _) -> case pricelist of
-              Nothing -> Left MsgServisAlreadyInTheList
+              Nothing -> Left MsgPriceAlreadyInTheList
               Just (Entity pid' _) | pid == pid' -> Right name
-                                   | otherwise -> Left MsgServisAlreadyInTheList
+                                   | otherwise -> Left MsgPriceAlreadyInTheList
 
 
 getAdmServiceImageR :: ServiceId -> Handler TypedContent
@@ -256,7 +318,8 @@ getAdmServiceEditFormR (Services sids) = do
     
 getAdmServiceCreateFormR :: Services -> Handler Html
 getAdmServiceCreateFormR (Services sids) = do
-    scrollY <- fromMaybe "0" <$> runInputGet (iopt textField "scrollY")
+    scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
+    open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
     (widget,enctype) <- generateFormPost $ formService Nothing (LS.last sids)
     defaultLayout $ do
         setTitleI MsgService
@@ -265,8 +328,9 @@ getAdmServiceCreateFormR (Services sids) = do
 
 postAdmServicesR :: Services -> Handler Html
 postAdmServicesR (Services sids) = do
+    scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
+    open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
     ((fr,widget),enctype) <- runFormPost $ formService Nothing (LS.last sids)
-    scrollY <- fromMaybe "0" <$> runInputGet (iopt textField "scrollY")
     case fr of
       FormSuccess (s,mfi) -> do
           sid <- runDB $ insert s
@@ -280,7 +344,7 @@ postAdmServicesR (Services sids) = do
                                           }
             Nothing -> return ()
           redirect ( AdminR $ AdmServicesR (Services sids)
-                   , [("sid",pack $ show $ fromSqlKey sid),("scrollY",scrollY)]
+                   , catMaybes [Just ("sid",pack $ show $ fromSqlKey sid),scrollY,open]
                    )
       _ -> defaultLayout $ do
           setTitleI MsgService
@@ -289,7 +353,9 @@ postAdmServicesR (Services sids) = do
 
 getAdmServicesR :: Services -> Handler Html
 getAdmServicesR (Services sids) = do
+    open <- runInputGet (iopt textField "open")
     scrollY <- fromMaybe "0" <$> runInputGet (iopt textField "scrollY")
+    mpid <- (toSqlKey <$>) <$> runInputGet (iopt intField "pid")
     msid <- (toSqlKey <$>) <$> runInputGet (iopt intField "sid")
     muid <- maybeAuth
     service <- case sids of

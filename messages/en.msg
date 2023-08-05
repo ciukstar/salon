@@ -1,3 +1,6 @@
+PriceAlreadyInTheList: This price is already in the list
+Registration: Registration
+Authentication: Authentication
 NoPriceSetYet: No price has been set for the service
 AddPrice: Add price
 Pricelist: Pricelist

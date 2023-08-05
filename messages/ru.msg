@@ -1,3 +1,6 @@
+PriceAlreadyInTheList: Эта цена уже есть в списке
+Registration: Регистрация
+Authentication: Аутентификация
 NoPriceSetYet: Цена за услугу не установлена
 AddPrice: Добавить цену
 Pricelist: Прейскурант

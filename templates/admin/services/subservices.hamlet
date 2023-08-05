@@ -22,8 +22,9 @@
       <div.mdc-list-divider role=separator>
 
   <div.mdc-touch-target-wrapper #fabAddSubservice>
-    <a.mdc-fab.mdc-fab--extended.mdc-fab--touch href=@{AdminR $ AdmServiceCreateFormR (Services sids)}
-      onclick="this.href = `${this.href}?scrollY=${window.scrollY}`">
+    <a.mdc-fab.mdc-fab--extended.mdc-fab--touch
+      href=@?{(AdminR $ AdmServiceCreateFormR (Services sids),[("open","subservices")])}
+      onclick="this.href = `${this.href}&scrollY=${window.scrollY}`">
       <span.mdc-fab__ripple>
       <span.mdc-fab__focus-ring>
       <span.mdc-fab__icon.material-symbols-outlined>add

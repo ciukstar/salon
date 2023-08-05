@@ -2,18 +2,17 @@
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
       <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button
-        href="@{AdminR $ AdmServicesR (Services sids)}?scrollY=#{scrollY}&open=subservices">
+        href=@?{(AdminR $ AdmPriceR pid (Services sids),catMaybes [scrollY,open])}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
-      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgService}
-        
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgPrice}
 <main.mdc-top-app-bar--fixed-adjust>
   <form method=POST enctype=#{enctype} novalidate
-    action="@{AdminR $ AdmServiceR (Services sids)}?scrollY=#{scrollY}&open=subservices">
+    action=@?{(AdminR $ AdmPriceR pid (Services sids),catMaybes [scrollY,open])}>
     ^{widget}
     <div.actions>
-      <a.mdc-button href="@{AdminR $ AdmServicesR (Services sids)}?scrollY=#{scrollY}&open=subservices" role=button>
+      <a.mdc-button href=@?{(AdminR $ AdmPriceR pid (Services sids),catMaybes [scrollY,open])} role=button>
         <span.mdc-button__ripple>
         <span.mdc-button__focus-ring>
         <span.mdc-button__label>_{MsgCancel}
@@ -21,4 +20,3 @@
         <span.mdc-button__ripple>
         <span.mdc-button__focus-ring>
         <span.mdc-button__label>_{MsgSave}
-        

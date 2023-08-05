@@ -1,18 +1,7 @@
-
 main
-  padding: 0 1rem
-  display: flex
-  flex-direction: column
-  gap: 1rem
-  form
-    display: flex
-    flex-direction: column
-    gap: 1rem
-    div.form-field
-      display: flex
-      flex-direction: column
-    div.actions
-      display: flex
-      flex-direction: row
-      justify-content: flex-end
-      gap: 0.5rem
+  .mdc-data-table
+    width: 100%
+    border-left: none
+    border-right: none
+    table th
+      font-weight: 500

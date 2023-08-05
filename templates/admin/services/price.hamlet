@@ -1,22 +1,53 @@
 <header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=@{AdminR $ AdmServicesR (Services sids)}>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button 
+        href=@?{(AdminR $ AdmServicesR sids,catMaybes [scrollY,open,Just ("pid",pack $ show $ fromSqlKey pid)])}>
         <span.mdc-icon-button__ripple>
         <i.material-symbols-outlined>arrow_back
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgPrice}
-      
-  
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
+      <button.mdc-top-app-bar__action-item.mdc-icon-button type=button>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>delete
+      <a.mdc-top-app-bar__action-item.mdc-icon-button role=button
+        href=@?{(AdminR $ AdmPriceEditR pid sids,catMaybes [scrollY,open])}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>edit
+        
 <main.mdc-top-app-bar--fixed-adjust>
-  <form method=POST action=@{AdminR $ AdmPricelistR (Services sids)} enctype=#{enctype} novalidate>
-    ^{widget}
-    <div.actions>
-      <a.mdc-button href=@{AdminR $ AdmServicesR (Services sids)} role=button>
-        <span.mdc-button__ripple>
-        <span.mdc-button__focus-ring>
-        <span.mdc-button__label>_{MsgCancel}
-      <button.mdc-button.mdc-button--raised type=submit>
-        <span.mdc-button__ripple>
-        <span.mdc-button__focus-ring>
-        <span.mdc-button__label>_{MsgSave}
+  $maybe Entity _ (Pricelist _ name price prefix suffix descr) <- price
+    <div.mdc-data-table>
+      <div.mdc-data-table__table-container>
+        <table.mdc-data-table__table>
+          <tbody.mdc-data-table__content>
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgTheName}
+              <td.mdc-data-table__cell>#{name}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgPrice}
+              <td.mdc-data-table__cell>
+                $maybe prefix <- prefix
+                  #{prefix}
+                $with price <- show price
+                  <span.numeric-format data-value=#{price} data-minFracDigits=0 data-maxFracDigits=2>
+                    #{price}
+                $maybe suffix <- suffix
+                  #{suffix}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgDescription}
+              <td.mdc-data-table__cell>
+                $maybe descr <- descr
+                  #{descr}
 
+$forall (_,msg) <- msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
+    <div.mdc-snackbar__surface role=status aria-relevant=additions>
+      <div.mdc-snackbar__label aria-atomic=false>
+        #{msg}
+      <div.mdc-snackbar__actions aria-atomic=true>
+        <button.mdc-snackbar__dismiss.mdc-icon-button>
+          <span.mdc-icon-button__ripple>
+          <i.material-symbols-outlined>close

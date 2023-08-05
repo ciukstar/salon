@@ -67,6 +67,9 @@ import Admin.Services
     , getAdmServiceImageR
     , getAdmPricelistCreateR
     , postAdmPricelistR
+    , getAdmPriceR
+    , postAdmPriceR
+    , getAdmPriceEditR
     )
 import Handler.Common
     ( getFaviconR, getRobotsR, getPhotoPlaceholderR

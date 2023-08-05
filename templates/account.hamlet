@@ -4,6 +4,7 @@
       <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=#{ult}>
         <span.mdc-icon-button__ripple>
         <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgRegistration}
 
 <main.mdc-top-app-bar--fixed-adjust>
   <form method=POST action=@{AccountR} enctype=#{enctype} novalidate>

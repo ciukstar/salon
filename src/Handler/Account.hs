@@ -43,7 +43,7 @@ import Foundation
       ( MsgAccount, MsgCancel, MsgUsername, MsgPassword
       , MsgPhoto, MsgFullName, MsgEmail, MsgSignUp
       , MsgConfirmPassword, MsgYouMustEnterTwoValues
-      , MsgPasswordsDoNotMatch
+      , MsgPasswordsDoNotMatch, MsgRegistration
       )
     )
 

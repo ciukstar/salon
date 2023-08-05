@@ -1,0 +1,19 @@
+
+window.mdc.autoInit();
+
+Array.from(
+  document.querySelectorAll('span.numeric-format')
+).forEach(function (x) {
+  x.textContent = Number(x.dataset.value).toLocaleString(
+    navigator.language,
+    { minimumFractionDigits: x.dataset.minFracDigits,
+      maximumFractionDigits: x.dataset.maxFracDigits
+    }
+  );
+});
+
+Array.from(
+  document.querySelectorAll('aside.mdc-snackbar')
+).map(x => x.MDCSnackbar).forEach(function (x) {
+  x.open();
+});

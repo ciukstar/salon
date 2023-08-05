@@ -13,14 +13,16 @@
 / HomeR GET
 
 /admin AdminR:
-    /form/pricelist/+Services  AdmPricelistCreateR   GET
-    /pricelist/+Services       AdmPricelistR	     POST
-    /form/services/+Services   AdmServiceEditFormR   GET
-    /form/service/+Services    AdmServiceCreateFormR GET
-    /delete/services/+Services AdmServiceDeleteR     POST
-    /edit/services/+Services   AdmServiceR	     POST
-    /image/services/#ServiceId AdmServiceImageR	     GET
-    /services/+Services        AdmServicesR          GET POST
+    /form/pricelist/+Services          AdmPricelistCreateR   GET
+    /form/price/#PricelistId/+Services AdmPriceEditR   	     GET
+    /prices/#PricelistId/+Services     AdmPriceR	     GET POST
+    /pricelist/+Services       	       AdmPricelistR	     POST
+    /form/services/+Services   	       AdmServiceEditFormR   GET
+    /form/service/+Services    	       AdmServiceCreateFormR GET
+    /delete/services/+Services 	       AdmServiceDeleteR     POST
+    /edit/services/+Services   	       AdmServiceR	     POST
+    /image/services/#ServiceId 	       AdmServiceImageR	     GET
+    /services/+Services        	       AdmServicesR          GET POST
 
     /form/user UserCreateFormR GET
     /users     UsersR GET

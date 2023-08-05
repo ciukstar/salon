@@ -1,3 +1,6 @@
+PriceAlreadyInTheList: Acest preț este deja în listă
+Registration: Înregistrare
+Authentication: Autentificare
 NoPriceSetYet: Nu a fost stabilit niciun preț pentru serviciu
 AddPrice: Adaugă preț
 Pricelist: Lista de prețuri

@@ -5,6 +5,7 @@
         href=#{ult} role=button>
         <span.mdc-icon-button__ripple>
         <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgAuthentication}
 
 <main.mdc-top-app-bar--fixed-adjust>
 

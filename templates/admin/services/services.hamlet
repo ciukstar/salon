@@ -6,10 +6,11 @@
           <span.mdc-icon-button__ripple>
           <i.material-symbols-outlined>menu
       $else
-        <a.mdc-top-app-bar__navigation-icon.mdc-icon-button 
-          href="@{AdminR $ AdmServicesR (Services (init sids))}?sid=#{fromSqlKey $ last sids}&scrollY=#{scrollY}">
-          <span.mdc-icon-button__ripple>
-          <i.material-symbols-outlined>arrow_back
+        $with sid <- fromSqlKey $ last sids
+          <a.mdc-top-app-bar__navigation-icon.mdc-icon-button 
+            href="@{AdminR $ AdmServicesR (Services (init sids))}?sid=#{sid}&scrollY=#{scrollY}&open=subservices">
+            <span.mdc-icon-button__ripple>
+            <i.material-symbols-outlined>arrow_back
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
         $if null sids
           _{MsgServices}
@@ -34,8 +35,7 @@
                     <i.material-symbols-outlined style="margin-right:1rem">logout
                     <span.mdc-deprecated-list-item__text>_{MsgLogout}
         $nothing
-          <a.mdc-top-app-bar__action-item.mdc-icon-button role=button
-            href=@{AuthR LoginR}>
+          <a.mdc-top-app-bar__action-item.mdc-icon-button role=button href=@{AuthR LoginR}>
             <span.mdc-icon-button__ripple>
             <i.material-symbols-outlined>login
       $else
@@ -88,61 +88,69 @@
                 $maybe descr <- descr
                   #{descr}
 
-  
-  <details #detailsPricelist>
-    <summary style="list-style:none">
-      <ul.mdc-list data-mdc-auto-init=MDCList>
-        <li.mdc-list-item
-          .mdc-list-item--with-one-line
-          .mdc-list-item--with-trailing-icon>
-          <span.mdc-list-item__ripple>
-          <span.mdc-list-item__content>
-            <div.mdc-list-item__primary-text>
-              <div.label-with-badge>
-                <div.label>_{MsgPricelist}
-                <div.badge>#{length pricelist}
-          <span.mdc-list-item__end>
-            <i.material-symbols-outlined>expand_more
-
-    $if null pricelist
-      <figure>
-        <img src=@{StaticR img_spark_svg} height=80>
-        <figcaption>
-          _{MsgNoPriceSetYet}.
-    $else
-      <nav.mdc-list data-mdc-auto-init=MDCList>
-        $forall Entity _ (Pricelist _ name price prefix suffix _) <- pricelist
-          <a.mdc-list-item href=#
-            .mdc-list-item--activated
-            .mdc-list-item--with-two-lines.mdc-list-item--with-trailing-icon>
+  $if not (null sids)
+    <details #detailsPricelist :open == Just "pricelist":open>
+      <summary style="list-style:none">
+        <ul.mdc-list data-mdc-auto-init=MDCList>
+          <li.mdc-list-item :open == Just "pricelist":.mdc-list-item--activated
+            .mdc-list-item--with-one-line
+            .mdc-list-item--with-trailing-icon>
             <span.mdc-list-item__ripple>
             <span.mdc-list-item__content>
-              <div.mdc-list-item__primary-text>#{name}
-              <div.mdc-list-item__secondary-text>
-                $maybe prefix <- prefix
-                  #{prefix}
-                $with price <- show price
-                  <span.numeric-format data-value=#{price} data-minFracDigits=0 data-maxFracDigits=2>
-                    #{price}
-                $maybe suffix <- suffix
-                  #{suffix}
+              <div.mdc-list-item__primary-text>
+                <div.label-with-badge>
+                  <div.label>_{MsgPricelist}
+                  <div.badge>#{length pricelist}
             <span.mdc-list-item__end>
-              <i.material-symbols-outlined>arrow_forward_ios
-          <div.mdc-list-divider role=separator>
+              <i.material-symbols-outlined>
+                $if open == Just "pricelist"
+                  expand_less
+                $elseif open == Nothing
+                  expand_more
+                $else
+                  expand_more
 
-    <div.mdc-touch-target-wrapper #fabAddPrice>
-      <a.mdc-fab.mdc-fab--extended.mdc-fab--touch href=@{AdminR $ AdmPricelistCreateR (Services sids)}>
-        <span.mdc-fab__ripple>
-        <span.mdc-fab__focus-ring>
-        <span.mdc-fab__icon.material-symbols-outlined>add
-        <span.mdc-fab__label>_{MsgAddPrice}
-        <span.mdc-fab__touch>
+      $if null pricelist
+        <figure>
+          <img src=@{StaticR img_spark_svg} height=80>
+          <figcaption>
+            _{MsgNoPriceSetYet}.
+      $else
+        <nav.mdc-list data-mdc-auto-init=MDCList>
+          $forall Entity pid (Pricelist _ name price prefix suffix _) <- pricelist
+            <a.mdc-list-item href=@?{(AdminR $ AdmPriceR pid (Services sids),[("open","pricelist")])}
+              :Just pid == mpid:.mdc-list-item--activated
+              .mdc-list-item--with-two-lines.mdc-list-item--with-trailing-icon>
+              <span.mdc-list-item__ripple>
+              <span.mdc-list-item__content>
+                <div.mdc-list-item__primary-text>#{name}
+                <div.mdc-list-item__secondary-text>
+                  $maybe prefix <- prefix
+                    #{prefix}
+                  $with price <- show price
+                    <span.numeric-format data-value=#{price} data-minFracDigits=0 data-maxFracDigits=2>
+                      #{price}
+                  $maybe suffix <- suffix
+                    #{suffix}
+              <span.mdc-list-item__end>
+                <i.material-symbols-outlined>arrow_forward_ios
+            <div.mdc-list-divider role=separator>
+
+      <div.mdc-touch-target-wrapper #fabAddPrice>
+        <a.mdc-fab.mdc-fab--extended.mdc-fab--touch href=@{AdminR $ AdmPricelistCreateR (Services sids)}
+          onclick="this.href = `${this.href}?scrollY=${window.scrollY}&open=pricelist`">
+          <span.mdc-fab__ripple>
+          <span.mdc-fab__focus-ring>
+          <span.mdc-fab__icon.material-symbols-outlined>add
+          <span.mdc-fab__label>_{MsgAddPrice}
+          <span.mdc-fab__touch>
             
   $if not (null sids)
-    <details #detailsSubservices>
+    <details #detailsSubservices :open == Just "subservices":open>
       <summary style="list-style:none">
         <ul.mdc-list data-mdc-auto-init=MDCList>
           <li.mdc-list-item
+            :open == Just "subservices":.mdc-list-item--activated
             .mdc-list-item--with-one-line
             .mdc-list-item--with-trailing-icon>
             <span.mdc-list-item__ripple>
@@ -152,7 +160,13 @@
                   <div.label>_{MsgSubservices}
                   <div.badge>#{length services}
             <span.mdc-list-item__end>
-              <i.material-symbols-outlined>expand_more
+              <i.material-symbols-outlined>
+                $if open == Just "subservices"
+                  expand_less
+                $elseif open == Nothing
+                  expand_more
+                $else
+                  expand_more
             
       ^{subservices services sids msid}
   $else
