@@ -33,20 +33,19 @@
 <main.mdc-top-app-bar--prominent-fixed-adjust>
 
   <ul.mdc-list data-mdc-auto-init=MDCList>
-    $forall Entity cid (Service name _ _) <- categories
-      <details role=listitem #details#{fromSqlKey cid} data-id=#{fromSqlKey cid}>
+    $forall (Entity sid (Service name _ _), services) <- services
+      <details role=listitem #details#{fromSqlKey sid} data-id=#{fromSqlKey sid}>
         <summary.mdc-list-item
           .mdc-list-item--with-one-line
           .mdc-list-item--with-leading-image
           .mdc-list-item--with-trailing-icon>
           <span.mdc-list-item__ripple>
           <span.mdc-list-item__start>
-            <img src=@{StaticR img_photo_FILL0_wght400_GRAD0_opsz48_svg} height=56 width=56 alt=_{MsgThumbnail} 
-              onerror="this.src = '@{StaticR img_photo_FILL0_wght400_GRAD0_opsz48_svg}'">
+            <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail}>
           <span.mdc-list-item__content>
             <div.mdc-list-item__primary-text>#{name}
           <span.mdc-list-item__end>
-            <i.material-symbols-outlined #iconExpand#{fromSqlKey cid}>expand_more
+            <i.material-symbols-outlined #iconExpand#{fromSqlKey sid}>expand_more
         
         <ul.mdc-list data-mdc-auto-init=MDCList>
           $forall Entity sid (Service name _ _) <- services
@@ -56,6 +55,7 @@
               .mdc-list-item--with-trailing-icon>
               <span.mdc-list-item__ripple>
               <span.mdc-list-item__start>
+                <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail}>
               <span.mdc-list-item__content>
                 <div.mdc-list-item__primary-text>#{name}
                 <div.mdc-list-item__secondary-text>

@@ -2,6 +2,7 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE TupleSections #-}
 
 module Handler.Services
   ( getServicesR
@@ -14,7 +15,7 @@ import Data.Text.Encoding (encodeUtf8)
 import Yesod.Core
     ( Yesod(defaultLayout), setTitleI, setUltDestCurrent
     , getMessages
-    , TypedContent (TypedContent), notFound, ToContent (toContent)
+    , TypedContent (TypedContent), ToContent (toContent), typeSvg
     )
 import Yesod.Auth (Route (LoginR, LogoutR), maybeAuth)
 import Settings (widgetFile)
@@ -23,7 +24,7 @@ import Foundation
     ( Handler
     , Route
       ( AuthR, AccountPhotoR, PhotoPlaceholderR, ServicesR
-      , ServiceR, StaticR
+      , ServiceR, StaticR, ServiceThumbnailR
       )
     , AppMessage
       ( MsgServices, MsgPhoto, MsgService
@@ -41,7 +42,7 @@ import Database.Persist.Sql (fromSqlKey)
 import Database.Esqueleto.Experimental
     (selectOne, from, table, orderBy, asc
     , (^.), (==.)
-    , where_, val, select, isNothing, not_
+    , where_, val, select, isNothing, just
     )
     
 import Model
@@ -52,8 +53,9 @@ import Model
 
 import Settings.StaticFiles
     ( img_spark_svg
-    , img_photo_FILL0_wght400_GRAD0_opsz48_svg
     )
+import Control.Monad (forM)
+import Data.FileEmbed (embedFile)
 
 
 getServiceR :: ServiceId -> Handler Html
@@ -74,11 +76,13 @@ getServicesR = do
         where_ $ isNothing $ x ^. ServiceGroup
         orderBy [asc (x ^. ServiceId)]
         return x
-    services <- runDB $ select $ do
+        
+    services <- forM categories $ \e@(Entity sid _) -> (e,) <$> runDB ( select $ do
         x <- from $ table @Service
-        where_ $ not_ $ isNothing $ x ^. ServiceGroup
+        where_ $ x ^. ServiceGroup ==. just (val sid)
         orderBy [asc (x ^. ServiceId)]
-        return x
+        return x )
+        
     muid <- maybeAuth
     msgs <- getMessages
     setUltDestCurrent
@@ -93,7 +97,7 @@ getServiceThumbnailR sid = do
        x <- from $ table @Thumbnail
        where_ $ x ^. ThumbnailService ==. val sid
        return x
-    case img of
-      Just (Entity _ (Thumbnail _ photo mime)) -> return $ TypedContent (encodeUtf8 mime) $ toContent photo
-      Nothing -> notFound
+    return $ case img of
+      Just (Entity _ (Thumbnail _ photo mime)) -> TypedContent (encodeUtf8 mime) $ toContent photo
+      Nothing -> TypedContent typeSvg $ toContent $(embedFile "static/img/photo_FILL0_wght400_GRAD0_opsz48.svg")
 
