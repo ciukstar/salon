@@ -7,7 +7,7 @@
         <i.material-symbols-outlined>arrow_back
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgPrice}
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
-      <button.mdc-top-app-bar__action-item.mdc-icon-button type=button>
+      <button.mdc-top-app-bar__action-item.mdc-icon-button type=button #buttonDeletePrice>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>delete
@@ -16,6 +16,23 @@
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>edit
+
+  <div.mdc-dialog #dialogDeletePrice data-mdc-auto-init=MDCDialog>
+    <div.mdc-dialog__container>
+      <div.mdc-dialog__surface role=alertdialog aria-modal=true tabindex=-1>
+        <h4.mdc-dialog__title>_{MsgPleaseConfirm}
+        <div.mdc-dialog__content>_{MsgDeleteAreYouSure}
+        <div.mdc-dialog__actions>
+          <button.mdc-button type=button #buttonCancelPriceDelete>
+            <span.mdc-button__ripple>
+            <span.mdc-button__focus-ring>
+            <span.mdc-button__label>_{MsgCancel}
+          <form method=POST action=@?{(AdminR $ AdmPriceDeleteR pid sids,catMaybes [scrollY,open])}>
+            <button.mdc-button.mdc-button--raised type=submit>
+              <span.mdc-button__ripple>
+              <span.mdc-button__focus-ring>
+              <span.mdc-button__label>_{MsgYesDelete}
+    <div.mdc-dialog__scrim>
         
 <main.mdc-top-app-bar--fixed-adjust>
   $maybe Entity _ (Pricelist _ name price prefix suffix descr) <- price

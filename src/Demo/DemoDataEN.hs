@@ -289,6 +289,22 @@ populateEN = do
                             , serviceGroup = Just s2
                             }
 
+    insert_ $ Pricelist { pricelistService = s22
+                        , pricelistName = "Price"
+                        , pricelistPrice = 75
+                        , pricelistPrefix = Just "$"
+                        , pricelistSuffix = Nothing
+                        , pricelistDescr = Nothing
+                        }
+
+    insert_ $ Pricelist { pricelistService = s22
+                        , pricelistName = "Package"
+                        , pricelistPrice = 350
+                        , pricelistPrefix = Just "$"
+                        , pricelistSuffix = Just "/5 sessions"
+                        , pricelistDescr = Nothing
+                        }
+
     s23 <- insert $ Service { serviceName = "Pampering Facial (90 min)"
                             , serviceDescr = Just "A hydrating clinical treatment, creating a cooling effect on the skin to revitalize, moisturize, and soothe. Its thermo-cooling effect on the skin makes it a remarkable revitalizing treatment particularly for reducing redness. ALGOMASK+ offers instant radiance and long-lasting hydration."
                             , serviceGroup = Just s2

@@ -1,3 +1,8 @@
+header.mdc-top-app-bar
+  div.mdc-dialog
+    div.mdc-dialog__actions
+      gap: 0.5rem
+
 main
   .mdc-data-table
     width: 100%

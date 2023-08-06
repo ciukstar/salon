@@ -1,20 +1,13 @@
 <header.mdc-top-app-bar.mdc-top-app-bar--fixed mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=@{ServicesR} role=button>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button
+        href=@?{(ServicesR sids,catMaybes [open,scrollY,Just ("sid",pack $ show $ fromSqlKey sid)])}>
         <span.mdc-icon-button__ripple>
         <spam.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
-    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
-      <a.mdc-top-app-bar__action-item.mdc-icon-button href=#>
-        <span.mdc-icon-button__ripple>
-        <spam.mdc-icon-button__focus-ring>
-        <i.material-symbols-outlined>delete
-      <a.mdc-top-app-bar__action-item.mdc-icon-button href=#>
-        <span.mdc-icon-button__ripple>
-        <spam.mdc-icon-button__focus-ring>
-        <i.material-symbols-outlined>edit
-        
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgService}
+
 <main.mdc-top-app-bar--fixed-adjust>
   $maybe Entity _ (Service name descr _) <- service
     <div>#{name}

@@ -10,14 +10,20 @@ module Handler.Services
   , getServiceR
   ) where
 
+import Control.Monad (forM)
+import Data.Maybe (catMaybes, fromMaybe)
+import Data.FileEmbed (embedFile)
+import Data.Text (pack)
 import Text.Hamlet (Html)
 import Data.Text.Encoding (encodeUtf8)
 import Yesod.Core
     ( Yesod(defaultLayout), setTitleI, setUltDestCurrent
-    , getMessages
-    , TypedContent (TypedContent), ToContent (toContent), typeSvg
+    , getMessages, typeSvg
+    , TypedContent (TypedContent), ToContent (toContent)
     )
 import Yesod.Auth (Route (LoginR, LogoutR), maybeAuth)
+import Yesod.Form.Input (iopt, runInputGet)
+import Yesod.Form.Fields (textField, intField)
 import Settings (widgetFile)
 
 import Foundation
@@ -38,7 +44,7 @@ import Yesod.Persist.Core (runDB)
 import Database.Persist
     ( Entity (Entity)
     )
-import Database.Persist.Sql (fromSqlKey)
+import Database.Persist.Sql (fromSqlKey, toSqlKey)
 import Database.Esqueleto.Experimental
     (selectOne, from, table, orderBy, asc
     , (^.), (==.)
@@ -47,19 +53,19 @@ import Database.Esqueleto.Experimental
     
 import Model
     ( Service(Service), ServiceId
-    , EntityField (ServiceId, ThumbnailService, ServiceGroup)
-    , Thumbnail (Thumbnail)
+    , EntityField (ServiceId, ThumbnailService, ServiceGroup, PricelistService, PricelistId)
+    , Thumbnail (Thumbnail), Pricelist (Pricelist), Services (Services)
     )
 
 import Settings.StaticFiles
     ( img_spark_svg
     )
-import Control.Monad (forM)
-import Data.FileEmbed (embedFile)
 
 
-getServiceR :: ServiceId -> Handler Html
-getServiceR sid = do
+getServiceR :: ServiceId -> Services -> Handler Html
+getServiceR sid sids = do
+    open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
+    scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
     service <- runDB $ selectOne $ do
         x <- from $ table @Service
         where_ $ x ^. ServiceId ==. val sid
@@ -69,8 +75,11 @@ getServiceR sid = do
         $(widgetFile "services/service")
 
 
-getServicesR :: Handler Html
-getServicesR = do
+getServicesR :: Services -> Handler Html
+getServicesR (Services sids) = do
+    open <- runInputGet (iopt textField "open")
+    scrollY <- runInputGet (iopt textField "scrollY")
+    msid <- (toSqlKey <$>) <$> runInputGet (iopt intField "sid")
     categories <- runDB $ select $ do
         x <- from $ table @Service
         where_ $ isNothing $ x ^. ServiceGroup
@@ -82,6 +91,12 @@ getServicesR = do
         where_ $ x ^. ServiceGroup ==. just (val sid)
         orderBy [asc (x ^. ServiceId)]
         return x )
+
+    pricelist <- forM services $ \(g, ss) -> (g,) <$> forM ss ( \s@(Entity sid _) -> (s,) <$> runDB ( select $ do
+        x <- from $ table @Pricelist
+        where_ $ x ^. PricelistService ==. val sid
+        orderBy [asc (x ^. PricelistId)]
+        return x ) )
         
     muid <- maybeAuth
     msgs <- getMessages

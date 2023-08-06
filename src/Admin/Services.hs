@@ -18,6 +18,7 @@ module Admin.Services
   , getAdmPriceR
   , postAdmPriceR
   , getAdmPriceEditR
+  , postAdmPriceDeleteR
   ) where
 
 import Control.Applicative ((<|>))
@@ -55,7 +56,8 @@ import Foundation
     , Route (StaticR, AuthR, PhotoPlaceholderR, AdminR, AccountPhotoR, ServiceThumbnailR)
     , AdminR
       ( AdmServiceCreateFormR, AdmServiceEditFormR, AdmServicesR, AdmServiceR
-      , AdmServiceDeleteR, AdmServiceImageR, AdmPricelistCreateR, AdmPricelistR, AdmPriceR, AdmPriceEditR
+      , AdmServiceDeleteR, AdmServiceImageR, AdmPricelistCreateR, AdmPricelistR
+      , AdmPriceR, AdmPriceEditR, AdmPriceDeleteR
       )
     , AppMessage
       ( MsgServices, MsgPhoto, MsgLogout, MsgTheName
@@ -97,6 +99,15 @@ import Database.Esqueleto.Experimental
     , (^.), (==.)
     , isNothing, select, orderBy, asc, just
     )
+
+
+postAdmPriceDeleteR :: PricelistId -> Services -> Handler Html
+postAdmPriceDeleteR pid sids = do
+    scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
+    open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
+    runDB $ delete pid
+    addMessageI "info" MsgRecordDeleted
+    redirect (AdminR $ AdmServicesR sids,catMaybes [scrollY,open])
 
 
 getAdmPriceEditR :: PricelistId -> Services -> Handler Html

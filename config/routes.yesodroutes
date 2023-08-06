@@ -3,9 +3,9 @@
 
 /about AboutR GET
 
-/services/#ServiceId/thumbnail ServiceThumbnailR  GET
-/services/#ServiceId 	       ServiceR		  GET
-/services 		       ServicesR	  GET
+/thumbnail/#ServiceId      ServiceThumbnailR GET
+/info/services/#ServiceId/+Services  ServiceR	     GET
+/services/+Services   	   ServicesR	     GET
 
 /account/#UserId/photo AccountPhotoR GET
 /account               AccountR GET POST
@@ -13,16 +13,17 @@
 / HomeR GET
 
 /admin AdminR:
-    /form/pricelist/+Services          AdmPricelistCreateR   GET
-    /form/price/#PricelistId/+Services AdmPriceEditR   	     GET
-    /prices/#PricelistId/+Services     AdmPriceR	     GET POST
-    /pricelist/+Services       	       AdmPricelistR	     POST
-    /form/services/+Services   	       AdmServiceEditFormR   GET
-    /form/service/+Services    	       AdmServiceCreateFormR GET
-    /delete/services/+Services 	       AdmServiceDeleteR     POST
-    /edit/services/+Services   	       AdmServiceR	     POST
-    /image/services/#ServiceId 	       AdmServiceImageR	     GET
-    /services/+Services        	       AdmServicesR          GET POST
+    /form/pricelist/+Services             AdmPricelistCreateR   GET
+    /form/price/#PricelistId/+Services    AdmPriceEditR   	GET
+    /delete/prices/#PricelistId/+Services AdmPriceDeleteR	POST
+    /prices/#PricelistId/+Services        AdmPriceR	        GET POST
+    /pricelist/+Services       	       	  AdmPricelistR	        POST
+    /form/services/+Services   	       	  AdmServiceEditFormR   GET
+    /form/service/+Services    	          AdmServiceCreateFormR GET
+    /delete/services/+Services 	       	  AdmServiceDeleteR     POST
+    /edit/services/+Services   	       	  AdmServiceR	     	POST
+    /image/services/#ServiceId 	       	  AdmServiceImageR	GET
+    /services/+Services        	       	  AdmServicesR          GET POST
 
     /form/user UserCreateFormR GET
     /users     UsersR GET

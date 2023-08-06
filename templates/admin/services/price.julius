@@ -12,6 +12,14 @@ Array.from(
   );
 });
 
+document.getElementById('buttonDeletePrice').addEventListener('click',function (e) {
+  document.getElementById('dialogDeletePrice').MDCDialog.open();
+});
+
+document.getElementById('buttonCancelPriceDelete').addEventListener('click',function (e) {
+  document.getElementById('dialogDeletePrice').MDCDialog.close();
+});
+
 Array.from(
   document.querySelectorAll('aside.mdc-snackbar')
 ).map(x => x.MDCSnackbar).forEach(function (x) {
