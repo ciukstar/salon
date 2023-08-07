@@ -8,6 +8,9 @@
         _{MsgServices}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
+      <button.mdc-top-app-bar__action-item.mdc-icon-button type=button>
+        <span.mdc-icon-button__ripple>
+        <i.material-symbols-outlined>search
       $maybe Entity uid _ <- muid
         <button.mdc-top-app-bar__action-item.mdc-icon-button type=button #buttonProfile>
           <span.mdc-icon-button__ripple>
@@ -33,52 +36,90 @@
 <main.mdc-top-app-bar--prominent-fixed-adjust>
 
   <ul.mdc-list data-mdc-auto-init=MDCList>
-    $forall (Entity cid (Service name _ _), services) <- pricelist
+    $forall ((Entity cid (Service name descr _),pricelist), Srvs services) <- pricelist
       $with gid <- pack $ show $ fromSqlKey cid
-        <details role=listitem #details#{gid} data-id=#{gid} :Just gid == open:open>
-          <summary.mdc-list-item
-            .mdc-list-item--with-one-line
-            .mdc-list-item--with-leading-image
-            .mdc-list-item--with-trailing-icon>
-            <span.mdc-list-item__ripple>
-            <span.mdc-list-item__start>
-              <img src=@{ServiceThumbnailR cid} height=56 width=56 alt=_{MsgThumbnail}>
-            <span.mdc-list-item__content>
-              <div.mdc-list-item__primary-text>#{name}
-            <span.mdc-list-item__end>
-              <i.material-symbols-outlined #iconExpand#{gid}>expand_more
-
-          <ul.mdc-list data-mdc-auto-init=MDCList>
-            $forall (Entity sid (Service name _ _),pricelist) <- services
-              $with l <- length pricelist
-                <a.mdc-list-item href=@?{(ServiceR sid (Services sids),[("open",gid)])}
-                  :l == 0:.mdc-list-item--with-one-line
-                  :l == 1:.mdc-list-item--with-two-lines
-                  :l >= 2:.mdc-list-item--with-three-lines
-                  :msid == Just sid:.mdc-list-item--activated
-                  .mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon
-                  onclick="this.href = `${this.href}&scrollY=${window.scrollY}`">
+        $if (length services) < 1
+          $with l <- length pricelist
+            <a.mdc-list-item href=@?{(ServiceR cid (Services sids),[("open",gid)])}
+              :l == 0:.mdc-list-item--with-one-line
+              :l == 1:.mdc-list-item--with-two-lines
+              :l >= 2:.mdc-list-item--with-three-lines
+              :msid == Just cid:.mdc-list-item--activated
+              .mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon
+              onclick="this.href = `${this.href}&scrollY=${window.scrollY}`">
+              <span.mdc-list-item__ripple>
+              <span.mdc-list-item__start>
+                <img src=@{ServiceThumbnailR cid} height=56 width=56 alt=_{MsgThumbnail}>
+              <span.mdc-list-item__content>
+                <div.mdc-list-item__primary-text>
+                  #{name}
+                $forall Entity _ (Pricelist _ name price prefix suffix _) <- take 2 pricelist
+                  <div.mdc-list-item__secondary-text>
+                    #{name}:&nbsp;
+                    $maybe prefix <- prefix
+                      #{prefix}
+                    $with price <- show price
+                      <span.numeric-format data-value=#{price} data-minFracDigits=0 data-maxFracDigits=2>
+                        #{price}
+                    $maybe suffix <- suffix
+                      #{suffix}
+              <span.mdc-list-item__end>
+                <i.material-symbols-outlined>arrow_forward_ios
+          
+        $else
+          <details role=listitem #details#{gid} data-id=#{gid} :Just gid == open:open>
+            <summary.mdc-list-item
+              .mdc-list-item--with-one-line
+              .mdc-list-item--with-leading-image
+              .mdc-list-item--with-trailing-icon>
+              <span.mdc-list-item__ripple>
+              <span.mdc-list-item__start>
+                <img src=@{ServiceThumbnailR cid} height=56 width=56 alt=_{MsgThumbnail}>
+              <span.mdc-list-item__content>
+                <div.mdc-list-item__primary-text>#{name}
+              <span.mdc-list-item__end>
+                <i.material-symbols-outlined #iconExpand#{gid}>expand_more
+            
+            <ul.mdc-list data-mdc-auto-init=MDCList>
+              $maybe descr <- descr
+                <a.mdc-list-item href=@?{(ServiceR cid (Services sids),[("open",gid)])}
+                  .mdc-list-item--with-one-line
+                  .mdc-list-item--with-trailing-icon>
                   <span.mdc-list-item__ripple>
-                  <span.mdc-list-item__start>
-                    <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail}>
                   <span.mdc-list-item__content>
-                    <div.mdc-list-item__primary-text>
-                      #{name}
-                    $forall Entity _ (Pricelist _ name price prefix suffix _) <- take 2 pricelist
-                      <div.mdc-list-item__secondary-text>
-                        #{name}:&nbsp;
-                        $maybe prefix <- prefix
-                          #{prefix}
-                        $with price <- show price
-                          <span.numeric-format data-value=#{price} data-minFracDigits=0 data-maxFracDigits=2>
-                            #{price}
-                        $maybe suffix <- suffix
-                          #{suffix}
+                    <div.mdc-list-item__primary-text>#{descr}
                   <span.mdc-list-item__end>
-                    <i.material-symbols-outlined>arrow_forward_ios
-      <li.mdc-list-divider role=separator>
+                    <i.material-symbols-outlined #iconExpand#{gid}>info
+              $forall ((Entity sid (Service name _ _),pricelist),Srvs subserices) <- services
+                $with l <- length pricelist
+                  <a.mdc-list-item href=@?{(ServiceR sid (Services sids),[("open",gid)])}
+                    :l == 0:.mdc-list-item--with-one-line
+                    :l == 1:.mdc-list-item--with-two-lines
+                    :l >= 2:.mdc-list-item--with-three-lines
+                    :msid == Just sid:.mdc-list-item--activated
+                    .mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon
+                    onclick="this.href = `${this.href}&scrollY=${window.scrollY}`">
+                    <span.mdc-list-item__ripple>
+                    <span.mdc-list-item__start>
+                      <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail}>
+                    <span.mdc-list-item__content>
+                      <div.mdc-list-item__primary-text>
+                        #{name}: #{length subserices}
+                      $forall Entity _ (Pricelist _ name price prefix suffix _) <- take 2 pricelist
+                        <div.mdc-list-item__secondary-text>
+                          #{name}:&nbsp;
+                          $maybe prefix <- prefix
+                            #{prefix}
+                          $with price <- show price
+                            <span.numeric-format data-value=#{price} data-minFracDigits=0 data-maxFracDigits=2>
+                              #{price}
+                          $maybe suffix <- suffix
+                            #{suffix}
+                    <span.mdc-list-item__end>
+                      <i.material-symbols-outlined>arrow_forward_ios
+        <li.mdc-list-divider role=separator>
 
-  $if null services
+  $if null pricelist
     <figure style="display:flex;flex-direction:column;align-items:center">
       <img src=@{StaticR img_spark_svg}>
       <figcaption>

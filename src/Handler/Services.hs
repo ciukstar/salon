@@ -18,12 +18,12 @@ import Text.Hamlet (Html)
 import Data.Text.Encoding (encodeUtf8)
 import Yesod.Core
     ( Yesod(defaultLayout), setTitleI, setUltDestCurrent
-    , getMessages, typeSvg
+    , getMessages, typeSvg, preEscapedToMarkup
     , TypedContent (TypedContent), ToContent (toContent)
     )
 import Yesod.Auth (Route (LoginR, LogoutR), maybeAuth)
 import Yesod.Form.Input (iopt, runInputGet)
-import Yesod.Form.Fields (textField, intField)
+import Yesod.Form.Fields (textField, intField, unTextarea)
 import Settings (widgetFile)
 
 import Foundation
@@ -60,6 +60,7 @@ import Model
 import Settings.StaticFiles
     ( img_spark_svg
     )
+import qualified Data.List.Safe as LS
 
 
 getServiceR :: ServiceId -> Services -> Handler Html
@@ -70,6 +71,13 @@ getServiceR sid sids = do
         x <- from $ table @Service
         where_ $ x ^. ServiceId ==. val sid
         return x
+
+    pricelist <- runDB $ select $ do
+        x <- from $ table @Pricelist
+        where_ $ x ^. PricelistService ==. val sid
+        orderBy [asc (x ^. PricelistId)]
+        return x
+    
     defaultLayout $ do
         setTitleI MsgService
         $(widgetFile "services/service")
@@ -80,30 +88,35 @@ getServicesR (Services sids) = do
     open <- runInputGet (iopt textField "open")
     scrollY <- runInputGet (iopt textField "scrollY")
     msid <- (toSqlKey <$>) <$> runInputGet (iopt intField "sid")
-    categories <- runDB $ select $ do
-        x <- from $ table @Service
-        where_ $ isNothing $ x ^. ServiceGroup
-        orderBy [asc (x ^. ServiceId)]
-        return x
-        
-    services <- forM categories $ \e@(Entity sid _) -> (e,) <$> runDB ( select $ do
-        x <- from $ table @Service
-        where_ $ x ^. ServiceGroup ==. just (val sid)
-        orderBy [asc (x ^. ServiceId)]
-        return x )
-
-    pricelist <- forM services $ \(g, ss) -> (g,) <$> forM ss ( \s@(Entity sid _) -> (s,) <$> runDB ( select $ do
-        x <- from $ table @Pricelist
-        where_ $ x ^. PricelistService ==. val sid
-        orderBy [asc (x ^. PricelistId)]
-        return x ) )
-        
+    Srvs pricelist <- fetchServices (LS.last sids)
     muid <- maybeAuth
     msgs <- getMessages
     setUltDestCurrent
     defaultLayout $ do
         setTitleI MsgServices
         $(widgetFile "services/services")
+
+
+newtype Srvs = Srvs [((Entity Service, [Entity Pricelist]), Srvs)]
+
+
+fetchServices :: Maybe ServiceId -> Handler Srvs
+fetchServices gid = do
+    categories <- runDB $ select $ do
+        x <- from $ table @Service
+        case gid of
+          Nothing -> where_ $ isNothing $ x ^. ServiceGroup
+          Just sid -> where_ $ x ^. ServiceGroup ==. just (val sid)
+        orderBy [asc (x ^. ServiceId)]
+        return x
+
+    groups <- forM categories $ \e@(Entity sid _) -> (e,) <$> runDB ( select $ do
+        x <- from $ table @Pricelist
+        where_ $ x ^. PricelistService ==. val sid
+        orderBy [asc (x ^. PricelistId)]
+        return x )
+
+    Srvs <$> forM groups ( \g@(Entity sid _,_) -> (g,) <$> fetchServices (Just sid) )
 
 
 getServiceThumbnailR :: ServiceId -> Handler TypedContent

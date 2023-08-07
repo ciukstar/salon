@@ -312,9 +312,59 @@ populateEN = do
 
     insert_ $ Pricelist { pricelistService = s23
                         , pricelistName = "Price"
-                        , pricelistPrice = 75
+                        , pricelistPrice = 90
                         , pricelistPrefix = Just "$"
-                        , pricelistSuffix = Just " & up"
+                        , pricelistSuffix = Nothing
+                        , pricelistDescr = Nothing
+                        }
+
+    insert_ $ Pricelist { pricelistService = s23
+                        , pricelistName = "Package"
+                        , pricelistPrice = 400
+                        , pricelistPrefix = Just "$"
+                        , pricelistSuffix = Just "/5 sessions"
+                        , pricelistDescr = Nothing
+                        }
+
+    s24 <- insert $ Service { serviceName = "Acne Treatment (120 min)"
+                            , serviceDescr = Just "It is a very innovative and effective way of treating acne conditions that have not responded to other treatments and has produced many remarkable results. Urea peroxide, alpha-hydroxyl acids, and a special anti-androgen element are incorporated in Rejuvi Normalizing Formula."
+                            , serviceGroup = Just s2
+                            }
+
+    insert_ $ Pricelist { pricelistService = s24
+                        , pricelistName = "Price"
+                        , pricelistPrice = 95
+                        , pricelistPrefix = Just "$"
+                        , pricelistSuffix = Nothing
+                        , pricelistDescr = Nothing
+                        }
+
+    insert_ $ Pricelist { pricelistService = s24
+                        , pricelistName = "Package"
+                        , pricelistPrice = 600
+                        , pricelistPrefix = Just "$"
+                        , pricelistSuffix = Just "/7 sessions"
+                        , pricelistDescr = Nothing
+                        }
+
+    s25 <- insert $ Service { serviceName = "24k Gold Whitening Treatment"
+                            , serviceDescr = Just "<p>A luxurious age defying facial treatment. This hydrating active age defying formula combines the power of pure vitamins, plant extracts and 24k gold. These ingredients effectively assist in the stimulation of collagen manufacturing. They form a continuous protective barrier to mimic the effects of surgery.</p><p>The mask fits like a “second skin” and perfectly adapts to the contours of the face. It delivers maximum hydration, fortifies the skin’s natural protective barrier, and rejuvenate your sensitive skin to reduce signs of aging.</p>"
+                            , serviceGroup = Just s2
+                            }
+
+    insert_ $ Pricelist { pricelistService = s25
+                        , pricelistName = "Price"
+                        , pricelistPrice = 100
+                        , pricelistPrefix = Just "$"
+                        , pricelistSuffix = Nothing
+                        , pricelistDescr = Nothing
+                        }
+
+    insert_ $ Pricelist { pricelistService = s25
+                        , pricelistName = "Package"
+                        , pricelistPrice = 460
+                        , pricelistPrefix = Just "$"
+                        , pricelistSuffix = Just "/5 sessions"
                         , pricelistDescr = Nothing
                         }
 
