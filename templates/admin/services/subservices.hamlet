@@ -6,7 +6,7 @@
       <figcaption>
         _{MsgNoServicesYet}.
   $else
-    $forall Entity sid (Service name _ _) <- services
+    $forall Entity sid (Service name _ _ _) <- services
       <a.mdc-list-item href=@{AdminR $ AdmServicesR $ Services (sids ++ [sid])}
         :Just sid == msid:.mdc-list-item--activated
         .mdc-list-item--with-one-line.mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon

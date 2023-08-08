@@ -16,6 +16,7 @@ Pricelist
 
 Service
   name Text
+  overview Text Maybe
   descr Textarea Maybe
   group ServiceId Maybe OnDeleteCascade
   UniqueService name

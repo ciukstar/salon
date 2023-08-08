@@ -35,7 +35,7 @@
     <figure>
       <img src=@{StaticR img_salon_svg} #intro>
       <figcaption>_{MsgSalon}
-    <a.mdc-button href=@{ServicesR (Services [])}>
+    <a.mdc-button href=@{ServicesR}>
       <span.mdc-button__ripple>
       <span.mdc-button__label>_{MsgServices}
     <a.mdc-button href=@{AboutR}>

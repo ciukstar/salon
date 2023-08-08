@@ -1,3 +1,4 @@
+Overview: Prezentare generală
 PriceAlreadyInTheList: Acest preț este deja în listă
 Registration: Înregistrare
 Authentication: Autentificare

@@ -1,7 +1,8 @@
+
 window.scroll(0,#{fromMaybe "0" scrollY});
 window.mdc.autoInit();
 
-Array.from(
+Array.from (
   document.querySelectorAll('span.numeric-format')
 ).forEach(function (x) {
   x.textContent = Number(x.dataset.value).toLocaleString(
@@ -21,6 +22,17 @@ window.onscroll = function (e) {
 }
 
 Array.from(
+  document.querySelectorAll('ul.mdc-list a.mdc-list-item')
+).forEach(function (x) {
+  x.addEventListener('click',function (e) {
+    x.href = [new window.URL(x.href)].map(x => {
+      x.searchParams.append('scrollY',window.scrollY);
+      return x;
+    })[0].href;
+  });
+});
+
+Array.from(
   document.querySelectorAll('details')
 ).forEach(function (x) {
   x.addEventListener('toggle',function (e) {
@@ -30,17 +42,6 @@ Array.from(
       document.getElementById(`iconExpand${x.dataset.id}`).textContent = 'expand_more';
     }
   });
-});
-
-Array.from (
-  document.querySelectorAll('span.numeric-format')
-).forEach(function (x) {
-  x.textContent = Number(x.dataset.value).toLocaleString(
-    navigator.language,
-    { minimumFractionDigits: x.dataset.minFracDigits,
-      maximumFractionDigits: x.dataset.maxFracDigits
-    }
-  );
 });
 
 Array.from(

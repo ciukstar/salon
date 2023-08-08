@@ -1,3 +1,4 @@
+Overview: Overview
 PriceAlreadyInTheList: This price is already in the list
 Registration: Registration
 Authentication: Authentication

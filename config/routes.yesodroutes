@@ -3,9 +3,9 @@
 
 /about AboutR GET
 
-/thumbnail/#ServiceId      ServiceThumbnailR GET
-/info/services/#ServiceId/+Services  ServiceR	     GET
-/services/+Services   	   ServicesR	     GET
+/thumbnail/#ServiceId    ServiceThumbnailR GET
+/info/services/+Services ServiceR	   GET
+/services   	 	 ServicesR	   GET
 
 /account/#UserId/photo AccountPhotoR GET
 /account               AccountR GET POST

@@ -66,7 +66,7 @@ import Foundation
       , MsgSubservices, MsgAddService, MsgAddSubservice, MsgNoServicesYet
       , MsgDeleteAreYouSure, MsgYesDelete, MsgPleaseConfirm, MsgRecordDeleted
       , MsgPrefix, MsgSuffix, MsgServisAlreadyInTheList, MsgPricelist, MsgAddPrice
-      , MsgNoPriceSetYet, MsgPriceAlreadyInTheList
+      , MsgNoPriceSetYet, MsgPriceAlreadyInTheList, MsgOverview
       )
     )
 
@@ -77,7 +77,7 @@ import Database.Persist
 import Model
     ( ServiceId
     , Service
-      ( Service, serviceName, serviceDescr, serviceGroup
+      ( Service, serviceName, serviceDescr, serviceGroup, serviceOverview
       )
     , Thumbnail (Thumbnail, thumbnailService, thumbnailPhoto, thumbnailMime)
     , Services (Services)
@@ -408,6 +408,11 @@ formService service group extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (serviceName . entityVal <$> service)
+    (overviewR,overviewV) <- mopt textField FieldSettings
+        { fsLabel = SomeMessage MsgOverview
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (serviceOverview . entityVal <$> service)
     (descrR,descrV) <- mopt textareaField FieldSettings
         { fsLabel = SomeMessage MsgDescription
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
@@ -426,6 +431,7 @@ formService service group extra = do
     let r = (,)
             <$> ( Service
                   <$> nameR
+                  <*> overviewR
                   <*> descrR
                   <*> ((toSqlKey <$>) <$> groupR)
                 )

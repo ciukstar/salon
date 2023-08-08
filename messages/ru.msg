@@ -1,3 +1,4 @@
+Overview: Обзор
 PriceAlreadyInTheList: Эта цена уже есть в списке
 Registration: Регистрация
 Authentication: Аутентификация

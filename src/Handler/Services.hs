@@ -13,13 +13,14 @@ module Handler.Services
 import Control.Monad (forM)
 import Data.Maybe (catMaybes, fromMaybe)
 import Data.FileEmbed (embedFile)
-import Data.Text (pack)
+import Data.Text (pack, Text)
 import Text.Hamlet (Html)
 import Data.Text.Encoding (encodeUtf8)
 import Yesod.Core
     ( Yesod(defaultLayout), setTitleI, setUltDestCurrent
     , getMessages, typeSvg, preEscapedToMarkup
     , TypedContent (TypedContent), ToContent (toContent)
+    , whamlet, getRequest, YesodRequest (reqGetParams)
     )
 import Yesod.Auth (Route (LoginR, LogoutR), maybeAuth)
 import Yesod.Form.Input (iopt, runInputGet)
@@ -37,7 +38,7 @@ import Foundation
       , MsgThumbnail
       , MsgNoServicesYet
       , MsgLogout
-      )
+      ), Widget
     )
 
 import Yesod.Persist.Core (runDB)
@@ -60,13 +61,13 @@ import Model
 import Settings.StaticFiles
     ( img_spark_svg
     )
-import qualified Data.List.Safe as LS
 
 
-getServiceR :: ServiceId -> Services -> Handler Html
-getServiceR sid sids = do
-    open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
+getServiceR :: Services -> Handler Html
+getServiceR (Services sids) = do
+    open <- (Just <$>) . filter ((== "o") . fst) . reqGetParams <$> getRequest
     scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
+    let sid = last sids
     service <- runDB $ selectOne $ do
         x <- from $ table @Service
         where_ $ x ^. ServiceId ==. val sid
@@ -83,12 +84,13 @@ getServiceR sid sids = do
         $(widgetFile "services/service")
 
 
-getServicesR :: Services -> Handler Html
-getServicesR (Services sids) = do
-    open <- runInputGet (iopt textField "open")
+getServicesR :: Handler Html
+getServicesR = do
+    open <- (snd <$>) . filter ((== "o") . fst) . reqGetParams <$> getRequest
     scrollY <- runInputGet (iopt textField "scrollY")
     msid <- (toSqlKey <$>) <$> runInputGet (iopt intField "sid")
-    Srvs pricelist <- fetchServices (LS.last sids)
+    srvs <- fetchServices Nothing
+    let Srvs pricelist = srvs
     muid <- maybeAuth
     msgs <- getMessages
     setUltDestCurrent
@@ -96,6 +98,65 @@ getServicesR (Services sids) = do
         setTitleI MsgServices
         $(widgetFile "services/services")
 
+
+buildSnippet :: [Text] -> Maybe ServiceId -> Services -> Srvs -> Widget
+buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
+<ul.mdc-list data-mdc-auto-init=MDCList>
+  $forall ((Entity sid (Service name overview _ _), pricelist),srvs@(Srvs subservices)) <- services
+    $with (gid,l) <- (pack $ show $ fromSqlKey sid, length pricelist)
+      $if (length subservices) > 0
+        <details role=listitem #details#{gid} data-id=#{gid} :elem gid open:open>
+          <summary.mdc-list-item
+            .mdc-list-item--with-one-line
+            .mdc-list-item--with-leading-image
+            .mdc-list-item--with-trailing-icon>
+            <span.mdc-list-item__ripple>
+            <span.mdc-list-item__start>
+              <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail}>
+            <span.mdc-list-item__content>
+              <div.mdc-list-item__primary-text>#{name}
+            <span.mdc-list-item__end>
+              <i.material-symbols-outlined #iconExpand#{gid}>expand_more
+          $maybe overview <- overview
+            <a.mdc-list-item href=@?{(ServiceR (Services (sids ++ [sid])),oqs (sids ++ [sid]))}
+              .mdc-list-item--with-one-line
+              .mdc-list-item--with-trailing-icon>
+              <span.mdc-list-item__ripple>
+              <span.mdc-list-item__content>
+                <div.mdc-list-item__secondary-text>
+                  <i>#{overview}
+              <span.mdc-list-item__end>
+                <i.material-symbols-outlined #iconExpand#{gid}>info
+          ^{buildSnippet open msid (Services (sids ++ [sid])) srvs}
+      $else
+        <a.mdc-list-item href=@?{(ServiceR (Services (sids ++ [sid])),oqs sids)}
+          :l == 0:.mdc-list-item--with-one-line
+          :l == 1:.mdc-list-item--with-two-lines
+          :l >= 2:.mdc-list-item--with-three-lines
+          :msid == Just sid:.mdc-list-item--activated
+          .mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon>
+          <span.mdc-list-item__ripple>
+          <span.mdc-list-item__start>
+            <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail}>
+          <span.mdc-list-item__content>
+            <div.mdc-list-item__primary-text>
+              #{name}
+            $forall Entity _ (Pricelist _ name price prefix suffix _) <- take 2 pricelist
+              <div.mdc-list-item__secondary-text>
+                #{name}:&nbsp;
+                $maybe prefix <- prefix
+                  #{prefix}
+                $with price <- show price
+                  <span.numeric-format data-value=#{price} data-minFracDigits=0 data-maxFracDigits=2>
+                    #{price}
+                $maybe suffix <- suffix
+                  #{suffix}
+          <span.mdc-list-item__end>
+            <i.material-symbols-outlined>arrow_forward_ios
+|]
+    where
+      oqs :: [ServiceId] -> [(Text,Text)]
+      oqs = (<$>) (("o",) . pack . show . fromSqlKey)
 
 newtype Srvs = Srvs [((Entity Service, [Entity Pricelist]), Srvs)]
 

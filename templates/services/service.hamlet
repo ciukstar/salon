@@ -2,25 +2,24 @@
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
       <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button
-        href=@?{(ServicesR sids,catMaybes [open,scrollY,Just ("sid",pack $ show $ fromSqlKey sid)])}>
+        href=@?{(ServicesR,catMaybes (open ++ [scrollY,Just ("sid",pack $ show $ fromSqlKey sid)]))}>
         <span.mdc-icon-button__ripple>
         <spam.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgService}
 
 <main.mdc-top-app-bar--fixed-adjust>
-  $maybe Entity _ (Service name descr _) <- service
+  $maybe Entity _ (Service name _ descr _) <- service
     <p.mdc-typography--headline6>#{name}
-    <dl>
-      $forall Entity _ (Pricelist _ name price prefix suffix _) <- pricelist
-        <p>
-          <strong>#{name}:&nbsp;
-          $maybe prefix <- prefix
-            #{prefix}
-          $with price <- show price
-            <span.numeric-format data-value=#{price} data-minFracDigits=0 data-maxFracDigits=2>
-              #{price}
-          $maybe suffix <- suffix
-            #{suffix}
-    $maybe descr <- descr 
+    $forall Entity _ (Pricelist _ name price prefix suffix _) <- pricelist
+      <p>
+        <strong>#{name}:&nbsp;
+        $maybe prefix <- prefix
+          #{prefix}
+        $with price <- show price
+          <span.numeric-format data-value=#{price} data-minFracDigits=0 data-maxFracDigits=2>
+            #{price}
+        $maybe suffix <- suffix
+          #{suffix}
+    $maybe descr <- descr
       <div>#{preEscapedToMarkup $ unTextarea descr}

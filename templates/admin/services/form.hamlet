@@ -12,7 +12,7 @@
         _{MsgImage}
 
   ^{fvInput thumbnailV}
-$forall v <- [nameV]
+$forall v <- [nameV,overviewV]
   <div.form-field>
     <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
       :isJust (fvErrors v):.mdc-text-field--invalid

@@ -14,8 +14,8 @@
           <span.mdc-deprecated-list-item__ripple>
           <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>home
           <span.mdc-deprecated-list-item__text>_{MsgWelcome}
-        <a.mdc-deprecated-list-item href=@{ServicesR (Services [])}
-          :Just (ServicesR (Services [])) == curr:.mdc-deprecated-list-item--activated>
+        <a.mdc-deprecated-list-item href=@{ServicesR}
+          :Just ServicesR == curr:.mdc-deprecated-list-item--activated>
           <span.mdc-deprecated-list-item__ripple>
           <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>volunteer_activism
           <span.mdc-deprecated-list-item__text>_{MsgServices}
