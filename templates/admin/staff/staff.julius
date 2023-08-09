@@ -1,0 +1,28 @@
+
+window.mdc.autoInit();
+
+[document.getElementById('btnMainMenu')].filter(x => !!x).forEach(function (x) {
+  x.addEventListener('click',function (e) {
+    document.getElementById('asideMainMenu').MDCDrawer.open = true;
+  })
+});
+
+const menuElem = document.querySelector('div.mdc-menu.mdc-menu-surface');
+
+if (!!menuElem) {
+  const menu = menuElem.MDCMenuSurface;
+  [document.getElementById('buttonProfile')].filter(x => !!x).forEach(function (x) {    
+    x.addEventListener('click',function (e) {
+      
+      if (menu.isOpen()) {
+        menu.close(true);
+      } else {
+        menu.open();
+      }
+      
+      document.body.addEventListener(
+        'click', e => e.stopPropagation(), {capture: true, once: true}
+      );
+    });
+  })
+}

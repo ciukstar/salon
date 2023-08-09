@@ -32,7 +32,8 @@ import Yesod.Core
     ( Yesod(defaultLayout), setTitleI, setUltDestCurrent
     , FileInfo (fileContentType), SomeMessage (SomeMessage)
     , addMessageI, fileSourceByteString, redirect, getMessages
-    , TypedContent (TypedContent), ToContent (toContent), typeSvg, whamlet
+    , TypedContent (TypedContent), ToContent (toContent), typeSvg
+    , whamlet, preEscapedToMarkup
     )
 import Settings (widgetFile)
 import Settings.StaticFiles
@@ -47,7 +48,7 @@ import Yesod.Form
     , FieldView (fvId, fvErrors, fvInput, fvLabel)
     , hiddenField, runInputGet, iopt, intField, checkM
     , mreq, textField, doubleField, mopt, textareaField, fileField
-    , generateFormPost, runFormPost
+    , generateFormPost, runFormPost, boolField, unTextarea, withRadioField, OptionList (OptionList), optionsPairs
     )
 
 import Yesod.Auth (Route (LoginR, LogoutR), maybeAuth)
@@ -66,7 +67,8 @@ import Foundation
       , MsgSubservices, MsgAddService, MsgAddSubservice, MsgNoServicesYet
       , MsgDeleteAreYouSure, MsgYesDelete, MsgPleaseConfirm, MsgRecordDeleted
       , MsgPrefix, MsgSuffix, MsgServisAlreadyInTheList, MsgPricelist, MsgAddPrice
-      , MsgNoPriceSetYet, MsgPriceAlreadyInTheList, MsgOverview
+      , MsgNoPriceSetYet, MsgPriceAlreadyInTheList, MsgOverview, MsgPublished
+      , MsgYes, MsgNo
       )
     )
 
@@ -77,7 +79,7 @@ import Database.Persist
 import Model
     ( ServiceId
     , Service
-      ( Service, serviceName, serviceDescr, serviceGroup, serviceOverview
+      ( Service, serviceName, serviceDescr, serviceGroup, serviceOverview, servicePublished
       )
     , Thumbnail (Thumbnail, thumbnailService, thumbnailPhoto, thumbnailMime)
     , Services (Services)
@@ -408,6 +410,11 @@ formService service group extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (serviceName . entityVal <$> service)
+    (publishedR,publishedV) <- mreq (myBoolField (optionsPairs [(MsgYes,True),(MsgNo,False)])) FieldSettings
+        { fsLabel = SomeMessage MsgPublished
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-radio__native-control")]
+        } (servicePublished . entityVal <$> service)
     (overviewR,overviewV) <- mopt textField FieldSettings
         { fsLabel = SomeMessage MsgOverview
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
@@ -431,6 +438,7 @@ formService service group extra = do
     let r = (,)
             <$> ( Service
                   <$> nameR
+                  <*> publishedR
                   <*> overviewR
                   <*> descrR
                   <*> ((toSqlKey <$>) <$> groupR)
@@ -439,6 +447,22 @@ formService service group extra = do
     let w = $(widgetFile "admin/services/form")
     return (r,w)
   where
+
+      myBoolField :: Handler (OptionList Bool) -> Field Handler Bool
+      myBoolField = withRadioField
+          (\_ _ -> [whamlet||])
+          (\theId value _isSel text optionW -> [whamlet|
+<div.mdc-form-field.mdc-touch-target-wrapper>
+  <div.mdc-radio.mdc-radio--touch>
+    ^{optionW}
+    <div.mdc-radio__background>
+      <div.mdc-radio__outer-circle>
+      <div.mdc-radio__inner-circle>
+    <div.mdc-radio__ripple>
+    <div.mdc-radio__focus-ring>
+  <label for=#{theId}-#{value}>#{text}
+|])
+      
       uniqueNameField :: Field Handler Text
       uniqueNameField = checkM uniqueName textField
 

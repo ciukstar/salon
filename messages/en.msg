@@ -1,3 +1,8 @@
+AddStaffMember: Add staff member
+Staff: Staff
+No: No
+Yes: Yes
+Published: Published
 Overview: Overview
 PriceAlreadyInTheList: This price is already in the list
 Registration: Registration

@@ -12,6 +12,12 @@
         _{MsgImage}
 
   ^{fvInput thumbnailV}
+
+
+<div.form-field>
+  _{MsgPublished} ^{fvInput publishedV}
+
+
 $forall v <- [nameV,overviewV]
   <div.form-field>
     <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField

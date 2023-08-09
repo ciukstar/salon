@@ -1,4 +1,7 @@
 :root
+
+  --theme-accent: #6200ee
+
   --mdc-theme-primary: #FEDBD0
   --mdc-theme-on-primary: #442C2E
   

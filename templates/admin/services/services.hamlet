@@ -68,7 +68,7 @@
   
 <main.mdc-top-app-bar--fixed-adjust>
 
-  $maybe Entity sid (Service name overview descr _) <- service
+  $maybe Entity sid (Service name published overview descr _) <- service
     <figure>
       <img src=@{ServiceThumbnailR sid} height=56 width=56 
         onerror="this.src = '@{StaticR img_photo_FILL0_wght400_GRAD0_opsz48_svg}'">
@@ -83,6 +83,13 @@
               <th.mdc-data-table__cell scope=row>_{MsgTheName}
               <td.mdc-data-table__cell>#{name}
             <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgPublished}
+              <td.mdc-data-table__cell>
+                $if published
+                  _{MsgYes}
+                $else
+                  _{MsgNo}
+            <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgOverview}
               <td.mdc-data-table__cell>
                 $maybe overview <- overview
@@ -91,7 +98,7 @@
               <th.mdc-data-table__cell scope=row>_{MsgDescription}
               <td.mdc-data-table__cell>
                 $maybe descr <- descr
-                  #{descr}
+                  #{preEscapedToMarkup $ unTextarea descr}
 
   $if not (null sids)
     <details #detailsPricelist :open == Just "pricelist":open>

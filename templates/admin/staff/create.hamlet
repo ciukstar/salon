@@ -1,0 +1,7 @@
+<header>
+<main>
+  <form method=post action=# enctype=#{et}>
+    ^{fw}
+    <div.form-actions>
+      <a href=@{AdminR AdmStaffR} role=button>_{MsgCancel}
+      <button type=submit>_{MsgSave}

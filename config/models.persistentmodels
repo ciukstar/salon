@@ -1,4 +1,18 @@
 
+StaffPhoto
+  staff StaffId OnDeleteCascade
+  photo ByteString
+  mime Text
+  UniqueStaffPhoto staff
+
+Staff
+  name Text
+  role Text
+  phone Text Maybe
+  mobile Text Maybe
+  email Text Maybe
+  UniqueStaff name
+
 Thumbnail
   service ServiceId OnDeleteCascade
   photo ByteString
@@ -16,6 +30,7 @@ Pricelist
 
 Service
   name Text
+  published Bool
   overview Text Maybe
   descr Textarea Maybe
   group ServiceId Maybe OnDeleteCascade

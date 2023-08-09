@@ -1,3 +1,8 @@
+AddStaffMember: Добавить сотрудника
+Staff: Персонал
+No: Нет
+Yes: Да
+Published: Опубликовано
 Overview: Обзор
 PriceAlreadyInTheList: Эта цена уже есть в списке
 Registration: Регистрация

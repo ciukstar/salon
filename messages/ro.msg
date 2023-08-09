@@ -1,3 +1,8 @@
+AddStaffMember: Adaugă membru
+Staff: Personalul
+No: Nu
+Yes: Da
+Published: Publicat
 Overview: Prezentare generală
 PriceAlreadyInTheList: Acest preț este deja în listă
 Registration: Înregistrare

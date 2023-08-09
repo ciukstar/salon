@@ -37,6 +37,12 @@
           <span.mdc-deprecated-list-item__ripple>
           <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>edit_note
           <span.mdc-deprecated-list-item__text>_{MsgServices}
+          
+        <a.mdc-deprecated-list-item href=@{AdminR AdmStaffR}
+          :Just (AdminR AdmStaffR) == curr:.mdc-deprecated-list-item--activated>
+          <span.mdc-deprecated-list-item__ripple>
+          <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>edit_note
+          <span.mdc-deprecated-list-item__text>_{MsgStaff}
         
 
 <div.mdc-drawer-scrim>

@@ -54,7 +54,7 @@ import Database.Esqueleto.Experimental
     
 import Model
     ( Service(Service), ServiceId
-    , EntityField (ServiceId, ThumbnailService, ServiceGroup, PricelistService, PricelistId)
+    , EntityField (ServiceId, ThumbnailService, ServiceGroup, PricelistService, PricelistId, ServicePublished)
     , Thumbnail (Thumbnail), Pricelist (Pricelist), Services (Services)
     )
 
@@ -102,7 +102,7 @@ getServicesR = do
 buildSnippet :: [Text] -> Maybe ServiceId -> Services -> Srvs -> Widget
 buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
 <ul.mdc-list data-mdc-auto-init=MDCList>
-  $forall ((Entity sid (Service name overview _ _), pricelist),srvs@(Srvs subservices)) <- services
+  $forall ((Entity sid (Service name _ overview _ _), pricelist),srvs@(Srvs subservices)) <- services
     $with (gid,l) <- (pack $ show $ fromSqlKey sid, length pricelist)
       $if (length subservices) > 0
         <details role=listitem #details#{gid} data-id=#{gid} :elem gid open:open>
@@ -165,9 +165,10 @@ fetchServices :: Maybe ServiceId -> Handler Srvs
 fetchServices gid = do
     categories <- runDB $ select $ do
         x <- from $ table @Service
-        case gid of
-          Nothing -> where_ $ isNothing $ x ^. ServiceGroup
-          Just sid -> where_ $ x ^. ServiceGroup ==. just (val sid)
+        where_ $ x ^. ServicePublished ==. val True
+        where_ $ case gid of
+          Nothing -> isNothing $ x ^. ServiceGroup
+          Just sid -> x ^. ServiceGroup ==. just (val sid)
         orderBy [asc (x ^. ServiceId)]
         return x
 

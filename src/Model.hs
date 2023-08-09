@@ -15,6 +15,7 @@
 
 module Model where
 
+import Data.Bool (Bool)
 import Data.Function ((.))
 import Data.Maybe (Maybe (Just))
 import ClassyPrelude.Yesod

@@ -23,7 +23,10 @@ import qualified Yesod.Core.Unsafe as Unsafe
 import qualified Data.CaseInsensitive as CI
 import qualified Data.Text.Encoding as TE
 import Yesod.Auth.HashDB (authHashDBWithForm)
-import Yesod.Auth.Message (AuthMessage(InvalidLogin), englishMessage, frenchMessage, russianMessage, defaultMessage)
+import Yesod.Auth.Message
+    ( AuthMessage(InvalidLogin), englishMessage, frenchMessage
+    , russianMessage, defaultMessage
+    )
 import Yesod.Form.I18n.English (englishFormMessage)
 import Yesod.Form.I18n.French (frenchFormMessage)
 import Yesod.Form.I18n.Russian (russianFormMessage)
@@ -136,7 +139,9 @@ instance Yesod App where
     isAuthorized (AdminR (AdmPriceR _ _)) _ = return Authorized
     isAuthorized (AdminR (AdmPriceEditR _ _)) _ = return Authorized
     isAuthorized (AdminR (AdmPriceDeleteR _ _)) _ = return Authorized
-        
+    isAuthorized (AdminR AdmStaffR) _ = return Authorized
+    isAuthorized (AdminR AdmStaffCreateR) _ = return Authorized
+            
         
     isAuthorized AccountR _ = return Authorized
     isAuthorized (AccountPhotoR _) _ = return Authorized

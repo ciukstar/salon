@@ -25,6 +25,10 @@
     /image/services/#ServiceId 	       	  AdmServiceImageR	GET
     /services/+Services        	       	  AdmServicesR          GET POST
 
+
+    /form/staff AdmStaffCreateR GET
+    /staff 	AdmStaffR 	GET
+
     /form/user UserCreateFormR GET
     /users     UsersR GET
 

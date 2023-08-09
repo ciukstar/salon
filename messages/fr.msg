@@ -1,3 +1,8 @@
+AddStaffMember: Ajouter un membre
+Staff: Personnelle
+No: Non
+Yes: Oui
+Published: Publié
 Overview: Aperçu
 PriceAlreadyInTheList: Ce prix est déjà dans la liste
 Registration: Inscription
