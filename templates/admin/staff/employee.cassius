@@ -1,0 +1,16 @@
+
+main
+  figure
+    text-align: center
+
+  div.mdc-data-table
+    width: 100%
+    border-right: none
+    border-left: none
+    table tbody
+      tr th
+        font-weight: 500
+
+div.mdc-dialog
+  div.mdc-dialog__actions
+    gap: 0.5rem

@@ -1,0 +1,14 @@
+
+window.mdc.autoInit();
+
+document.getElementById('btnEmplDelete').addEventListener('click',function (x) {
+  document.getElementById('dlgEmplDelete').MDCDialog.open();
+});
+
+document.getElementById('btnEmplDeleteCancel').addEventListener('click',function (x) {
+  document.getElementById('dlgEmplDelete').MDCDialog.close();
+});
+
+Array.from(
+  document.querySelectorAll('aside.mdc-snackbar')
+).map(x => x.MDCSnackbar).forEach(function (x) { x.open(); });

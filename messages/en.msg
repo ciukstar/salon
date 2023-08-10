@@ -1,3 +1,9 @@
+EmployeeAlreadyInTheList: Employee already in the list
+Mobile: Mobile
+Phone: Phone
+Role: Role
+Employee: Employee
+NoStaffYet: There is no staff yet
 AddStaffMember: Add staff member
 Staff: Staff
 No: No

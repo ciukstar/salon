@@ -1,3 +1,9 @@
+EmployeeAlreadyInTheList: L'employé déjà dans la liste
+Mobile: Portable
+Phone: Téléphone
+Role: Rôle
+Employee: Employée
+NoStaffYet: Il n'y a pas encore de personnel
 AddStaffMember: Ajouter un membre
 Staff: Personnelle
 No: Non

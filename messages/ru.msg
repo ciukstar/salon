@@ -1,3 +1,9 @@
+EmployeeAlreadyInTheList: Сотрудник уже в списке
+Mobile: Мобильный
+Phone: Телефон
+Role: Роль
+Employee: Сотрудник
+NoStaffYet: Персонала пока нет
 AddStaffMember: Добавить сотрудника
 Staff: Персонал
 No: Нет

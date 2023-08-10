@@ -1,3 +1,9 @@
+EmployeeAlreadyInTheList: Angajatul este deja în listă
+Mobile: Mobil
+Phone: Telefon
+Role: Rol
+Employee: Angajat
+NoStaffYet: Nu există încă personal
 AddStaffMember: Adaugă membru
 Staff: Personalul
 No: Nu

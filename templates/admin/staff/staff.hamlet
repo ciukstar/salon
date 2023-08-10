@@ -28,9 +28,27 @@
           <i.material-symbols-outlined>login
           
 <main.mdc-top-app-bar--fixed-adjust>
-  <ul>
-    $forall Entity _ (Staff name role _ _ _) <- staff
-      <li>#{name}: #{role}
+  $if not (null staff)
+    <nav.mdc-list data-mdc-auto-init=MDCList>
+      $forall Entity sid (Staff name role _ _ _) <- staff
+        <a.mdc-list-item href=@{AdminR $ AdmEmplR sid}
+          .mdc-list-item--with-leading-image
+          .mdc-list-item--with-two-lines
+          .mdc-list-item--with-trailing-icon>
+          <span.mdc-list-item__start>
+            <img src=@{AdminR $ AdmStaffPhotoR sid} width=56 height=56 alt=_{MsgPhoto}>
+          <span.mdc-list-item__content>
+            <div.mdc-list-item__primary-text>
+              #{name}
+            <div.mdc-list-item__secondary-text>
+              #{role}
+          <span.mdc-list-item__end>
+            <i.material-symbols-outlined>arrow_forward_ios
+  $else
+    <figure style="text-align:center">
+      <div style="font-size:5rem;color:gray">&#8709;
+      <figcaption>
+        _{MsgNoStaffYet}.
 
   <div.mdc-touch-target-wrapper #fabAddStaff>
     <a.mdc-fab.mdc-fab--touch href=@{AdminR AdmStaffCreateR} >

@@ -3,6 +3,7 @@
 
 module Demo.DemoDataEN (populateEN) where
 
+import qualified Data.ByteString.Base64 as B64 (decode)
 import Data.Text.Encoding (decodeUtf8)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import ClassyPrelude.Yesod (ReaderT)
@@ -20,8 +21,11 @@ import Model
       ( Pricelist, pricelistName, pricelistPrice, pricelistPrefix
       , pricelistSuffix, pricelistDescr, pricelistService
       )
+    , Staff (Staff, staffName, staffRole, staffPhone, staffMobile, staffEmail)
+    , StaffPhoto (StaffPhoto, staffPhotoPhoto, staffPhotoMime, staffPhotoStaff)
     )
 import Data.FileEmbed (embedFile)
+import Demo.DemoPhotos (man01)
 
 populateEN :: MonadIO m => ReaderT SqlBackend m ()
 populateEN = do
@@ -31,6 +35,20 @@ populateEN = do
                    , userFullName = Just "Smith James"
                    , userEmail = Just "jsmith@mail.en"
                    }
+
+    e1 <- insert $ Staff { staffName = "Johnny Smith"
+                         , staffRole = "Makeup artist"
+                         , staffPhone = Just "0491 570 006"
+                         , staffMobile = Just "0491 570 156"
+                         , staffEmail = Just "jsmith@mail.en"
+                         }
+
+    case B64.decode man01 of
+      Left _ -> return ()
+      Right x -> insert_ $ StaffPhoto { staffPhotoStaff = e1
+                                      , staffPhotoPhoto = x
+                                      , staffPhotoMime = "image/avif"
+                                      }
 
     s1 <- insert $ Service { serviceName = "Hair care"
                            , serviceOverview = Just "Hair Care Services"
