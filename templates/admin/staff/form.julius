@@ -1,0 +1,10 @@
+
+document.getElementById(#{fvId photoV}).addEventListener('change',function(e) {
+  if (this.files && this.files[0]) {
+    let fr = new FileReader();
+    fr.onload = function (e) {
+      document.getElementById('imgPhotoEmpl').setAttribute('src', e.target.result);
+    }
+    fr.readAsDataURL(this.files[0]);
+  }
+});

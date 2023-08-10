@@ -169,34 +169,7 @@ formEmpl staff extra = do
         } Nothing
 
     let r = (,) <$> (Staff <$> nameR <*> roleR <*> phoneR <*> mobileR <*> emailR) <*> photoR
-    let w = [whamlet|
-#{extra}
-<figure>
-  <label for=#{fvId photoV}>
-    <figure>
-      $maybe Entity sid _ <- staff
-        <img src=@{AdminR $ AdmStaffPhotoR sid} width=56 height=56 alt=_{MsgPhoto}>
-      $nothing
-        <img src=@{StaticR img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg} width=56 height=56 alt=_{MsgPhoto}>
-      <figcaption>
-        _{MsgPhoto}
-^{fvInput photoV}
-$forall v <- [nameV,roleV,phoneV,mobileV,emailV]
-  <div.form-field>
-    <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
-      :isJust (fvErrors v):.mdc-text-field--invalid
-      :isJust (fvErrors v):.mdc-text-field--with-trailing-icon>
-      <span.mdc-text-field__ripple>
-      <span.mdc-floating-label>#{fvLabel v}
-      ^{fvInput v}
-      $maybe _ <- fvErrors v
-        <i.mdc-text-field__icon.mdc-text-field__icon--trailing.material-symbols-outlined>error
-      <span.mdc-line-ripple>
-    $maybe errs <- fvErrors v 
-      <div.mdc-text-field-helper-line>
-        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
-          #{errs}
-|]
+    let w = $(widgetFile "admin/staff/form")
     return (r,w)
 
   where
