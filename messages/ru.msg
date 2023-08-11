@@ -1,6 +1,12 @@
+RoleAlreadyInTheList: Роль уже в списке
+Rating: Рейтинг
+AddRole: Добавить роль
+NoRolesYes: Ролей пока нет
+BookAppointment: Записаться на прием
 EmployeeAlreadyInTheList: Сотрудник уже в списке
 Mobile: Мобильный
 Phone: Телефон
+Roles: Роли
 Role: Роль
 Employee: Сотрудник
 NoStaffYet: Персонала пока нет

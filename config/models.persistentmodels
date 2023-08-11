@@ -1,4 +1,11 @@
 
+Role
+  staff StaffId OnDeleteCascade
+  service ServiceId OnDeleteCascade
+  name Text
+  rating Double Maybe
+  UniqueRole staff service name
+
 StaffPhoto
   staff StaffId OnDeleteCascade
   photo ByteString

@@ -145,6 +145,10 @@ instance Yesod App where
     isAuthorized (AdminR (AdmEmplR _)) _ = return Authorized
     isAuthorized (AdminR (AdmStaffEditR _)) _ = return Authorized
     isAuthorized (AdminR (AdmStaffDeleteR _)) _ = return Authorized
+    isAuthorized (AdminR (AdmRolesR _)) _ = return Authorized
+    isAuthorized (AdminR (AdmRoleR _ _)) _ = return Authorized
+    isAuthorized (AdminR (AdmRoleCreateR _)) _ = return Authorized
+    isAuthorized (AdminR (AdmRoleEditR _ _)) _ = return Authorized    
                 
         
     isAuthorized AccountR _ = return Authorized

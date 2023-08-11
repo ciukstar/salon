@@ -25,17 +25,21 @@
     /image/services/#ServiceId 	       	  AdmServiceImageR	GET
     /services/+Services        	       	  AdmServicesR          GET POST
 
-    /staff/#StaffId/photo  AdmStaffPhotoR  GET
-    /form/staff/#StaffId   AdmStaffEditR   GET
-    /form/staff 	   AdmStaffCreateR GET
-    /delete/staff/#StaffId AdmStaffDeleteR POST
-    /staff/#StaffId	   AdmEmplR 	   GET POST 
-    /staff 		   AdmStaffR 	   GET POST
+    /form/staff/#StaffId/roles/#RoleId AdmRoleEditR    GET
+    /form/staff/#StaffId/roles         AdmRoleCreateR  GET
+    /staff/#StaffId/roles/#RoleId      AdmRoleR        GET POST
+    /staff/#StaffId/roles  	       AdmRolesR       POST
+    /staff/#StaffId/photo  	       AdmStaffPhotoR  GET
+    /form/staff/#StaffId   	       AdmStaffEditR   GET
+    /form/staff 	   	       AdmStaffCreateR GET
+    /delete/staff/#StaffId 	       AdmStaffDeleteR POST
+    /staff/#StaffId	   	       AdmEmplR	       GET POST
+    /staff 		   	       AdmStaffR       GET POST
 
     /form/user UserCreateFormR GET
     /users     UsersR GET
 
-    
+
 
 /static StaticR Static appStatic
 /auth   AuthR   Auth   getAuth
@@ -43,4 +47,3 @@
 /photo-placeholder PhotoPlaceholderR GET
 /favicon.ico FaviconR GET
 /robots.txt RobotsR GET
-

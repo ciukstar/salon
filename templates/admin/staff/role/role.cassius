@@ -1,0 +1,9 @@
+
+main
+  div.mdc-data-table
+    width: 100%
+    border-right: none
+    border-left: none
+    border-radius: 0
+    table tr th
+      font-weight: 500

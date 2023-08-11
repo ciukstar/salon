@@ -1,5 +1,14 @@
 
+window.scroll(0,#{fromMaybe "0" scrollY});
 window.mdc.autoInit();
+
+document.getElementById('detailsRoles').addEventListener('toggle',function (e) {
+  if (this.open) {
+    document.getElementById('expanDetailsIcon').textContent = 'expand_less';
+  } else {
+    document.getElementById('expanDetailsIcon').textContent = 'expand_more';
+  }
+});
 
 document.getElementById('btnEmplDelete').addEventListener('click',function (x) {
   document.getElementById('dlgEmplDelete').MDCDialog.open();
@@ -11,4 +20,16 @@ document.getElementById('btnEmplDeleteCancel').addEventListener('click',function
 
 Array.from(
   document.querySelectorAll('aside.mdc-snackbar')
-).map(x => x.MDCSnackbar).forEach(function (x) { x.open(); });
+).map(x => x.MDCSnackbar).forEach(function (x) {
+  x.listen('MDCSnackbar:opening',function (e) {
+    [document.getElementById('touchTargetWrapperAddRole')].filter(x => !!x).forEach(function (x) {
+      x.style.bottom = '4rem';
+    });
+  });
+  x.listen('MDCSnackbar:closing',function (e) {
+    [document.getElementById('touchTargetWrapperAddRole')].filter(x => !!x).forEach(function (x) {
+      x.style.bottom = '1rem';
+    });
+  });
+  x.open();
+});

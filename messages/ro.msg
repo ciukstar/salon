@@ -1,7 +1,13 @@
+RoleAlreadyInTheList: Rol deja în listă
+Rating: Rating
+AddRole: Adăugați un rol
+NoRolesYes: Nu există încă roluri
+BookAppointment: Rezervă o programare
 EmployeeAlreadyInTheList: Angajatul este deja în listă
 Mobile: Mobil
 Phone: Telefon
 Role: Rol
+Roles: Roluri
 Employee: Angajat
 NoStaffYet: Nu există încă personal
 AddStaffMember: Adaugă membru

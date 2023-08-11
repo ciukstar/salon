@@ -1,7 +1,13 @@
+RoleAlreadyInTheList: Rôle déjà dans la liste
+Rating: Notation
+AddRole: Ajouter un rôle
+NoRolesYes: Il n'y a pas encore de rôles
+BookAppointment: Prenez rendez-vous
 EmployeeAlreadyInTheList: L'employé déjà dans la liste
 Mobile: Portable
 Phone: Téléphone
 Role: Rôle
+Roles: Rôles
 Employee: Employée
 NoStaffYet: Il n'y a pas encore de personnel
 AddStaffMember: Ajouter un membre

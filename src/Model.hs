@@ -15,6 +15,7 @@
 
 module Model where
 
+import Prelude (Double)
 import Data.Bool (Bool)
 import Data.Function ((.))
 import Data.Maybe (Maybe (Just))

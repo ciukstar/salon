@@ -60,7 +60,8 @@ import Handler.Users (getUsersR, getUserCreateFormR)
 import Admin.Staff
     ( getAdmStaffR, getAdmStaffCreateR, getAdmStaffPhotoR
     , getAdmEmplR, postAdmEmplR, getAdmStaffEditR
-    , postAdmStaffR, postAdmStaffDeleteR
+    , postAdmStaffR, postAdmStaffDeleteR, postAdmRolesR
+    , getAdmRoleR, postAdmRoleR, getAdmRoleCreateR, getAdmRoleEditR
     )
 import Admin.Services
     ( getAdmServicesR

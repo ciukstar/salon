@@ -34,11 +34,10 @@ import Foundation
       , ServiceR, StaticR, ServiceThumbnailR
       )
     , AppMessage
-      ( MsgServices, MsgPhoto, MsgService
-      , MsgThumbnail
-      , MsgNoServicesYet
-      , MsgLogout
-      ), Widget
+      ( MsgServices, MsgPhoto, MsgService, MsgThumbnail
+      , MsgNoServicesYet, MsgBookAppointment, MsgLogout
+      )
+    , Widget
     )
 
 import Yesod.Persist.Core (runDB)

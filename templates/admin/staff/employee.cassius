@@ -10,6 +10,28 @@ main
     table tbody
       tr th
         font-weight: 500
+  details
+    summary
+      div.label-with-badge
+        display: flex
+        flex-direction: row
+        justify-content: flex-start
+        align-items: center
+        gap: 0.5rem
+        span.badge
+          height: 1rem
+          width: 1rem
+          line-height: 1rem
+          font-size: 0.8rem
+          padding: 2px
+          border-radius: 50%
+          background-color: var(--mdc-theme-primary)
+          text-align: center
+        
+  #touchTargetWrapperAddRole
+    position: fixed
+    right: 1rem
+    bottom: 1rem
 
 div.mdc-dialog
   div.mdc-dialog__actions

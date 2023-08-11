@@ -21,5 +21,9 @@
             #{price}
         $maybe suffix <- suffix
           #{suffix}
+    <button.mdc-button.mdc-button--raised type=button>
+      <span.mdc-button__ripple>
+      <span.mdc-button__focus-ring>
+      <span.mdc-button__label>_{MsgBookAppointment}
     $maybe descr <- descr
-      <div>#{preEscapedToMarkup $ unTextarea descr}
+      <p>#{preEscapedToMarkup $ unTextarea descr}
