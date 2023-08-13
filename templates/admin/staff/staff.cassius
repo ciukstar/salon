@@ -5,5 +5,7 @@
   bottom: 1rem
   z-index: 1
 
-.mdc-list-item--activated .mdc-list-item__primary-text
-  color: var(--theme-accent)
+nav.mdc-list
+  margin-bottom: 4rem
+  .mdc-list-item--activated .mdc-list-item__primary-text
+    color: var(--theme-accent)

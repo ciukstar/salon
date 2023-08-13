@@ -14,7 +14,8 @@ import Database.Persist ( PersistStoreWrite(insert_, insert) )
 import Model
     ( User (User, userName, userPassword, userEmail, userFullName)
     , Service
-      ( Service, serviceName, serviceDescr, serviceGroup, serviceOverview, servicePublished
+      ( Service, serviceName, serviceDescr, serviceGroup, serviceOverview
+      , servicePublished
       )
     , Thumbnail (Thumbnail, thumbnailService, thumbnailPhoto, thumbnailMime)
     , Pricelist
@@ -22,10 +23,14 @@ import Model
       , pricelistSuffix, pricelistDescr, pricelistService
       )
     , Staff (Staff, staffName, staffPhone, staffMobile, staffEmail)
-    , StaffPhoto (StaffPhoto, staffPhotoPhoto, staffPhotoMime, staffPhotoStaff), Role (Role, roleStaff, roleService, roleName, roleRating)
+    , StaffPhoto (StaffPhoto, staffPhotoPhoto, staffPhotoMime, staffPhotoStaff)
+    , Role (Role, roleStaff, roleService, roleName, roleRating)
     )
 import Data.FileEmbed (embedFile)
-import Demo.DemoPhotos (man01)
+import Demo.DemoPhotos
+    ( man01, man02, man03, man04, man05, man06
+    , woman01, woman02, woman03, woman04, woman05
+    )
 
 populateEN :: MonadIO m => ReaderT SqlBackend m ()
 populateEN = do
@@ -48,6 +53,138 @@ populateEN = do
                                       , staffPhotoPhoto = x
                                       , staffPhotoMime = "image/avif"
                                       }
+
+    e2 <- insert $ Staff { staffName = "Mary Lopez"
+                         , staffPhone = Just "0491 570 006"
+                         , staffMobile = Just "0491 570 156"
+                         , staffEmail = Just "mlopez@mail.en"
+                         }
+
+    case B64.decode woman01 of
+      Left _ -> return ()
+      Right x -> insert_ $ StaffPhoto { staffPhotoStaff = e2
+                                      , staffPhotoPhoto = x
+                                      , staffPhotoMime = "image/avif"
+                                      }
+
+    e3 <- insert $ Staff { staffName = "John Johnson"
+                         , staffPhone = Just "0491 570 006"
+                         , staffMobile = Just "0491 570 156"
+                         , staffEmail = Just "jjohnson@mail.en"
+                         }
+
+    case B64.decode man02 of
+      Left _ -> return ()
+      Right x -> insert_ $ StaffPhoto { staffPhotoStaff = e3
+                                      , staffPhotoPhoto = x
+                                      , staffPhotoMime = "image/avif"
+                                      }
+
+    e4 <- insert $ Staff { staffName = "Patricia Brown"
+                         , staffPhone = Just "0491 570 006"
+                         , staffMobile = Just "0491 570 156"
+                         , staffEmail = Just "pbrown@mail.en"
+                         }
+
+    case B64.decode woman02 of
+      Left _ -> return ()
+      Right x -> insert_ $ StaffPhoto { staffPhotoStaff = e4
+                                      , staffPhotoPhoto = x
+                                      , staffPhotoMime = "image/avif"
+                                      }
+
+    e5 <- insert $ Staff { staffName = "Chris Wilson"
+                         , staffPhone = Just "0491 570 006"
+                         , staffMobile = Just "0491 570 156"
+                         , staffEmail = Just "cwilson@mail.en"
+                         }
+
+    case B64.decode man03 of
+      Left _ -> return ()
+      Right x -> insert_ $ StaffPhoto { staffPhotoStaff = e5
+                                      , staffPhotoPhoto = x
+                                      , staffPhotoMime = "image/avif"
+                                      }
+
+    e6 <- insert $ Staff { staffName = "Philip Davis"
+                         , staffPhone = Just "0491 570 006"
+                         , staffMobile = Just "0491 570 156"
+                         , staffEmail = Just "phdavis@mail.en"
+                         }
+
+    case B64.decode man04 of
+      Left _ -> return ()
+      Right x -> insert_ $ StaffPhoto { staffPhotoStaff = e6
+                                      , staffPhotoPhoto = x
+                                      , staffPhotoMime = "image/avif"
+                                      }
+
+    e7 <- insert $ Staff { staffName = "Helen Taylor"
+                         , staffPhone = Just "0491 570 006"
+                         , staffMobile = Just "0491 570 156"
+                         , staffEmail = Just "htaylor@mail.en"
+                         }
+
+    case B64.decode woman03 of
+      Left _ -> return ()
+      Right x -> insert_ $ StaffPhoto { staffPhotoStaff = e7
+                                      , staffPhotoPhoto = x
+                                      , staffPhotoMime = "image/avif"
+                                      }
+
+    e8 <- insert $ Staff { staffName = "Barbara Young"
+                         , staffPhone = Just "0491 570 006"
+                         , staffMobile = Just "0491 570 156"
+                         , staffEmail = Just "byoung@mail.en"
+                         }
+
+    case B64.decode woman04 of
+      Left _ -> return ()
+      Right x -> insert_ $ StaffPhoto { staffPhotoStaff = e8
+                                      , staffPhotoPhoto = x
+                                      , staffPhotoMime = "image/avif"
+                                      }
+
+    e9 <- insert $ Staff { staffName = "Jorge Walker"
+                         , staffPhone = Just "0491 570 006"
+                         , staffMobile = Just "0491 570 156"
+                         , staffEmail = Just "jwalker@mail.en"
+                         }
+
+    case B64.decode man05 of
+      Left _ -> return ()
+      Right x -> insert_ $ StaffPhoto { staffPhotoStaff = e9
+                                      , staffPhotoPhoto = x
+                                      , staffPhotoMime = "image/avif"
+                                      }
+
+    e10 <- insert $ Staff { staffName = "Robert William Evans"
+                         , staffPhone = Just "0491 570 006"
+                         , staffMobile = Just "0491 570 156"
+                         , staffEmail = Just "revans@mail.en"
+                         }
+
+    case B64.decode man06 of
+      Left _ -> return ()
+      Right x -> insert_ $ StaffPhoto { staffPhotoStaff = e10
+                                      , staffPhotoPhoto = x
+                                      , staffPhotoMime = "image/avif"
+                                      }
+
+    e11 <- insert $ Staff { staffName = "Isabel Hughes"
+                         , staffPhone = Just "0491 570 006"
+                         , staffMobile = Just "0491 570 156"
+                         , staffEmail = Just "ihughes@mail.en"
+                         }
+
+    case B64.decode woman05 of
+      Left _ -> return ()
+      Right x -> insert_ $ StaffPhoto { staffPhotoStaff = e11
+                                      , staffPhotoPhoto = x
+                                      , staffPhotoMime = "image/avif"
+                                      }
+
+    
 
     s1 <- insert $ Service { serviceName = "Hair care"
                            , serviceOverview = Just "Hair Care Services"
@@ -107,6 +244,12 @@ populateEN = do
                         , thumbnailMime = "image/svg+xml"
                         }
 
+    insert_ $ Role { roleStaff = e2
+                   , roleService = s12
+                   , roleName = "Barbers"
+                   , roleRating = Just 4.8
+                   }
+
     s13 <- insert $ Service { serviceName = "Women hair cuts (below shoulders)"
                             , servicePublished = True
                             , serviceOverview = Just "Hair cuts below shoulders for women"
@@ -127,6 +270,18 @@ populateEN = do
                         , thumbnailMime = "image/svg+xml"
                         }
 
+    insert_ $ Role { roleStaff = e11
+                   , roleService = s13
+                   , roleName = "Stylist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e3
+                   , roleService = s13
+                   , roleName = "Assistant stylist"
+                   , roleRating = Just 4
+                   }
+
     s14 <- insert $ Service { serviceName = "Children hair cuts"
                             , servicePublished = True
                             , serviceOverview = Just "Hair cuts for children"
@@ -146,6 +301,12 @@ populateEN = do
                         , thumbnailPhoto = $(embedFile "static/img/child-haircut.svg")
                         , thumbnailMime = "image/svg+xml"
                         }
+
+    insert_ $ Role { roleStaff = e4
+                   , roleService = s14
+                   , roleName = "Junior stylist"
+                   , roleRating = Just 5
+                   }
 
     s15 <- insert $ Service { serviceName = "Chemical services"
                             , servicePublished = True
@@ -185,6 +346,12 @@ populateEN = do
                         , pricelistSuffix = Just " & up"
                         , pricelistDescr = Nothing
                         }
+
+    insert_ $ Role { roleStaff = e5
+                   , roleService = s1511
+                   , roleName = "Hairdresser"
+                   , roleRating = Just 4.9
+                   }
 
     s1512 <- insert $ Service { serviceName = "Before Perm Conditioner"
                               , servicePublished = True
@@ -227,6 +394,12 @@ populateEN = do
                         , pricelistSuffix = Nothing
                         , pricelistDescr = Nothing
                         }
+
+    insert_ $ Role { roleStaff = e8
+                   , roleService = s1521
+                   , roleName = "Colourist"
+                   , roleRating = Just 5
+                   }
 
     s1522 <- insert $ Service { serviceName = "Partial"
                               , servicePublished = True
@@ -344,6 +517,12 @@ populateEN = do
                         , pricelistSuffix = Just "/5 sessions"
                         , pricelistDescr = Nothing
                         }
+
+    insert_ $ Role { roleStaff = e10
+                   , roleService = s21
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
 
     s22 <- insert $ Service { serviceName = "Deluxe Facial"
                             , servicePublished = True
@@ -485,6 +664,12 @@ populateEN = do
                         , thumbnailMime = "image/svg+xml"
                         }
 
+    insert_ $ Role { roleStaff = e9
+                   , roleService = s6
+                   , roleName = "Massage Therapist"
+                   , roleRating = Just 5
+                   }
+
     s7 <- insert $ Service { serviceName = "Makeup Services"
                            , servicePublished = True
                            , serviceOverview = Just "Makeup Services"
@@ -509,6 +694,12 @@ populateEN = do
                         , thumbnailMime = "image/svg+xml"
                         }
 
+    insert_ $ Role { roleStaff = e6
+                   , roleService = s8
+                   , roleName = "Waxing specialist"
+                   , roleRating = Just 5
+                   }
+
     s9 <- insert $ Service { serviceName = "Nail Care"
                            , servicePublished = True
                            , serviceOverview = Just "Nail Care"
@@ -520,6 +711,12 @@ populateEN = do
                         , thumbnailPhoto = $(embedFile "static/img/nail-care.svg")
                         , thumbnailMime = "image/svg+xml"
                         }
+
+    insert_ $ Role { roleStaff = e7
+                   , roleService = s9
+                   , roleName = "Nail technician"
+                   , roleRating = Just 5
+                   }
 
     s10 <- insert $ Service { serviceName = "Body Shaping & Fitness"
                             , servicePublished = True

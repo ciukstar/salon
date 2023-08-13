@@ -1,7 +1,7 @@
 
 header.mdc-top-app-bar
-  #wrapperMainFab
-    position: absolute
-    right: 1rem
-    bottom: 0
-    transform: translateY(50%)
+  div.mdc-top-app-bar__row
+    transition: height 0.3s ease-out
+
+main
+  margin: 0 1rem

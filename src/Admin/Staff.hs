@@ -2,6 +2,7 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE TupleSections #-}
 
 module Admin.Staff
   ( getAdmStaffR
@@ -90,6 +91,7 @@ import Model
 import Data.FileEmbed (embedFile)
 import Settings.StaticFiles (img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg)
 import Data.Maybe (isJust, fromMaybe)
+import Control.Monad (forM)
 
 
 postAdmRoleDeleteR :: StaffId -> RoleId -> Handler ()
@@ -420,11 +422,12 @@ getAdmStaffR = do
         x <- from $ table @Staff
         orderBy [asc (x ^. StaffId)]
         return x
-    roles <- runDB $ select $ do
-        x <- from $ table @Role
-        orderBy [desc (x ^. RoleRating), asc (x ^. RoleId)]
-        limit 2
-        return x
+    roles <- forM staff ( \e@(Entity eid _) -> (e,) <$> runDB ( select $ do
+          x <- from $ table @Role
+          where_ $ x ^. RoleStaff ==. val eid
+          orderBy [desc (x ^. RoleRating), asc (x ^. RoleId)]
+          limit 2
+          return x ) )
     msgs <- getMessages
     setUltDestCurrent
     defaultLayout $ do

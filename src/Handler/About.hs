@@ -4,18 +4,21 @@ module Handler.About (getAboutR) where
 
 import Text.Hamlet (Html)
 import Yesod.Core (Yesod(defaultLayout), setTitleI, setUltDestCurrent)
-import Yesod.Auth (Route (LoginR))
+import Yesod.Auth (Route (LoginR, LogoutR), maybeAuth)
 
 import Settings (widgetFile)
 
+import Database.Persist (Entity(Entity))
 import Foundation
     ( Handler
-    , Route (AuthR)
-    , AppMessage (MsgAboutUs, MsgAdd)
+    , Route (AuthR, PhotoPlaceholderR, AccountPhotoR)
+    , AppMessage (MsgAboutUs, MsgPhoto, MsgLogout)
     )
 
 getAboutR :: Handler Html
-getAboutR = defaultLayout $ do
+getAboutR = do
+    muid <- maybeAuth
     setUltDestCurrent
-    setTitleI MsgAboutUs
-    $(widgetFile "about/about")
+    defaultLayout $ do
+        setTitleI MsgAboutUs
+        $(widgetFile "about/about")

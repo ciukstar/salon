@@ -15,6 +15,7 @@
 
 module Model where
 
+import Data.Time (Day, UTCTime)
 import Prelude (Double)
 import Data.Bool (Bool)
 import Data.Function ((.))

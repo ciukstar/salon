@@ -1,4 +1,16 @@
 
+Contents
+  section Text
+  content Textarea
+  UniqueContents section
+
+Book
+  user UserId OnDeleteCascade
+  price PricelistId OnDeleteCascade
+  role RoleId Maybe OnDeleteCascade
+  day Day
+  time UTCTime
+
 Role
   staff StaffId OnDeleteCascade
   service ServiceId OnDeleteCascade
@@ -41,10 +53,6 @@ Service
   descr Textarea Maybe
   group ServiceId Maybe OnDeleteCascade
   UniqueService name
-
-Image
-  content ByteString
-  mime Text
 
 UserPhoto
   user UserId OnDeleteCascade
