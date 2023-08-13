@@ -1,0 +1,35 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--prominent.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <button.mdc-top-app-bar__navigation-icon.mdc-icon-button #btnMainMenu>
+        <span.mdc-icon-button__ripple>
+        <i.material-symbols-outlined>menu
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
+        _{MsgDocumentation}
+
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
+      $maybe Entity uid _ <- muid
+        <button.mdc-top-app-bar__action-item.mdc-icon-button type=button #buttonProfile>
+          <span.mdc-icon-button__ripple>
+          <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" alt=_{MsgPhoto}
+            onerror="this.src = '@{PhotoPlaceholderR}'">
+          
+          <div.mdc-menu-surface--anchor>
+            <div.mdc-menu.mdc-menu-surface data-mdc-auto-init=MDCMenuSurface>
+              <ul.mdc-deprecated-list.mdc-deprecated-list--icon-list
+                role=menu aria-hidden=true aria-orientation=vertical tabindex=-1>
+
+                <a.mdc-deprecated-list-item role=menuitem href=@{AuthR LogoutR}>
+                  <span.mdc-deprecated-list-item__ripple>
+                  <i.material-symbols-outlined style="margin-right:1rem">logout
+                  <span.mdc-deprecated-list-item__text>_{MsgLogout}
+      $nothing
+        <a.mdc-top-app-bar__action-item.mdc-icon-button role=button
+          href=@{AuthR LoginR}>
+          <span.mdc-icon-button__ripple>
+          <i.material-symbols-outlined>login
+      
+<main.mdc-top-app-bar--prominent-fixed-adjust>
+  <h4.mdc-typography--headline4>
+    _{MsgErdDiagram}
+  <img #imgErdDiagram src=@{StaticR img_Salon_ERD_svg} alt=_{MsgErdDiagram}>

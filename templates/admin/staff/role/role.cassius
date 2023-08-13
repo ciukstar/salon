@@ -1,4 +1,7 @@
 
+#dlgRoleDelete
+  div.mdc-dialog__actions
+    gap: 0.5rem
 main
   div.mdc-data-table
     width: 100%

@@ -21,8 +21,8 @@ import Model
       ( Pricelist, pricelistName, pricelistPrice, pricelistPrefix
       , pricelistSuffix, pricelistDescr, pricelistService
       )
-    , Staff (Staff, staffName, staffRole, staffPhone, staffMobile, staffEmail)
-    , StaffPhoto (StaffPhoto, staffPhotoPhoto, staffPhotoMime, staffPhotoStaff)
+    , Staff (Staff, staffName, staffPhone, staffMobile, staffEmail)
+    , StaffPhoto (StaffPhoto, staffPhotoPhoto, staffPhotoMime, staffPhotoStaff), Role (Role, roleStaff, roleService, roleName, roleRating)
     )
 import Data.FileEmbed (embedFile)
 import Demo.DemoPhotos (man01)
@@ -37,7 +37,6 @@ populateEN = do
                    }
 
     e1 <- insert $ Staff { staffName = "Johnny Smith"
-                         , staffRole = "Makeup artist"
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "jsmith@mail.en"
@@ -68,6 +67,12 @@ populateEN = do
                             , serviceDescr = Just "Hair cuts for men"
                             , serviceGroup = Just s1
                             }
+
+    insert_ $ Role { roleStaff = e1
+                   , roleService = s11
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
 
     insert_ $ Pricelist { pricelistService = s11
                         , pricelistName = "Price"

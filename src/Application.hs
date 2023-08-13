@@ -57,11 +57,13 @@ import Handler.Services
 import Handler.Account (getAccountR, postAccountR, getAccountPhotoR)
 import Handler.Home (getHomeR)
 import Handler.Users (getUsersR, getUserCreateFormR)
+import Handler.Resources (getDocsR)
 import Admin.Staff
     ( getAdmStaffR, getAdmStaffCreateR, getAdmStaffPhotoR
     , getAdmEmplR, postAdmEmplR, getAdmStaffEditR
     , postAdmStaffR, postAdmStaffDeleteR, postAdmRolesR
     , getAdmRoleR, postAdmRoleR, getAdmRoleCreateR, getAdmRoleEditR
+    , postAdmRoleDeleteR
     )
 import Admin.Services
     ( getAdmServicesR

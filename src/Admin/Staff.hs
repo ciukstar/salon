@@ -17,9 +17,10 @@ module Admin.Staff
   , postAdmRoleR
   , getAdmRoleCreateR
   , getAdmRoleEditR
+  , postAdmRoleDeleteR
   ) where
 
-import Data.Text (Text)
+import Data.Text (Text, pack)
 import Data.Text.Encoding (encodeUtf8)
 import Text.Hamlet (Html)
 import Yesod.Core
@@ -38,8 +39,9 @@ import Yesod.Form.Types
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsName, fsAttrs, fsId)
     , Field
     )
-import Yesod.Form (mreq, mopt, runFormPost, fileField, checkM, doubleField, hiddenField, runInputGet, iopt)
-import Yesod.Form.Fields (textField, emailField)
+import Yesod.Form (mreq, mopt, runFormPost, checkM)
+import Yesod.Form.Input (runInputGet, iopt)
+import Yesod.Form.Fields (textField, emailField, doubleField, hiddenField, fileField)
 import Yesod.Form.Functions (generateFormPost)
 import Settings (widgetFile)
 
@@ -47,7 +49,8 @@ import Foundation
     ( Handler, Widget
     , AdminR
       ( AdmStaffDeleteR, AdmStaffEditR, AdmEmplR, AdmStaffR, AdmRoleR
-      , AdmStaffCreateR, AdmStaffPhotoR, AdmRolesR, AdmRoleCreateR, AdmRoleEditR
+      , AdmStaffCreateR, AdmStaffPhotoR, AdmRolesR, AdmRoleCreateR
+      , AdmRoleEditR, AdmRoleDeleteR
       )
     , Route (AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR, StaticR)
     , AppMessage
@@ -71,14 +74,14 @@ import Database.Esqueleto.Experimental
     ( select, selectOne, from, table, orderBy, asc, val
     , (^.), (==.), (:&)((:&))
     , where_, not_, selectQuery, subSelectList
-    , just, notIn, isNothing_, innerJoin, on
+    , just, notIn, isNothing_, innerJoin, on, desc, limit
     )
 
 import Model
-    ( StaffId, Staff(Staff, staffName, staffRole, staffPhone, staffMobile, staffEmail)
+    ( StaffId, Staff(Staff, staffName, staffPhone, staffMobile, staffEmail)
     , EntityField
       ( StaffId, StaffPhotoStaff, StaffPhotoMime, StaffPhotoPhoto
-      , StaffName, RoleStaff, RoleId, ServiceId, ServiceGroup, RoleService, RoleName
+      , StaffName, RoleStaff, RoleId, ServiceId, ServiceGroup, RoleService, RoleName, RoleRating
       )
     , StaffPhoto (StaffPhoto, staffPhotoPhoto, staffPhotoMime, staffPhotoStaff)
     , Role (Role, roleService, roleName, roleRating), RoleId
@@ -89,8 +92,30 @@ import Settings.StaticFiles (img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_
 import Data.Maybe (isJust, fromMaybe)
 
 
+postAdmRoleDeleteR :: StaffId -> RoleId -> Handler ()
+postAdmRoleDeleteR eid rid = do
+    runDB $ delete rid
+    addMessageI "info" MsgRecordDeleted
+    state <- reqGetParams <$> getRequest
+    redirect (AdminR $ AdmEmplR eid,state)
+
+
 postAdmRoleR :: StaffId -> RoleId -> Handler Html
-postAdmRoleR sid rid = undefined
+postAdmRoleR eid rid = do
+    role <- runDB $ selectOne $ do
+        x <- from $ table @Role
+        where_ $ x ^. RoleId ==. val rid
+        return x
+    ((fr,fw),et) <- runFormPost $ formRole eid role
+    state <- reqGetParams <$> getRequest
+    case fr of
+      FormSuccess r -> do
+          runDB $ replace rid r
+          addMessageI "info" MsgRecordEdited
+          redirect (AdminR $ AdmEmplR eid,state)
+      _ -> defaultLayout $ do
+          setTitleI MsgRole
+          $(widgetFile "admin/staff/role/edit")
 
 
 getAdmRoleEditR :: StaffId -> RoleId -> Handler Html
@@ -127,9 +152,9 @@ postAdmRolesR sid = do
     ((fr,fw),et) <- runFormPost $ formRole sid Nothing
     case fr of
       FormSuccess r -> do
-          runDB $ insert_ r
+          rid <- runDB $ insert r
           addMessageI "info" MsgRecordAdded
-          redirect (AdminR $ AdmEmplR sid,state)
+          redirect (AdminR $ AdmEmplR sid,state ++ [("rid",pack $ show $ fromSqlKey rid)])
       _ -> defaultLayout $ do
           setTitleI MsgRole
           $(widgetFile "admin/staff/role/create")
@@ -275,6 +300,7 @@ postAdmEmplR sid = do
 
 getAdmEmplR :: StaffId -> Handler Html
 getAdmEmplR sid = do
+    mrid <- runInputGet $ iopt textField "rid"
     open <- runInputGet $ iopt textField "open"
     scrollY <- runInputGet $ iopt textField "scrollY"
     empl <- runDB $ selectOne $ do
@@ -322,11 +348,6 @@ formEmpl staff extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (staffName . entityVal <$> staff)
-    (roleR,roleV) <- mreq textField FieldSettings
-        { fsLabel = SomeMessage MsgRole
-        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
-        , fsAttrs = [("class","mdc-text-field__input")]
-        } (staffRole . entityVal <$> staff)
     (phoneR,phoneV) <- mopt textField FieldSettings
         { fsLabel = SomeMessage MsgPhone
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
@@ -348,7 +369,7 @@ formEmpl staff extra = do
         , fsAttrs = [("style","display:none")]
         } Nothing
 
-    let r = (,) <$> (Staff <$> nameR <*> roleR <*> phoneR <*> mobileR <*> emailR) <*> photoR
+    let r = (,) <$> (Staff <$> nameR <*> phoneR <*> mobileR <*> emailR) <*> photoR
     let w = $(widgetFile "admin/staff/form")
     return (r,w)
 
@@ -398,6 +419,11 @@ getAdmStaffR = do
     staff <- runDB $ select $ do
         x <- from $ table @Staff
         orderBy [asc (x ^. StaffId)]
+        return x
+    roles <- runDB $ select $ do
+        x <- from $ table @Role
+        orderBy [desc (x ^. RoleRating), asc (x ^. RoleId)]
+        limit 2
         return x
     msgs <- getMessages
     setUltDestCurrent

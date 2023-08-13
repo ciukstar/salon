@@ -1,3 +1,7 @@
+SourceCode: Codul sursă
+ErdDiagram: Diagrama ERD
+Resources: Resurse
+Documentation: Documentație 
 RoleAlreadyInTheList: Rol deja în listă
 Rating: Rating
 AddRole: Adăugați un rol
@@ -70,3 +74,6 @@ AboutUs: Despre noi
 Service: Serviciu
 Services: Servicii
 Salon: Salon
+AppName: Salon
+MetaKeywords: frumusețe, salon, aplicație
+MetaDescription: Aplicația salon de frumusețe

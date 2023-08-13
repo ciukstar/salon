@@ -47,7 +47,7 @@
           <span.mdc-deprecated-list-item__ripple>
           <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>edit_note
           <span.mdc-deprecated-list-item__text>_{MsgServices}
-          
+
         <a.mdc-deprecated-list-item href=@{AdminR AdmStaffR}
           :Just (AdminR AdmStaffR) /= curr:tabindex=-1
           :Just (AdminR AdmStaffR) == curr:tabindex=0
@@ -55,8 +55,24 @@
           <span.mdc-deprecated-list-item__ripple>
           <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>edit_note
           <span.mdc-deprecated-list-item__text>_{MsgStaff}
-        
+
+      <hr.mdc-deprecated-list-divider role=separator>
+      <h3.mdc-deprecated-list-group__subheader>_{MsgResources}
+      <nav.mdc-deprecated-list>
+        <a.mdc-deprecated-list-item href=@{ResourcesR DocsR}
+          :Just (ResourcesR DocsR) /= curr:tabindex=-1
+          :Just (ResourcesR DocsR) == curr:tabindex=0
+          :Just (ResourcesR DocsR) == curr:.mdc-deprecated-list-item--activated>
+          <span.mdc-deprecated-list-item__ripple>
+          <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>quick_reference
+          <span.mdc-deprecated-list-item__text>_{MsgDocumentation}
+          
+        <a.mdc-deprecated-list-item href="https://github.com/ciukstar/salon" target=_blank>
+          <span.mdc-deprecated-list-item__ripple>
+          <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>code
+          <span.mdc-deprecated-list-item__text>_{MsgSourceCode}
+          
 
 <div.mdc-drawer-scrim>
-    
+
 ^{widget}

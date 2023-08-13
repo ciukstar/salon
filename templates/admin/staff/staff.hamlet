@@ -30,7 +30,7 @@
 <main.mdc-top-app-bar--fixed-adjust>
   $if not (null staff)
     <nav.mdc-list data-mdc-auto-init=MDCList>
-      $forall Entity sid (Staff name role _ _ _) <- staff
+      $forall Entity sid (Staff name _ _ _) <- staff
         <a.mdc-list-item href=@{AdminR $ AdmEmplR sid}
           .mdc-list-item--with-leading-image
           .mdc-list-item--with-two-lines
@@ -40,8 +40,9 @@
           <span.mdc-list-item__content>
             <div.mdc-list-item__primary-text>
               #{name}
-            <div.mdc-list-item__secondary-text>
-              #{role}
+            $forall Entity _ (Role _ _ name _) <- roles
+              <div.mdc-list-item__secondary-text>
+                #{name}
           <span.mdc-list-item__end>
             <i.material-symbols-outlined>arrow_forward_ios
   $else

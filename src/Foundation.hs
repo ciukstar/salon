@@ -30,6 +30,7 @@ import Yesod.Auth.Message
 import Yesod.Form.I18n.English (englishFormMessage)
 import Yesod.Form.I18n.French (frenchFormMessage)
 import Yesod.Form.I18n.Russian (russianFormMessage)
+import qualified Data.List.Safe as LS
 
 -- | The foundation datatype for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
@@ -98,14 +99,9 @@ instance Yesod App where
     defaultLayout widget = do
         master <- getYesod
         curr <- getCurrentRoute
-        -- We break up the default layout into two components:
-        -- default-layout is the contents of the body tag, and
-        -- default-layout-wrapper is the entire page. Since the final
-        -- value passed to hamletToRepHtml cannot be a widget, this allows
-        -- you to use normal widget features in default-layout.
-
+        langs <- languages
+        let lang = fromMaybe "en" . LS.head $ langs
         pc <- widgetToPageContent $ do
-
             addStylesheet $ StaticR material_components_web_min_css
             addScript     $ StaticR material_components_web_min_js
             $(widgetFile "default-layout")
@@ -148,7 +144,10 @@ instance Yesod App where
     isAuthorized (AdminR (AdmRolesR _)) _ = return Authorized
     isAuthorized (AdminR (AdmRoleR _ _)) _ = return Authorized
     isAuthorized (AdminR (AdmRoleCreateR _)) _ = return Authorized
-    isAuthorized (AdminR (AdmRoleEditR _ _)) _ = return Authorized    
+    isAuthorized (AdminR (AdmRoleEditR _ _)) _ = return Authorized
+    isAuthorized (AdminR (AdmRoleDeleteR _ _)) _ = return Authorized
+    
+    
                 
         
     isAuthorized AccountR _ = return Authorized
@@ -158,6 +157,7 @@ instance Yesod App where
     isAuthorized (ServiceThumbnailR _) _ = return Authorized
     
     isAuthorized AboutR _ = return Authorized
+    isAuthorized (ResourcesR DocsR) _ = return Authorized
 
     -- This function creates static content files in the static folder
     -- and names them based on a hash of their content. This allows

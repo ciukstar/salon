@@ -7,7 +7,7 @@
         <i.material-symbols-outlined>arrow_back
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgRole}
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end.mdc-theme--text-primary-on-light role=toolbar>
-      <button.mdc-icon-button type=button>
+      <button.mdc-icon-button type=button #btnRoleDelete>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>delete
@@ -15,9 +15,26 @@
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>edit
+
+<div.mdc-dialog #dlgRoleDelete data-mdc-auto-init=MDCDialog>
+  <div.mdc-dialog__container>
+    <div.mdc-dialog__surface role=alertdialog tabindex=-1>
+      <h4.mdc-dialog__title>_{MsgPleaseConfirm}
+      <div.mdc-dialog__content>_{MsgDeleteAreYouSure}
+      <div.mdc-dialog__actions>
+        <button.mdc-button type=button #btnRoleDeleteCancel>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgCancel}
+        <form method=post action=@?{(AdminR $ AdmRoleDeleteR sid rid,[("open","roles")])}>
+          <button.mdc-button.mdc-button--raised type=submit>
+            <span.mdc-button__ripple>
+            <span.mdc-button__focus-ring>
+            <span.mdc-button__label>_{MsgYesDelete}
+  <div.mdc-dialog__scrim>
   
 <main.mdc-top-app-bar--fixed-adjust>
-  $maybe (Entity _ (Role _ _ name rating),Entity _ (Staff ename _ _ _ _),Entity _ (Service sname _ _ _ _)) <- role
+  $maybe (Entity _ (Role _ _ name rating),Entity _ (Staff ename _ _ _),Entity _ (Service sname _ _ _ _)) <- role
     <div.mdc-data-table>
       <div.mdc-data-table__container>
         <table.mdc-data-table__table>

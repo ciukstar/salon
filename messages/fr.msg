@@ -1,3 +1,7 @@
+SourceCode: Code source
+ErdDiagram: Diagramme ERD
+Resources: Ressources
+Documentation: Documentation
 RoleAlreadyInTheList: Rôle déjà dans la liste
 Rating: Notation
 AddRole: Ajouter un rôle
@@ -70,3 +74,6 @@ AboutUs: À propos de nous
 Service: Service
 Services: Services
 Salon: Salon
+AppName: Salon
+MetaKeywords: beauté, salon, application
+MetaDescription: Application de salon de beauté

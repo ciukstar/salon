@@ -10,7 +10,8 @@ main
     table tbody
       tr th
         font-weight: 500
-  details
+  #detailsRoles
+    margin-bottom: 4rem
     summary
       div.label-with-badge
         display: flex
@@ -27,11 +28,16 @@ main
           border-radius: 50%
           background-color: var(--mdc-theme-primary)
           text-align: center
+    .mdc-list
+      .mdc-list-item.mdc-list-item--activated
+        .mdc-list-item__primary-text
+          color: var(--theme-accent)
         
   #touchTargetWrapperAddRole
     position: fixed
     right: 1rem
     bottom: 1rem
+    z-index: 1
 
 div.mdc-dialog
   div.mdc-dialog__actions

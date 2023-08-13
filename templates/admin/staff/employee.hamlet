@@ -33,7 +33,7 @@
   <div.mdc-dialog__scrim>
 
 <main.mdc-top-app-bar--fixed-adjust>
-  $maybe Entity sid (Staff name role phone mobile email) <- empl
+  $maybe Entity sid (Staff name phone mobile email) <- empl
     <figure>
       <img src=@{AdminR $ AdmStaffPhotoR sid} width=56 height=56 alt=_{MsgPhoto}>
     <div.mdc-data-table>
@@ -43,9 +43,6 @@
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgName}
               <td.mdc-data-table__cell>#{name}
-            <tr.mdc-data-table__row>
-              <th.mdc-data-table__cell scope=row>_{MsgRole}
-              <td.mdc-data-table__cell>#{role}
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgPhone}
               <td.mdc-data-table__cell>
@@ -74,8 +71,10 @@
     <nav.mdc-list data-mdc-auto-init=MDCList>
       $if not (null roles)
         $forall (Entity rid (Role _ _ name rating), Entity _ (Service sname _ _ _ _)) <- roles
-          <a.mdc-list-item href=@{AdminR $ AdmRoleR sid rid}
-            .mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon>
+          <a.mdc-list-item href=@?{(AdminR $ AdmRoleR sid rid,[("open","roles"),("rid",pack $ show $ fromSqlKey rid)])}
+            :Just (pack $ show $ fromSqlKey rid) == mrid:.mdc-list-item--activated
+            .mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon
+            onclick="this.href = [new window.URL(this.href)].map(x => {x.searchParams.append('scrollY',window.scrollY);return x;})[0].href">
             <span.mdc-list-item__content>
               <div.mdc-list-item__primary-text>#{name}
               <div.mdc-list-item__secondary-text>#{sname}
@@ -84,7 +83,7 @@
                   _{MsgRating}: #{show rating}
             <span.mdc-list-item__end>
               <i.material-symbols-outlined>arrow_forward_ios
-          <span.mdc-list-divider role=separator>
+          <div.mdc-list-divider role=separator>
       $else
         <figure style="margin-bottom:4rem">
           <span style="line-height:5rem;font-size:5rem;color:gray">&varnothing;

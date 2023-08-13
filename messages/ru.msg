@@ -1,3 +1,7 @@
+SourceCode: Исходный код
+ErdDiagram: ER-диаграмма
+Resources: Ресурсы
+Documentation: Документация
 RoleAlreadyInTheList: Роль уже в списке
 Rating: Рейтинг
 AddRole: Добавить роль
@@ -70,3 +74,6 @@ AboutUs: О нас
 Service: Услуга
 Services: Услуги
 Salon: Салон
+AppName: Салон
+MetaKeywords: салон, красоты, приложение
+MetaDescription: Приложение Салон Красоты

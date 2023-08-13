@@ -1,12 +1,13 @@
 $newline never
 $doctype 5
-<html class="no-js" lang="en">
+<html class="no-js" lang=#{lang}>
   <head>
     <meta charset="UTF-8">
 
     <title>#{pageTitle pc}
-    <meta name="description" content="Salon Application">
-    <meta name="author" content="Sergiu Starciuc">
+    <meta name="description" content=#{renderMessage master langs MsgMetaDescription}>
+    <meta name="keywords" content=#{renderMessage master langs MsgMetaKeywords}>
+    <meta name="author" content="Sergiu Starciuc, ciukstar@gmail.com">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="theme-color" content="#FEDBD0">
     
