@@ -17,7 +17,7 @@ import Data.Text (Text)
 import Text.Hamlet (Html)
 import Yesod.Core
     ( Yesod(defaultLayout), preEscapedToMarkup, whamlet
-    , SomeMessage (SomeMessage), getMessages
+    , SomeMessage (SomeMessage), getMessages, setUltDestCurrent
     )
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Form.Fields (Textarea(unTextarea), textareaField)
@@ -158,6 +158,7 @@ getAdmAboutR = do
         where_ $ x ^. ContentsSection ==. val section
         return x
     msgs <- getMessages
+    setUltDestCurrent
     defaultLayout $ do
         setTitleI MsgAboutUs
         $(widgetFile "admin/about/about")
