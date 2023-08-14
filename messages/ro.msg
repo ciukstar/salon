@@ -1,3 +1,6 @@
+AlreadyExists: Deja exista
+Content: Conţinut
+NoContentYet: Nu există încă conținut
 SourceCode: Codul sursă
 ErdDiagram: Diagrama ERD
 Resources: Resurse

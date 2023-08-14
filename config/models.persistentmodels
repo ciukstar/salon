@@ -6,7 +6,7 @@ Contents
 
 Book
   user UserId OnDeleteCascade
-  price PricelistId OnDeleteCascade
+  serice ServiceId OnDeleteCascade
   role RoleId Maybe OnDeleteCascade
   day Day
   time UTCTime

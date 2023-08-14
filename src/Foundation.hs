@@ -7,6 +7,7 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE TypeOperators #-}
 
 module Foundation where
 
@@ -146,17 +147,20 @@ instance Yesod App where
     isAuthorized (AdminR (AdmRoleCreateR _)) _ = return Authorized
     isAuthorized (AdminR (AdmRoleEditR _ _)) _ = return Authorized
     isAuthorized (AdminR (AdmRoleDeleteR _ _)) _ = return Authorized
-    
-    
+    isAuthorized (AdminR AdmAboutR) _ = return Authorized
+    isAuthorized (AdminR AdmAboutCreateR) _ = return Authorized
+    isAuthorized (AdminR (AdmAboutEditR _)) _ = return Authorized
+    isAuthorized (AdminR (AdmAboutDeleteR _)) _ = return Authorized
                 
-        
+    
+    isAuthorized BookR _ = return Authorized
     isAuthorized AccountR _ = return Authorized
     isAuthorized (AccountPhotoR _) _ = return Authorized
     isAuthorized ServicesR _ = return Authorized
     isAuthorized (ServiceR _) _ = return Authorized
     isAuthorized (ServiceThumbnailR _) _ = return Authorized
     
-    isAuthorized AboutR _ = return Authorized
+    isAuthorized AboutUsR _ = return Authorized
     isAuthorized (ResourcesR DocsR) _ = return Authorized
 
     -- This function creates static content files in the static folder

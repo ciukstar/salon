@@ -23,17 +23,17 @@
           <span.mdc-deprecated-list-item__ripple>
           <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>volunteer_activism
           <span.mdc-deprecated-list-item__text>_{MsgServices}
-        <a.mdc-deprecated-list-item href=@{AboutR}
-          :Just AboutR /= curr:tabindex=-1
-          :Just AboutR == curr:tabindex=0
-          :Just AboutR == curr:.mdc-deprecated-list-item--activated>
+        <a.mdc-deprecated-list-item href=@{AboutUsR}
+          :Just AboutUsR /= curr:tabindex=-1
+          :Just AboutUsR == curr:tabindex=0
+          :Just AboutUsR == curr:.mdc-deprecated-list-item--activated>
           <span.mdc-deprecated-list-item__ripple>
           <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>info
           <span.mdc-deprecated-list-item__text>_{MsgAboutUs}
-        <a.mdc-deprecated-list-item href=#
-          :False:tabindex=-1
-          :False:tabindex=0
-          :False:.mdc-deprecated-list-item--activated>
+        <a.mdc-deprecated-list-item href=@{BookR}
+          :Just BookR /= curr:tabindex=-1
+          :Just BookR == curr:tabindex=0
+          :Just BookR == curr:.mdc-deprecated-list-item--activated>
           <span.mdc-deprecated-list-item__ripple>
           <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>book_online
           <span.mdc-deprecated-list-item__text>_{MsgBook}
@@ -55,6 +55,14 @@
           <span.mdc-deprecated-list-item__ripple>
           <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>edit_note
           <span.mdc-deprecated-list-item__text>_{MsgStaff}
+
+        <a.mdc-deprecated-list-item href=@{AdminR AdmAboutR}
+          :Just (AdminR AdmAboutR) /= curr:tabindex=-1
+          :Just (AdminR AdmAboutR) == curr:tabindex=0
+          :Just (AdminR AdmAboutR) == curr:.mdc-deprecated-list-item--activated>
+          <span.mdc-deprecated-list-item__ripple>
+          <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>edit_note
+          <span.mdc-deprecated-list-item__text>_{MsgAboutUs}
 
       <hr.mdc-deprecated-list-divider role=separator>
       <h3.mdc-deprecated-list-group__subheader>_{MsgResources}

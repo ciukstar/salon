@@ -8,7 +8,7 @@
         _{MsgWelcome}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
-      $maybe Entity uid (User name _ fname email) <- muid
+      $maybe Entity uid _ <- muid
         <button.mdc-top-app-bar__action-item.mdc-icon-button type=button #buttonProfile>
           <span.mdc-icon-button__ripple>
           <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" alt=_{MsgPhoto}
@@ -38,10 +38,10 @@
     <a.mdc-button href=@{ServicesR}>
       <span.mdc-button__ripple>
       <span.mdc-button__label>_{MsgServices}
-    <a.mdc-button href=@{AboutR}>
+    <a.mdc-button href=@{AboutUsR}>
       <span.mdc-button__ripple>
       <span.mdc-button__label>_{MsgAboutUs}
-    <a.mdc-button href=#>
+    <a.mdc-button href=@{BookR}>
       <span.mdc-button__ripple>
       <span.mdc-button__label>_{MsgBook}
 

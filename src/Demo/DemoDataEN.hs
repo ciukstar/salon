@@ -1,12 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE QuasiQuotes #-}
 
 module Demo.DemoDataEN (populateEN) where
 
+import Text.Shakespeare.Text (st)
 import qualified Data.ByteString.Base64 as B64 (decode)
 import Data.Text.Encoding (decodeUtf8)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import ClassyPrelude.Yesod (ReaderT)
+import Yesod.Form.Fields (Textarea (Textarea))
 import Yesod.Auth.Util.PasswordStore (makePassword)
 import Database.Persist.Sql (SqlBackend)
 import Database.Persist ( PersistStoreWrite(insert_, insert) )
@@ -25,6 +28,7 @@ import Model
     , Staff (Staff, staffName, staffPhone, staffMobile, staffEmail)
     , StaffPhoto (StaffPhoto, staffPhotoPhoto, staffPhotoMime, staffPhotoStaff)
     , Role (Role, roleStaff, roleService, roleName, roleRating)
+    , Contents (Contents, contentsSection, contentsContent)
     )
 import Data.FileEmbed (embedFile)
 import Demo.DemoPhotos
@@ -35,6 +39,25 @@ import Demo.DemoPhotos
 populateEN :: MonadIO m => ReaderT SqlBackend m ()
 populateEN = do
     password <- liftIO $ makePassword "root" 17
+
+    insert_ $ Contents { contentsSection = "ABOUT_US"
+                       , contentsContent = Textarea [st|
+<h2 style="color:gray">Our Mission</h2>
+<p>
+The mission of <i>Salon</i> is simple: to offer a special environment to every individual who walks through their doors, where they can indulge, groom and pamper themselves, while enhancing their personal image and bringing a feeling of well-being into their lives.
+</p>
+<h2 style="color:gray">Our Ethos</h2>
+<p>
+Any individual who comes to our salons is unique. We treat each unique client to their personal needs. We pride ourselves in offering the service that the customer expects and the treatments he/she requires, and we will continuously reassess their demands based on their lifestyle and bodies.
+We will never offer treatments that are unnecessary and make every client a priority. This is exactly the reason why we can proudly say that, over the years, we have built up a loyal client base. We learn from them as we look after them, and endeavour to keep up with the latest trends & treatments available to ensure we always meet the needs of our valued clients and any future visitors.
+</p>
+<h2 style="color:gray">Our Goals</h2>
+<p>
+We will continue to offer the latest treatments, the most innovative techniques while using the best products on the market place. All this in elegant, clean and welcoming environments with trained, professional and friendly therapists. We will endeavour to divulge our message that is everyone’s right to feel good!
+</p>
+|]
+                       }
+
     insert_ $ User { userName = "root"
                    , userPassword = decodeUtf8 password
                    , userFullName = Just "Smith James"

@@ -5,7 +5,7 @@
         <span.mdc-icon-button__ripple>
         <i.material-symbols-outlined>menu
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
-        _{MsgAboutUs}
+        _{MsgBook}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
       $maybe Entity uid _ <- muid
@@ -31,5 +31,4 @@
           
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
-  $maybe Entity _ (Contents _ content) <- content
-    #{preEscapedToMarkup $ unTextarea content}
+  Choose a service ...

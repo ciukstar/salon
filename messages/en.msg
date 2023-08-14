@@ -1,3 +1,6 @@
+AlreadyExists: Already exists
+Content: Content
+NoContentYet: There is no content yet
 SourceCode: Source code
 ErdDiagram: ERD Diagram
 Resources: Resources

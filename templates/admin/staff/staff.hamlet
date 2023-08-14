@@ -53,7 +53,7 @@
         _{MsgNoStaffYet}.
 
   <div.mdc-touch-target-wrapper #fabAddStaff>
-    <a.mdc-fab.mdc-fab--touch href=@{AdminR AdmStaffCreateR} >
+    <a.mdc-fab.mdc-fab--touch href=@{AdminR AdmStaffCreateR}>
       <span.mdc-fab__ripple>
       <span.mdc-fab__focus-ring>
       <span.mdc-fab__icon.material-symbols-outlined>add
