@@ -48,7 +48,7 @@ import Yesod.Form
     , FieldView (fvId, fvErrors, fvInput, fvLabel)
     , hiddenField, runInputGet, iopt, intField, checkM
     , mreq, textField, doubleField, mopt, textareaField, fileField
-    , generateFormPost, runFormPost, boolField, unTextarea, withRadioField, OptionList (OptionList), optionsPairs
+    , generateFormPost, runFormPost, unTextarea, withRadioField, OptionList, optionsPairs
     )
 
 import Yesod.Auth (Route (LoginR, LogoutR), maybeAuth)

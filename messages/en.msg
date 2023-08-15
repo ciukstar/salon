@@ -1,3 +1,7 @@
+NoUsersYet: There are no users yet
+User: User
+Users: Users
+Contact: Contact
 AlreadyExists: Already exists
 Content: Content
 NoContentYet: There is no content yet

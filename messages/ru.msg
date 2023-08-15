@@ -1,3 +1,7 @@
+NoUsersYet: Пользователей пока нет
+User: Пользователь
+Users: Пользователи
+Contact: Контакты
 AlreadyExists: Уже существует
 Content: Содержание
 NoContentYet: Контента пока нет

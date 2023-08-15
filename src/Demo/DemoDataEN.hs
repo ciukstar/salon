@@ -40,6 +40,31 @@ populateEN :: MonadIO m => ReaderT SqlBackend m ()
 populateEN = do
     password <- liftIO $ makePassword "root" 17
 
+    insert_ $ Contents { contentsSection = "CONTACTS"
+                       , contentsContent = Textarea [st|
+<h3 style="color:gray">Call Us</h3>
+<dl>
+  <dt><i>Telephone</i></dt>
+  <dd>937-810-6140</dd>
+  <dt><i>Mobile</i></dt>
+  <dd>567-274-7469</dd>
+</dl>
+<h3 style="color:gray">Email Us</h3>
+<dl>
+  <dt><i>Email</i></dt>
+  <dd>salon@mail.org</dd>
+</dl>
+<h3 style="color:gray">Come see us</h3>
+<dl>
+  <dt><i>Address</i><dt>
+  <dd>5331 Rexford Court, Montgomery AL 36116</dd>
+</dl>
+<p>
+  <iframe width="100%" height="400px" title="Salon" style="border:none" src='https://api.mapbox.com/styles/v1/mapbox/streets-v12.html?title=false&zoomwheel=false&access_token=pk.eyJ1IjoiY2l1a3N0YXIiLCJhIjoiY2o1enNibDNsMGNrNDJ3dDhxeTJuc3luMiJ9.Jgc5GdYUMbYwGq-zRWtzfw'></iframe>
+</p>
+|]
+                       }
+    
     insert_ $ Contents { contentsSection = "ABOUT_US"
                        , contentsContent = Textarea [st|
 <h2 style="color:gray">Our Mission</h2>

@@ -45,11 +45,15 @@ import Foundation
     , AppMessage
       ( MsgAboutUs, MsgLogout, MsgPhoto, MsgNoContentYet
       , MsgContent, MsgCancel, MsgSave, MsgRecordAdded, MsgAlreadyExists
-      , MsgRecordEdited, MsgYesDelete, MsgPleaseConfirm, MsgDeleteAreYouSure, MsgRecordDeleted
+      , MsgRecordEdited, MsgYesDelete, MsgPleaseConfirm, MsgDeleteAreYouSure
+      , MsgRecordDeleted
       )
     )
 
-import Model (Contents(Contents, contentsContent), EntityField (ContentsSection), ContentsId)
+import Model
+    ( ContentsId, Contents(Contents, contentsContent)
+    , EntityField (ContentsSection)
+    )
 
 
 postAdmAboutDeleteR :: ContentsId -> Handler ()

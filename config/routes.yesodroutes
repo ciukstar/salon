@@ -1,6 +1,8 @@
 -- By default this file is used by `parseRoutesFile` in Foundation.hs
 -- Syntax for this file here: https://www.yesodweb.com/book/routing-and-handlers
 
+/contact ContactR GET
+
 /book BookR GET
 
 /aboutus AboutUsR GET
@@ -15,6 +17,11 @@
 / HomeR GET
 
 /admin AdminR:
+    /form/contacts/#ContentsId   AdmContactsEditR   GET POST
+    /form/contacts               AdmContactsCreateR GET
+    /delete/contacts/#ContentsId AdmContactsDeleteR POST
+    /contacts                    AdmContactsR       GET POST
+    
     /form/about/#ContentsId   AdmAboutEditR   GET POST
     /form/about               AdmAboutCreateR GET
     /delete/about/#ContentsId AdmAboutDeleteR POST
@@ -45,7 +52,7 @@
     /staff 		   	       	 AdmStaffR       GET POST
 
     /form/user UserCreateFormR GET
-    /users     UsersR GET
+    /users     UsersR 	       GET POST
 
 /resources ResourcesR:
     /docs DocsR GET

@@ -1,0 +1,72 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <button.mdc-top-app-bar__navigation-icon.mdc-icon-button #btnMainMenu>
+        <span.mdc-icon-button__ripple>
+        <i.material-symbols-outlined>menu
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgUsers}
+
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>          
+      $maybe Entity uid _ <- muid
+        <button.mdc-top-app-bar__action-item.mdc-icon-button type=button #buttonProfile>
+          <span.mdc-icon-button__ripple>
+          <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" alt=_{MsgPhoto}
+            onerror="this.src = '@{PhotoPlaceholderR}'">
+
+          <div.mdc-menu-surface--anchor>
+            <div.mdc-menu.mdc-menu-surface data-mdc-auto-init=MDCMenuSurface>
+              <ul.mdc-deprecated-list.mdc-deprecated-list--icon-list
+                role=menu aria-hidden=true aria-orientation=vertical tabindex=-1>
+
+                <a.mdc-deprecated-list-item role=menuitem href=@{AuthR LogoutR}>
+                  <span.mdc-deprecated-list-item__ripple>
+                  <i.material-symbols-outlined style="margin-right:1rem">logout
+                  <span.mdc-deprecated-list-item__text>_{MsgLogout}
+      $nothing
+        <a.mdc-top-app-bar__action-item.mdc-icon-button role=button href=@{AuthR LoginR}>
+          <span.mdc-icon-button__ripple>
+          <i.material-symbols-outlined>login
+
+<main.mdc-top-app-bar--fixed-adjust>
+  $if not (null users)
+    <nav.mdc-list>
+      $forall Entity uid (User name _ fname email) <- users
+        <a.mdc-list-item href=#
+          .mdc-list-item--with-three-lines.mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon>
+          <span.mdc-list-item__ripple>
+          <span.mdc-list-item__start>
+            <img width=56 height=56 src=@{AccountPhotoR uid} alt=_{MsgPhoto}
+              onerror="this.src = '@{PhotoPlaceholderR}'">
+          <span.mdc-list-item__content>
+            <div.mdc-list-item__primary-text>
+              #{name}
+            <div.mdc-list-item__secondary-text>
+              $maybe fname <- fname
+                #{fname}
+            <div.mdc-list-item__secondary-text>
+              $maybe email <- email
+                #{email}
+          <span.mdc-list-item__end>
+            <i.material-symbols-outlined>arrow_forward_ios
+        <div.mdc-list-divider role=separator>
+  $else
+    <figure style="text-align:center">
+      <span style="font-size:5rem;color:gray">&varnothing;
+      <figcaption>
+        _{MsgNoUsersYet}.
+  <div.mdc-touch-target-wrapper #fabAddUser>
+    <a.mdc-fab.mdc-fab--touch href=@{AdminR UserCreateFormR}>
+      <span.mdc-fab__ripple>
+      <span.mdc-fab__focus-ring>
+      <span.mdc-fab__icon.material-symbols-outlined>add
+      <span.mdc-fab__touch>
+
+$forall (_,msg) <- msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
+    <div.mdc-snackbar__surface>
+      <div.mdc-snackbar__label>#{msg}
+      <div.mdc-snackbar__actions>
+        <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>close

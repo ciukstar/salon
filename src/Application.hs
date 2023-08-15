@@ -48,6 +48,7 @@ import System.Environment.Blank (getEnv)
 
 -- Import all relevant handler modules here.
 -- Don't forget to add new modules to your cabal file!
+import Handler.Contacts (getContactR)
 import Handler.Book (getBookR)
 import Handler.AboutUs (getAboutUsR)
 import Handler.Services
@@ -57,8 +58,22 @@ import Handler.Services
     )
 import Handler.Account (getAccountR, postAccountR, getAccountPhotoR)
 import Handler.Home (getHomeR)
-import Handler.Users (getUsersR, getUserCreateFormR)
 import Handler.Resources (getDocsR)
+
+import Admin.Users
+    ( getUsersR
+    , getUserCreateFormR
+    , postUsersR
+    )
+import Admin.Contacts
+    ( getAdmContactsR
+    , postAdmContactsR
+    , getAdmContactsCreateR
+    , getAdmContactsEditR
+    , postAdmContactsEditR
+    , postAdmContactsDeleteR
+    )
+    
 import Admin.About
     ( getAdmAboutR, getAdmAboutCreateR, postAdmAboutR
     , getAdmAboutEditR, postAdmAboutEditR, postAdmAboutDeleteR
