@@ -13,7 +13,9 @@ import Foundation
     ( Handler
     , Route (StaticR, AuthR, PhotoPlaceholderR, AccountPhotoR)
     , AppMessage
-      ( MsgDocumentation, MsgErdDiagram, MsgPhoto, MsgLogout)
+      ( MsgDocumentation, MsgErdDiagram, MsgPhoto, MsgLogout
+      , MsgAppName, MsgDoc001
+      )
     )
 
 getDocsR :: Handler Html

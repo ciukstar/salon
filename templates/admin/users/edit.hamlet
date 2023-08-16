@@ -8,7 +8,7 @@
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgUser}
 
 <main.mdc-top-app-bar--fixed-adjust>
-  <form method=post action=@{AdminR UsersR} enctype=#{et} novalidate>
+  <form method=post action=@{AdminR $ UserR uid} enctype=#{et} novalidate>
     ^{fw}
     <div.form-actions>
       <a.mdc-button href=@{AdminR UsersR} role=button>

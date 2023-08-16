@@ -1,3 +1,4 @@
+ResetPassword: Reseteaza parola
 NoUsersYet: Nu există încă utilizatori
 User: Utilizator
 Users: Utilizatori
@@ -8,7 +9,6 @@ NoContentYet: Nu există încă conținut
 SourceCode: Codul sursă
 ErdDiagram: Diagrama ERD
 Resources: Resurse
-Documentation: Documentație 
 RoleAlreadyInTheList: Rol deja în listă
 Rating: Rating
 AddRole: Adăugați un rol
@@ -84,3 +84,6 @@ Salon: Salon
 AppName: Salon
 MetaKeywords: frumusețe, salon, aplicație
 MetaDescription: Aplicația salon de frumusețe
+
+Documentation: Documentație
+Doc001: Aplicația „Salon” oferă posibilitatea de a publica și de a face publicitate serviciilor proprietarilor de saloane de înfrumusețare pe web.

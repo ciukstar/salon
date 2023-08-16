@@ -36,7 +36,7 @@
           .mdc-list-item--with-three-lines
           .mdc-list-item--with-trailing-icon>
           <span.mdc-list-item__start>
-            <img src=@{AdminR $ AdmStaffPhotoR sid} width=56 height=56 alt=_{MsgPhoto}>
+            <img src=@{AdminR $ AdmStaffPhotoR sid} width=56 height=56 alt=_{MsgPhoto} loading=lazy>
           <span.mdc-list-item__content>
             <div.mdc-list-item__primary-text>
               #{name}

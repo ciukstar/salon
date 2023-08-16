@@ -10,9 +10,11 @@ module Handler.Account
   ) where
 
 import Data.Text (Text)
+import Data.Text.Encoding (encodeUtf8)
 import qualified Data.Text as T (null)
 import Data.Maybe (fromMaybe, isJust)
 import Text.Hamlet (Html)
+import Data.FileEmbed (embedFile)
 import Settings (widgetFile)
 
 import Yesod.Core
@@ -21,7 +23,7 @@ import Yesod.Core
     , SomeMessage (SomeMessage), FileInfo (fileContentType), ToWidget (toWidget)
     , julius, fileSourceByteString, redirect
     , TypedContent (TypedContent)
-    , ToContent (toContent), emptyContent
+    , ToContent (toContent), typeSvg
     )
     
 import Yesod.Form.Types
@@ -62,7 +64,6 @@ import Database.Esqueleto.Experimental
     (selectOne, from, table, where_
     , (^.), (==.), val
     )
-import ClassyPrelude (Utf8(encodeUtf8))
 
 
 getAccountPhotoR :: UserId -> Handler TypedContent
@@ -73,7 +74,7 @@ getAccountPhotoR uid = do
         return x
     return $ case photo of
       Just (Entity _ (UserPhoto _ bs mime)) -> TypedContent (encodeUtf8 mime) $ toContent bs 
-      Nothing -> TypedContent "image/avif" emptyContent
+      Nothing -> TypedContent typeSvg $ toContent $(embedFile "static/img/person_FILL0_wght400_GRAD0_opsz48.svg") 
 
 
 postAccountR :: Handler Html

@@ -51,8 +51,11 @@
     /staff/#StaffId	   	       	 AdmEmplR	 GET POST
     /staff 		   	       	 AdmStaffR       GET POST
 
-    /form/user UserCreateFormR GET
-    /users     UsersR 	       GET POST
+    /form/user/#UserId    UserEditFormR   GET
+    /form/user 	          UserCreateFormR GET
+    /delete/users/#UserId UserDeleteR  	  POST
+    /users/#UserId        UserR	       	  GET POST
+    /users     	          UsersR 	  GET POST
 
 /resources ResourcesR:
     /docs DocsR GET

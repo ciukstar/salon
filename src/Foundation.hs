@@ -155,8 +155,10 @@ instance Yesod App where
     isAuthorized (AdminR AdmContactsCreateR) _ = return Authorized
     isAuthorized (AdminR (AdmContactsEditR _)) _ = return Authorized
     isAuthorized (AdminR (AdmContactsDeleteR _)) _ = return Authorized
-                
-
+    isAuthorized (AdminR (UserEditFormR _)) _ = return Authorized
+    isAuthorized (AdminR (UserR _)) _ = return Authorized
+    isAuthorized (AdminR (UserDeleteR _)) _ = return Authorized
+    
     
     isAuthorized ContactR _ = return Authorized
     isAuthorized BookR _ = return Authorized

@@ -111,7 +111,7 @@ buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
             .mdc-list-item--with-trailing-icon>
             <span.mdc-list-item__ripple>
             <span.mdc-list-item__start>
-              <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail}>
+              <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail} loading=lazy>
             <span.mdc-list-item__content>
               <div.mdc-list-item__primary-text>#{name}
             <span.mdc-list-item__end>
@@ -136,7 +136,7 @@ buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
           .mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon>
           <span.mdc-list-item__ripple>
           <span.mdc-list-item__start>
-            <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail}>
+            <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail} loading=lazy>
           <span.mdc-list-item__content>
             <div.mdc-list-item__primary-text>
               #{name}

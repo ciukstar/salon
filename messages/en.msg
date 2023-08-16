@@ -1,3 +1,4 @@
+ResetPassword: Reset password
 NoUsersYet: There are no users yet
 User: User
 Users: Users
@@ -8,7 +9,6 @@ NoContentYet: There is no content yet
 SourceCode: Source code
 ErdDiagram: ERD Diagram
 Resources: Resources
-Documentation: Docs
 RoleAlreadyInTheList: Role already in the list
 Rating: Rating
 AddRole: Add role
@@ -84,3 +84,6 @@ Salon: Salon
 AppName: Salon
 MetaKeywords: beauty, salon, application
 MetaDescription: Beauty Salon Application
+
+Documentation: Docs
+Doc001: The "Salon" application provides the ability to publish and advertise the services of beauty salon owners on the web.

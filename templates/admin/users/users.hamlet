@@ -31,7 +31,7 @@
   $if not (null users)
     <nav.mdc-list>
       $forall Entity uid (User name _ fname email) <- users
-        <a.mdc-list-item href=#
+        <a.mdc-list-item href=@{AdminR $ UserR uid}
           .mdc-list-item--with-three-lines.mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon>
           <span.mdc-list-item__ripple>
           <span.mdc-list-item__start>

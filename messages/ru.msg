@@ -1,3 +1,4 @@
+ResetPassword: Сброс пароля
 NoUsersYet: Пользователей пока нет
 User: Пользователь
 Users: Пользователи
@@ -8,7 +9,6 @@ NoContentYet: Контента пока нет
 SourceCode: Исходный код
 ErdDiagram: ER-диаграмма
 Resources: Ресурсы
-Documentation: Документация
 RoleAlreadyInTheList: Роль уже в списке
 Rating: Рейтинг
 AddRole: Добавить роль
@@ -84,3 +84,6 @@ Salon: Салон
 AppName: Салон
 MetaKeywords: салон, красоты, приложение
 MetaDescription: Приложение Салон Красоты
+
+Documentation: Документация
+Doc001: Приложение «Салон» предоставляет возможность публиковать и рекламировать услуги владельцев салонов красоты в сети.

@@ -1,0 +1,26 @@
+#dlgUserDelete
+  div.mdc-dialog__actions
+    display: flex
+    flex-direction: row
+    justify-content: flex-end
+    gap: 0.5rem
+  
+main
+  display: flex
+  flex-direction: column
+  #figureUserPhoto
+    justify-self: center
+    text-align: center
+  div.mdc-data-table
+    width: 100%
+    border-radius: 0
+    border-right: none
+    border-left: none
+    table tbody
+      tr th
+        font-weight: 500
+      tr td
+        white-space: wrap
+  #btnResetPassword
+    margin: 1rem
+    align-self: center

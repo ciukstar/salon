@@ -64,6 +64,10 @@ import Admin.Users
     ( getUsersR
     , getUserCreateFormR
     , postUsersR
+    , getUserR
+    , postUserR
+    , getUserEditFormR
+    , postUserDeleteR
     )
 import Admin.Contacts
     ( getAdmContactsR
