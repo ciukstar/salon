@@ -1,3 +1,6 @@
+RegisterAsUser: Înregistrați ca utilizator
+PasswordChanged: Parolă schimbată
+NewPassword: Parolă nouă
 ResetPassword: Reseteaza parola
 NoUsersYet: Nu există încă utilizatori
 User: Utilizator

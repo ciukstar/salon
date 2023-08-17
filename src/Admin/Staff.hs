@@ -19,11 +19,16 @@ module Admin.Staff
   , getAdmRoleCreateR
   , getAdmRoleEditR
   , postAdmRoleDeleteR
+  , getAdmEmplUserR
+  , postAdmEmplUserR
   ) where
 
 import Data.Text (Text, pack)
 import Data.Text.Encoding (encodeUtf8)
 import Text.Hamlet (Html)
+import Data.FileEmbed (embedFile)
+import Data.Maybe (isJust, fromMaybe)
+import Control.Monad (forM)
 import Yesod.Core
     ( Yesod(defaultLayout), setUltDestCurrent, getMessages
     , TypedContent (TypedContent), ToContent (toContent)
@@ -40,29 +45,12 @@ import Yesod.Form.Types
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsName, fsAttrs, fsId)
     , Field
     )
-import Yesod.Form (mreq, mopt, runFormPost, checkM)
+import Yesod.Form (mreq, mopt, runFormPost, checkM, passwordField)
 import Yesod.Form.Input (runInputGet, iopt)
 import Yesod.Form.Fields (textField, emailField, doubleField, hiddenField, fileField)
 import Yesod.Form.Functions (generateFormPost)
 import Settings (widgetFile)
 
-import Foundation
-    ( Handler, Widget
-    , AdminR
-      ( AdmStaffDeleteR, AdmStaffEditR, AdmEmplR, AdmStaffR, AdmRoleR
-      , AdmStaffCreateR, AdmStaffPhotoR, AdmRolesR, AdmRoleCreateR
-      , AdmRoleEditR, AdmRoleDeleteR
-      )
-    , Route (AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR, StaticR)
-    , AppMessage
-      ( MsgStaff, MsgLogout, MsgPhoto, MsgCancel, MsgSave
-      , MsgNoStaffYet, MsgEmployee, MsgRecordEdited, MsgName
-      , MsgRole, MsgPhone, MsgMobile, MsgEmail, MsgRecordAdded
-      , MsgEmployeeAlreadyInTheList, MsgDeleteAreYouSure, MsgYesDelete
-      , MsgPleaseConfirm, MsgRecordDeleted, MsgRoles, MsgNoRolesYes
-      , MsgAddRole, MsgService, MsgTheName, MsgRating, MsgRoleAlreadyInTheList
-      )
-    )
 import Database.Persist
     ( Entity (Entity, entityVal)
     , PersistStoreWrite (replace, insert, insert_, delete)
@@ -73,25 +61,96 @@ import Database.Persist.Sql (fromSqlKey)
 import Yesod.Persist (YesodPersist(runDB))
 import Database.Esqueleto.Experimental
     ( select, selectOne, from, table, orderBy, asc, val
-    , (^.), (==.), (:&)((:&))
+    , (^.), (==.), (:&)((:&)), (?.)
     , where_, not_, selectQuery, subSelectList
     , just, notIn, isNothing_, innerJoin, on, desc, limit
+    , leftJoin
+    )
+
+import Foundation
+    ( Handler, Widget
+    , AdminR
+      ( AdmStaffDeleteR, AdmStaffEditR, AdmEmplR, AdmStaffR, AdmRoleR
+      , AdmStaffCreateR, AdmStaffPhotoR, AdmRolesR, AdmRoleCreateR
+      , AdmRoleEditR, AdmRoleDeleteR, AdmEmplUserR
+      )
+    , Route (AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR, StaticR)
+    , AppMessage
+      ( MsgStaff, MsgLogout, MsgPhoto, MsgCancel, MsgSave
+      , MsgNoStaffYet, MsgEmployee, MsgRecordEdited, MsgName
+      , MsgRole, MsgPhone, MsgMobile, MsgEmail, MsgRecordAdded
+      , MsgEmployeeAlreadyInTheList, MsgDeleteAreYouSure, MsgYesDelete
+      , MsgPleaseConfirm, MsgRecordDeleted, MsgRoles, MsgNoRolesYes
+      , MsgAddRole, MsgService, MsgTheName, MsgRating, MsgRoleAlreadyInTheList
+      , MsgRegisterAsUser, MsgUser, MsgRegistration, MsgUsername, MsgPassword, MsgFullName
+      )
     )
 
 import Model
     ( StaffId, Staff(Staff, staffName, staffPhone, staffMobile, staffEmail)
     , EntityField
       ( StaffId, StaffPhotoStaff, StaffPhotoMime, StaffPhotoPhoto
-      , StaffName, RoleStaff, RoleId, ServiceId, ServiceGroup, RoleService, RoleName, RoleRating
+      , StaffName, RoleStaff, RoleId, ServiceId, ServiceGroup
+      , RoleService, RoleName, RoleRating, StaffUser, UserId
       )
     , StaffPhoto (StaffPhoto, staffPhotoPhoto, staffPhotoMime, staffPhotoStaff)
     , Role (Role, roleService, roleName, roleRating), RoleId
-    , ServiceId, Service (Service)
+    , ServiceId, Service (Service), User (User)
     )
-import Data.FileEmbed (embedFile)
+
 import Settings.StaticFiles (img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg)
-import Data.Maybe (isJust, fromMaybe)
-import Control.Monad (forM)
+
+
+postAdmEmplUserR :: StaffId -> Handler Html
+postAdmEmplUserR eid = undefined
+
+
+getAdmEmplUserR :: StaffId -> Handler Html
+getAdmEmplUserR eid = do
+    empl <- runDB $ selectOne $ do
+        x <- from $ table @Staff
+        where_ $ x ^. StaffId ==. val eid
+        return x
+    (fw,et) <- generateFormPost $ formUser empl 
+    defaultLayout $ do
+        setTitleI MsgRegistration
+        $(widgetFile "admin/staff/user/user")
+
+
+formUser :: Maybe (Entity Staff) -> Html -> MForm Handler (FormResult User, Widget)
+formUser empl extra = do
+    (nameR,nameV) <- mreq textField FieldSettings
+        { fsLabel = SomeMessage MsgUsername
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (staffName . entityVal <$> empl)
+    (passR,passV) <- mreq passwordField FieldSettings
+        { fsLabel = SomeMessage MsgPassword
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } Nothing
+    (fnameR,fnameV) <- mopt textField FieldSettings
+        { fsLabel = SomeMessage MsgFullName
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (pure (staffName . entityVal <$> empl))
+    (emailR,emailV) <- mopt emailField FieldSettings
+        { fsLabel = SomeMessage MsgEmail
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (staffEmail . entityVal <$> empl)
+    let r = User <$> nameR <*> passR <*> fnameR <*> emailR
+    let w = [whamlet|
+#{extra}
+$forall v <- [nameV,passV,fnameV,emailV]
+  <div.form-field>
+    <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField>
+      <span.mdc-text-field__ripple>
+      <span.mdc-floating-label>#{fvLabel v}
+      ^{fvInput v}
+      <div.mdc-line-ripple>
+|]
+    return (r,w)
 
 
 postAdmRoleDeleteR :: StaffId -> RoleId -> Handler ()
@@ -131,7 +190,7 @@ getAdmRoleEditR eid rid = do
     defaultLayout $ do
         setTitleI MsgRole
         $(widgetFile "admin/staff/role/edit")
-        
+
 
 
 getAdmRoleR :: StaffId -> RoleId -> Handler Html
@@ -306,11 +365,12 @@ getAdmEmplR sid = do
     open <- runInputGet $ iopt textField "open"
     scrollY <- runInputGet $ iopt textField "scrollY"
     empl <- runDB $ selectOne $ do
-        x <- from $ table @Staff
+        x :& u <- from $ table @Staff
+            `leftJoin` table @User `on` (\(x :& u) -> x ^. StaffUser ==. u ?. UserId)
         where_ $ x ^. StaffId ==. val sid
-        return x
+        return (x,u)
     roles <- case empl of
-      Just (Entity eid _) -> runDB $ select $ do
+      Just (Entity eid _, _) -> runDB $ select $ do
           x :& s <- from $ table @Role
              `innerJoin` table @Service `on` (\(x :& s) -> x ^. RoleService ==. s ^. ServiceId)
           where_ $ x ^. RoleStaff ==. val eid
@@ -371,7 +431,7 @@ formEmpl staff extra = do
         , fsAttrs = [("style","display:none")]
         } Nothing
 
-    let r = (,) <$> (Staff <$> nameR <*> phoneR <*> mobileR <*> emailR) <*> photoR
+    let r = (,) <$> (Staff <$> nameR <*> phoneR <*> mobileR <*> emailR <*> FormSuccess Nothing) <*> photoR
     let w = $(widgetFile "admin/staff/form")
     return (r,w)
 

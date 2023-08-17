@@ -1,3 +1,6 @@
+RegisterAsUser: Зарегистрировать как пользователь
+PasswordChanged: Пароль изменен
+NewPassword: Новый пароль
 ResetPassword: Сброс пароля
 NoUsersYet: Пользователей пока нет
 User: Пользователь

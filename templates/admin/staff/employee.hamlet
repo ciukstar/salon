@@ -7,6 +7,11 @@
         <i.material-symbols-outlined>arrow_back
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgEmployee}
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
+      <a.mdc-icon-button.mdc-theme--text-primary-on-light role=button title=_{MsgRegisterAsUser}
+        href=@{AdminR $ AdmEmplUserR sid}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>how_to_reg
       <button.mdc-icon-button.mdc-theme--text-primary-on-light type=button #btnEmplDelete>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
@@ -33,7 +38,7 @@
   <div.mdc-dialog__scrim>
 
 <main.mdc-top-app-bar--fixed-adjust>
-  $maybe Entity sid (Staff name phone mobile email) <- empl
+  $maybe (Entity sid (Staff name phone mobile email _), user) <- empl
     <figure>
       <img src=@{AdminR $ AdmStaffPhotoR sid} width=56 height=56 alt=_{MsgPhoto}>
     <div.mdc-data-table>
@@ -58,6 +63,12 @@
               <td.mdc-data-table__cell>
                 $maybe email <- email
                   #{email}
+                  
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgUser}
+              <td.mdc-data-table__cell>
+                $maybe Entity _ (User uname _ _ _ ) <- user
+                  #{uname}
 
   <details.mdc-list #detailsRoles :Just "roles" == open:open>
     <summary.mdc-list-item.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>

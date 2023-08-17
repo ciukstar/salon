@@ -1,3 +1,6 @@
+RegisterAsUser: Register as user
+PasswordChanged: Password changed
+NewPassword: New password
 ResetPassword: Reset password
 NoUsersYet: There are no users yet
 User: User

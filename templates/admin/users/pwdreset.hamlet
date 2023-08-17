@@ -5,10 +5,10 @@
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
-      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgUser}
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgResetPassword}
 
 <main.mdc-top-app-bar--fixed-adjust>
-  <form method=post action=@{AdminR $ UserR uid} enctype=#{et} novalidate>
+  <form method=post action=@{AdminR $ UserPwdResetR uid} enctype=#{et} novalidate>
     ^{fw}
     <div.form-actions>
       <a.mdc-button href=@{AdminR $ UserR uid} role=button>

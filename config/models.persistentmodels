@@ -29,6 +29,7 @@ Staff
   phone Text Maybe
   mobile Text Maybe
   email Text Maybe
+  user UserId Maybe OnDeleteSetNull
   UniqueStaff name
 
 Thumbnail

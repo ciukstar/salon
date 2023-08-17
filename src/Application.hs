@@ -68,6 +68,8 @@ import Admin.Users
     , postUserR
     , getUserEditFormR
     , postUserDeleteR
+    , getUserPwdResetR
+    , postUserPwdResetR
     )
 import Admin.Contacts
     ( getAdmContactsR
@@ -87,7 +89,7 @@ import Admin.Staff
     , getAdmEmplR, postAdmEmplR, getAdmStaffEditR
     , postAdmStaffR, postAdmStaffDeleteR, postAdmRolesR
     , getAdmRoleR, postAdmRoleR, getAdmRoleCreateR, getAdmRoleEditR
-    , postAdmRoleDeleteR
+    , postAdmRoleDeleteR, getAdmEmplUserR, postAdmEmplUserR
     )
 import Admin.Services
     ( getAdmServicesR

@@ -11,20 +11,28 @@ module Admin.Users
   , postUserR
   , getUserEditFormR
   , postUserDeleteR
+  , getUserPwdResetR
+  , postUserPwdResetR
   ) where
 
 import Data.Maybe (isJust)
+import qualified Data.List.Safe as LS (head)
 import Data.Text (Text)
+import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import Text.Hamlet (Html)
+import Yesod.Auth.Util.PasswordStore (makePassword)
 import Yesod.Auth (maybeAuth, Route (LoginR, LogoutR))
 import Yesod.Auth.HashDB (setPassword)
 import Yesod.Core
     ( Yesod(defaultLayout), setTitleI, setUltDestCurrent
     , getMessages, whamlet, SomeMessage (SomeMessage)
-    , FileInfo (fileContentType), addMessageI, redirect, fileSourceByteString
+    , FileInfo (fileContentType), addMessageI, redirect
+    , fileSourceByteString, MonadIO (liftIO)
+    , RenderMessage (renderMessage), languages, getYesod
     )
 import Yesod.Form.Types
-    ( FormResult (FormSuccess), MForm, FieldView (fvInput, fvLabel, fvId, fvErrors)
+    ( FormResult (FormSuccess, FormFailure), MForm
+    , FieldView (fvInput, fvLabel, fvId, fvErrors)
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
     )
 import Yesod.Form.Functions (mreq, mopt, generateFormPost, runFormPost, checkM)
@@ -37,7 +45,7 @@ import Database.Persist
     , PersistStoreWrite (insert, insert_, delete)
     , PersistUniqueWrite (upsert)
     )
-import qualified Database.Persist as P ((=.)) 
+import qualified Database.Persist as P ((=.))
 import Database.Esqueleto.Experimental
     ( select, from, table, orderBy, desc, where_
     , (^.), (==.), (=.)
@@ -47,21 +55,119 @@ import Database.Esqueleto.Experimental
 import Foundation
     ( Handler, Widget
     , Route (AuthR, AdminR, PhotoPlaceholderR, AccountPhotoR, AdminR, StaticR)
-    , AdminR (UserCreateFormR, UsersR, UserR, UserEditFormR, UserDeleteR)
+    , AdminR (UserCreateFormR, UsersR, UserR, UserEditFormR, UserDeleteR, UserPwdResetR)
     , AppMessage
       ( MsgUsers, MsgNoUsersYet, MsgLogout, MsgPhoto, MsgSave
       , MsgUser, MsgCancel, MsgUsername, MsgPassword, MsgFullName, MsgEmail
       , MsgRecordAdded, MsgAlreadyExists, MsgYesDelete, MsgDeleteAreYouSure
       , MsgPleaseConfirm, MsgRecordDeleted, MsgRecordEdited, MsgResetPassword
+      , MsgConfirmPassword, MsgNewPassword, MsgPasswordsDoNotMatch
+      , MsgPasswordChanged
       )
     )
 import Model
     ( UserId, User(User, userName, userPassword, userFullName, userEmail)
-    , EntityField (UserId, UserName, UserFullName, UserEmail, UserPhotoPhoto, UserPhotoMime)
     , UserPhoto (UserPhoto)
+    , EntityField
+      ( UserId, UserName, UserFullName, UserEmail, UserPhotoPhoto
+      , UserPhotoMime, UserPassword
+      )
     )
 
 import Settings.StaticFiles (img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg)
+
+
+postUserPwdResetR :: UserId -> Handler Html
+postUserPwdResetR uid = do
+    user <- runDB $ selectOne $ do
+        x <- from $ table @User
+        where_ $ x ^. UserId ==. val uid
+        return x
+    ((fr,fw),et) <- runFormPost $ formPwdReset user
+    case fr of
+      FormSuccess (r,_) -> do
+          pwd <- liftIO $ decodeUtf8 <$> makePassword (encodeUtf8 r) 17
+          runDB $ update $ \x -> do
+              set x [UserPassword =. val pwd]
+              where_ $ x ^. UserId ==. val uid
+          addMessageI "info" MsgPasswordChanged
+          redirect $ AdminR $ UserR uid
+      _ -> defaultLayout $ do
+          setTitleI MsgResetPassword
+          $(widgetFile "admin/users/pwdreset")
+
+
+getUserPwdResetR :: UserId -> Handler Html
+getUserPwdResetR uid = do
+    user <- runDB $ selectOne $ do
+        x <- from $ table @User
+        where_ $ x ^. UserId ==. val uid
+        return x
+    (fw,et) <- generateFormPost $ formPwdReset user
+    defaultLayout $ do
+        setTitleI MsgResetPassword
+        $(widgetFile "admin/users/pwdreset")
+
+
+formPwdReset :: Maybe (Entity User) -> Html -> MForm Handler (FormResult (Text,Text),Widget)
+formPwdReset user extra = do
+    app <- getYesod
+    langs <- languages 
+    (fstR,fstV) <- mreq passwordField FieldSettings
+        { fsLabel = SomeMessage MsgNewPassword
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } Nothing
+    (sndR,sndV) <- mreq passwordField FieldSettings
+        { fsLabel = SomeMessage MsgConfirmPassword
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } Nothing
+    let r = case (fstR,sndR) of
+          (FormSuccess a, FormSuccess b) | a /= b -> FormFailure [renderMessage app langs MsgPasswordsDoNotMatch]
+          _ -> (,) <$> fstR <*> sndR
+    let w = [whamlet|
+#{extra}
+$case r
+  $of FormFailure errs
+    $maybe err <- LS.head errs
+      <div.mdc-banner role=banner data-mdc-auto-init=MDCBanner>
+        <div.mdc-banner__content role=alertdialog aria-live=assertive>
+          <div.mdc-banner__graphic-text-wrapper>
+            <div.mdc-banner__graphic role=img style="background-color:var(--mdc-theme-error)">
+              <i.mdc-banner__icon.material-symbols-outlined>warning
+            <div.mdc-banner__text>
+              #{err}
+          <div.mdc-banner__actions>
+            <button.mdc-banner__primary-action.mdc-icon-button type=button>
+              <span.mdc-icon-button__ripple>
+              <i.material-symbols-outlined>close            
+  $of _
+  
+$maybe Entity uid (User name _ _ _) <- user
+  <figure>
+    <img src=@{AccountPhotoR uid} width=56 heigt=56 alt=_{MsgPhoto}>
+    <figcaption>
+      #{name}
+      
+$forall v <- [fstV,sndV]
+  <div.form-field>
+    <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
+      :isJust (fvErrors v):.mdc-text-field--invalid
+      :isJust (fvErrors v):.mdc-text-field--with-trailing-icon>
+      <span.mdc-text-field__ripple>
+      <span.mdc-floating-label>#{fvLabel v}
+      ^{fvInput v}
+      $maybe _ <- fvErrors v
+        <i.mdc-text-field__icon.mdc-text-field__icon--trailing.material-symbols-outlined>error
+      <div.mdc-line-ripple>
+    $maybe errs <- fvErrors v
+      <div.mdc-text-field-helper-line>
+        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+          #{errs}
+|]
+    return (r,w)
+
 
 
 postUserDeleteR :: UserId -> Handler ()
@@ -188,7 +294,7 @@ formUserCreate extra = do
         , fsTooltip = Nothing, fsId = Just "inputPhotoUser", fsName = Nothing
         , fsAttrs = [("style","display:none")]
         } Nothing
-        
+
     let r = (,) <$> (User <$> nameR <*> passR <*> fnameR <*> emailR) <*> photoR
     let w = [whamlet|
 #{extra}
@@ -199,7 +305,7 @@ formUserCreate extra = do
       <figcaption>
         _{MsgPhoto}
   ^{fvInput photoV}
-    
+
 $forall v <- [nameV,passV,fnameV,emailV]
   <div.form-field>
     <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
@@ -244,13 +350,13 @@ formUserEdit user extra = do
         { fsLabel = SomeMessage MsgEmail
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
-        } (userEmail . entityVal <$> user)        
+        } (userEmail . entityVal <$> user)
     (photoR,photoV) <- mopt fileField FieldSettings
         { fsLabel = SomeMessage MsgPhoto
         , fsTooltip = Nothing, fsId = Just "inputPhotoUser", fsName = Nothing
         , fsAttrs = [("style","display:none")]
         } Nothing
-        
+
     let r = (,) <$> (User <$> nameR <*> FormSuccess "Nothing" <*> fnameR <*> emailR) <*> photoR
     let w = [whamlet|
 #{extra}
@@ -264,20 +370,8 @@ formUserEdit user extra = do
       <figcaption>
         _{MsgPhoto}
   ^{fvInput photoV}
-  
-<div.form-field>
-  <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
-    :isJust (fvErrors nameV):.mdc-text-field--invalid>
-    <span.mdc-text-field__ripple>
-    <span.mdc-floating-label>#{fvLabel nameV}
-    ^{fvInput nameV}
-    <div.mdc-line-ripple>
-  $maybe errs <- fvErrors nameV
-    <div.mdc-text-field-helper-line>
-      <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
-        #{errs}
-  
-$forall v <- [nameV,fnameV,emailV]  
+
+$forall v <- [nameV,fnameV,emailV]
   <div.form-field>
     <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
       :isJust (fvErrors v):.mdc-text-field--invalid>
@@ -308,6 +402,3 @@ $forall v <- [nameV,fnameV,emailV]
               Nothing -> Right username
               Just (Entity uid' _) | uid == uid' -> Right username
                                    | otherwise -> Left MsgAlreadyExists
-                
-            
-          

@@ -39,6 +39,7 @@
     /image/services/#ServiceId 	       	  AdmServiceImageR	GET
     /services/+Services        	       	  AdmServicesR          GET POST
 
+    /staff/#StaffId/user                 AdmEmplUserR    GET POST
     /delete/staff/#StaffId/roles/#RoleId AdmRoleDeleteR  POST
     /form/staff/#StaffId/roles/#RoleId 	 AdmRoleEditR    GET
     /form/staff/#StaffId/roles         	 AdmRoleCreateR  GET
@@ -51,11 +52,12 @@
     /staff/#StaffId	   	       	 AdmEmplR	 GET POST
     /staff 		   	       	 AdmStaffR       GET POST
 
-    /form/user/#UserId    UserEditFormR   GET
-    /form/user 	          UserCreateFormR GET
-    /delete/users/#UserId UserDeleteR  	  POST
-    /users/#UserId        UserR	       	  GET POST
-    /users     	          UsersR 	  GET POST
+    /users/#UserId/form/reset UserPwdResetR   GET POST
+    /users/#UserId/form/edit  UserEditFormR   GET
+    /users/form/create 	      UserCreateFormR GET
+    /users/#UserId/delete     UserDeleteR     POST
+    /users/#UserId            UserR	      GET POST
+    /users     	              UsersR 	      GET POST
 
 /resources ResourcesR:
     /docs DocsR GET

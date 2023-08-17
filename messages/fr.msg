@@ -1,3 +1,6 @@
+RegisterAsUser: S'inscrire en tant qu'utilisateur
+PasswordChanged: Mot de passe changé
+NewPassword: Nouveau mot de passe
 ResetPassword: Réinitialiser le mot de passe
 NoUsersYet: Il n'y a pas encore d'utilisateurs
 User: Utilisateur

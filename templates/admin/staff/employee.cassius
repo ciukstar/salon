@@ -5,6 +5,7 @@ main
 
   div.mdc-data-table
     width: 100%
+    border-radius: 0
     border-right: none
     border-left: none
     table tbody

@@ -7,6 +7,11 @@
         <i.material-symbols-outlined>arrow_back
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgUser}
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
+      <a.mdc-icon-button.mdc-theme--text-primary-on-light type=button title=_{MsgResetPassword}
+        href=@{AdminR $ UserPwdResetR uid}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>lock_reset
       <button.mdc-icon-button.mdc-theme--text-primary-on-light type=button #btnUserDelete
         onclick="document.getElementById('dlgUserDelete').MDCDialog.open()">
         <span.mdc-icon-button__ripple>
@@ -59,11 +64,6 @@
               <td.mdc-data-table__cell>
                 $maybe email <- email
                   #{email}
-
-    <button.mdc-button.mdc-button--raised.mdc-button--icon-leading type=button #btnResetPassword>
-      <span.mdc-button__ripple>
-      <i.mdc-button__icon.material-symbols-outlined>lock_reset
-      <span.mdc-button__label>_{MsgResetPassword}
 
 
 $forall (_,msg) <- msgs

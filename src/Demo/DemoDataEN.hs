@@ -25,7 +25,7 @@ import Model
       ( Pricelist, pricelistName, pricelistPrice, pricelistPrefix
       , pricelistSuffix, pricelistDescr, pricelistService
       )
-    , Staff (Staff, staffName, staffPhone, staffMobile, staffEmail)
+    , Staff (Staff, staffName, staffPhone, staffMobile, staffEmail, staffUser)
     , StaffPhoto (StaffPhoto, staffPhotoPhoto, staffPhotoMime, staffPhotoStaff)
     , Role (Role, roleStaff, roleService, roleName, roleRating)
     , Contents (Contents, contentsSection, contentsContent)
@@ -93,6 +93,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "jsmith@mail.en"
+                         , staffUser = Nothing
                          }
 
     case B64.decode man01 of
@@ -106,6 +107,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "mlopez@mail.en"
+                         , staffUser = Nothing
                          }
 
     case B64.decode woman01 of
@@ -119,6 +121,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "jjohnson@mail.en"
+                         , staffUser = Nothing
                          }
 
     case B64.decode man02 of
@@ -132,6 +135,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "pbrown@mail.en"
+                         , staffUser = Nothing
                          }
 
     case B64.decode woman02 of
@@ -145,6 +149,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "cwilson@mail.en"
+                         , staffUser = Nothing
                          }
 
     case B64.decode man03 of
@@ -158,6 +163,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "phdavis@mail.en"
+                         , staffUser = Nothing
                          }
 
     case B64.decode man04 of
@@ -171,6 +177,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "htaylor@mail.en"
+                         , staffUser = Nothing
                          }
 
     case B64.decode woman03 of
@@ -184,6 +191,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "byoung@mail.en"
+                         , staffUser = Nothing
                          }
 
     case B64.decode woman04 of
@@ -197,6 +205,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "jwalker@mail.en"
+                         , staffUser = Nothing
                          }
 
     case B64.decode man05 of
@@ -210,6 +219,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "revans@mail.en"
+                         , staffUser = Nothing
                          }
 
     case B64.decode man06 of
@@ -223,6 +233,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "ihughes@mail.en"
+                         , staffUser = Nothing
                          }
 
     case B64.decode woman05 of
