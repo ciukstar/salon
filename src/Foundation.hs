@@ -160,8 +160,8 @@ instance Yesod App where
     isAuthorized (AdminR (UserDeleteR _)) _ = return Authorized
     isAuthorized (AdminR (UserPwdResetR _)) _ = return Authorized
     isAuthorized (AdminR (AdmEmplUserR _)) _ = return Authorized
-    
-    
+    isAuthorized (AdminR (AdmEmplUnregR _ _)) _ = return Authorized
+    isAuthorized (AdminR AdmStaffSearchR) _ = return Authorized
     
     
     isAuthorized ContactR _ = return Authorized

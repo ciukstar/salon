@@ -25,7 +25,8 @@ import Model
       ( Pricelist, pricelistName, pricelistPrice, pricelistPrefix
       , pricelistSuffix, pricelistDescr, pricelistService
       )
-    , Staff (Staff, staffName, staffPhone, staffMobile, staffEmail, staffUser)
+    , EmplStatus (EmplStatusEmployed, EmplStatusDismissed)
+    , Staff (Staff, staffName, staffStatus, staffPhone, staffMobile, staffEmail, staffUser)
     , StaffPhoto (StaffPhoto, staffPhotoPhoto, staffPhotoMime, staffPhotoStaff)
     , Role (Role, roleStaff, roleService, roleName, roleRating)
     , Contents (Contents, contentsSection, contentsContent)
@@ -90,6 +91,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                    }
 
     e1 <- insert $ Staff { staffName = "Johnny Smith"
+                         , staffStatus = EmplStatusEmployed
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "jsmith@mail.en"
@@ -104,6 +106,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                                       }
 
     e2 <- insert $ Staff { staffName = "Mary Lopez"
+                         , staffStatus = EmplStatusEmployed
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "mlopez@mail.en"
@@ -118,6 +121,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                                       }
 
     e3 <- insert $ Staff { staffName = "John Johnson"
+                         , staffStatus = EmplStatusEmployed
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "jjohnson@mail.en"
@@ -132,6 +136,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                                       }
 
     e4 <- insert $ Staff { staffName = "Patricia Brown"
+                         , staffStatus = EmplStatusEmployed
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "pbrown@mail.en"
@@ -146,6 +151,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                                       }
 
     e5 <- insert $ Staff { staffName = "Chris Wilson"
+                         , staffStatus = EmplStatusEmployed
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "cwilson@mail.en"
@@ -160,6 +166,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                                       }
 
     e6 <- insert $ Staff { staffName = "Philip Davis"
+                         , staffStatus = EmplStatusEmployed
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "phdavis@mail.en"
@@ -174,6 +181,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                                       }
 
     e7 <- insert $ Staff { staffName = "Helen Taylor"
+                         , staffStatus = EmplStatusEmployed
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "htaylor@mail.en"
@@ -188,6 +196,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                                       }
 
     e8 <- insert $ Staff { staffName = "Barbara Young"
+                         , staffStatus = EmplStatusEmployed
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "byoung@mail.en"
@@ -202,6 +211,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                                       }
 
     e9 <- insert $ Staff { staffName = "Jorge Walker"
+                         , staffStatus = EmplStatusEmployed
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "jwalker@mail.en"
@@ -216,6 +226,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                                       }
 
     e10 <- insert $ Staff { staffName = "Robert William Evans"
+                         , staffStatus = EmplStatusEmployed
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "revans@mail.en"
@@ -230,6 +241,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                                       }
 
     e11 <- insert $ Staff { staffName = "Isabel Hughes"
+                         , staffStatus = EmplStatusDismissed
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "ihughes@mail.en"
@@ -306,7 +318,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Role { roleStaff = e2
                    , roleService = s12
                    , roleName = "Barbers"
-                   , roleRating = Just 4.8
+                   , roleRating = Just 3
                    }
 
     s13 <- insert $ Service { serviceName = "Women hair cuts (below shoulders)"
@@ -409,7 +421,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Role { roleStaff = e5
                    , roleService = s1511
                    , roleName = "Hairdresser"
-                   , roleRating = Just 4.9
+                   , roleRating = Just 2
                    }
 
     s1512 <- insert $ Service { serviceName = "Before Perm Conditioner"

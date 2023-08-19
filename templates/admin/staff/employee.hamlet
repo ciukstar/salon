@@ -1,17 +1,43 @@
 <header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=@{AdminR AdmStaffR} role=button>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button
+        href=@?{(AdminR AdmStaffR,state)}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgEmployee}
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
-      <a.mdc-icon-button.mdc-theme--text-primary-on-light role=button title=_{MsgRegisterAsUser}
-        href=@{AdminR $ AdmEmplUserR sid}>
-        <span.mdc-icon-button__ripple>
-        <span.mdc-icon-button__focus-ring>
-        <i.material-symbols-outlined>how_to_reg
+      $maybe (Entity eid _, user) <- empl
+        $maybe Entity uid _ <- user
+          <button.mdc-icon-button.mdc-theme--text-primary-on-light type=button
+            onclick="document.getElementById('dlgUnregEmplUser').MDCDialog.open()">
+            <span.mdc-icon-button__ripple>
+            <span.mdc-icon-button__focus-ring>
+            <i.material-symbols-outlined>person_cancel
+
+          <div.mdc-dialog data-mdc-auto-init=MDCDialog #dlgUnregEmplUser>
+            <div.mdc-dialog__container>
+              <div.mdc-dialog__surface role=alertdialog tabindex=-1>
+                <h4.mdc-dialog__title>_{MsgPleaseConfirm}
+                <div.mdc-dialog__content>
+                  _{MsgUnregisterAreYouSure}
+                <div.mdc-dialog__actions>
+                  <button.mdc-button type=button 
+                    onclick="document.getElementById('dlgUnregEmplUser').MDCDialog.close()">
+                    <span.mdc-button__ripple>
+                    <span.mdc-button__label>_{MsgCancel}
+                  <form method=post action=@{AdminR $ AdmEmplUnregR eid uid}>
+                    <button.mdc-button.mdc-button--raised type=submit>
+                      <span.mdc-button__ripple>
+                      <span.mdc-button__label>_{MsgYesDelete}
+            <div.mdc-dialog__scrim>
+        $nothing
+          <a.mdc-icon-button.mdc-theme--text-primary-on-light role=button title=_{MsgRegisterAsUser}
+            href=@{AdminR $ AdmEmplUserR sid}>
+            <span.mdc-icon-button__ripple>
+            <span.mdc-icon-button__focus-ring>
+            <i.material-symbols-outlined>how_to_reg
       <button.mdc-icon-button.mdc-theme--text-primary-on-light type=button #btnEmplDelete>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
@@ -38,7 +64,7 @@
   <div.mdc-dialog__scrim>
 
 <main.mdc-top-app-bar--fixed-adjust>
-  $maybe (Entity sid (Staff name phone mobile email _), user) <- empl
+  $maybe (Entity sid (Staff name _ phone mobile email _), user) <- empl
     <figure>
       <img src=@{AdminR $ AdmStaffPhotoR sid} width=56 height=56 alt=_{MsgPhoto}>
     <div.mdc-data-table>

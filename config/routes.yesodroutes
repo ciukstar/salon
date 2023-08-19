@@ -39,6 +39,9 @@
     /image/services/#ServiceId 	       	  AdmServiceImageR	GET
     /services/+Services        	       	  AdmServicesR          GET POST
 
+
+    /search/staff			 AdmStaffSearchR GET
+    /staff/#StaffId/users/#UserId        AdmEmplUnregR   POST
     /staff/#StaffId/user                 AdmEmplUserR    GET POST
     /delete/staff/#StaffId/roles/#RoleId AdmRoleDeleteR  POST
     /form/staff/#StaffId/roles/#RoleId 	 AdmRoleEditR    GET

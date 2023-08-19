@@ -1,3 +1,15 @@
+ValueNotInRange rstart rend: Valoarea nu se află în intervalul #{show rstart}..#{show rend}
+InvalidValue: Valoare nevalidă
+Unregistered: Neînregistrat
+Registered: Înregistrat
+AccountStatus: Starea contului
+Employed: Angajat
+Dismissed: Concediat
+Select: Selectează
+Status: Starea
+NoStaffMembersFound: Nu a fost găsit niciun membru al personalului
+Search: Caută
+UnregisterAreYouSure: Sigur doriți să anulați înregistrarea utilizatorului?
 RegisterAsUser: Înregistrați ca utilizator
 PasswordChanged: Parolă schimbată
 NewPassword: Parolă nouă
@@ -13,6 +25,7 @@ SourceCode: Codul sursă
 ErdDiagram: Diagrama ERD
 Resources: Resurse
 RoleAlreadyInTheList: Rol deja în listă
+Ratings: Evaluări
 Rating: Rating
 AddRole: Adăugați un rol
 NoRolesYes: Nu există încă roluri

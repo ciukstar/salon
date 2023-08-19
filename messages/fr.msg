@@ -1,3 +1,15 @@
+ValueNotInRange rstart rend: Valeur hors plage #{show rstart}..#{show rend}
+InvalidValue: Valeur incorrecte
+Unregistered: Non enregistré
+Registered: Enregistré
+AccountStatus: Statut du compte
+Employed: Employé
+Dismissed: Licencié
+Select: Sélectionner
+Status: Statut
+NoStaffMembersFound: Aucun membre du personnel trouvé
+Search: Recherche
+UnregisterAreYouSure: Voulez-vous vraiment désinscrire l'utilisateur ?
 RegisterAsUser: S'inscrire en tant qu'utilisateur
 PasswordChanged: Mot de passe changé
 NewPassword: Nouveau mot de passe
@@ -13,6 +25,7 @@ SourceCode: Code source
 ErdDiagram: Diagramme ERD
 Resources: Ressources
 RoleAlreadyInTheList: Rôle déjà dans la liste
+Ratings: Évaluations
 Rating: Notation
 AddRole: Ajouter un rôle
 NoRolesYes: Il n'y a pas encore de rôles

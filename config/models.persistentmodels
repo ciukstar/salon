@@ -15,7 +15,7 @@ Role
   staff StaffId OnDeleteCascade
   service ServiceId OnDeleteCascade
   name Text
-  rating Double Maybe
+  rating Int Maybe
   UniqueRole staff service name
 
 StaffPhoto
@@ -26,6 +26,7 @@ StaffPhoto
 
 Staff
   name Text
+  status EmplStatus
   phone Text Maybe
   mobile Text Maybe
   email Text Maybe

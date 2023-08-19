@@ -1,3 +1,15 @@
+ValueNotInRange rstart rend: Значение вне диапазона #{show rstart}..#{show rend}
+InvalidValue: Недопустимое значение
+Unregistered: Незарегистрированный
+Registered: Зарегистрированный
+AccountStatus: Статус учетной записи
+Employed: Работает
+Dismissed: Уволенный
+Select: Выбирать
+Status: Статус
+NoStaffMembersFound: Сотрудников не найдено
+Search: Поиск
+UnregisterAreYouSure: Вы уверены, что хотите отменить регистрацию пользователя?
 RegisterAsUser: Зарегистрировать как пользователь
 PasswordChanged: Пароль изменен
 NewPassword: Новый пароль
@@ -13,6 +25,7 @@ SourceCode: Исходный код
 ErdDiagram: ER-диаграмма
 Resources: Ресурсы
 RoleAlreadyInTheList: Роль уже в списке
+Ratings: Рейтинги
 Rating: Рейтинг
 AddRole: Добавить роль
 NoRolesYes: Ролей пока нет

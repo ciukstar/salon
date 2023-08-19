@@ -10,3 +10,5 @@ main
     border-radius: 0
     table tr th
       font-weight: 500
+    table tr td
+      white-space: wrap

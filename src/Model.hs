@@ -16,13 +16,13 @@
 module Model where
 
 import Data.Time (Day, UTCTime)
-import Prelude (Double)
+import Prelude (Int)
 import Data.Bool (Bool)
 import Data.Function ((.))
 import Data.Maybe (Maybe (Just))
 import ClassyPrelude.Yesod
     ( Typeable , Text , ByteString , mkMigrate , mkPersist
-    , persistFileWith , share , sqlSettings , Textarea
+    , persistFileWith , share , sqlSettings , Textarea, derivePersistField
     )
 import Database.Persist.Quasi (lowerCaseSettings)
 import Data.Fixed (Centi)
@@ -36,10 +36,12 @@ import Data.Eq (Eq)
 import Data.Functor ((<$>))
 import Control.Monad (mapM)
 
--- You can define all of your database entities in the entities file.
--- You can find more information on persistent and how to declare entities
--- at:
--- http://www.yesodweb.com/book/persistent/
+
+data EmplStatus = EmplStatusEmployed | EmplStatusDismissed
+    deriving (Show, Read, Eq)
+derivePersistField "EmplStatus"
+
+
 share [mkPersist sqlSettings, mkMigrate "migrateAll"]
     $(persistFileWith lowerCaseSettings "config/models.persistentmodels")
 

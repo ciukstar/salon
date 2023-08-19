@@ -7,6 +7,9 @@
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgStaff}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
+      <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{AdminR AdmStaffSearchR} role=button>
+        <span.mdc-icon-button__ripple>
+        <i.material-symbols-outlined>search
       $maybe Entity uid _ <- muid
         <button.mdc-top-app-bar__action-item.mdc-icon-button type=button #buttonProfile>
           <span.mdc-icon-button__ripple>
@@ -30,19 +33,28 @@
 <main.mdc-top-app-bar--fixed-adjust>
   $if not (null staff)
     <nav.mdc-list data-mdc-auto-init=MDCList>
-      $forall (Entity sid (Staff name _ _ _ _), roles) <- roles
-        <a.mdc-list-item href=@{AdminR $ AdmEmplR sid}
+      $forall (Entity sid (Staff name _ _ _ _ _), role) <- roles
+        <a.mdc-list-item href=@?{(AdminR $ AdmEmplR sid,[("sid",pack $ show $ fromSqlKey sid)])}
           .mdc-list-item--with-leading-image
           .mdc-list-item--with-three-lines
-          .mdc-list-item--with-trailing-icon>
+          .mdc-list-item--with-trailing-icon
+          :Just sid == msid:.mdc-list-item--activated
+          onclick="this.href = [new window.URL(this.href)].map(x => {x.searchParams.append('scrollY',window.scrollY);return x;})[0].href">
+          <span.mdc-list-item__ripple>
           <span.mdc-list-item__start>
             <img src=@{AdminR $ AdmStaffPhotoR sid} width=56 height=56 alt=_{MsgPhoto} loading=lazy>
           <span.mdc-list-item__content>
             <div.mdc-list-item__primary-text>
               #{name}
-            $forall Entity _ (Role _ _ name _) <- roles
+            $maybe Entity _ (Role _ _ name rating) <- role
               <div.mdc-list-item__secondary-text>
                 #{name}
+              <div.mdc-list-item__secondary-text>
+                $maybe rating <- rating
+                  $forall _ <- range 1 rating
+                    <span style="color:#FFBF00">&starf;
+                  $forall _ <- range 1 (5 - rating)
+                    &starf;
           <span.mdc-list-item__end>
             <i.material-symbols-outlined>arrow_forward_ios
         <div.mdc-list-divider role=separator>

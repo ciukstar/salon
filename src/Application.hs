@@ -90,6 +90,7 @@ import Admin.Staff
     , postAdmStaffR, postAdmStaffDeleteR, postAdmRolesR
     , getAdmRoleR, postAdmRoleR, getAdmRoleCreateR, getAdmRoleEditR
     , postAdmRoleDeleteR, getAdmEmplUserR, postAdmEmplUserR
+    , postAdmEmplUnregR, getAdmStaffSearchR
     )
 import Admin.Services
     ( getAdmServicesR

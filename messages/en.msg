@@ -1,3 +1,15 @@
+ValueNotInRange rstart@Int rend@Int: Value not in range #{show rstart}..#{show rend}
+InvalidValue: Invalid value
+Unregistered: Unregistered
+Registered: Registered
+AccountStatus: Account status
+Employed: Employed
+Dismissed: Dismissed
+Select: Select
+Status: Status
+NoStaffMembersFound: No staff members found
+Search: Search
+UnregisterAreYouSure: Are you sure you want to unregister user?
 RegisterAsUser: Register as user
 PasswordChanged: Password changed
 NewPassword: New password
@@ -13,6 +25,7 @@ SourceCode: Source code
 ErdDiagram: ERD Diagram
 Resources: Resources
 RoleAlreadyInTheList: Role already in the list
+Ratings: Ratings
 Rating: Rating
 AddRole: Add role
 NoRolesYes: There are no roles yet

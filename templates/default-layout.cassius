@@ -1,6 +1,7 @@
 :root
 
   --theme-accent: #6200ee
+  --theme-on-accent: #FFFFFF
 
   --mdc-theme-primary: #FEDBD0
   --mdc-theme-on-primary: #442C2E
@@ -52,6 +53,9 @@
   
   --mdc-switch-selected-pressed-track-color: #FEEAE6
   --mdc-switch-unselected-pressed-track-color: #FEEAE6
+
+  --mdc-checkbox-checked-color: var(--mdc-theme-primary)
+  --mdc-checkbox-ink-color: var(--mdc-theme-on-primary)
 
 html
   body
