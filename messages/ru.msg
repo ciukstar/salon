@@ -1,3 +1,10 @@
+More: Больше
+Favicon: Значок
+NoBrandYet: Бренда еще нет
+BrandStrapline: Слоган бренда
+BrandName: Название бренда
+BrandMark: Отпечаток бренда
+Brand: Бренд
 ValueNotInRange rstart rend: Значение вне диапазона #{show rstart}..#{show rend}
 InvalidValue: Недопустимое значение
 Unregistered: Незарегистрированный

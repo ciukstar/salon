@@ -11,7 +11,8 @@
 {-# LANGUAGE StandaloneDeriving         #-}
 {-# LANGUAGE UndecidableInstances       #-}
 {-# LANGUAGE DataKinds                  #-}
-{-# LANGUAGE InstanceSigs #-}
+{-# LANGUAGE InstanceSigs               #-}
+{-# LANGUAGE TypeOperators              #-}
 
 module Model where
 

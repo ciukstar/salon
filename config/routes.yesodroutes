@@ -17,6 +17,12 @@
 / HomeR GET
 
 /admin AdminR:
+    /brand/#BrandId/mark   BrandMarkR   GET
+    /brand/delete 	   BrandDeleteR POST
+    /brand/#BrandId/edit   BrandEditR   GET POST
+    /brand/create 	   BrandCreateR GET
+    /brand 		   BrandR       GET POST
+
     /form/contacts/#ContentsId   AdmContactsEditR   GET POST
     /form/contacts               AdmContactsCreateR GET
     /delete/contacts/#ContentsId AdmContactsDeleteR POST

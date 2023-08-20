@@ -1,0 +1,87 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <button.mdc-top-app-bar__navigation-icon.mdc-icon-button #btnMainMenu>
+        <span.mdc-icon-button__ripple>
+        <i.material-symbols-outlined>menu
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgBrand}
+
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
+      $maybe Entity bid _ <- brand
+        <button.mdc-top-app-bar__action-item.mdc-icon-button type=button
+          onclick="document.getElementById('dlgBrandDelete').MDCDialog.open()">
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>delete
+        <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{AdminR $ BrandEditR bid} role=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>edit
+
+        <div.mdc-dialog #dlgBrandDelete data-mdc-auto-init=MDCDialog>
+          <div.mdc-dialog__container>
+            <div.mdc-dialog__surface role=alertdialog tabindex=-1>
+              <h4.mdc-dialog__title>_{MsgPleaseConfirm}
+              <div.mdc-dialog__content>_{MsgDeleteAreYouSure}
+              <div.mdc-dialog__actions>
+                <button.mdc-dialog-button.mdc-button type=button data-mdc-dialog-action=cancel>
+                  <span.mdc-button__ripple>
+                  <span.mdc-button__label>_{MsgCancel}
+                <form method=post action=@{AdminR BrandDeleteR}>
+                  <button.mdc-dialog-button.mdc-button.mdc-button--raised type=submit>
+                    <span.mdc-button__ripple>
+                    <span.mdc-button__label>_{MsgYesDelete}
+          <div.mdc-dialog__scrim>
+          
+      $maybe Entity uid _ <- muid
+        <button.mdc-top-app-bar__action-item.mdc-icon-button type=button #buttonProfile>
+          <span.mdc-icon-button__ripple>
+          <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" alt=_{MsgPhoto}
+            onerror="this.src = '@{PhotoPlaceholderR}'">
+
+          <div.mdc-menu-surface--anchor>
+            <div.mdc-menu.mdc-menu-surface data-mdc-auto-init=MDCMenuSurface>
+              <ul.mdc-deprecated-list.mdc-deprecated-list--icon-list
+                role=menu aria-hidden=true aria-orientation=vertical tabindex=-1>
+
+                <a.mdc-deprecated-list-item role=menuitem href=@{AuthR LogoutR}>
+                  <span.mdc-deprecated-list-item__ripple>
+                  <i.material-symbols-outlined style="margin-right:1rem">logout
+                  <span.mdc-deprecated-list-item__text>_{MsgLogout}
+      $nothing
+        <a.mdc-top-app-bar__action-item.mdc-icon-button role=button href=@{AuthR LoginR}>
+          <span.mdc-icon-button__ripple>
+          <i.material-symbols-outlined>login
+
+<main.mdc-top-app-bar--fixed-adjust>
+  $maybe Entity bid (Brand _ name strap _ more) <- brand
+    <figure>
+      <img src=@{AdminR $ BrandMarkR bid} alt=_{MsgBrandMark}>
+      <figcaption>
+        $maybe name <- name
+          #{preEscapedToMarkup $ unTextarea name}
+        $maybe strap <- strap
+          #{preEscapedToMarkup $ unTextarea strap}
+    $maybe more <- more
+      #{preEscapedToMarkup $ unTextarea more}
+  $nothing
+    <figure style="text-align:center">
+      <span style="font-size:5rem;color:gray">&varnothing;
+      <figcaption>
+        _{MsgNoBrandYet}.
+    <div.mdc-touch-target-wrapper #fabBrandCreate style="position:fixed;right:1rem;bottom:1rem">
+      <a.mdc-fab.mdc-fab--touch href=@{AdminR BrandCreateR}>
+        <span.mdc-fab__ripple>
+        <span.mdc-fab__focus-ring>
+        <span.mdc-fab__icon.material-symbols-outlined>add
+        <span.mdc-fab__touch>
+
+$forall (_,msg) <- msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
+    <div.mdc-snackbar__surface>
+      <div.mdc-snackbar__label>#{msg}
+      <div.mdc-snackbar__actions>
+        <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>close

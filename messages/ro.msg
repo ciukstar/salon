@@ -1,3 +1,10 @@
+More: Mai mult
+Favicon: Pictograma
+NoBrandYet: Nu există încă nicio marcă
+BrandStrapline: Sloganul mărcii
+BrandName: Numele mărcii
+BrandMark: Amprenta mărcii
+Brand: Marca
 ValueNotInRange rstart rend: Valoarea nu se află în intervalul #{show rstart}..#{show rend}
 InvalidValue: Valoare nevalidă
 Unregistered: Neînregistrat

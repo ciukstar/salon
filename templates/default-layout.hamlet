@@ -46,7 +46,7 @@
           <span.mdc-deprecated-list-item__text>_{MsgContact}
       <hr.mdc-deprecated-list-divider role=separator>
       
-      <details :elem curr [Just (AdminR $ AdmServicesR (Services [])),Just (AdminR AdmStaffR),Just (AdminR AdmAboutR),Just (AdminR AdmContactsR),Just (AdminR UsersR)]:open
+      <details :elem curr [Just (AdminR $ AdmServicesR (Services [])),Just (AdminR AdmStaffR),Just (AdminR AdmAboutR),Just (AdminR AdmContactsR),Just (AdminR UsersR), Just (AdminR BrandR)]:open
         ontoggle="document.getElementById('iconDataExpand').textContent = this.open ? 'expand_less' : 'expand_more'">
         <summary.mdc-deprecated-list>
           <li.mdc-deprecated-list-item>
@@ -93,6 +93,14 @@
             <span.mdc-deprecated-list-item__ripple>
             <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>edit_note
             <span.mdc-deprecated-list-item__text>_{MsgUsers}
+
+          <a.mdc-deprecated-list-item href=@{AdminR BrandR}
+            :Just (AdminR BrandR) /= curr:tabindex=-1
+            :Just (AdminR BrandR) == curr:tabindex=0
+            :Just (AdminR BrandR) == curr:.mdc-deprecated-list-item--activated>
+            <span.mdc-deprecated-list-item__ripple>
+            <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>edit_note
+            <span.mdc-deprecated-list-item__text>_{MsgBrand}
 
       <hr.mdc-deprecated-list-divider role=separator>
       <details :elem curr [Just (ResourcesR DocsR)]:open

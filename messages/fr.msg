@@ -1,3 +1,10 @@
+More: Plus
+Favicon: Icône
+NoBrandYet: Il n'y a pas encore de marque
+BrandStrapline: Slogan de la marque
+BrandName: Nom de la marque
+BrandMark: Empreinte de la marque
+Brand: Marque
 ValueNotInRange rstart rend: Valeur hors plage #{show rstart}..#{show rend}
 InvalidValue: Valeur incorrecte
 Unregistered: Non enregistré

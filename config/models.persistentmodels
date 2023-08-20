@@ -69,3 +69,10 @@ User
   email Text Maybe
   UniqueUser name
   deriving Typeable
+
+Brand
+  mark ByteString Maybe
+  name Textarea Maybe
+  strapline Textarea Maybe
+  ico ByteString Maybe
+  more Textarea Maybe

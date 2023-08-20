@@ -60,6 +60,11 @@ import Handler.Account (getAccountR, postAccountR, getAccountPhotoR)
 import Handler.Home (getHomeR)
 import Handler.Resources (getDocsR)
 
+import Admin.Brand
+    ( getBrandR, getBrandMarkR, postBrandR, getBrandEditR
+    , postBrandEditR, postBrandDeleteR, getBrandCreateR
+    )
+
 import Admin.Users
     ( getUsersR
     , getUserCreateFormR

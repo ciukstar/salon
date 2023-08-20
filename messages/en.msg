@@ -1,3 +1,10 @@
+More: More
+Favicon: Favicon
+NoBrandYet: There is no brand yet
+BrandStrapline: Brand strapline
+BrandName: Brand name
+BrandMark: Brand mark
+Brand: Brand
 ValueNotInRange rstart@Int rend@Int: Value not in range #{show rstart}..#{show rend}
 InvalidValue: Invalid value
 Unregistered: Unregistered
