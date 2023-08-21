@@ -1,0 +1,12 @@
+
+[#{fvId icoV},#{fvId markV}].forEach(function (x) {
+  document.getElementById(x).addEventListener('change',function (e) {
+    if (this.files && this.files[0]) {
+      let r = new FileReader();
+      r.onload = function (e) {
+	document.getElementById(`img${x}`).setAttribute('src',e.target.result);
+      }
+      r.readAsDataURL(this.files[0]);
+    }
+  });
+});

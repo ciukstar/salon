@@ -1,3 +1,6 @@
+Administrator: Administrator
+Customer: Client
+NoUsersFound: Nu a fost găsit niciun utilizator
 More: Mai mult
 Favicon: Pictograma
 NoBrandYet: Nu există încă nicio marcă
@@ -67,6 +70,7 @@ AddService: Adaugă serviciu
 AddSubservice: Adaugă subserviciu
 Subservices: Subservicii
 Category: Categorie
+Categories: Categorii
 Image: Imagine
 NoServicesYet: Nu există încă servicii
 RecordDeleted: Înregistrarea a fost ștearsă

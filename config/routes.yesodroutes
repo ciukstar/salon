@@ -1,5 +1,3 @@
--- By default this file is used by `parseRoutesFile` in Foundation.hs
--- Syntax for this file here: https://www.yesodweb.com/book/routing-and-handlers
 
 /contact ContactR GET
 
@@ -17,6 +15,7 @@
 / HomeR GET
 
 /admin AdminR:
+    /brand/#BrandId/ico    BrandIcoR    GET
     /brand/#BrandId/mark   BrandMarkR   GET
     /brand/delete 	   BrandDeleteR POST
     /brand/#BrandId/edit   BrandEditR   GET POST
@@ -61,6 +60,7 @@
     /staff/#StaffId	   	       	 AdmEmplR	 GET POST
     /staff 		   	       	 AdmStaffR       GET POST
 
+    /search/users	      UsersSearchR    GET
     /users/#UserId/form/reset UserPwdResetR   GET POST
     /users/#UserId/form/edit  UserEditFormR   GET
     /users/form/create 	      UserCreateFormR GET

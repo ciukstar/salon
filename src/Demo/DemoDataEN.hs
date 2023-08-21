@@ -15,7 +15,8 @@ import Database.Persist.Sql (SqlBackend)
 import Database.Persist ( PersistStoreWrite(insert_, insert) )
 
 import Model
-    ( User (User, userName, userPassword, userEmail, userFullName)
+    ( User (User, userName, userPassword, userAdmin, userEmail, userFullName)
+    , UserPhoto (UserPhoto, userPhotoUser, userPhotoPhoto, userPhotoMime)
     , Service
       ( Service, serviceName, serviceDescr, serviceGroup, serviceOverview
       , servicePublished
@@ -39,7 +40,6 @@ import Demo.DemoPhotos
 
 populateEN :: MonadIO m => ReaderT SqlBackend m ()
 populateEN = do
-    password <- liftIO $ makePassword "root" 17
 
     insert_ $ Contents { contentsSection = "CONTACTS"
                        , contentsContent = Textarea [st|
@@ -65,7 +65,7 @@ populateEN = do
 </p>
 |]
                        }
-    
+
     insert_ $ Contents { contentsSection = "ABOUT_US"
                        , contentsContent = Textarea [st|
 <h2 style="color:gray">Our Mission</h2>
@@ -84,86 +84,153 @@ We will continue to offer the latest treatments, the most innovative techniques 
 |]
                        }
 
+    pass0 <- liftIO $ makePassword "root" 17
     insert_ $ User { userName = "root"
-                   , userPassword = decodeUtf8 password
-                   , userFullName = Just "Smith James"
-                   , userEmail = Just "jsmith@mail.en"
+                   , userPassword = decodeUtf8 pass0
+                   , userAdmin = True
+                   , userFullName = Just "The Root"
+                   , userEmail = Just "theroot@mail.en"
                    }
+
+    pass1 <- liftIO $ makePassword "johnnysmith" 17
+    u1 <- insert $ User { userName = "johnnysmith"
+                        , userPassword = decodeUtf8 pass1
+                        , userAdmin = False
+                        , userFullName = Just "Johnny Smith"
+                        , userEmail = Just "jsmith@mail.en"
+                        }
 
     e1 <- insert $ Staff { staffName = "Johnny Smith"
                          , staffStatus = EmplStatusEmployed
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "jsmith@mail.en"
-                         , staffUser = Nothing
+                         , staffUser = Just u1
                          }
 
     case B64.decode man01 of
       Left _ -> return ()
-      Right x -> insert_ $ StaffPhoto { staffPhotoStaff = e1
-                                      , staffPhotoPhoto = x
-                                      , staffPhotoMime = "image/avif"
-                                      }
+      Right x -> do
+          insert_ $ StaffPhoto { staffPhotoStaff = e1
+                               , staffPhotoPhoto = x
+                               , staffPhotoMime = "image/avif"
+                               }
+          insert_ $ UserPhoto { userPhotoUser = u1
+                              , userPhotoPhoto = x
+                              , userPhotoMime = "image/avif"
+                              }
+
+    pass2 <- liftIO $ makePassword "marylopez" 17
+    u2 <- insert $ User { userName = "marylopez"
+                        , userPassword = decodeUtf8 pass2
+                        , userAdmin = False
+                        , userFullName = Just "Mary Lopez"
+                        , userEmail = Just "mlopez@mail.en"
+                        }
 
     e2 <- insert $ Staff { staffName = "Mary Lopez"
                          , staffStatus = EmplStatusEmployed
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "mlopez@mail.en"
-                         , staffUser = Nothing
+                         , staffUser = Just u2
                          }
 
     case B64.decode woman01 of
       Left _ -> return ()
-      Right x -> insert_ $ StaffPhoto { staffPhotoStaff = e2
-                                      , staffPhotoPhoto = x
-                                      , staffPhotoMime = "image/avif"
-                                      }
+      Right x -> do
+          insert_ $ StaffPhoto { staffPhotoStaff = e2
+                               , staffPhotoPhoto = x
+                               , staffPhotoMime = "image/avif"
+                               }
+          insert_ $ UserPhoto { userPhotoUser = u2
+                              , userPhotoPhoto = x
+                              , userPhotoMime = "image/avif"
+                              }
+
+    pass3 <- liftIO $ makePassword "johnjohnson" 17
+    u3 <- insert $ User { userName = "johnjohnson"
+                        , userPassword = decodeUtf8 pass3
+                        , userAdmin = False
+                        , userFullName = Just "John Johnson"
+                        , userEmail = Just "jjohnson@mail.en"
+                        }
 
     e3 <- insert $ Staff { staffName = "John Johnson"
                          , staffStatus = EmplStatusEmployed
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "jjohnson@mail.en"
-                         , staffUser = Nothing
+                         , staffUser = Just u3
                          }
 
     case B64.decode man02 of
       Left _ -> return ()
-      Right x -> insert_ $ StaffPhoto { staffPhotoStaff = e3
-                                      , staffPhotoPhoto = x
-                                      , staffPhotoMime = "image/avif"
-                                      }
+      Right x -> do
+          insert_ $ StaffPhoto { staffPhotoStaff = e3
+                               , staffPhotoPhoto = x
+                               , staffPhotoMime = "image/avif"
+                               }
+          insert_ $ UserPhoto { userPhotoUser = u3
+                              , userPhotoPhoto = x
+                              , userPhotoMime = "image/avif"
+                              }
+
+    pass4 <- liftIO $ makePassword "patriciabrown" 17
+    u4 <- insert $ User { userName = "patriciabrown"
+                        , userPassword = decodeUtf8 pass4
+                        , userAdmin = False
+                        , userFullName = Just "Patricia Brown"
+                        , userEmail = Just "pbrown@mail.en"
+                        }
 
     e4 <- insert $ Staff { staffName = "Patricia Brown"
                          , staffStatus = EmplStatusEmployed
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "pbrown@mail.en"
-                         , staffUser = Nothing
+                         , staffUser = Just u4
                          }
 
     case B64.decode woman02 of
       Left _ -> return ()
-      Right x -> insert_ $ StaffPhoto { staffPhotoStaff = e4
-                                      , staffPhotoPhoto = x
-                                      , staffPhotoMime = "image/avif"
-                                      }
+      Right x -> do
+          insert_ $ StaffPhoto { staffPhotoStaff = e4
+                               , staffPhotoPhoto = x
+                               , staffPhotoMime = "image/avif"
+                               }
+          insert_ $ UserPhoto { userPhotoUser = u4
+                              , userPhotoPhoto = x
+                              , userPhotoMime = "image/avif"
+                              }
+
+    pass5 <- liftIO $ makePassword "chriswilson" 17
+    u5 <- insert $ User { userName = "chriswilson"
+                        , userPassword = decodeUtf8 pass5
+                        , userAdmin = False
+                        , userFullName = Just "Chris Wilson"
+                        , userEmail = Just "cwilson@mail.en"
+                        }
 
     e5 <- insert $ Staff { staffName = "Chris Wilson"
                          , staffStatus = EmplStatusEmployed
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "cwilson@mail.en"
-                         , staffUser = Nothing
+                         , staffUser = Just u5
                          }
 
     case B64.decode man03 of
       Left _ -> return ()
-      Right x -> insert_ $ StaffPhoto { staffPhotoStaff = e5
-                                      , staffPhotoPhoto = x
-                                      , staffPhotoMime = "image/avif"
-                                      }
+      Right x -> do
+          insert_ $ StaffPhoto { staffPhotoStaff = e5
+                               , staffPhotoPhoto = x
+                               , staffPhotoMime = "image/avif"
+                               }
+          insert_ $ UserPhoto { userPhotoUser = u5
+                              , userPhotoPhoto = x
+                              , userPhotoMime = "image/avif"
+                              }
 
     e6 <- insert $ Staff { staffName = "Philip Davis"
                          , staffStatus = EmplStatusEmployed
@@ -255,7 +322,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                                       , staffPhotoMime = "image/avif"
                                       }
 
-    
+
 
     s1 <- insert $ Service { serviceName = "Hair care"
                            , serviceOverview = Just "Hair Care Services"
@@ -800,5 +867,5 @@ We will continue to offer the latest treatments, the most innovative techniques 
                         , thumbnailPhoto = $(embedFile "static/img/body-shaping-fitness.svg")
                         , thumbnailMime = "image/svg+xml"
                         }
-        
+
     return ()

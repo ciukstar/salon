@@ -29,21 +29,32 @@
           <i.material-symbols-outlined>login
         
 
-
 <main.mdc-top-app-bar--prominent-fixed-adjust>
-  <div #wrapper>
-    <figure>
-      <img src=@{StaticR img_salon_svg} #intro>
-      <figcaption>_{MsgSalon}
-    <a.mdc-button href=@{ServicesR}>
-      <span.mdc-button__ripple>
-      <span.mdc-button__label>_{MsgServices}
-    <a.mdc-button href=@{AboutUsR}>
-      <span.mdc-button__ripple>
-      <span.mdc-button__label>_{MsgAboutUs}
-    <a.mdc-button href=@{BookR}>
-      <span.mdc-button__ripple>
-      <span.mdc-button__label>_{MsgBook}
+  $maybe Entity bid (Brand _ _ name strap _ _ more) <- brand
+    <div #brand>
+      <figure>
+        <img src=@{AdminR $ BrandMarkR bid} alt=_{MsgBrandMark}>
+        <figcaption>
+          $maybe name <- name
+            #{preEscapedToMarkup $ unTextarea name}
+          $maybe strap <- strap
+            #{preEscapedToMarkup $ unTextarea strap}
+      $maybe more <- more
+        #{preEscapedToMarkup $ unTextarea more}
+  $nothing
+    <div #brandDefault>
+      <figure>
+        <img src=@{StaticR img_salon_svg}>
+        <figcaption>_{MsgSalon}
+      <a.mdc-button href=@{ServicesR}>
+        <span.mdc-button__ripple>
+        <span.mdc-button__label>_{MsgServices}
+      <a.mdc-button href=@{AboutUsR}>
+        <span.mdc-button__ripple>
+        <span.mdc-button__label>_{MsgAboutUs}
+      <a.mdc-button href=@{BookR}>
+        <span.mdc-button__ripple>
+        <span.mdc-button__label>_{MsgBook}
 
 $forall (_,msg) <- msgs
   <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>

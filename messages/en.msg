@@ -1,3 +1,6 @@
+Administrator: Administrator
+Customer: Customer
+NoUsersFound: No users found
 More: More
 Favicon: Favicon
 NoBrandYet: There is no brand yet
@@ -67,6 +70,7 @@ AddService: Add service
 AddSubservice: Add subservice
 Subservices: Subservices
 Category: Category
+Categories: Categories
 Image: Image
 NoServicesYet: There are not services yet
 RecordDeleted: Record deleted

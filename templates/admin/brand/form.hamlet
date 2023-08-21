@@ -1,0 +1,31 @@
+#{extra}
+<div.form-field>
+  <label #labelFavicon>
+    <figure #figureFavicon>
+      $maybe Entity bid _ <- brand
+        <img #img#{fvId icoV} src=@{AdminR $ BrandIcoR bid} height=16 width=16 alt=_{MsgFavicon}>
+      $nothing
+        <img #img#{fvId icoV} src=@{StaticR img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg}
+          height=24 width=24 alt=_{MsgFavicon}>
+      <figcaption>
+        #{fvLabel icoV}
+    ^{fvInput icoV}
+<div.form-field>
+  <label #labelMark>
+    <figure #figureMark>
+      $maybe Entity bid _ <- brand
+        <img #img#{fvId markV} src=@{AdminR $ BrandMarkR bid} width=56 height=56 alt=_{MsgBrandMark}>
+      $nothing
+        <img #img#{fvId markV} src=@{StaticR img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg}
+          width=56 height=56 alt=_{MsgBrandMark}>
+      <figcaption>
+        #{fvLabel markV}
+    ^{fvInput markV}
+$forall v <- [nameV,strapV,moreV]
+  <div.form-field>
+    <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--textarea data-mdc-auto-init=MDCTextField>
+      <span.mdc-text-field__ripple>
+      <span.mdc-floating-label>#{fvLabel v}
+      <span.mdc-text-field__resizer>
+        ^{fvInput v}
+      <span.mdc-line-ripple>

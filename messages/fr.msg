@@ -1,3 +1,6 @@
+Administrator: Administrateur
+Customer: Cliente
+NoUsersFound: Aucun utilisateur trouvé
 More: Plus
 Favicon: Icône
 NoBrandYet: Il n'y a pas encore de marque
@@ -67,6 +70,7 @@ AddService: Ajouter service
 AddSubservice: Ajouter sous-service
 Subservices: Sous-services
 Category: Catégorie
+Categories: Catégories
 Image: Image
 NoServicesYet: Il n'y a pas encore de services
 RecordDeleted: L'enregistrement a été supprimé

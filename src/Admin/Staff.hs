@@ -52,7 +52,7 @@ import Yesod.Form.Types
     )
 import Yesod.Form.Input (runInputGet, iopt)
 import Yesod.Form.Fields
-    ( textField, emailField, passwordField, intField, hiddenField, fileField )
+    ( textField, emailField, passwordField, intField, hiddenField, fileField, boolField )
 import Yesod.Form.Functions
     ( mreq, mopt, generateFormPost, runFormPost, checkM, checkBool )
 import Settings (widgetFile)
@@ -94,7 +94,7 @@ import Foundation
       , MsgFullName, MsgAlreadyExists, MsgUnregisterAreYouSure, MsgSearch
       , MsgNoStaffMembersFound, MsgStatus, MsgSelect, MsgRatings
       , MsgDismissed, MsgEmployed, MsgAccountStatus, MsgRegistered
-      , MsgUnregistered, MsgValueNotInRange
+      , MsgUnregistered, MsgValueNotInRange, MsgAdministrator
       )
     )
 
@@ -228,6 +228,11 @@ formUser empl extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } Nothing
+    (adminR,adminV) <- mreq boolField FieldSettings
+        { fsLabel = SomeMessage MsgAdministrator
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (pure False)
     (fnameR,fnameV) <- mopt textField FieldSettings
         { fsLabel = SomeMessage MsgFullName
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
@@ -238,10 +243,10 @@ formUser empl extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (staffEmail . entityVal <$> empl)
-    let r = User <$> nameR <*> passR <*> fnameR <*> emailR
+    let r = User <$> nameR <*> passR <*> adminR <*> fnameR <*> emailR
     let w = [whamlet|
 #{extra}
-$forall v <- [nameV,passV,fnameV,emailV]
+$forall v <- [nameV,passV,adminV,fnameV,emailV]
   <div.form-field>
     <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
       :isJust (fvErrors v):.mdc-text-field--invalid

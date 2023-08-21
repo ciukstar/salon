@@ -64,7 +64,7 @@
   <div.mdc-dialog__scrim>
 
 <main.mdc-top-app-bar--fixed-adjust>
-  $maybe (Entity sid (Staff name _ phone mobile email _), user) <- empl
+  $maybe (Entity sid (Staff name status phone mobile email _), user) <- empl
     <figure>
       <img src=@{AdminR $ AdmStaffPhotoR sid} width=56 height=56 alt=_{MsgPhoto}>
     <div.mdc-data-table>
@@ -74,6 +74,14 @@
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgName}
               <td.mdc-data-table__cell>#{name}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgStatus}
+              <td.mdc-data-table__cell>
+                $case status
+                  $of EmplStatusEmployed
+                    _{MsgEmployed}
+                  $of EmplStatusDismissed
+                    _{MsgDismissed}
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgPhone}
               <td.mdc-data-table__cell>
@@ -93,7 +101,7 @@
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgUser}
               <td.mdc-data-table__cell>
-                $maybe Entity _ (User uname _ _ _ ) <- user
+                $maybe Entity _ (User uname _ _ _ _ ) <- user
                   #{uname}
 
   <details.mdc-list #detailsRoles :Just "roles" == open:open>

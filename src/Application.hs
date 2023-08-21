@@ -61,7 +61,7 @@ import Handler.Home (getHomeR)
 import Handler.Resources (getDocsR)
 
 import Admin.Brand
-    ( getBrandR, getBrandMarkR, postBrandR, getBrandEditR
+    ( getBrandR, getBrandMarkR, getBrandIcoR, postBrandR, getBrandEditR
     , postBrandEditR, postBrandDeleteR, getBrandCreateR
     )
 
@@ -75,6 +75,7 @@ import Admin.Users
     , postUserDeleteR
     , getUserPwdResetR
     , postUserPwdResetR
+    , getUsersSearchR
     )
 import Admin.Contacts
     ( getAdmContactsR

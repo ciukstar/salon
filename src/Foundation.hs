@@ -159,6 +159,7 @@ instance Yesod App where
     isAuthorized (AdminR (UserR _)) _ = return Authorized
     isAuthorized (AdminR (UserDeleteR _)) _ = return Authorized
     isAuthorized (AdminR (UserPwdResetR _)) _ = return Authorized
+    isAuthorized (AdminR UsersSearchR) _ = return Authorized
     isAuthorized (AdminR (AdmEmplUserR _)) _ = return Authorized
     isAuthorized (AdminR (AdmEmplUnregR _ _)) _ = return Authorized
     isAuthorized (AdminR AdmStaffSearchR) _ = return Authorized
@@ -166,6 +167,7 @@ instance Yesod App where
     isAuthorized (AdminR BrandDeleteR) _ = return Authorized
     isAuthorized (AdminR (BrandEditR _)) _ = return Authorized
     isAuthorized (AdminR (BrandMarkR _)) _ = return Authorized
+    isAuthorized (AdminR (BrandIcoR _)) _ = return Authorized
     isAuthorized (AdminR BrandCreateR) _ = return Authorized
     
     

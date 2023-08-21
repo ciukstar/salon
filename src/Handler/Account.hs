@@ -34,7 +34,7 @@ import Yesod.Form.Types
     )
 import Yesod.Form
     ( generateFormPost, mreq, textField, mopt
-    , fileField, emailField, runFormPost
+    , fileField, emailField, runFormPost, boolField, checkBoxField
     )
 import Yesod.Auth (Route (LoginR))
 
@@ -45,7 +45,7 @@ import Foundation
       ( MsgAccount, MsgCancel, MsgUsername, MsgPassword
       , MsgPhoto, MsgFullName, MsgEmail, MsgSignUp
       , MsgConfirmPassword, MsgYouMustEnterTwoValues
-      , MsgPasswordsDoNotMatch, MsgRegistration
+      , MsgPasswordsDoNotMatch, MsgRegistration, MsgAdministrator
       )
     )
 
@@ -55,7 +55,7 @@ import Database.Persist (Entity (Entity), insert, insert_)
 
 import Model
     ( ultDestKey
-    , User (userName, User, userPassword, userFullName), UserId
+    , User (userName, User, userPassword, userFullName, userAdmin), UserId
     , UserPhoto (UserPhoto, userPhotoUser, userPhotoPhoto, userPhotoMime)
     , EntityField (UserPhotoUser)
     )
@@ -120,6 +120,11 @@ formAccount user extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (userPassword <$> user)
+    (adminR,adminV) <- mreq checkBoxField FieldSettings
+        { fsLabel = SomeMessage MsgAdministrator
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-checkbox__native-control")]
+        } (userAdmin <$> user)
     (fnameR,fnameV) <- mopt textField FieldSettings
         { fsLabel = SomeMessage MsgFullName
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
@@ -136,7 +141,7 @@ formAccount user extra = do
         , fsAttrs = [("style","display:none")]
         } Nothing
 
-    let r = (,) <$> (User <$> nameR <*> passR <*> fnameR <*> emailR) <*> photoR
+    let r = (,) <$> (User <$> nameR <*> passR <*> adminR <*> fnameR <*> emailR) <*> photoR
 
     let w = do
             toWidget [julius|
@@ -178,6 +183,29 @@ document.getElementById(#{fvId photoV}).addEventListener('change',function (e) {
     <div.mdc-text-field-helper-line>
       <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
         #{err}
+
+<div.mdc-form-field.form-field data-mdc-auto-init=MDCFormField style="display:flex;flex-direction:row">
+  ^{fvInput adminV}
+  $with selected <- resolveSelected adminR
+    <button.mdc-switch type=button role=switch #switchAdmin data-mdc-auto-init=MDCSwitch
+      :selected:.mdc-switch--selected :selected:aria-checked=true
+      :not selected:.mdc-switch--unselected :not selected:aria-checked=false
+      onclick="document.getElementById('#{fvId adminV}').checked = !this.MDCSwitch.selected">
+      <div.mdc-switch__track>
+      <div.mdc-switch__handle-track>
+        <div.mdc-switch__handle>
+          <div.mdc-switch__shadow>
+            <div.mdc-elevation-overlay>
+          <div.mdc-switch__ripple>
+          <div.mdc-switch__icons>
+            <svg.mdc-switch__icon.mdc-switch__icon--on viewBox="0 0 24 24">
+              <path d="M19.69,5.23L8.96,15.96l-4.23-4.23L2.96,13.5l6,6L21.46,7L19.69,5.23z">
+            <svg.mdc-switch__icon.mdc-switch__icon--off viewBox="0 0 24 24">
+              <path d="M20 13H4v-2h16v2z">
+
+    <span.mdc-switch__focus-ring-wrapper>
+      <span.mdc-switch__focus-ring>
+    <label for=switchAdmin>_{MsgAdministrator}
         
 $forall v <- [fnameV,emailV]
   <div.form-field>
@@ -193,6 +221,8 @@ $forall v <- [fnameV,emailV]
           #{errs}
 |]
     return (r, w)
+  where
+      resolveSelected adminR = case adminR of FormSuccess x -> x ; _ -> False
 
 
 passwordConfirmField :: Field Handler Text

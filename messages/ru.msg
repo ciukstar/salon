@@ -1,3 +1,6 @@
+Administrator: Администратор
+Customer: Клиент
+NoUsersFound: Пользователей не найдено
 More: Больше
 Favicon: Значок
 NoBrandYet: Бренда еще нет
@@ -67,6 +70,7 @@ AddService: Добавить услугу
 AddSubservice: Добавить подуслугу
 Subservices: Подуслуги
 Category: Категория
+Categories: Категории
 Image: Изображение
 NoServicesYet: Услуг пока нет
 RecordDeleted: Запись удалена

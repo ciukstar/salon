@@ -6,7 +6,10 @@
         <i.material-symbols-outlined>menu
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgUsers}
 
-    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>          
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
+      <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{AdminR UsersSearchR} role=button>
+        <span.mdc-icon-button__ripple>
+        <i.material-symbols-outlined>search
       $maybe Entity uid _ <- muid
         <button.mdc-top-app-bar__action-item.mdc-icon-button type=button #buttonProfile>
           <span.mdc-icon-button__ripple>
@@ -30,7 +33,7 @@
 <main.mdc-top-app-bar--fixed-adjust>
   $if not (null users)
     <nav.mdc-list>
-      $forall Entity uid (User name _ fname email) <- users
+      $forall Entity uid (User name _ _ fname email) <- users
         <a.mdc-list-item href=@{AdminR $ UserR uid}
           .mdc-list-item--with-three-lines.mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon>
           <span.mdc-list-item__ripple>
