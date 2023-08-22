@@ -54,7 +54,7 @@
         <div.mdc-list-divider role=separator>
   $else
     <figure style="text-align:center">
-      <span style="font-size:5rem;color:gray">&varnothing;
+      <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
       <figcaption>
         _{MsgNoUsersYet}.
   <div.mdc-touch-target-wrapper #fabAddUser>

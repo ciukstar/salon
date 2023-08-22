@@ -1,3 +1,4 @@
+NoServicesFound: Nu a fost găsit niciun serviciu
 Administrator: Administrator
 Customer: Client
 NoUsersFound: Nu a fost găsit niciun utilizator
@@ -51,6 +52,7 @@ AddStaffMember: Adaugă membru
 Staff: Personalul
 No: Nu
 Yes: Da
+Unpublished: Nepublicat
 Published: Publicat
 Overview: Prezentare generală
 PriceAlreadyInTheList: Acest preț este deja în listă

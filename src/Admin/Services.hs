@@ -19,10 +19,12 @@ module Admin.Services
   , postAdmPriceR
   , getAdmPriceEditR
   , postAdmPriceDeleteR
+  , getAdmServicesSearchR
   ) where
 
 import Control.Applicative ((<|>))
-import Data.Text (Text, pack)
+import Control.Monad (when)
+import Data.Text (Text, pack, unpack)
 import Data.Maybe (isJust, fromMaybe, catMaybes)
 import Data.Text.Encoding (encodeUtf8)
 import Data.FileEmbed (embedFile)
@@ -33,7 +35,8 @@ import Yesod.Core
     , FileInfo (fileContentType), SomeMessage (SomeMessage)
     , addMessageI, fileSourceByteString, redirect, getMessages
     , TypedContent (TypedContent), ToContent (toContent), typeSvg
-    , whamlet, preEscapedToMarkup
+    , whamlet, preEscapedToMarkup, newIdent, getRequest
+    , YesodRequest (reqGetParams)
     )
 import Settings (widgetFile)
 import Settings.StaticFiles
@@ -48,7 +51,8 @@ import Yesod.Form
     , FieldView (fvId, fvErrors, fvInput, fvLabel)
     , hiddenField, runInputGet, iopt, intField, checkM
     , mreq, textField, doubleField, mopt, textareaField, fileField
-    , generateFormPost, runFormPost, unTextarea, withRadioField, OptionList, optionsPairs
+    , generateFormPost, runFormPost, unTextarea, withRadioField
+    , OptionList, optionsPairs, searchField, Textarea (Textarea)
     )
 
 import Yesod.Auth (Route (LoginR, LogoutR), maybeAuth)
@@ -58,7 +62,7 @@ import Foundation
     , AdminR
       ( AdmServiceCreateFormR, AdmServiceEditFormR, AdmServicesR, AdmServiceR
       , AdmServiceDeleteR, AdmServiceImageR, AdmPricelistCreateR, AdmPricelistR
-      , AdmPriceR, AdmPriceEditR, AdmPriceDeleteR
+      , AdmPriceR, AdmPriceEditR, AdmPriceDeleteR, AdmServicesSearchR
       )
     , AppMessage
       ( MsgServices, MsgPhoto, MsgLogout, MsgTheName
@@ -68,7 +72,8 @@ import Foundation
       , MsgDeleteAreYouSure, MsgYesDelete, MsgPleaseConfirm, MsgRecordDeleted
       , MsgPrefix, MsgSuffix, MsgServisAlreadyInTheList, MsgPricelist, MsgAddPrice
       , MsgNoPriceSetYet, MsgPriceAlreadyInTheList, MsgOverview, MsgPublished
-      , MsgYes, MsgNo
+      , MsgYes, MsgNo, MsgSearch, MsgNoServicesFound, MsgSelect, MsgCategory
+      , MsgCategories, MsgStatus, MsgUnpublished
       )
     )
 
@@ -79,13 +84,15 @@ import Database.Persist
 import Model
     ( ServiceId
     , Service
-      ( Service, serviceName, serviceDescr, serviceGroup, serviceOverview, servicePublished
+      ( Service, serviceName, serviceDescr, serviceGroup, serviceOverview
+      , servicePublished
       )
     , Thumbnail (Thumbnail, thumbnailService, thumbnailPhoto, thumbnailMime)
     , Services (Services)
     , EntityField
       ( ServiceId, ThumbnailPhoto, ThumbnailMime, ServiceGroup, ThumbnailService
-      , ServiceName, PricelistService, PricelistId, PricelistName
+      , ServiceName, PricelistService, PricelistId, PricelistName, ServiceOverview
+      , ServiceDescr, ServicePublished
       )
     , Pricelist
       ( Pricelist, pricelistName, pricelistPrice, pricelistPrefix, pricelistSuffix
@@ -97,10 +104,48 @@ import Model
 import Yesod.Persist (YesodPersist(runDB), (=.), PersistUniqueWrite (upsert))
 import Database.Persist.Sql (fromSqlKey, toSqlKey, delete)
 import Database.Esqueleto.Experimental
-    ( selectOne, from, table, where_, val
-    , (^.), (==.)
-    , isNothing, select, orderBy, asc, just
+    ( selectOne, from, table, where_, val, in_, valList, just, justList
+    , (^.), (==.), (%), (++.), (||.)
+    , isNothing, select, orderBy, asc, upper_, like, not_, exists
     )
+
+
+data ServiceStatus = ServiceStatusPulished | ServiceStatusUnpublished
+  deriving (Show, Read, Eq)
+
+
+getAdmServicesSearchR :: Handler Html
+getAdmServicesSearchR = do
+    formSearch <- newIdent
+    dlgCategList <- newIdent
+    dlgStatusList <- newIdent
+    mq <- runInputGet $ iopt (searchField True) "q"
+    categs <- (toSqlKey . read . unpack . snd <$>) . filter ((== "categ") . fst) . reqGetParams <$> getRequest
+    stati <- (read . unpack . snd <$>) . filter ((== "status") . fst) . reqGetParams <$> getRequest
+    services <- runDB $ select $ do
+        x <- from $ table @Service 
+        case mq of
+          Just q -> where_ $ ( upper_ (x ^. ServiceName) `like` (%) ++. upper_ (val q) ++. (%) )
+              ||. ( upper_ (x ^. ServiceOverview) `like` (%) ++. upper_ (just (val q)) ++. (%) )
+              ||. ( upper_ (x ^. ServiceDescr) `like` (%) ++. upper_ (just (val (Textarea q))) ++. (%) )
+          _ -> return ()
+        case categs of
+          [] -> return ()
+          xs -> where_ $ x ^. ServiceGroup `in_` justList (valList xs)
+        when (ServiceStatusPulished `elem` stati) $ where_ $ x ^. ServicePublished
+        when (ServiceStatusUnpublished `elem` stati) $ where_ $ not_ $ x ^. ServicePublished
+        orderBy [asc (x ^. ServiceName)]
+        return x
+    groups <- runDB $ select $ do
+        x <- from $ table @Service
+        where_ $ exists $ do
+            y <- from $ table @Service
+            where_ $ y ^. ServiceGroup ==. just (x ^. ServiceId)
+        return x
+    let statusList = [(ServiceStatusPulished,MsgPublished),(ServiceStatusUnpublished,MsgUnpublished)]
+    defaultLayout $ do
+        setTitleI MsgSearch
+        $(widgetFile "admin/services/search")
 
 
 postAdmPriceDeleteR :: PricelistId -> Services -> Handler Html

@@ -34,7 +34,7 @@ import Yesod.Form.Types
     )
 import Yesod.Form
     ( generateFormPost, mreq, textField, mopt
-    , fileField, emailField, runFormPost, boolField, checkBoxField
+    , fileField, emailField, runFormPost, checkBoxField
     )
 import Yesod.Auth (Route (LoginR))
 

@@ -36,12 +36,12 @@ import Text.Read (Read, readMaybe)
 import Data.Eq (Eq)
 import Data.Functor ((<$>))
 import Control.Monad (mapM)
+import Database.Esqueleto.Experimental (SqlString)
 
 
 data EmplStatus = EmplStatusEmployed | EmplStatusDismissed
     deriving (Show, Read, Eq)
 derivePersistField "EmplStatus"
-
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"]
     $(persistFileWith lowerCaseSettings "config/models.persistentmodels")
@@ -64,6 +64,8 @@ instance HashDBUser User where
 
     setPasswordHash :: Text -> User -> User
     setPasswordHash h u = u { userPassword = h } 
+
+instance SqlString Textarea
 
 
 ultDestKey :: Text

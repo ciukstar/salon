@@ -32,6 +32,7 @@
     /delete/about/#ContentsId AdmAboutDeleteR POST
     /about                    AdmAboutR       GET POST
 
+    /search/services	      		  AdmServicesSearchR	GET
     /form/pricelist/+Services             AdmPricelistCreateR   GET
     /form/price/#PricelistId/+Services    AdmPriceEditR   	GET
     /delete/prices/#PricelistId/+Services AdmPriceDeleteR	POST

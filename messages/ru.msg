@@ -1,3 +1,4 @@
+NoServicesFound: Услуги не найдены
 Administrator: Администратор
 Customer: Клиент
 NoUsersFound: Пользователей не найдено
@@ -51,6 +52,7 @@ AddStaffMember: Добавить сотрудника
 Staff: Персонал
 No: Нет
 Yes: Да
+Unpublished: Неопубликовано
 Published: Опубликовано
 Overview: Обзор
 PriceAlreadyInTheList: Эта цена уже есть в списке

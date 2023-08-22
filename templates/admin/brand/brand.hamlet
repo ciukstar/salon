@@ -66,7 +66,7 @@
       #{preEscapedToMarkup $ unTextarea more}
   $nothing
     <figure style="text-align:center">
-      <span style="font-size:5rem;color:gray">&varnothing;
+      <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
       <figcaption>
         _{MsgNoBrandYet}.
     <div.mdc-touch-target-wrapper #fabBrandCreate style="position:fixed;right:1rem;bottom:1rem">

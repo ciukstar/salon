@@ -1,3 +1,4 @@
+NoServicesFound: No services found
 Administrator: Administrator
 Customer: Customer
 NoUsersFound: No users found
@@ -51,6 +52,7 @@ AddStaffMember: Add staff member
 Staff: Staff
 No: No
 Yes: Yes
+Unpublished: Unpublished
 Published: Published
 Overview: Overview
 PriceAlreadyInTheList: This price is already in the list

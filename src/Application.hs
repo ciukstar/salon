@@ -112,6 +112,7 @@ import Admin.Services
     , postAdmPriceR
     , getAdmPriceEditR
     , postAdmPriceDeleteR
+    , getAdmServicesSearchR
     )
 import Handler.Common
     ( getFaviconR, getRobotsR, getPhotoPlaceholderR

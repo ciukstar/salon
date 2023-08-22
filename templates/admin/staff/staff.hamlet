@@ -60,7 +60,7 @@
         <div.mdc-list-divider role=separator>
   $else
     <figure style="text-align:center">
-      <div style="font-size:5rem;color:gray">&#8709;
+      <div style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
       <figcaption>
         _{MsgNoStaffYet}.
 

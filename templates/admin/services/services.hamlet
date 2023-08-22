@@ -18,6 +18,9 @@
           _{MsgService}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
+      <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{AdminR AdmServicesSearchR} role=button>
+        <span.mdc-icon-button__ripple>
+        <i.material-symbols-outlined>search
       $if null sids
         $maybe Entity uid _ <- muid
           <button.mdc-top-app-bar__action-item.mdc-icon-button type=button #buttonProfile>
