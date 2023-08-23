@@ -52,9 +52,8 @@ import Handler.Contacts (getContactR)
 import Handler.Book (getBookR)
 import Handler.AboutUs (getAboutUsR)
 import Handler.Services
-    ( getServicesR
-    , getServiceThumbnailR
-    , getServiceR
+    ( getServicesR, getServiceThumbnailR, getServiceR
+    , getServicesSearchR
     )
 import Handler.Account (getAccountR, postAccountR, getAccountPhotoR)
 import Handler.Home (getHomeR)

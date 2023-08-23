@@ -5,6 +5,7 @@
 
 /aboutus AboutUsR GET
 
+/search/services         ServicesSearchR   GET
 /thumbnail/#ServiceId    ServiceThumbnailR GET
 /info/services/+Services ServiceR	   GET
 /services   	 	 ServicesR	   GET

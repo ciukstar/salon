@@ -8,12 +8,13 @@ module Handler.Services
   ( getServicesR
   , getServiceThumbnailR
   , getServiceR
+  , getServicesSearchR
   ) where
 
 import Control.Monad (forM)
 import Data.Maybe (catMaybes, fromMaybe)
 import Data.FileEmbed (embedFile)
-import Data.Text (pack, Text)
+import Data.Text (pack, unpack, Text)
 import Text.Hamlet (Html)
 import Data.Text.Encoding (encodeUtf8)
 import Yesod.Core
@@ -22,22 +23,26 @@ import Yesod.Core
     , TypedContent (TypedContent), ToContent (toContent)
     , whamlet, getRequest, YesodRequest (reqGetParams)
     )
+import Yesod.Core.Handler (newIdent)
 import Yesod.Auth (Route (LoginR, LogoutR), maybeAuth)
 import Yesod.Form.Input (iopt, runInputGet)
-import Yesod.Form.Fields (textField, intField, unTextarea)
+import Yesod.Form.Fields
+    ( textField, intField, searchField, unTextarea, Textarea (Textarea))
 import Settings (widgetFile)
 
 import Foundation
-    ( Handler
+    ( Handler, Widget
     , Route
       ( AuthR, AccountPhotoR, PhotoPlaceholderR, ServicesR
-      , ServiceR, StaticR, ServiceThumbnailR
+      , ServiceR, ServiceThumbnailR, ServicesSearchR, StaticR
       )
     , AppMessage
       ( MsgServices, MsgPhoto, MsgService, MsgThumbnail
       , MsgNoServicesYet, MsgBookAppointment, MsgLogout
+      , MsgSearch, MsgSelect, MsgCancel, MsgCategories
+      , MsgNoServicesFound, MsgStatus, MsgCategories
+      , MsgCategory, MsgUnpublished, MsgPublished
       )
-    , Widget
     )
 
 import Yesod.Persist.Core (runDB)
@@ -46,20 +51,59 @@ import Database.Persist
     )
 import Database.Persist.Sql (fromSqlKey, toSqlKey)
 import Database.Esqueleto.Experimental
-    (selectOne, from, table, orderBy, asc
-    , (^.), (==.)
-    , where_, val, select, isNothing, just
+    (selectOne, from, table, orderBy, asc, exists, not_
+    , (^.), (==.), (%), (++.), (||.)
+    , where_, val, select, isNothing, just, justList
+    , valList, in_, upper_, like
     )
     
 import Model
     ( Service(Service), ServiceId
-    , EntityField (ServiceId, ThumbnailService, ServiceGroup, PricelistService, PricelistId, ServicePublished)
+    , EntityField
+      ( ServiceId, ThumbnailService, ServiceGroup, PricelistService
+      , PricelistId, ServicePublished, ServiceName, ServiceDescr
+      , ServiceOverview
+      )
     , Thumbnail (Thumbnail), Pricelist (Pricelist), Services (Services)
+    , ServiceStatus (ServiceStatusPulished, ServiceStatusUnpublished)
     )
 
-import Settings.StaticFiles
-    ( img_spark_svg
-    )
+import Settings.StaticFiles (img_photo_FILL0_wght400_GRAD0_opsz48_svg)
+
+getServicesSearchR :: Handler Html
+getServicesSearchR = do
+    formSearch <- newIdent
+    dlgCategList <- newIdent
+    dlgStatusList <- newIdent
+    mq <- runInputGet $ iopt (searchField True) "q"
+    categs <- (toSqlKey . read . unpack . snd <$>) . filter ((== "categ") . fst) . reqGetParams <$> getRequest
+    stati <- (read . unpack . snd <$>) . filter ((== "status") . fst) . reqGetParams <$> getRequest
+    services <- runDB $ select $ do
+        x <- from $ table @Service 
+        case mq of
+          Just q -> where_ $ ( upper_ (x ^. ServiceName) `like` (%) ++. upper_ (val q) ++. (%) )
+              ||. ( upper_ (x ^. ServiceOverview) `like` (%) ++. upper_ (just (val q)) ++. (%) )
+              ||. ( upper_ (x ^. ServiceDescr) `like` (%) ++. upper_ (just (val (Textarea q))) ++. (%) )
+          _ -> return ()
+        case categs of
+          [] -> return ()
+          xs -> where_ $ x ^. ServiceGroup `in_` justList (valList xs)
+        case stati of
+          [ServiceStatusPulished] -> where_ $ x ^. ServicePublished
+          [ServiceStatusUnpublished] -> where_ $ not_ $ x ^. ServicePublished
+          _ -> return ()
+        orderBy [asc (x ^. ServiceName)]
+        return x
+    groups <- runDB $ select $ do
+        x <- from $ table @Service
+        where_ $ exists $ do
+            y <- from $ table @Service
+            where_ $ y ^. ServiceGroup ==. just (x ^. ServiceId)
+        return x
+    let statusList = [(ServiceStatusPulished,MsgPublished),(ServiceStatusUnpublished,MsgUnpublished)]
+    defaultLayout $ do
+        setTitleI MsgSearch
+        $(widgetFile "services/search")
 
 
 getServiceR :: Services -> Handler Html
@@ -104,7 +148,8 @@ buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
   $forall ((Entity sid (Service name _ overview _ _), pricelist),srvs@(Srvs subservices)) <- services
     $with (gid,l) <- (pack $ show $ fromSqlKey sid, length pricelist)
       $if (length subservices) > 0
-        <details role=listitem #details#{gid} data-id=#{gid} :elem gid open:open>
+        <details role=listitem #details#{gid} :elem gid open:open
+          ontoggle="document.getElementById('iconExpand#{gid}').textContent = this.open ? 'expand_less' : 'expand_more'">
           <summary.mdc-list-item
             .mdc-list-item--with-one-line
             .mdc-list-item--with-leading-image

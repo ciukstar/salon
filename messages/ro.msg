@@ -1,3 +1,4 @@
+Unregister: Anulează înregistrarea
 NoServicesFound: Nu a fost găsit niciun serviciu
 Administrator: Administrator
 Customer: Client

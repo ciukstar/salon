@@ -1,10 +1,13 @@
 
 <aside.mdc-drawer.mdc-drawer--modal data-mdc-auto-init=MDCDrawer #asideMainMenu>
   <div.mdc-drawer__header.mdc-ripple-surface data-mdc-auto-init=MDCRipple #drawerHeader>
-    <h3.mdc-drawer__title #drawerTitle>
-      <div.content>
-        <img src=@{StaticR img_salon_svg} height=24>
-        _{MsgSalon}
+    <h3.mdc-drawer__title>
+      <div #drawerTitle>
+        <div #drawerTitleStart>
+          <img src=@{StaticR img_salon_svg} height=24 width=24 loading=lazy>
+          _{MsgSalon}
+        <div #drawerTitleEnd>
+          &#x2715;
   <div.mdc-drawer__content>
     <div.mdc-deprecated-list-group>
       <hr.mdc-deprecated-list-divider role=separator>

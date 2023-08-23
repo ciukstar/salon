@@ -1,4 +1,4 @@
-<form method=get action=@{AdminR AdmServicesSearchR} ##{formSearch}>
+<form method=get action=@{ServicesSearchR} ##{formSearch}>
 
 <header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row.mdc-theme--background>
@@ -6,7 +6,7 @@
       .mdc-text-field--with-leading-icon.mdc-text-field--with-trailing-icon #labelSearch>
       <span.mdc-text-field__ripple>
       <div.mdc-touch-target-wrapper style="align-self:center">
-        <a.mdc-icon-button.mdc-theme--text-primary-on-light href=@{AdminR $ AdmServicesR (Services [])} role=button tabindex=0>
+        <a.mdc-icon-button.mdc-theme--text-primary-on-light href=@{ServicesR} role=button tabindex=0>
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>arrow_back
@@ -57,12 +57,12 @@
   $else
     <nav.mdc-list data-mdc-auto-init=MDCList>
       $forall Entity sid (Service name _ _ _ _) <- services
-        <a.mdc-list-item href=@{AdminR $ AdmServicesR $ Services [sid]}
+        <a.mdc-list-item href=@{ServiceR $ Services [sid]}
           .mdc-list-item--with-one-line.mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon
           onclick="this.href = `${this.href}?scrollY=${window.scrollY}`">
           <span.mdc-list-item__ripple>
           <span.mdc-list-item__start>
-            <img src=@{AdminR $ AdmServiceImageR sid} height=56 width=56 loading=lazy
+            <img src=@{ServiceThumbnailR sid} height=56 width=56 loading=lazy
               onerror="this.src = '@{StaticR img_photo_FILL0_wght400_GRAD0_opsz48_svg}'">
           <span.mdc-list-item__content>
             <div.mdc-list-item__primary-text>#{name}

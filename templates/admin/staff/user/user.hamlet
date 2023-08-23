@@ -2,8 +2,8 @@
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
       <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=@{AdminR $ AdmEmplR eid}>
-        <span.mdc-button__ripple>
-        <span.mdc-button__focus-ring>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgRegistration}
     

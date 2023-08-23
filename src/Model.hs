@@ -39,6 +39,9 @@ import Control.Monad (mapM)
 import Database.Esqueleto.Experimental (SqlString)
 
 
+data ServiceStatus = ServiceStatusPulished | ServiceStatusUnpublished
+  deriving (Show, Read, Eq)
+
 data EmplStatus = EmplStatusEmployed | EmplStatusDismissed
     deriving (Show, Read, Eq)
 derivePersistField "EmplStatus"

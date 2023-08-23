@@ -1,3 +1,4 @@
+Unregister: Отменить регистрацию
 NoServicesFound: Услуги не найдены
 Administrator: Администратор
 Customer: Клиент

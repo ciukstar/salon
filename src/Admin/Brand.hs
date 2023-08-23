@@ -57,7 +57,11 @@ import Model
     , Brand
       (Brand, brandName, brandStrapline, brandMore, brandMark, brandIco
       , brandMarkMime, brandIcoMime
-      ), EntityField (BrandId, BrandMark, BrandName, BrandStrapline, BrandMore, BrandMarkMime, BrandIco, BrandIcoMime)
+      )
+    , EntityField
+      ( BrandId, BrandMark, BrandName, BrandStrapline, BrandMore, BrandMarkMime
+      , BrandIco, BrandIcoMime
+      )
     )
     
 import Settings.StaticFiles (img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg)

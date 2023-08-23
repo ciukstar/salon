@@ -30,7 +30,7 @@
                   <form method=post action=@{AdminR $ AdmEmplUnregR eid uid}>
                     <button.mdc-button.mdc-button--raised type=submit>
                       <span.mdc-button__ripple>
-                      <span.mdc-button__label>_{MsgYesDelete}
+                      <span.mdc-button__label>_{MsgUnregister}
             <div.mdc-dialog__scrim>
         $nothing
           <a.mdc-icon-button.mdc-theme--text-primary-on-light role=button title=_{MsgRegisterAsUser}

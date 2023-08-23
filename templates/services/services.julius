@@ -33,18 +33,6 @@ Array.from(
 });
 
 Array.from(
-  document.querySelectorAll('details')
-).forEach(function (x) {
-  x.addEventListener('toggle',function (e) {
-    if (x.open) {
-      document.getElementById(`iconExpand${x.dataset.id}`).textContent = 'expand_less';
-    } else {
-      document.getElementById(`iconExpand${x.dataset.id}`).textContent = 'expand_more';
-    }
-  });
-});
-
-Array.from(
   document.querySelectorAll('aside.mdc-snackbar')
 ).map(x => x.MDCSnackbar).forEach(function (x) {
   x.open();

@@ -61,9 +61,18 @@ html
   body
     margin: 0
     padding: 0
-    #drawerTitle div.content
+    #drawerTitle
       display: flex
       flex-direction: row
-      justify-content: flex-start
+      justify-content: space-between
       align-items: center
-      gap: 2rem
+      #drawerTitleStart
+        display: flex
+        flex-direction: row
+        justify-content: flex-start
+        align-items: center
+        gap: 2rem
+      #drawerTitleEnd
+        color: gray
+      #drawerTitleEnd:hover
+        cursor: pointer

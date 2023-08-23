@@ -2,7 +2,7 @@
 <nav.mdc-list data-mdc-auto-init=MDCList>
   $if null services
     <figure>
-      <img src=@{StaticR img_spark_svg} height=80>
+      <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
       <figcaption>
         _{MsgNoServicesYet}.
   $else

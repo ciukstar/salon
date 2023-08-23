@@ -52,7 +52,9 @@ import Yesod.Form.Types
     )
 import Yesod.Form.Input (runInputGet, iopt)
 import Yesod.Form.Fields
-    ( textField, emailField, passwordField, intField, hiddenField, fileField, boolField )
+    ( textField, emailField, passwordField, intField, hiddenField
+    , fileField, checkBoxField
+    )
 import Yesod.Form.Functions
     ( mreq, mopt, generateFormPost, runFormPost, checkM, checkBool )
 import Settings (widgetFile)
@@ -94,7 +96,7 @@ import Foundation
       , MsgFullName, MsgAlreadyExists, MsgUnregisterAreYouSure, MsgSearch
       , MsgNoStaffMembersFound, MsgStatus, MsgSelect, MsgRatings
       , MsgDismissed, MsgEmployed, MsgAccountStatus, MsgRegistered
-      , MsgUnregistered, MsgValueNotInRange, MsgAdministrator
+      , MsgUnregistered, MsgValueNotInRange, MsgAdministrator, MsgUnregister
       )
     )
 
@@ -228,10 +230,10 @@ formUser empl extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } Nothing
-    (adminR,adminV) <- mreq boolField FieldSettings
+    (adminR,adminV) <- mreq checkBoxField FieldSettings
         { fsLabel = SomeMessage MsgAdministrator
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
-        , fsAttrs = [("class","mdc-text-field__input")]
+        , fsAttrs = [("class","mdc-checkbox__native-control")]
         } (pure False)
     (fnameR,fnameV) <- mopt textField FieldSettings
         { fsLabel = SomeMessage MsgFullName
@@ -246,7 +248,46 @@ formUser empl extra = do
     let r = User <$> nameR <*> passR <*> adminR <*> fnameR <*> emailR
     let w = [whamlet|
 #{extra}
-$forall v <- [nameV,passV,adminV,fnameV,emailV]
+$forall v <- [nameV,passV]
+  <div.form-field>
+    <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
+      :isJust (fvErrors v):.mdc-text-field--invalid
+      :isJust (fvErrors v):.mdc-text-field--with-trailing-icon>
+      <span.mdc-text-field__ripple>
+      <span.mdc-floating-label>#{fvLabel v}
+      ^{fvInput v}
+      $maybe _ <- fvErrors v
+        <i.mdc-text-field__icon.mdc-text-field__icon--trailing.material-symbols-outlined>error
+      <div.mdc-line-ripple>
+    $maybe errs <- fvErrors v
+      <div.mdc-text-field-helper-line>
+        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+          #{errs}
+
+<div.mdc-form-field.form-field data-mdc-auto-init=MDCFormField style="display:flex;flex-direction:row">
+  ^{fvInput adminV}
+  $with selected <- resolveSelected adminR
+    <button.mdc-switch type=button role=switch #switchAdmin data-mdc-auto-init=MDCSwitch
+      :selected:.mdc-switch--selected :selected:aria-checked=true
+      :not selected:.mdc-switch--unselected :not selected:aria-checked=false
+      onclick="document.getElementById('#{fvId adminV}').checked = !this.MDCSwitch.selected">
+      <div.mdc-switch__track>
+      <div.mdc-switch__handle-track>
+        <div.mdc-switch__handle>
+          <div.mdc-switch__shadow>
+            <div.mdc-elevation-overlay>
+          <div.mdc-switch__ripple>
+          <div.mdc-switch__icons>
+            <svg.mdc-switch__icon.mdc-switch__icon--on viewBox="0 0 24 24">
+              <path d="M19.69,5.23L8.96,15.96l-4.23-4.23L2.96,13.5l6,6L21.46,7L19.69,5.23z">
+            <svg.mdc-switch__icon.mdc-switch__icon--off viewBox="0 0 24 24">
+              <path d="M20 13H4v-2h16v2z">
+
+    <span.mdc-switch__focus-ring-wrapper>
+      <span.mdc-switch__focus-ring>
+    <label for=switchAdmin>_{MsgAdministrator}
+
+$forall v <- [fnameV,emailV]
   <div.form-field>
     <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
       :isJust (fvErrors v):.mdc-text-field--invalid
@@ -264,6 +305,8 @@ $forall v <- [nameV,passV,adminV,fnameV,emailV]
 |]
     return (r,w)
   where
+      resolveSelected adminR = case adminR of FormSuccess x -> x ; _ -> False
+      
       uniqueNameField = checkM uniqueName textField
 
       uniqueName :: Text -> Handler (Either AppMessage Text)

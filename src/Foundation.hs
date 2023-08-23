@@ -8,6 +8,7 @@
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE TypeApplications #-}
 
 module Foundation where
 
@@ -25,13 +26,14 @@ import qualified Data.CaseInsensitive as CI
 import qualified Data.Text.Encoding as TE
 import Yesod.Auth.HashDB (authHashDBWithForm)
 import Yesod.Auth.Message
-    ( AuthMessage(InvalidLogin), englishMessage, frenchMessage
-    , russianMessage, defaultMessage
+    ( AuthMessage(InvalidLogin)
+    , englishMessage, frenchMessage, russianMessage, defaultMessage
     )
 import Yesod.Form.I18n.English (englishFormMessage)
 import Yesod.Form.I18n.French (frenchFormMessage)
 import Yesod.Form.I18n.Russian (russianFormMessage)
 import qualified Data.List.Safe as LS
+import Database.Esqueleto.Experimental (selectOne, from, table)
 
 -- | The foundation datatype for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
@@ -106,6 +108,9 @@ instance Yesod App where
             addStylesheet $ StaticR material_components_web_min_css
             addScript     $ StaticR material_components_web_min_js
             $(widgetFile "default-layout")
+            
+        brand <- runDB $ selectOne $ from $ table @Brand
+        
         withUrlRenderer $(hamletFile "templates/default-layout-wrapper.hamlet")
 
     -- The page to be redirected to when authentication is required.
@@ -181,6 +186,8 @@ instance Yesod App where
     isAuthorized ServicesR _ = return Authorized
     isAuthorized (ServiceR _) _ = return Authorized
     isAuthorized (ServiceThumbnailR _) _ = return Authorized
+    isAuthorized ServicesSearchR _ = return Authorized
+    
     
     isAuthorized AboutUsR _ = return Authorized
     isAuthorized (ResourcesR DocsR) _ = return Authorized

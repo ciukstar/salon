@@ -8,8 +8,9 @@
         _{MsgServices}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
-      <button.mdc-top-app-bar__action-item.mdc-icon-button type=button>
+      <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{ServicesSearchR} role=button>
         <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>search
       $maybe Entity uid _ <- muid
         <button.mdc-top-app-bar__action-item.mdc-icon-button type=button #buttonProfile>
@@ -39,7 +40,7 @@
 
   $if null pricelist
     <figure style="display:flex;flex-direction:column;align-items:center">
-      <img src=@{StaticR img_spark_svg}>
+      <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
       <figcaption>
         _{MsgNoServicesYet}.
 

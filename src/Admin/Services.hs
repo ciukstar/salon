@@ -23,7 +23,6 @@ module Admin.Services
   ) where
 
 import Control.Applicative ((<|>))
-import Control.Monad (when)
 import Data.Text (Text, pack, unpack)
 import Data.Maybe (isJust, fromMaybe, catMaybes)
 import Data.Text.Encoding (encodeUtf8)
@@ -42,7 +41,6 @@ import Settings (widgetFile)
 import Settings.StaticFiles
     ( img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg
     , img_photo_FILL0_wght400_GRAD0_opsz48_svg
-    , img_spark_svg
     )
     
 import Yesod.Form
@@ -99,6 +97,7 @@ import Model
       , pricelistDescr
       )
     , PricelistId
+    , ServiceStatus (ServiceStatusPulished, ServiceStatusUnpublished)
     )
 
 import Yesod.Persist (YesodPersist(runDB), (=.), PersistUniqueWrite (upsert))
@@ -108,10 +107,6 @@ import Database.Esqueleto.Experimental
     , (^.), (==.), (%), (++.), (||.)
     , isNothing, select, orderBy, asc, upper_, like, not_, exists
     )
-
-
-data ServiceStatus = ServiceStatusPulished | ServiceStatusUnpublished
-  deriving (Show, Read, Eq)
 
 
 getAdmServicesSearchR :: Handler Html
@@ -132,8 +127,10 @@ getAdmServicesSearchR = do
         case categs of
           [] -> return ()
           xs -> where_ $ x ^. ServiceGroup `in_` justList (valList xs)
-        when (ServiceStatusPulished `elem` stati) $ where_ $ x ^. ServicePublished
-        when (ServiceStatusUnpublished `elem` stati) $ where_ $ not_ $ x ^. ServicePublished
+        case stati of
+          [ServiceStatusPulished] -> where_ $ x ^. ServicePublished
+          [ServiceStatusUnpublished] -> where_ $ not_ $ x ^. ServicePublished
+          _ -> return ()
         orderBy [asc (x ^. ServiceName)]
         return x
     groups <- runDB $ select $ do

@@ -1,3 +1,4 @@
+Unregister: Désinscrire
 NoServicesFound: Aucun service trouvé
 Administrator: Administrateur
 Customer: Cliente
