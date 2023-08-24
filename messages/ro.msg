@@ -1,3 +1,7 @@
+ChooseServices: Alegeți serviciile
+ChooseServicesToBook: Alegeți serviciile de rezervat
+ChooseService: Alegeți un serviciu
+ChooseServiceToBook: Alegeți un serviciu de rezervat
 Unregister: Anulează înregistrarea
 NoServicesFound: Nu a fost găsit niciun serviciu
 Administrator: Administrator

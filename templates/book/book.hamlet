@@ -5,7 +5,7 @@
         <span.mdc-icon-button__ripple>
         <i.material-symbols-outlined>menu
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
-        _{MsgBook}
+        <div style="white-space:normal;line-height:1.1">_{MsgChooseServicesToBook}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
       $maybe Entity uid _ <- muid
@@ -24,11 +24,33 @@
                   <i.material-symbols-outlined style="margin-right:1rem">logout
                   <span.mdc-deprecated-list-item__text>_{MsgLogout}
       $nothing
-        <a.mdc-top-app-bar__action-item.mdc-icon-button role=button
-          href=@{AuthR LoginR}>
+        <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{AuthR LoginR} role=button>
           <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>login
           
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
-  Choose a service ...
+
+  <ul.mdc-list aria-multiselectable=true #serviceList data-mdc-auto-init=MDCList>
+    $forall (Entity sid (Service sname _ _ _ _),Entity pid (Pricelist _ pname price prefix suffix pdescr)) <- offers
+      <li.mdc-list-item role=checkbox
+        .mdc-list-item--with-leading-checkbox
+        .mdc-list-item--with-two-lines
+        .mdc-list-item--with-trailing-meta tabindex=0 aria-checked=true>
+        <span.mdc-list-item__ripple>
+        <span.mdc-list-item__start style="pointer-events:all">
+          <div.mdc-checkbox data-mdc-auto-init=MDCCheckbox>
+            <input.mdc-checkbox__native-control type=checkbox checked>
+            <div.mdc-checkbox__background>
+              <svg.mdc-checkbox__checkmark viewBox="0 0 24 24">
+                <path.mdc-checkbox__checkmark-path fill=none d="M1.73,12.91 8.1,19.28 22.79,4.59">
+              <div.mdc-checkbox__mixedmark>
+        <span.mdc-list-item__content>
+          <div.mdc-list-item__primary-text>#{sname}
+          <div.mdc-list-item__secondary-text>
+            $maybe descr <- pdescr
+              #{descr}
+        <span.mdc-list-item__end>
+          #{show price}
+      <li.mdc-list-divider role=separator>

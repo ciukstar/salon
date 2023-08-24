@@ -1,3 +1,7 @@
+ChooseServices: Выберите услуги
+ChooseServicesToBook: Выберите услуги для бронирования
+ChooseService: Выберите услугу
+ChooseServiceToBook: Выберите услугу для бронирования
 Unregister: Отменить регистрацию
 NoServicesFound: Услуги не найдены
 Administrator: Администратор

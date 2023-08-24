@@ -1,3 +1,7 @@
+ChooseServices: Choose services
+ChooseServicesToBook: Choisissez les services à réserver
+ChooseService: Choisissez un service
+ChooseServiceToBook: Choisissez un service à réserver
 Unregister: Désinscrire
 NoServicesFound: Aucun service trouvé
 Administrator: Administrateur
