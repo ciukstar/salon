@@ -22,9 +22,9 @@ import Model
       , servicePublished
       )
     , Thumbnail (Thumbnail, thumbnailService, thumbnailPhoto, thumbnailMime)
-    , Pricelist
-      ( Pricelist, pricelistName, pricelistPrice, pricelistPrefix
-      , pricelistSuffix, pricelistDescr, pricelistService
+    , Offer
+      ( Offer, offerName, offerPrice, offerPrefix
+      , offerSuffix, offerDescr, offerService
       )
     , EmplStatus (EmplStatusEmployed, EmplStatusDismissed)
     , Staff (Staff, staffName, staffStatus, staffPhone, staffMobile, staffEmail, staffUser)
@@ -349,12 +349,12 @@ We will continue to offer the latest treatments, the most innovative techniques 
                    , roleRating = Just 5
                    }
 
-    insert_ $ Pricelist { pricelistService = s11
-                        , pricelistName = "Price"
-                        , pricelistPrice = 26
-                        , pricelistPrefix = Just "$"
-                        , pricelistSuffix = Nothing
-                        , pricelistDescr = Nothing
+    insert_ $ Offer { offerService = s11
+                        , offerName = "Price"
+                        , offerPrice = 26
+                        , offerPrefix = Just "$"
+                        , offerSuffix = Nothing
+                        , offerDescr = Nothing
                         }
 
     insert_ $ Thumbnail { thumbnailService = s11
@@ -369,12 +369,12 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             , serviceGroup = Just s1
                             }
 
-    insert_ $ Pricelist { pricelistService = s12
-                        , pricelistName = "Price"
-                        , pricelistPrice = 28
-                        , pricelistPrefix = Just "$"
-                        , pricelistSuffix = Nothing
-                        , pricelistDescr = Nothing
+    insert_ $ Offer { offerService = s12
+                        , offerName = "Price"
+                        , offerPrice = 28
+                        , offerPrefix = Just "$"
+                        , offerSuffix = Nothing
+                        , offerDescr = Nothing
                         }
 
     insert_ $ Thumbnail { thumbnailService = s12
@@ -395,12 +395,12 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             , serviceGroup = Just s1
                             }
 
-    insert_ $ Pricelist { pricelistService = s13
-                        , pricelistName = "Price"
-                        , pricelistPrice = 35
-                        , pricelistPrefix = Just "$"
-                        , pricelistSuffix = Nothing
-                        , pricelistDescr = Nothing
+    insert_ $ Offer { offerService = s13
+                        , offerName = "Price"
+                        , offerPrice = 35
+                        , offerPrefix = Just "$"
+                        , offerSuffix = Nothing
+                        , offerDescr = Nothing
                         }
 
     insert_ $ Thumbnail { thumbnailService = s13
@@ -427,12 +427,12 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             , serviceGroup = Just s1
                             }
 
-    insert_ $ Pricelist { pricelistService = s14
-                        , pricelistName = "Price"
-                        , pricelistPrice = 16
-                        , pricelistPrefix = Just "$"
-                        , pricelistSuffix = Just "-$20 (depending on the length of their hair)"
-                        , pricelistDescr = Nothing
+    insert_ $ Offer { offerService = s14
+                        , offerName = "Price"
+                        , offerPrice = 16
+                        , offerPrefix = Just "$"
+                        , offerSuffix = Just "-$20 (depending on the length of their hair)"
+                        , offerDescr = Nothing
                         }
 
     insert_ $ Thumbnail { thumbnailService = s14
@@ -477,12 +477,12 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               , serviceGroup = Just s151
                               }
 
-    insert_ $ Pricelist { pricelistService = s1511
-                        , pricelistName = "Price"
-                        , pricelistPrice = 99
-                        , pricelistPrefix = Just "$"
-                        , pricelistSuffix = Just " & up"
-                        , pricelistDescr = Nothing
+    insert_ $ Offer { offerService = s1511
+                        , offerName = "Price"
+                        , offerPrice = 99
+                        , offerPrefix = Just "$"
+                        , offerSuffix = Just " & up"
+                        , offerDescr = Nothing
                         }
 
     insert_ $ Role { roleStaff = e5
@@ -498,12 +498,12 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               , serviceGroup = Just s151
                               }
 
-    insert_ $ Pricelist { pricelistService = s1512
-                        , pricelistName = "Price"
-                        , pricelistPrice = 110
-                        , pricelistPrefix = Just "$"
-                        , pricelistSuffix = Just " & up"
-                        , pricelistDescr = Nothing
+    insert_ $ Offer { offerService = s1512
+                        , offerName = "Price"
+                        , offerPrice = 110
+                        , offerPrefix = Just "$"
+                        , offerSuffix = Just " & up"
+                        , offerDescr = Nothing
                         }
 
     s152 <- insert $ Service { serviceName = "Highlights & Color"
@@ -525,12 +525,12 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               , serviceGroup = Just s152
                               }
 
-    insert_ $ Pricelist { pricelistService = s1521
-                        , pricelistName = "Price"
-                        , pricelistPrice = 130
-                        , pricelistPrefix = Just "$"
-                        , pricelistSuffix = Nothing
-                        , pricelistDescr = Nothing
+    insert_ $ Offer { offerService = s1521
+                        , offerName = "Price"
+                        , offerPrice = 130
+                        , offerPrefix = Just "$"
+                        , offerSuffix = Nothing
+                        , offerDescr = Nothing
                         }
 
     insert_ $ Role { roleStaff = e8
@@ -546,12 +546,12 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               , serviceGroup = Just s152
                               }
 
-    insert_ $ Pricelist { pricelistService = s1522
-                        , pricelistName = "Price"
-                        , pricelistPrice = 68
-                        , pricelistPrefix = Just "$"
-                        , pricelistSuffix = Just " & up"
-                        , pricelistDescr = Nothing
+    insert_ $ Offer { offerService = s1522
+                        , offerName = "Price"
+                        , offerPrice = 68
+                        , offerPrefix = Just "$"
+                        , offerSuffix = Just " & up"
+                        , offerDescr = Nothing
                         }
 
     s1523 <- insert $ Service { serviceName = "Permanent Color"
@@ -561,12 +561,12 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               , serviceGroup = Just s152
                               }
 
-    insert_ $ Pricelist { pricelistService = s1523
-                        , pricelistName = "Price"
-                        , pricelistPrice = 68
-                        , pricelistPrefix = Just "$"
-                        , pricelistSuffix = Just " & up"
-                        , pricelistDescr = Nothing
+    insert_ $ Offer { offerService = s1523
+                        , offerName = "Price"
+                        , offerPrice = 68
+                        , offerPrefix = Just "$"
+                        , offerSuffix = Just " & up"
+                        , offerDescr = Nothing
                         }
 
     s153 <- insert $ Service { serviceName = "Perm"
@@ -583,12 +583,12 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               , serviceGroup = Just s153
                               }
 
-    insert_ $ Pricelist { pricelistService = s1531
-                        , pricelistName = "Price"
-                        , pricelistPrice = 79
-                        , pricelistPrefix = Just "$"
-                        , pricelistSuffix = Just " & up"
-                        , pricelistDescr = Nothing
+    insert_ $ Offer { offerService = s1531
+                        , offerName = "Price"
+                        , offerPrice = 79
+                        , offerPrefix = Just "$"
+                        , offerSuffix = Just " & up"
+                        , offerDescr = Nothing
                         }
 
     s1532 <- insert $ Service { serviceName = "Acid Repair Perm"
@@ -598,12 +598,12 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               , serviceGroup = Just s153
                               }
 
-    insert_ $ Pricelist { pricelistService = s1532
-                        , pricelistName = "Price"
-                        , pricelistPrice = 89
-                        , pricelistPrefix = Just "$"
-                        , pricelistSuffix = Just " & up"
-                        , pricelistDescr = Nothing
+    insert_ $ Offer { offerService = s1532
+                        , offerName = "Price"
+                        , offerPrice = 89
+                        , offerPrefix = Just "$"
+                        , offerSuffix = Just " & up"
+                        , offerDescr = Nothing
                         }
 
     s1533 <- insert $ Service { serviceName = "Japanese Straightening Perm"
@@ -613,12 +613,12 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               , serviceGroup = Just s153
                               }
 
-    insert_ $ Pricelist { pricelistService = s1533
-                        , pricelistName = "Price"
-                        , pricelistPrice = 250
-                        , pricelistPrefix = Just "$"
-                        , pricelistSuffix = Just " & up"
-                        , pricelistDescr = Nothing
+    insert_ $ Offer { offerService = s1533
+                        , offerName = "Price"
+                        , offerPrice = 250
+                        , offerPrefix = Just "$"
+                        , offerSuffix = Just " & up"
+                        , offerDescr = Nothing
                         }
 
     s2 <- insert $ Service { serviceName = "Facial Treatments"
@@ -640,20 +640,20 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             , serviceGroup = Just s2
                             }
 
-    insert_ $ Pricelist { pricelistService = s21
-                        , pricelistName = "Price"
-                        , pricelistPrice = 55
-                        , pricelistPrefix = Just "$"
-                        , pricelistSuffix = Nothing
-                        , pricelistDescr = Nothing
+    insert_ $ Offer { offerService = s21
+                        , offerName = "Price"
+                        , offerPrice = 55
+                        , offerPrefix = Just "$"
+                        , offerSuffix = Nothing
+                        , offerDescr = Nothing
                         }
 
-    insert_ $ Pricelist { pricelistService = s21
-                        , pricelistName = "Package"
-                        , pricelistPrice = 250
-                        , pricelistPrefix = Just "$"
-                        , pricelistSuffix = Just "/5 sessions"
-                        , pricelistDescr = Nothing
+    insert_ $ Offer { offerService = s21
+                        , offerName = "Package"
+                        , offerPrice = 250
+                        , offerPrefix = Just "$"
+                        , offerSuffix = Just "/5 sessions"
+                        , offerDescr = Nothing
                         }
 
     insert_ $ Role { roleStaff = e10
@@ -669,20 +669,20 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             , serviceGroup = Just s2
                             }
 
-    insert_ $ Pricelist { pricelistService = s22
-                        , pricelistName = "Price"
-                        , pricelistPrice = 75
-                        , pricelistPrefix = Just "$"
-                        , pricelistSuffix = Nothing
-                        , pricelistDescr = Nothing
+    insert_ $ Offer { offerService = s22
+                        , offerName = "Price"
+                        , offerPrice = 75
+                        , offerPrefix = Just "$"
+                        , offerSuffix = Nothing
+                        , offerDescr = Nothing
                         }
 
-    insert_ $ Pricelist { pricelistService = s22
-                        , pricelistName = "Package"
-                        , pricelistPrice = 350
-                        , pricelistPrefix = Just "$"
-                        , pricelistSuffix = Just "/5 sessions"
-                        , pricelistDescr = Nothing
+    insert_ $ Offer { offerService = s22
+                        , offerName = "Package"
+                        , offerPrice = 350
+                        , offerPrefix = Just "$"
+                        , offerSuffix = Just "/5 sessions"
+                        , offerDescr = Nothing
                         }
 
     s23 <- insert $ Service { serviceName = "Pampering Facial (90 min)"
@@ -692,20 +692,20 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             , serviceGroup = Just s2
                             }
 
-    insert_ $ Pricelist { pricelistService = s23
-                        , pricelistName = "Price"
-                        , pricelistPrice = 90
-                        , pricelistPrefix = Just "$"
-                        , pricelistSuffix = Nothing
-                        , pricelistDescr = Nothing
+    insert_ $ Offer { offerService = s23
+                        , offerName = "Price"
+                        , offerPrice = 90
+                        , offerPrefix = Just "$"
+                        , offerSuffix = Nothing
+                        , offerDescr = Nothing
                         }
 
-    insert_ $ Pricelist { pricelistService = s23
-                        , pricelistName = "Package"
-                        , pricelistPrice = 400
-                        , pricelistPrefix = Just "$"
-                        , pricelistSuffix = Just "/5 sessions"
-                        , pricelistDescr = Nothing
+    insert_ $ Offer { offerService = s23
+                        , offerName = "Package"
+                        , offerPrice = 400
+                        , offerPrefix = Just "$"
+                        , offerSuffix = Just "/5 sessions"
+                        , offerDescr = Nothing
                         }
 
     s24 <- insert $ Service { serviceName = "Acne Treatment (120 min)"
@@ -715,20 +715,20 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             , serviceGroup = Just s2
                             }
 
-    insert_ $ Pricelist { pricelistService = s24
-                        , pricelistName = "Price"
-                        , pricelistPrice = 95
-                        , pricelistPrefix = Just "$"
-                        , pricelistSuffix = Nothing
-                        , pricelistDescr = Nothing
+    insert_ $ Offer { offerService = s24
+                        , offerName = "Price"
+                        , offerPrice = 95
+                        , offerPrefix = Just "$"
+                        , offerSuffix = Nothing
+                        , offerDescr = Nothing
                         }
 
-    insert_ $ Pricelist { pricelistService = s24
-                        , pricelistName = "Package"
-                        , pricelistPrice = 600
-                        , pricelistPrefix = Just "$"
-                        , pricelistSuffix = Just "/7 sessions"
-                        , pricelistDescr = Nothing
+    insert_ $ Offer { offerService = s24
+                        , offerName = "Package"
+                        , offerPrice = 600
+                        , offerPrefix = Just "$"
+                        , offerSuffix = Just "/7 sessions"
+                        , offerDescr = Nothing
                         }
 
     s25 <- insert $ Service { serviceName = "24k Gold Whitening Treatment"
@@ -738,20 +738,20 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             , serviceGroup = Just s2
                             }
 
-    insert_ $ Pricelist { pricelistService = s25
-                        , pricelistName = "Price"
-                        , pricelistPrice = 100
-                        , pricelistPrefix = Just "$"
-                        , pricelistSuffix = Nothing
-                        , pricelistDescr = Nothing
+    insert_ $ Offer { offerService = s25
+                        , offerName = "Price"
+                        , offerPrice = 100
+                        , offerPrefix = Just "$"
+                        , offerSuffix = Nothing
+                        , offerDescr = Nothing
                         }
 
-    insert_ $ Pricelist { pricelistService = s25
-                        , pricelistName = "Package"
-                        , pricelistPrice = 460
-                        , pricelistPrefix = Just "$"
-                        , pricelistSuffix = Just "/5 sessions"
-                        , pricelistDescr = Nothing
+    insert_ $ Offer { offerService = s25
+                        , offerName = "Package"
+                        , offerPrice = 460
+                        , offerPrefix = Just "$"
+                        , offerSuffix = Just "/5 sessions"
+                        , offerDescr = Nothing
                         }
 
     s3 <- insert $ Service { serviceName = "Advanced Facial Treatments"

@@ -13,8 +13,8 @@ module Admin.Services
   , postAdmServicesR
   , postAdmServiceDeleteR
   , getAdmServiceImageR
-  , getAdmPricelistCreateR
-  , postAdmPricelistR
+  , getAdmOfferCreateR
+  , postAdmOfferR
   , getAdmPriceR
   , postAdmPriceR
   , getAdmPriceEditR
@@ -59,7 +59,7 @@ import Foundation
     , Route (StaticR, AuthR, PhotoPlaceholderR, AdminR, AccountPhotoR, ServiceThumbnailR)
     , AdminR
       ( AdmServiceCreateFormR, AdmServiceEditFormR, AdmServicesR, AdmServiceR
-      , AdmServiceDeleteR, AdmServiceImageR, AdmPricelistCreateR, AdmPricelistR
+      , AdmServiceDeleteR, AdmServiceImageR, AdmOfferCreateR, AdmOfferR
       , AdmPriceR, AdmPriceEditR, AdmPriceDeleteR, AdmServicesSearchR
       )
     , AppMessage
@@ -68,10 +68,10 @@ import Foundation
       , MsgService, MsgSave, MsgCancel, MsgRecordAdded, MsgImage
       , MsgSubservices, MsgAddService, MsgAddSubservice, MsgNoServicesYet
       , MsgDeleteAreYouSure, MsgYesDelete, MsgPleaseConfirm, MsgRecordDeleted
-      , MsgPrefix, MsgSuffix, MsgServisAlreadyInTheList, MsgPricelist, MsgAddPrice
+      , MsgPrefix, MsgSuffix, MsgServisAlreadyInTheList, MsgAddPrice
       , MsgNoPriceSetYet, MsgPriceAlreadyInTheList, MsgOverview, MsgPublished
       , MsgYes, MsgNo, MsgSearch, MsgNoServicesFound, MsgSelect, MsgCategory
-      , MsgCategories, MsgStatus, MsgUnpublished
+      , MsgCategories, MsgStatus, MsgUnpublished, MsgOffers
       )
     )
 
@@ -89,14 +89,14 @@ import Model
     , Services (Services)
     , EntityField
       ( ServiceId, ThumbnailPhoto, ThumbnailMime, ServiceGroup, ThumbnailService
-      , ServiceName, PricelistService, PricelistId, PricelistName, ServiceOverview
+      , ServiceName, OfferService, OfferId, OfferName, ServiceOverview
       , ServiceDescr, ServicePublished
       )
-    , Pricelist
-      ( Pricelist, pricelistName, pricelistPrice, pricelistPrefix, pricelistSuffix
-      , pricelistDescr
+    , Offer
+      ( Offer, offerName, offerPrice, offerPrefix, offerSuffix
+      , offerDescr
       )
-    , PricelistId
+    , OfferId
     , ServiceStatus (ServiceStatusPulished, ServiceStatusUnpublished)
     )
 
@@ -145,7 +145,7 @@ getAdmServicesSearchR = do
         $(widgetFile "admin/services/search")
 
 
-postAdmPriceDeleteR :: PricelistId -> Services -> Handler Html
+postAdmPriceDeleteR :: OfferId -> Services -> Handler Html
 postAdmPriceDeleteR pid sids = do
     scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
     open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
@@ -154,13 +154,13 @@ postAdmPriceDeleteR pid sids = do
     redirect (AdminR $ AdmServicesR sids,catMaybes [scrollY,open])
 
 
-getAdmPriceEditR :: PricelistId -> Services -> Handler Html
+getAdmPriceEditR :: OfferId -> Services -> Handler Html
 getAdmPriceEditR pid (Services sids) = do
     scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
     open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
     price <- runDB $ selectOne $ do
-        x <- from $ table @Pricelist
-        where_ $ x ^. PricelistId ==. val pid
+        x <- from $ table @Offer
+        where_ $ x ^. OfferId ==. val pid
         return x
     (widget,enctype) <- generateFormPost $ formPrice (last sids) price
     defaultLayout $ do
@@ -168,13 +168,13 @@ getAdmPriceEditR pid (Services sids) = do
         $(widgetFile "admin/services/edit-price")
 
 
-postAdmPriceR :: PricelistId -> Services -> Handler Html
+postAdmPriceR :: OfferId -> Services -> Handler Html
 postAdmPriceR pid (Services sids) = do
     scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
     open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
     price <- runDB $ selectOne $ do
-        x <- from $ table @Pricelist
-        where_ $ x ^. PricelistId ==. val pid
+        x <- from $ table @Offer
+        where_ $ x ^. OfferId ==. val pid
         return x
     ((fr,widget),enctype) <- runFormPost $ formPrice (last sids) price
     case fr of
@@ -189,13 +189,13 @@ postAdmPriceR pid (Services sids) = do
           $(widgetFile "admin/services/edit-price")
 
 
-getAdmPriceR :: PricelistId -> Services -> Handler Html
+getAdmPriceR :: OfferId -> Services -> Handler Html
 getAdmPriceR pid sids = do
     scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
     open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
     price <- runDB $ selectOne $ do
-        x <- from $ table @Pricelist
-        where_ $ x ^. PricelistId ==. val pid
+        x <- from $ table @Offer
+        where_ $ x ^. OfferId ==. val pid
         return x
     msgs <- getMessages
     defaultLayout $ do
@@ -203,8 +203,8 @@ getAdmPriceR pid sids = do
         $(widgetFile "admin/services/price")
 
 
-postAdmPricelistR :: Services -> Handler Html
-postAdmPricelistR (Services sids) = do
+postAdmOfferR :: Services -> Handler Html
+postAdmOfferR (Services sids) = do
     scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
     open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
     ((fr,widget),enctype) <- runFormPost $ formPrice (last sids) Nothing
@@ -220,8 +220,8 @@ postAdmPricelistR (Services sids) = do
           $(widgetFile "admin/services/create-price")
 
 
-getAdmPricelistCreateR :: Services -> Handler Html
-getAdmPricelistCreateR (Services sids) = do
+getAdmOfferCreateR :: Services -> Handler Html
+getAdmOfferCreateR (Services sids) = do
     scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
     open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
     (widget,enctype) <- generateFormPost $ formPrice (last sids) Nothing
@@ -230,36 +230,36 @@ getAdmPricelistCreateR (Services sids) = do
         $(widgetFile "admin/services/create-price")
 
 
-formPrice :: ServiceId -> Maybe (Entity Pricelist)
-          -> Html -> MForm Handler (FormResult Pricelist, Widget)
-formPrice sid pricelist extra = do
+formPrice :: ServiceId -> Maybe (Entity Offer)
+          -> Html -> MForm Handler (FormResult Offer, Widget)
+formPrice sid offer extra = do
     (nameR,nameV) <- mreq uniqueNameField FieldSettings
         { fsLabel = SomeMessage MsgTheName
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
-        } (pricelistName . entityVal <$> pricelist)
+        } (offerName . entityVal <$> offer)
     (priceR,priceV) <- mreq doubleField FieldSettings
         { fsLabel = SomeMessage MsgPrice
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
-        } (realToFrac . pricelistPrice . entityVal <$> pricelist)
+        } (realToFrac . offerPrice . entityVal <$> offer)
     (prefR,prefV) <- mopt textField FieldSettings
         { fsLabel = SomeMessage MsgPrefix
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
-        } (pricelistPrefix . entityVal <$> pricelist)
+        } (offerPrefix . entityVal <$> offer)
     (suffR,suffV) <- mopt textField FieldSettings
         { fsLabel = SomeMessage MsgSuffix
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
-        } (pricelistSuffix . entityVal <$> pricelist)
+        } (offerSuffix . entityVal <$> offer)
     (descrR,descrV) <- mopt textareaField FieldSettings
         { fsLabel = SomeMessage MsgDescription
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
-        } (pricelistDescr . entityVal <$> pricelist)
+        } (offerDescr . entityVal <$> offer)
 
-    let r = Pricelist sid <$> nameR <*> (realToFrac <$> priceR) <*> prefR <*> suffR <*> descrR
+    let r = Offer sid <$> nameR <*> (realToFrac <$> priceR) <*> prefR <*> suffR <*> descrR
     let w = [whamlet|
 #{extra}
 
@@ -300,13 +300,13 @@ $forall v <- [nameV,priceV,prefV,suffV]
       uniqueName :: Text -> Handler (Either AppMessage Text)
       uniqueName name = do
           mx <- runDB $ selectOne $ do
-              x <- from $ table @Pricelist
-              where_ $ x ^. PricelistService ==. val sid
-              where_ $ x ^. PricelistName ==. val name
+              x <- from $ table @Offer
+              where_ $ x ^. OfferService ==. val sid
+              where_ $ x ^. OfferName ==. val name
               return x
           return $ case mx of
             Nothing -> Right name
-            Just (Entity pid _) -> case pricelist of
+            Just (Entity pid _) -> case offer of
               Nothing -> Left MsgPriceAlreadyInTheList
               Just (Entity pid' _) | pid == pid' -> Right name
                                    | otherwise -> Left MsgPriceAlreadyInTheList
@@ -419,11 +419,11 @@ getAdmServicesR (Services sids) = do
           x <- from $ table @Service
           where_ $ x ^. ServiceId ==. val sid
           return x
-    pricelist <- case service of
+    offer <- case service of
       Just (Entity sid _) -> runDB $ select $ do
-          x <- from $ table @Pricelist
-          where_ $ x ^. PricelistService ==. val sid
-          orderBy [asc (x ^. PricelistId)]
+          x <- from $ table @Offer
+          where_ $ x ^. OfferService ==. val sid
+          orderBy [asc (x ^. OfferId)]
           return x
       Nothing -> return []
     services <- runDB $ select $ do

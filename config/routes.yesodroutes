@@ -34,11 +34,11 @@
     /about                    AdmAboutR       GET POST
 
     /search/services	      		  AdmServicesSearchR	GET
-    /form/pricelist/+Services             AdmPricelistCreateR   GET
-    /form/price/#PricelistId/+Services    AdmPriceEditR   	GET
-    /delete/prices/#PricelistId/+Services AdmPriceDeleteR	POST
-    /prices/#PricelistId/+Services        AdmPriceR	        GET POST
-    /pricelist/+Services       	       	  AdmPricelistR	        POST
+    /form/pricelist/+Services             AdmOfferCreateR   GET
+    /form/price/#OfferId/+Services    AdmPriceEditR   	GET
+    /delete/prices/#OfferId/+Services AdmPriceDeleteR	POST
+    /prices/#OfferId/+Services        AdmPriceR	        GET POST
+    /pricelist/+Services       	       	  AdmOfferR	        POST
     /form/services/+Services   	       	  AdmServiceEditFormR   GET
     /form/service/+Services    	          AdmServiceCreateFormR GET
     /delete/services/+Services 	       	  AdmServiceDeleteR     POST

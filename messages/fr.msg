@@ -1,3 +1,5 @@
+Offers: Offres
+Offer: Offre
 ChooseServices: Choose services
 ChooseServicesToBook: Choisissez les services à réserver
 ChooseService: Choisissez un service

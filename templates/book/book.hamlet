@@ -4,10 +4,14 @@
       <button.mdc-top-app-bar__navigation-icon.mdc-icon-button #btnMainMenu>
         <span.mdc-icon-button__ripple>
         <i.material-symbols-outlined>menu
-      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
-        <div style="white-space:normal;line-height:1.1">_{MsgChooseServicesToBook}
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light style="white-space:normal">
+        _{MsgChooseServicesToBook}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
+      <a.mdc-top-app-bar__action-item.mdc-icon-button href=# role=button>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>search
       $maybe Entity uid _ <- muid
         <button.mdc-top-app-bar__action-item.mdc-icon-button type=button #buttonProfile>
           <span.mdc-icon-button__ripple>
@@ -32,25 +36,52 @@
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
 
-  <ul.mdc-list aria-multiselectable=true #serviceList data-mdc-auto-init=MDCList>
-    $forall (Entity sid (Service sname _ _ _ _),Entity pid (Pricelist _ pname price prefix suffix pdescr)) <- offers
-      <li.mdc-list-item role=checkbox
-        .mdc-list-item--with-leading-checkbox
-        .mdc-list-item--with-two-lines
-        .mdc-list-item--with-trailing-meta tabindex=0 aria-checked=true>
-        <span.mdc-list-item__ripple>
-        <span.mdc-list-item__start style="pointer-events:all">
-          <div.mdc-checkbox data-mdc-auto-init=MDCCheckbox>
-            <input.mdc-checkbox__native-control type=checkbox checked>
-            <div.mdc-checkbox__background>
-              <svg.mdc-checkbox__checkmark viewBox="0 0 24 24">
-                <path.mdc-checkbox__checkmark-path fill=none d="M1.73,12.91 8.1,19.28 22.79,4.59">
-              <div.mdc-checkbox__mixedmark>
-        <span.mdc-list-item__content>
-          <div.mdc-list-item__primary-text>#{sname}
-          <div.mdc-list-item__secondary-text>
-            $maybe descr <- pdescr
-              #{descr}
-        <span.mdc-list-item__end>
-          #{show price}
-      <li.mdc-list-divider role=separator>
+  <form mthod=get #formBook>
+    <ul.mdc-list role=listbox aria-multiselectable=true #serviceList tabindex=-1 data-mdc-auto-init=MDCList>
+      $forall (Entity _ (Service sname _ _ _ _),Entity oid (Offer _ _ price prefix suffix pdescr)) <- offers
+        <li.mdc-list-item tabindex=0 role=option
+          .mdc-list-item--with-leading-checkbox.mdc-list-item--with-two-lines.mdc-list-item--with-trailing-meta
+          :elem oid oids:aria-checked=true :not (elem oid oids):aria-checked=false data-amount=#{show price}>
+          <span.mdc-list-item__ripple>
+          <span.mdc-list-item__start>
+            <div.mdc-checkbox :elem oid oids:checked tabindex=-1 data-mdc-auto-init=MDCCheckbox>
+              <input.mdc-checkbox__native-control type=checkbox name=oid value=#{fromSqlKey oid} :elem oid oids:checked>
+              <div.mdc-checkbox__background>
+                <svg.mdc-checkbox__checkmark viewBox="0 0 24 24">
+                  <path.mdc-checkbox__checkmark-path fill=none d="M1.73,12.91 8.1,19.28 22.79,4.59">
+                <div.mdc-checkbox__mixedmark>
+          <span.mdc-list-item__content>
+            <div.mdc-list-item__primary-text>#{sname}
+            <div.mdc-list-item__secondary-text>
+              $maybe descr <- pdescr
+                #{descr}
+          <span.mdc-list-item__end>
+            $maybe prefix <- prefix
+              #{prefix}
+            $with amount <- show price
+              <span data-amount=#{amount}>#{amount}
+            $maybe suffix <- suffix
+              #{suffix}
+        <li.mdc-list-divider role=separator>
+
+<footer>
+  <div #footerContent>
+    <section #footerSectionStart>
+      <div #footerBookCountLabel>
+        <span #footerBookCount>#{length oids}
+        <span>_{MsgServices}
+      $with amount <- show $ amount oids offers
+        <div #footerBookAmount>
+          $maybe (_,Entity _ (Offer _ _ _ prefix _ _)) <- LS.head offers
+            $maybe prefix <- prefix
+              #{prefix}
+          <span data-amount=#{amount}>#{amount}
+          $maybe (_,Entity _ (Offer _ _ _ _ suffix _)) <- LS.head offers
+            $maybe suffix <- suffix
+              #{suffix}
+    <section #footerSectionEnd>
+      <button.mdc-button.mdc-button--raised type=submit form=formBook #btnSubmitForm>
+        <span.mdc-button__ripple>
+        <span.mdc-button__focus-ring>
+        <i.mdc-button__icon.material-symbols-outlined>check
+        <span.mdc-button__label>_{MsgBook}

@@ -35,7 +35,7 @@
     <div.mdc-dialog__scrim>
         
 <main.mdc-top-app-bar--fixed-adjust>
-  $maybe Entity _ (Pricelist _ name price prefix suffix descr) <- price
+  $maybe Entity _ (Offer _ name price prefix suffix descr) <- price
     <div.mdc-data-table>
       <div.mdc-data-table__table-container>
         <table.mdc-data-table__table>

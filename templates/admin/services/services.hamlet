@@ -104,36 +104,36 @@
                   #{preEscapedToMarkup $ unTextarea descr}
 
   $if not (null sids)
-    <details #detailsPricelist :open == Just "pricelist":open>
+    <details #detailsOffer :open == Just "offer":open>
       <summary style="list-style:none">
         <ul.mdc-list data-mdc-auto-init=MDCList>
-          <li.mdc-list-item :open == Just "pricelist":.mdc-list-item--activated
+          <li.mdc-list-item :open == Just "offer":.mdc-list-item--activated
             .mdc-list-item--with-one-line
             .mdc-list-item--with-trailing-icon>
             <span.mdc-list-item__ripple>
             <span.mdc-list-item__content>
               <div.mdc-list-item__primary-text>
                 <div.label-with-badge>
-                  <div.label>_{MsgPricelist}
-                  <div.badge>#{length pricelist}
+                  <div.label>_{MsgOffers}
+                  <div.badge>#{length offer}
             <span.mdc-list-item__end>
               <i.material-symbols-outlined>
-                $if open == Just "pricelist"
+                $if open == Just "offer"
                   expand_less
                 $elseif open == Nothing
                   expand_more
                 $else
                   expand_more
 
-      $if null pricelist
+      $if null offer
         <figure>
           <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
           <figcaption>
             _{MsgNoPriceSetYet}.
       $else
         <nav.mdc-list data-mdc-auto-init=MDCList>
-          $forall Entity pid (Pricelist _ name price prefix suffix _) <- pricelist
-            <a.mdc-list-item href=@?{(AdminR $ AdmPriceR pid (Services sids),[("open","pricelist")])}
+          $forall Entity pid (Offer _ name price prefix suffix _) <- offer
+            <a.mdc-list-item href=@?{(AdminR $ AdmPriceR pid (Services sids),[("open","offer")])}
               :Just pid == mpid:.mdc-list-item--activated
               .mdc-list-item--with-two-lines.mdc-list-item--with-trailing-icon>
               <span.mdc-list-item__ripple>
@@ -152,8 +152,8 @@
             <div.mdc-list-divider role=separator>
 
       <div.mdc-touch-target-wrapper #fabAddPrice>
-        <a.mdc-fab.mdc-fab--extended.mdc-fab--touch href=@{AdminR $ AdmPricelistCreateR (Services sids)}
-          onclick="this.href = `${this.href}?scrollY=${window.scrollY}&open=pricelist`">
+        <a.mdc-fab.mdc-fab--extended.mdc-fab--touch href=@{AdminR $ AdmOfferCreateR (Services sids)}
+          onclick="this.href = `${this.href}?scrollY=${window.scrollY}&open=offer`">
           <span.mdc-fab__ripple>
           <span.mdc-fab__focus-ring>
           <span.mdc-fab__icon.material-symbols-outlined>add

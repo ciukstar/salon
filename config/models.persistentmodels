@@ -6,7 +6,7 @@ Contents
 
 Book
   user UserId OnDeleteCascade
-  serice ServiceId OnDeleteCascade
+  offer OfferId OnDeleteCascade
   role RoleId Maybe OnDeleteCascade
   day Day
   time UTCTime
@@ -39,14 +39,14 @@ Thumbnail
   mime Text
   UniqueThumbnail service
 
-Pricelist
+Offer
   service ServiceId OnDeleteCascade
   name Text
   price Centi
   prefix Text Maybe
   suffix Text Maybe
   descr Textarea Maybe
-  UniquePricelist service name 
+  UniqueOffer service name 
 
 Service
   name Text

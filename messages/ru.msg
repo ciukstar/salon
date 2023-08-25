@@ -1,3 +1,5 @@
+Offers: Предложения
+Offer: Предложение
 ChooseServices: Выберите услуги
 ChooseServicesToBook: Выберите услуги для бронирования
 ChooseService: Выберите услугу

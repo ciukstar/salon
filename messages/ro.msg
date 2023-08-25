@@ -1,3 +1,5 @@
+Offers: Oferte
+Offer: Ofertă
 ChooseServices: Alegeți serviciile
 ChooseServicesToBook: Alegeți serviciile de rezervat
 ChooseService: Alegeți un serviciu

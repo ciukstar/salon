@@ -10,7 +10,7 @@
   
 <main.mdc-top-app-bar--fixed-adjust>
   <form method=POST enctype=#{enctype} novalidate
-    action=@?{(AdminR $ AdmPricelistR (Services sids),catMaybes [scrollY,open])}>
+    action=@?{(AdminR $ AdmOfferR (Services sids),catMaybes [scrollY,open])}>
     ^{widget}
     <div.actions>
       <a.mdc-button href=@?{(AdminR $ AdmServicesR (Services sids),catMaybes [scrollY,open])} role=button>

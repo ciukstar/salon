@@ -105,8 +105,8 @@ import Admin.Services
     , postAdmServicesR
     , postAdmServiceDeleteR
     , getAdmServiceImageR
-    , getAdmPricelistCreateR
-    , postAdmPricelistR
+    , getAdmOfferCreateR
+    , postAdmOfferR
     , getAdmPriceR
     , postAdmPriceR
     , getAdmPriceEditR

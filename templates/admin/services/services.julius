@@ -9,7 +9,7 @@ window.mdc.autoInit();
   });
 });
 
-[document.getElementById('detailsPricelist')].filter(x => !!x).forEach(function (x) {
+[document.getElementById('detailsOffer')].filter(x => !!x).forEach(function (x) {
   x.addEventListener('click',function (e) {
     [document.getElementById('detailsSubservices')].filter(x => !!x).forEach(function (x) {
       x.removeAttribute('open');
@@ -19,14 +19,14 @@ window.mdc.autoInit();
 
 [document.getElementById('detailsSubservices')].filter(x => !!x).forEach(function (x) {
   x.addEventListener('click',function (e) {
-    [document.getElementById('detailsPricelist')].filter(x => !!x).forEach(function (x) {
+    [document.getElementById('detailsOffer')].filter(x => !!x).forEach(function (x) {
       x.removeAttribute('open');
     });
   });
 });
 
 [ document.getElementById('detailsSubservices'),
-  document.getElementById('detailsPricelist')
+  document.getElementById('detailsOffer')
 ].filter(x => !!x).forEach(function (x) {
   const endIcon = x.querySelector('.mdc-list-item__end > .material-symbols-outlined');
   x.addEventListener('toggle',function (e) {

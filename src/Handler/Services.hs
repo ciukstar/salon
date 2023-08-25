@@ -60,11 +60,11 @@ import Database.Esqueleto.Experimental
 import Model
     ( Service(Service), ServiceId
     , EntityField
-      ( ServiceId, ThumbnailService, ServiceGroup, PricelistService
-      , PricelistId, ServicePublished, ServiceName, ServiceDescr
+      ( ServiceId, ThumbnailService, ServiceGroup, OfferService
+      , OfferId, ServicePublished, ServiceName, ServiceDescr
       , ServiceOverview
       )
-    , Thumbnail (Thumbnail), Pricelist (Pricelist), Services (Services)
+    , Thumbnail (Thumbnail), Offer (Offer), Services (Services)
     , ServiceStatus (ServiceStatusPulished, ServiceStatusUnpublished)
     )
 
@@ -116,10 +116,10 @@ getServiceR (Services sids) = do
         where_ $ x ^. ServiceId ==. val sid
         return x
 
-    pricelist <- runDB $ select $ do
-        x <- from $ table @Pricelist
-        where_ $ x ^. PricelistService ==. val sid
-        orderBy [asc (x ^. PricelistId)]
+    offer <- runDB $ select $ do
+        x <- from $ table @Offer
+        where_ $ x ^. OfferService ==. val sid
+        orderBy [asc (x ^. OfferId)]
         return x
     
     defaultLayout $ do
@@ -133,7 +133,7 @@ getServicesR = do
     scrollY <- runInputGet (iopt textField "scrollY")
     msid <- (toSqlKey <$>) <$> runInputGet (iopt intField "sid")
     srvs <- fetchServices Nothing
-    let Srvs pricelist = srvs
+    let Srvs offer = srvs
     muid <- maybeAuth
     msgs <- getMessages
     setUltDestCurrent
@@ -145,8 +145,8 @@ getServicesR = do
 buildSnippet :: [Text] -> Maybe ServiceId -> Services -> Srvs -> Widget
 buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
 <ul.mdc-list data-mdc-auto-init=MDCList>
-  $forall ((Entity sid (Service name _ overview _ _), pricelist),srvs@(Srvs subservices)) <- services
-    $with (gid,l) <- (pack $ show $ fromSqlKey sid, length pricelist)
+  $forall ((Entity sid (Service name _ overview _ _), offer),srvs@(Srvs subservices)) <- services
+    $with (gid,l) <- (pack $ show $ fromSqlKey sid, length offer)
       $if (length subservices) > 0
         <details role=listitem #details#{gid} :elem gid open:open
           ontoggle="document.getElementById('iconExpand#{gid}').textContent = this.open ? 'expand_less' : 'expand_more'">
@@ -185,7 +185,7 @@ buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
           <span.mdc-list-item__content>
             <div.mdc-list-item__primary-text>
               #{name}
-            $forall Entity _ (Pricelist _ name price prefix suffix _) <- take 2 pricelist
+            $forall Entity _ (Offer _ name price prefix suffix _) <- take 2 offer
               <div.mdc-list-item__secondary-text>
                 #{name}:&nbsp;
                 $maybe prefix <- prefix
@@ -202,7 +202,7 @@ buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
       oqs :: [ServiceId] -> [(Text,Text)]
       oqs = (<$>) (("o",) . pack . show . fromSqlKey)
 
-newtype Srvs = Srvs [((Entity Service, [Entity Pricelist]), Srvs)]
+newtype Srvs = Srvs [((Entity Service, [Entity Offer]), Srvs)]
 
 
 fetchServices :: Maybe ServiceId -> Handler Srvs
@@ -217,9 +217,9 @@ fetchServices gid = do
         return x
 
     groups <- forM categories $ \e@(Entity sid _) -> (e,) <$> runDB ( select $ do
-        x <- from $ table @Pricelist
-        where_ $ x ^. PricelistService ==. val sid
-        orderBy [asc (x ^. PricelistId)]
+        x <- from $ table @Offer
+        where_ $ x ^. OfferService ==. val sid
+        orderBy [asc (x ^. OfferId)]
         return x )
 
     Srvs <$> forM groups ( \g@(Entity sid _,_) -> (g,) <$> fetchServices (Just sid) )
