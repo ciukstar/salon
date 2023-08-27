@@ -1,3 +1,11 @@
+SelectStaff: Sélectionner le personnel
+MaximumAvailability: Disponibilité maximale
+NoPreference: Aucune préférence
+NoStaffAvailable: Pas de personnel disponible
+SymbolMinute: min
+SymbolHour: h
+InvalidDurationHourMinute duration: Durée non valide : #{duration}. Modèle attendu HH:MM
+Duration: Durée
 Offers: Offres
 Offer: Offre
 ChooseServices: Choose services

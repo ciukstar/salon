@@ -1,3 +1,11 @@
+SelectStaff: Selectați personalul
+MaximumAvailability: Disponibilitate maxima
+NoPreference: Fară preferinţe
+NoStaffAvailable: Nu există personal disponibil
+SymbolMinute: min
+SymbolHour: h
+InvalidDurationHourMinute duration: Durată nevalidă: #{duration}. Modelul așteptat HH:MM
+Duration: Durată
 Offers: Oferte
 Offer: Ofertă
 ChooseServices: Alegeți serviciile

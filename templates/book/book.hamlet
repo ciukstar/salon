@@ -36,11 +36,11 @@
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
 
-  <form mthod=get #formBook>
+  <form mthod=get action=@{BookStaffR} #formBook>
     <ul.mdc-list role=listbox aria-multiselectable=true #serviceList tabindex=-1 data-mdc-auto-init=MDCList>
-      $forall (Entity _ (Service sname _ _ _ _),Entity oid (Offer _ _ price prefix suffix pdescr)) <- offers
+      $forall (Entity _ (Service sname _ _ duration _ _),Entity oid (Offer _ pname price prefix suffix _)) <- offers
         <li.mdc-list-item tabindex=0 role=option
-          .mdc-list-item--with-leading-checkbox.mdc-list-item--with-two-lines.mdc-list-item--with-trailing-meta
+          .mdc-list-item--with-leading-checkbox.mdc-list-item--with-three-lines
           :elem oid oids:aria-checked=true :not (elem oid oids):aria-checked=false data-amount=#{show price}>
           <span.mdc-list-item__ripple>
           <span.mdc-list-item__start>
@@ -53,15 +53,19 @@
           <span.mdc-list-item__content>
             <div.mdc-list-item__primary-text>#{sname}
             <div.mdc-list-item__secondary-text>
-              $maybe descr <- pdescr
-                #{descr}
-          <span.mdc-list-item__end>
-            $maybe prefix <- prefix
-              #{prefix}
-            $with amount <- show price
-              <span data-amount=#{amount}>#{amount}
-            $maybe suffix <- suffix
-              #{suffix}
+              $maybe duration <- duration
+                $with pat <- intercalate "" ["%H",renderMessage app langs MsgSymbolHour," %M",renderMessage app langs MsgSymbolMinute]
+                  $with duration <- formatTime defaultTimeLocale (unpack pat) duration
+                    #{duration}
+              
+            <div.mdc-list-item__secondary-text style="white-space:nowrap">
+              #{pname}: 
+              $maybe prefix <- prefix
+                #{prefix}
+              $with amount <- show price
+                <span data-amount=#{amount}>#{amount}
+              $maybe suffix <- suffix
+                #{suffix}
         <li.mdc-list-divider role=separator>
 
 <footer>
@@ -76,9 +80,11 @@
             $maybe prefix <- prefix
               #{prefix}
           <span data-amount=#{amount}>#{amount}
-          $maybe (_,Entity _ (Offer _ _ _ _ suffix _)) <- LS.head offers
-            $maybe suffix <- suffix
-              #{suffix}
+          $maybe (_,Entity _ (Offer _ _ _ prefix suffix _)) <- LS.head offers
+            $maybe _ <- prefix
+            $nothing
+              $maybe suffix <- suffix
+                #{suffix}
     <section #footerSectionEnd>
       <button.mdc-button.mdc-button--raised type=submit form=formBook #btnSubmitForm>
         <span.mdc-button__ripple>

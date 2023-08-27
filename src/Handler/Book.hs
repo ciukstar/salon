@@ -1,15 +1,23 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TupleSections #-}
 
-module Handler.Book (getBookR) where
+module Handler.Book
+  ( getBookR
+  , getBookStaffR
+  ) where
 
+import Control.Monad (forM)
+import Data.Fixed (Centi)
 import qualified Data.List.Safe as LS (head)
-import Data.Text (unpack)
+import Data.Text (unpack, intercalate)
+import Data.Time.Format (formatTime, defaultTimeLocale)
 import Text.Hamlet (Html)
+import Text.Shakespeare.I18N (renderMessage)
 import Yesod.Core
     ( Yesod(defaultLayout), setUltDestCurrent, getRequest
-    , YesodRequest (reqGetParams)
+    , YesodRequest (reqGetParams), getYesod, languages
     )
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Auth (maybeAuth, Route (LoginR, LogoutR))
@@ -22,24 +30,47 @@ import Database.Persist.Sql ( fromSqlKey, toSqlKey )
 import Database.Esqueleto.Experimental
     ( select, from, table, where_, innerJoin, on
     , (^.), (==.), (:&)((:&))
-    , orderBy, asc
+    , orderBy, asc, selectOne, val, desc
     )
 
 import Foundation
     ( Handler
-    , Route (AuthR, PhotoPlaceholderR, AccountPhotoR)
+    , Route (BookR, BookStaffR, AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR)
+    , AdminR (AdmStaffPhotoR)
     , AppMessage
       ( MsgBook, MsgPhoto, MsgLogout, MsgChooseServicesToBook
-      , MsgServices
+      , MsgServices, MsgSymbolHour, MsgSymbolMinute, MsgStaff
+      , MsgNoStaffAvailable, MsgNoPreference, MsgMaximumAvailability
+      , MsgSelectStaff
       )
     )
-    
+
 import Model
     ( Service(Service)
     , Offer (Offer), OfferId
-    , EntityField (ServiceId, OfferService, ServicePublished, ServiceName)
+    , Staff (Staff)
+    , Role (Role)
+    , EntityField
+      ( StaffId, RoleId, ServiceId, OfferService, ServicePublished
+      , ServiceName, RoleStaff, RoleRating
+      )
     )
-import Data.Fixed (Centi)
+
+
+getBookStaffR :: Handler Html
+getBookStaffR = do
+    staff <- runDB $ select $ do
+        x <- from $ table @Staff
+        orderBy [asc (x ^. StaffId)]
+        return x
+    roles <- forM staff ( \e@(Entity eid _) -> (e,) <$> runDB ( selectOne $ do
+          x <- from $ table @Role
+          where_ $ x ^. RoleStaff ==. val eid
+          orderBy [desc (x ^. RoleRating), asc (x ^. RoleId)]
+          return x ) )
+    defaultLayout $ do
+        setTitleI MsgStaff
+        $(widgetFile "book/staff")
 
 
 getBookR :: Handler Html
@@ -53,6 +84,8 @@ getBookR = do
         orderBy [asc (x ^. ServiceName)]
         return (x,p)
     setUltDestCurrent
+    app <- getYesod
+    langs <- languages
     defaultLayout $ do
         setTitleI MsgBook
         $(widgetFile "book/book")
@@ -63,3 +96,7 @@ amount oids xs = sum (
     (\(_,Entity _ (Offer _ _ price _ _ _)) -> price)
       <$> filter (\(_,Entity oid _) -> oid `elem` oids) xs
     )
+
+
+range :: Enum a => a -> a -> [a]
+range a b = [a..b]

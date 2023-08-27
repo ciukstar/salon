@@ -9,7 +9,7 @@
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgService}
 
 <main.mdc-top-app-bar--fixed-adjust>
-  $maybe Entity _ (Service name _ _ descr _) <- service
+  $maybe Entity _ (Service name _ _ _ descr _) <- service
     <p.mdc-typography--headline6>#{name}
     $forall Entity _ (Offer _ name price prefix suffix _) <- offer
       <p>

@@ -1,0 +1,12 @@
+
+window.mdc.autoInit();
+
+window.onscroll = function (e) {
+  if (document.body.scrollTop > 128 || document.documentElement.scrollTop > 128) {
+    document.querySelector('header.mdc-top-app-bar').classList.remove('mdc-top-app-bar--prominent');
+    document.querySelector('header.mdc-top-app-bar span.mdc-top-app-bar__title').style['white-space'] = 'nowrap';
+  } else {
+    document.querySelector('header.mdc-top-app-bar').classList.add('mdc-top-app-bar--prominent');
+    document.querySelector('header.mdc-top-app-bar span.mdc-top-app-bar__title').style['white-space'] = 'normal';
+  }
+};

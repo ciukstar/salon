@@ -18,7 +18,7 @@
   _{MsgPublished} ^{fvInput publishedV}
 
 
-$forall v <- [nameV,overviewV]
+$forall v <- [nameV,overviewV,durationV]
   <div.form-field>
     <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
       :isJust (fvErrors v):.mdc-text-field--invalid

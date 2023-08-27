@@ -145,7 +145,7 @@ getServicesR = do
 buildSnippet :: [Text] -> Maybe ServiceId -> Services -> Srvs -> Widget
 buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
 <ul.mdc-list data-mdc-auto-init=MDCList>
-  $forall ((Entity sid (Service name _ overview _ _), offer),srvs@(Srvs subservices)) <- services
+  $forall ((Entity sid (Service name _ overview _ _ _), offer),srvs@(Srvs subservices)) <- services
     $with (gid,l) <- (pack $ show $ fromSqlKey sid, length offer)
       $if (length subservices) > 0
         <details role=listitem #details#{gid} :elem gid open:open

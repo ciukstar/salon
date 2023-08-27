@@ -71,7 +71,7 @@
   
 <main.mdc-top-app-bar--fixed-adjust>
 
-  $maybe Entity sid (Service name published overview descr _) <- service
+  $maybe Entity sid (Service name published overview duration descr _) <- service
     <figure>
       <img src=@{ServiceThumbnailR sid} height=56 width=56 
         onerror="this.src = '@{StaticR img_photo_FILL0_wght400_GRAD0_opsz48_svg}'">
@@ -92,6 +92,13 @@
                   _{MsgYes}
                 $else
                   _{MsgNo}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgDuration}
+              <td.mdc-data-table__cell>
+                $maybe duration <- duration
+                  $with pat <- intercalate "" ["%H",renderMessage app langs MsgSymbolHour," %M",renderMessage app langs MsgSymbolMinute]
+                    $with duration <- formatTime defaultTimeLocale (unpack pat) duration
+                      #{duration}
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgOverview}
               <td.mdc-data-table__cell>

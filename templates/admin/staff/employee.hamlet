@@ -115,7 +115,7 @@
         <i.material-symbols-outlined #expanDetailsIcon>expand_more
     <nav.mdc-list data-mdc-auto-init=MDCList>
       $if not (null roles)
-        $forall (Entity rid (Role _ _ name rating), Entity _ (Service sname _ _ _ _)) <- roles
+        $forall (Entity rid (Role _ _ name rating), Entity _ (Service sname _ _ _ _ _)) <- roles
           <a.mdc-list-item href=@?{(AdminR $ AdmRoleR sid rid,[("open","roles"),("rid",pack $ show $ fromSqlKey rid)])}
             :Just (pack $ show $ fromSqlKey rid) == mrid:.mdc-list-item--activated
             .mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon

@@ -23,19 +23,20 @@ module Admin.Services
   ) where
 
 import Control.Applicative ((<|>))
-import Data.Text (Text, pack, unpack)
+import Data.Text (Text, pack, unpack, intercalate)
 import Data.Maybe (isJust, fromMaybe, catMaybes)
 import Data.Text.Encoding (encodeUtf8)
 import Data.FileEmbed (embedFile)
 import qualified Data.List.Safe as LS (last)
 import Text.Hamlet (Html)
+import Text.Shakespeare.I18N (renderMessage)
 import Yesod.Core
     ( Yesod(defaultLayout), setTitleI, setUltDestCurrent
     , FileInfo (fileContentType), SomeMessage (SomeMessage)
     , addMessageI, fileSourceByteString, redirect, getMessages
     , TypedContent (TypedContent), ToContent (toContent), typeSvg
     , whamlet, preEscapedToMarkup, newIdent, getRequest
-    , YesodRequest (reqGetParams)
+    , YesodRequest (reqGetParams), getYesod, languages
     )
 import Settings (widgetFile)
 import Settings.StaticFiles
@@ -50,7 +51,7 @@ import Yesod.Form
     , hiddenField, runInputGet, iopt, intField, checkM
     , mreq, textField, doubleField, mopt, textareaField, fileField
     , generateFormPost, runFormPost, unTextarea, withRadioField
-    , OptionList, optionsPairs, searchField, Textarea (Textarea)
+    , OptionList, optionsPairs, searchField, Textarea (Textarea), check
     )
 
 import Yesod.Auth (Route (LoginR, LogoutR), maybeAuth)
@@ -71,7 +72,8 @@ import Foundation
       , MsgPrefix, MsgSuffix, MsgServisAlreadyInTheList, MsgAddPrice
       , MsgNoPriceSetYet, MsgPriceAlreadyInTheList, MsgOverview, MsgPublished
       , MsgYes, MsgNo, MsgSearch, MsgNoServicesFound, MsgSelect, MsgCategory
-      , MsgCategories, MsgStatus, MsgUnpublished, MsgOffers
+      , MsgCategories, MsgStatus, MsgUnpublished, MsgOffers, MsgDuration
+      , MsgInvalidDurationHourMinute, MsgSymbolHour, MsgSymbolMinute
       )
     )
 
@@ -83,7 +85,7 @@ import Model
     ( ServiceId
     , Service
       ( Service, serviceName, serviceDescr, serviceGroup, serviceOverview
-      , servicePublished
+      , servicePublished, serviceDuration
       )
     , Thumbnail (Thumbnail, thumbnailService, thumbnailPhoto, thumbnailMime)
     , Services (Services)
@@ -107,6 +109,8 @@ import Database.Esqueleto.Experimental
     , (^.), (==.), (%), (++.), (||.)
     , isNothing, select, orderBy, asc, upper_, like, not_, exists
     )
+import Data.Time.Clock (DiffTime)
+import Data.Time.Format (formatTime, defaultTimeLocale, parseTimeM)
 
 
 getAdmServicesSearchR :: Handler Html
@@ -435,6 +439,8 @@ getAdmServicesR (Services sids) = do
         return x
     setUltDestCurrent
     msgs <- getMessages
+    app <- getYesod
+    langs <- languages
     defaultLayout $ do
         setTitleI MsgServices
         $(widgetFile "admin/services/services")
@@ -452,7 +458,7 @@ formService service group extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (serviceName . entityVal <$> service)
-    (publishedR,publishedV) <- mreq (myBoolField (optionsPairs [(MsgYes,True),(MsgNo,False)])) FieldSettings
+    (publishedR,publishedV) <- mreq (mdcBoolField (optionsPairs [(MsgYes,True),(MsgNo,False)])) FieldSettings
         { fsLabel = SomeMessage MsgPublished
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-radio__native-control")]
@@ -462,6 +468,11 @@ formService service group extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (serviceOverview . entityVal <$> service)
+    (durationR,durationV) <- mopt durationField FieldSettings
+        { fsLabel = SomeMessage MsgDuration
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } ((pack . formatTime defaultTimeLocale "%H:%M" <$>) . serviceDuration . entityVal <$> service)
     (descrR,descrV) <- mopt textareaField FieldSettings
         { fsLabel = SomeMessage MsgDescription
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
@@ -482,6 +493,7 @@ formService service group extra = do
                   <$> nameR
                   <*> publishedR
                   <*> overviewR
+                  <*> ((parseTimeM True defaultTimeLocale "%H:%M" . unpack =<<) <$> durationR)
                   <*> descrR
                   <*> ((toSqlKey <$>) <$> groupR)
                 )
@@ -490,8 +502,14 @@ formService service group extra = do
     return (r,w)
   where
 
-      myBoolField :: Handler (OptionList Bool) -> Field Handler Bool
-      myBoolField = withRadioField
+      durationField = check validateDuration textField
+
+      validateDuration x = case (parseTimeM True defaultTimeLocale "%H:%M" (unpack x) :: Maybe DiffTime) of
+                             Nothing -> Left $ MsgInvalidDurationHourMinute x
+                             _ -> Right x
+      
+      mdcBoolField :: Handler (OptionList Bool) -> Field Handler Bool
+      mdcBoolField = withRadioField
           (\_ _ -> [whamlet||])
           (\theId value _isSel text optionW -> [whamlet|
 <div.mdc-form-field.mdc-touch-target-wrapper>
@@ -520,5 +538,3 @@ formService service group extra = do
               Nothing -> Left MsgServisAlreadyInTheList
               Just (Entity sid' _) | sid == sid' -> Right name
                                    | otherwise -> Left MsgServisAlreadyInTheList
-
-

@@ -52,6 +52,7 @@ Service
   name Text
   published Bool
   overview Text Maybe
+  duration DiffTime Maybe
   descr Textarea Maybe
   group ServiceId Maybe OnDeleteCascade
   UniqueService name

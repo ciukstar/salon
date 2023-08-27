@@ -56,7 +56,7 @@
         _{MsgNoServicesFound}.
   $else
     <nav.mdc-list data-mdc-auto-init=MDCList>
-      $forall Entity sid (Service name _ _ _ _) <- services
+      $forall Entity sid (Service name _ _ _ _ _) <- services
         <a.mdc-list-item href=@{ServiceR $ Services [sid]}
           .mdc-list-item--with-one-line.mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon
           onclick="this.href = `${this.href}?scrollY=${window.scrollY}`">
@@ -79,7 +79,7 @@
           <span.mdc-icon-button__ripple>
           <i.material-symbols-outlined>close
       <div.mdc-dialog__content>
-        $forall Entity sid (Service name _ _ _ _) <- groups
+        $forall Entity sid (Service name _ _ _ _ _) <- groups
           $with ident <- fromSqlKey sid
             <div.mdc-form-field.mdc-form-field--nowrap>
               <div.mdc-checkbox data-mdc-auto-init=MDCCheckbox>

@@ -1,3 +1,11 @@
+SelectStaff: Select staff
+MaximumAvailability: Maximum availability
+NoPreference: No preference
+NoStaffAvailable: No staff available
+SymbolMinute: min
+SymbolHour: h
+InvalidDurationHourMinute duration@Text: Invalid duration: #{duration}. Expected pattern HH:MM
+Duration: Duration
 Offers: Offers
 Offer: Offer
 ChooseServices: Choose services

@@ -1,12 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE TypeApplications #-}
 
 module Demo.DemoDataEN (populateEN) where
 
 import Text.Shakespeare.Text (st)
 import qualified Data.ByteString.Base64 as B64 (decode)
 import Data.Text.Encoding (decodeUtf8)
+import Data.Time.Clock (DiffTime)
+import Data.Time.Format (parseTimeM, defaultTimeLocale)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import ClassyPrelude.Yesod (ReaderT)
 import Yesod.Form.Fields (Textarea (Textarea))
@@ -19,7 +22,7 @@ import Model
     , UserPhoto (UserPhoto, userPhotoUser, userPhotoPhoto, userPhotoMime)
     , Service
       ( Service, serviceName, serviceDescr, serviceGroup, serviceOverview
-      , servicePublished
+      , servicePublished, serviceDuration
       )
     , Thumbnail (Thumbnail, thumbnailService, thumbnailPhoto, thumbnailMime)
     , Offer
@@ -328,6 +331,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                            , serviceOverview = Just "Hair Care Services"
                            , servicePublished = True
                            , serviceDescr = Just "<p>Always distinctive and never run of the mill, our hair care experts have trained extensively to provide designer cuts and styling services that are customized to each client’s needs. As a salon we support our team in their efforts to perfect their individual techniques, and we give our stylists the freedom to fully express and explore their creativity. This in turn gives our guests the opportunity to enjoy personalized service each and every time. Whether you love modern looks or a classic cut speaks to your signature style – the options are endless with us.</p>"
+                           , serviceDuration = duration "01:30"
                            , serviceGroup = Nothing
                            }
 
@@ -340,6 +344,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             , servicePublished = True
                             , serviceOverview = Just "Hair cuts for men"
                             , serviceDescr = Just "Hair cuts for men"
+                            , serviceDuration = duration "01:00"
                             , serviceGroup = Just s1
                             }
 
@@ -366,6 +371,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             , servicePublished = True
                             , serviceOverview = Just "Hair cuts above shoulders for women"
                             , serviceDescr = Just "Hair cuts above shoulders for women"
+                            , serviceDuration = duration "01:30"
                             , serviceGroup = Just s1
                             }
 
@@ -392,6 +398,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             , servicePublished = True
                             , serviceOverview = Just "Hair cuts below shoulders for women"
                             , serviceDescr = Just "Hair cuts below shoulders for women"
+                            , serviceDuration = duration "01:35"
                             , serviceGroup = Just s1
                             }
 
@@ -424,6 +431,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             , servicePublished = True
                             , serviceOverview = Just "Hair cuts for children"
                             , serviceDescr = Just "Hair cuts for children"
+                            , serviceDuration = duration "01:20"
                             , serviceGroup = Just s1
                             }
 
@@ -450,6 +458,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             , servicePublished = True
                             , serviceOverview = Just "Chemical services"
                             , serviceDescr = Just "<p>Our chemical services address a wide range of hair care needs. Our smoothing treatments combat frizz, increase manageability and provide the long-lasting results you’ve always desired. You can enjoy smooth and silky locks with our keratin service, as well as repair damage to your hair by replenishing lost protein. If added waves, curl and volume are what you’re looking for, our professional perm services will allow you to achieve your desired texture. We utilize innovative products and techniques to establish defined curls you are sure to love.</p>"
+                            , serviceDuration = duration "02:00"
                             , serviceGroup = Just s1
                             }
 
@@ -462,6 +471,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                              , servicePublished = True
                              , serviceOverview = Just "Conditioning services"
                              , serviceDescr = Just "Conditioning"
+                             , serviceDuration = duration "01:35"
                              , serviceGroup = Just s15
                              }
 
@@ -474,6 +484,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               , servicePublished = True
                               , serviceOverview = Just "After Perm Conditioner"
                               , serviceDescr = Just "After Perm Conditioner"
+                              , serviceDuration = duration "01:25"
                               , serviceGroup = Just s151
                               }
 
@@ -495,6 +506,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               , servicePublished = True
                               , serviceOverview = Just "Before Perm Conditioner"
                               , serviceDescr = Just "Before Perm Conditioner"
+                              , serviceDuration = duration "01:15"
                               , serviceGroup = Just s151
                               }
 
@@ -510,6 +522,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                              , servicePublished = True
                              , serviceOverview = Just "Highlights & Color"
                              , serviceDescr = Just "Highlights & Color"
+                             , serviceDuration = duration "01:10"
                              , serviceGroup = Just s15
                              }
 
@@ -522,6 +535,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               , servicePublished = True
                               , serviceOverview = Just "Full"
                               , serviceDescr = Just "Full"
+                              , serviceDuration = duration "01:00"
                               , serviceGroup = Just s152
                               }
 
@@ -543,6 +557,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               , servicePublished = True
                               , serviceOverview = Just "Partial"
                               , serviceDescr = Just "Partial"
+                              , serviceDuration = duration "01:15"
                               , serviceGroup = Just s152
                               }
 
@@ -558,6 +573,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               , servicePublished = True
                               , serviceOverview = Just "Permanent Color"
                               , serviceDescr = Just "Permanent Color"
+                              , serviceDuration = duration "01:45"
                               , serviceGroup = Just s152
                               }
 
@@ -573,6 +589,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                              , servicePublished = True
                              , serviceOverview = Just "Perm"
                              , serviceDescr = Just "Perm"
+                             , serviceDuration = duration "00:45"
                              , serviceGroup = Just s15
                              }
 
@@ -580,6 +597,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               , servicePublished = True
                               , serviceOverview = Just "Full Perm"
                               , serviceDescr = Just "Full Perm"
+                              , serviceDuration = duration "00:35"
                               , serviceGroup = Just s153
                               }
 
@@ -595,6 +613,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               , servicePublished = True
                               , serviceOverview = Just "Acid Repair Perm"
                               , serviceDescr = Just "Acid Repair Perm"
+                              , serviceDuration = duration "01:25"
                               , serviceGroup = Just s153
                               }
 
@@ -610,6 +629,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               , servicePublished = True
                               , serviceOverview = Just "Japanese Straightening Perm"
                               , serviceDescr = Just "Japanese Straightening Perm"
+                              , serviceDuration = duration "01:25"
                               , serviceGroup = Just s153
                               }
 
@@ -625,6 +645,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                            , servicePublished = True
                            , serviceOverview = Just "Facial Treatments"
                            , serviceDescr = Just "<p>Your face is an expressive canvass that shows experience and emotion. At one of the best salons around, our palette holds nourishing treatments, which enhances, emphasizes beauty, youth and color for your body. Before any facial, our professional esthetician will give you a consolidation and work from there You won’t believe the difference!</p><p>All facial treatments include eyebrow shaping.</p>"
+                           , serviceDuration = duration "01:45"
                            , serviceGroup = Nothing
                            }
 
@@ -637,6 +658,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             , servicePublished = True
                             , serviceOverview = Just "Basic Facial (60 min)"
                             , serviceDescr = Just "Free Deep cleansing, exfoliation with steam treatment, followed by extractions, then eyebrow shaping; a de-stressing massage for the face, neck & shoulders. A custom mask, plus regular eye treatment, followed by moisturizer/sunscreen application. This relaxing but serious cleansing treatment will leave you with a clean, fresh, & glowing complexion."
+                            , serviceDuration = duration "01:25"
                             , serviceGroup = Just s2
                             }
 
@@ -649,12 +671,12 @@ We will continue to offer the latest treatments, the most innovative techniques 
                         }
 
     insert_ $ Offer { offerService = s21
-                        , offerName = "Package"
-                        , offerPrice = 250
-                        , offerPrefix = Just "$"
-                        , offerSuffix = Just "/5 sessions"
-                        , offerDescr = Nothing
-                        }
+                    , offerName = "Package"
+                    , offerPrice = 250
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Just "/5 sessions"
+                    , offerDescr = Nothing
+                    }
 
     insert_ $ Role { roleStaff = e10
                    , roleService = s21
@@ -666,6 +688,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             , servicePublished = True
                             , serviceOverview = Just "Deluxe Facial"
                             , serviceDescr = Just "This special facial can be customized to the client’s skin situation (ie. dry, oily, sensitive, etc.) It is created to smooth and soften your complexion while it de-stresses your entire body. Our deluxe facial will make you feel and look healthier."
+                            , serviceDuration = duration "01:30"
                             , serviceGroup = Just s2
                             }
 
@@ -689,6 +712,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             , servicePublished = True
                             , serviceOverview = Just "Pampering Facial (90 min)"
                             , serviceDescr = Just "A hydrating clinical treatment, creating a cooling effect on the skin to revitalize, moisturize, and soothe. Its thermo-cooling effect on the skin makes it a remarkable revitalizing treatment particularly for reducing redness. ALGOMASK+ offers instant radiance and long-lasting hydration."
+                            , serviceDuration = duration "00:30"
                             , serviceGroup = Just s2
                             }
 
@@ -712,6 +736,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             , servicePublished = True
                             , serviceOverview = Just "Acne Treatment (120 min)"
                             , serviceDescr = Just "It is a very innovative and effective way of treating acne conditions that have not responded to other treatments and has produced many remarkable results. Urea peroxide, alpha-hydroxyl acids, and a special anti-androgen element are incorporated in Rejuvi Normalizing Formula."
+                            , serviceDuration = duration "01:00"
                             , serviceGroup = Just s2
                             }
 
@@ -735,6 +760,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             , servicePublished = True
                             , serviceOverview = Just "24k Gold Whitening Treatment"
                             , serviceDescr = Just "<p>A luxurious age defying facial treatment. This hydrating active age defying formula combines the power of pure vitamins, plant extracts and 24k gold. These ingredients effectively assist in the stimulation of collagen manufacturing. They form a continuous protective barrier to mimic the effects of surgery.</p><p>The mask fits like a “second skin” and perfectly adapts to the contours of the face. It delivers maximum hydration, fortifies the skin’s natural protective barrier, and rejuvenate your sensitive skin to reduce signs of aging.</p>"
+                            , serviceDuration = duration "01:15"
                             , serviceGroup = Just s2
                             }
 
@@ -758,6 +784,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                            , servicePublished = True
                            , serviceOverview = Just "Advanced Facial Treatments"
                            , serviceDescr = Just "Advanced Facial Treatments"
+                           , serviceDuration = duration "01:10"
                            , serviceGroup = Nothing
                            }
 
@@ -770,6 +797,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                            , servicePublished = True
                            , serviceOverview = Just "Anti-Aging Treatments"
                            , serviceDescr = Just "Anti-Aging Treatments"
+                           , serviceDuration = duration "01:30"
                            , serviceGroup = Nothing
                            }
 
@@ -782,6 +810,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                            , servicePublished = True
                            , serviceOverview = Just "Eye Treatment Center"
                            , serviceDescr = Just "Eye Treatment Center"
+                           , serviceDuration = duration "02:00"
                            , serviceGroup = Nothing
                            }
 
@@ -794,6 +823,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                            , servicePublished = True
                            , serviceOverview = Just "Body Massage"
                            , serviceDescr = Just "Body Massage"
+                           , serviceDuration = duration "02:00"
                            , serviceGroup = Nothing
                            }
 
@@ -812,6 +842,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                            , servicePublished = True
                            , serviceOverview = Just "Makeup Services"
                            , serviceDescr = Just "Makeup Services"
+                           , serviceDuration = duration "01:30"
                            , serviceGroup = Nothing
                            }
 
@@ -824,6 +855,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                            , servicePublished = True
                            , serviceOverview = Just "Waxing"
                            , serviceDescr = Just "Waxing"
+                           , serviceDuration = duration "01:25"
                            , serviceGroup = Nothing
                            }
 
@@ -842,6 +874,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                            , servicePublished = True
                            , serviceOverview = Just "Nail Care"
                            , serviceDescr = Just "Nail Care"
+                           , serviceDuration = duration "01:00"
                            , serviceGroup = Nothing
                            }
 
@@ -860,6 +893,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             , servicePublished = True
                             , serviceOverview = Just "Body Shaping & Fitness"
                             , serviceDescr = Just "Body Shaping & Fitness"
+                            , serviceDuration = duration "01:15" 
                             , serviceGroup = Nothing
                             }
 
@@ -869,3 +903,6 @@ We will continue to offer the latest treatments, the most innovative techniques 
                         }
 
     return ()
+  where
+      duration :: String -> Maybe DiffTime
+      duration = parseTimeM True defaultTimeLocale "%H:%M"

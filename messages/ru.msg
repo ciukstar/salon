@@ -1,3 +1,11 @@
+SelectStaff: Выберите персонал
+MaximumAvailability: Максимальная доступность
+NoPreference: Нет предпочтений
+NoStaffAvailable: Нет доступных сотрудников
+SymbolMinute: мин
+SymbolHour: ч
+InvalidDurationHourMinute duration: Недопустимая продолжительность: #{duration}. Ожидаемый шаблон ЧЧ:ММ
+Duration: Продолжительность
 Offers: Предложения
 Offer: Предложение
 ChooseServices: Выберите услуги

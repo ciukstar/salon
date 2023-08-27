@@ -435,7 +435,7 @@ formRole eid role extra = do
 
     <div.mdc-select__menu.mdc-menu.mdc-menu-surface.mdc-menu-surface--fullwidth>
       <ul.mdc-deprecated-list role=listbox>
-        $forall Entity sid (Service name _ _ _ _) <- services
+        $forall Entity sid (Service name _ _ _ _ _) <- services
           <li.mdc-deprecated-list-item role=option data-value=#{fromSqlKey sid} aria-selected=false>
             <span.mdc-deprecated-list-item__ripple>
             <span.mdc-deprecated-list-item__text>
