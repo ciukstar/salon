@@ -1,3 +1,4 @@
+SelectAtLeastOneServicePlease: Sélectionnez au moins un service
 SelectStaff: Sélectionner le personnel
 MaximumAvailability: Disponibilité maximale
 NoPreference: Aucune préférence

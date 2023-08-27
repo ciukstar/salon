@@ -2,7 +2,7 @@
 /contact ContactR GET
 
 /book/staff BookStaffR GET
-/book 	    BookR      GET
+/book 	    BookR      GET POST
 
 /aboutus AboutUsR GET
 

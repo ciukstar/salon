@@ -1,0 +1,34 @@
+ 
+<ul.mdc-list ##{theId} role=listbox aria-multiselectable=true tabindex=-1 data-mdc-auto-init=MDCList>
+  $forall e@(Entity _ (Service sname _ _ duration _ _),Entity oid (Offer _ pname price prefix suffix _)) <- items
+    $with checked <- isChecked vals e
+      <li.mdc-list-item tabindex=0 role=option
+        .mdc-list-item--with-leading-checkbox.mdc-list-item--with-three-lines
+        :checked:aria-checked=true
+        :checked:aria-checked=false data-amount=#{show price}>
+        <span.mdc-list-item__ripple>
+        <span.mdc-list-item__start>
+          <div.mdc-checkbox :checked:checked tabindex=-1 data-mdc-auto-init=MDCCheckbox>
+            <input.mdc-checkbox__native-control type=checkbox name=#{name} value=#{fromSqlKey oid} *{attrs}
+              :checked:checked>
+            <div.mdc-checkbox__background>
+              <svg.mdc-checkbox__checkmark viewBox="0 0 24 24">
+                <path.mdc-checkbox__checkmark-path fill=none d="M1.73,12.91 8.1,19.28 22.79,4.59">
+              <div.mdc-checkbox__mixedmark>
+        <span.mdc-list-item__content>
+          <div.mdc-list-item__primary-text>#{sname}
+          <div.mdc-list-item__secondary-text>
+            $maybe duration <- duration
+              $with p <- intercalate "" ["%H",renderMessage app langs MsgSymbolHour," %M",renderMessage app langs MsgSymbolMinute]
+                $with duration <- formatTime defaultTimeLocale (unpack p) duration
+                  #{duration}
+
+          <div.mdc-list-item__secondary-text style="white-space:nowrap">
+            #{pname}: 
+            $maybe prefix <- prefix
+              #{prefix}
+            $with amount <- show price
+              <span data-amount=#{amount}>#{amount}
+            $maybe suffix <- suffix
+              #{suffix}
+      <li.mdc-list-divider role=separator>

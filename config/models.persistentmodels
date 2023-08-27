@@ -46,7 +46,8 @@ Offer
   prefix Text Maybe
   suffix Text Maybe
   descr Textarea Maybe
-  UniqueOffer service name 
+  UniqueOffer service name
+  deriving Eq
 
 Service
   name Text
@@ -56,6 +57,7 @@ Service
   descr Textarea Maybe
   group ServiceId Maybe OnDeleteCascade
   UniqueService name
+  deriving Eq
 
 UserPhoto
   user UserId OnDeleteCascade

@@ -1,3 +1,4 @@
+SelectAtLeastOneServicePlease: Selectați cel puțin un serviciu
 SelectStaff: Selectați personalul
 MaximumAvailability: Disponibilitate maxima
 NoPreference: Fară preferinţe

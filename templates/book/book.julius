@@ -15,24 +15,6 @@ window.onscroll = function (e) {
   }
 };
 
-
-const serviceList = document.getElementById('serviceList').MDCList;
-
-serviceList.selectedIndex = serviceList.listElements.map(
-  (x,i) => x.matches('[aria-checked=true]') ? [i] : []
-).flat();
-
-Array.from(
-  document.getElementById('serviceList').querySelectorAll('.mdc-list-item .mdc-list-item__end span[data-amount]')
-).forEach(function (x) {
-  x.textContent = Number(x.dataset.amount).toLocaleString(
-    navigator.language,
-    { minimumFractionDigits: 0,
-      maximumFractionDigits: 2
-    }
-  );
-});
-
 document.getElementById('footerBookAmount').querySelector('span[data-amount]').textContent = Number(
   document.getElementById('footerBookAmount').querySelector('span[data-amount]').dataset.amount
 ).toLocaleString(
@@ -42,19 +24,6 @@ document.getElementById('footerBookAmount').querySelector('span[data-amount]').t
   }
 );
 
-serviceList.listen('MDCList:selectionChange',function (e) {
-  if (0 === this.MDCList.selectedIndex.filter(x => e.detail.changedIndices.includes(x)).length) {
-    this.MDCList.selectedIndex = [...this.MDCList.selectedIndex,...e.detail.changedIndices];
-  } else {
-    this.MDCList.selectedIndex = this.MDCList.selectedIndex.filter(x => !e.detail.changedIndices.includes(x));
-  }
-  document.getElementById('footerBookCount').textContent = this.MDCList.selectedIndex.length;
-  document.getElementById('footerBookAmount').querySelector('span[data-amount]').textContent = this.MDCList.listElements.filter(
-    x => x.matches('[aria-checked=true]')
-  ).reduce((a,b) => a + Number(b.dataset.amount),0).toLocaleString(
-    navigator.language,
-    { minimumFractionDigits: 0,
-      maximumFractionDigits: 2
-    }
-  );
-});
+Array.from(
+  document.querySelectorAll('div.mdc-banner')
+).forEach(function (x) { x.MDCBanner.open(); });

@@ -36,37 +36,8 @@
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
 
-  <form mthod=get action=@{BookStaffR} #formBook>
-    <ul.mdc-list role=listbox aria-multiselectable=true #serviceList tabindex=-1 data-mdc-auto-init=MDCList>
-      $forall (Entity _ (Service sname _ _ duration _ _),Entity oid (Offer _ pname price prefix suffix _)) <- offers
-        <li.mdc-list-item tabindex=0 role=option
-          .mdc-list-item--with-leading-checkbox.mdc-list-item--with-three-lines
-          :elem oid oids:aria-checked=true :not (elem oid oids):aria-checked=false data-amount=#{show price}>
-          <span.mdc-list-item__ripple>
-          <span.mdc-list-item__start>
-            <div.mdc-checkbox :elem oid oids:checked tabindex=-1 data-mdc-auto-init=MDCCheckbox>
-              <input.mdc-checkbox__native-control type=checkbox name=oid value=#{fromSqlKey oid} :elem oid oids:checked>
-              <div.mdc-checkbox__background>
-                <svg.mdc-checkbox__checkmark viewBox="0 0 24 24">
-                  <path.mdc-checkbox__checkmark-path fill=none d="M1.73,12.91 8.1,19.28 22.79,4.59">
-                <div.mdc-checkbox__mixedmark>
-          <span.mdc-list-item__content>
-            <div.mdc-list-item__primary-text>#{sname}
-            <div.mdc-list-item__secondary-text>
-              $maybe duration <- duration
-                $with pat <- intercalate "" ["%H",renderMessage app langs MsgSymbolHour," %M",renderMessage app langs MsgSymbolMinute]
-                  $with duration <- formatTime defaultTimeLocale (unpack pat) duration
-                    #{duration}
-              
-            <div.mdc-list-item__secondary-text style="white-space:nowrap">
-              #{pname}: 
-              $maybe prefix <- prefix
-                #{prefix}
-              $with amount <- show price
-                <span data-amount=#{amount}>#{amount}
-              $maybe suffix <- suffix
-                #{suffix}
-        <li.mdc-list-divider role=separator>
+  <form method=post action=@{BookR} enctype=#{et} #formBook novalidate>
+    ^{fw}
 
 <footer>
   <div #footerContent>
