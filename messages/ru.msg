@@ -1,3 +1,5 @@
+ReceptionTime: Время приема
+AppointmentTime: Время встречи
 SelectAtLeastOneServicePlease: Пожалуйста, выберите хотя бы одну услугу
 SelectStaff: Выберите персонал
 MaximumAvailability: Максимальная доступность

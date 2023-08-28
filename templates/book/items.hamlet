@@ -19,9 +19,10 @@
           <div.mdc-list-item__primary-text>#{sname}
           <div.mdc-list-item__secondary-text>
             $maybe duration <- duration
-              $with p <- intercalate "" ["%H",renderMessage app langs MsgSymbolHour," %M",renderMessage app langs MsgSymbolMinute]
-                $with duration <- formatTime defaultTimeLocale (unpack p) duration
-                  #{duration}
+              $with translate <- renderMessage app langs
+                $with pat <- intercalate "" ["%H",translate MsgSymbolHour," %M",translate MsgSymbolMinute]
+                  $with duration <- formatTime defaultTimeLocale (unpack pat) duration
+                    #{duration}
 
           <div.mdc-list-item__secondary-text style="white-space:nowrap">
             #{pname}: 

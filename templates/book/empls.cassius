@@ -1,0 +1,7 @@
+
+main
+  button.mdc-list-item
+    width: 100%
+    border: none
+    background-color: transparent
+    text-align: start

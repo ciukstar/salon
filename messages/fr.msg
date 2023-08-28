@@ -1,3 +1,5 @@
+ReceptionTime: Heure d'accueil
+AppointmentTime: Heure du rendez-vous
 SelectAtLeastOneServicePlease: Sélectionnez au moins un service
 SelectStaff: Sélectionner le personnel
 MaximumAvailability: Disponibilité maximale

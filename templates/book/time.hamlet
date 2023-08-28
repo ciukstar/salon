@@ -1,12 +1,12 @@
 <header.mdc-top-app-bar.mdc-top-app-bar--prominent.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section-align-start>
-      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=@?{(BookR,oids)} role=button>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=@{BookStaffR} role=button>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light style="white-space:normal">
-        _{MsgSelectStaff}
+        _{MsgAppointmentTime}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
       <a.mdc-top-app-bar__action-item.mdc-icon-button href=# role=button>
@@ -15,6 +15,8 @@
         <i.material-symbols-outlined>search
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
-  <form method=post action=@{BookStaffR} enctype=#{et2} novalidate>
-    ^{fw2}
-    
+  <div>FormSuccess: offers selected: #{length (fst r)}
+  $maybe (_,Entity _ (Role _ _ rname _)) <- snd r
+    FormSuccess: role selected: #{rname}
+  $nothing
+    FormSuccess: no role selected

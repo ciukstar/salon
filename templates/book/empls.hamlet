@@ -1,0 +1,37 @@
+<ul.mdc-list ##{theId} tabindex=-1 data-mdc-auto-init=MDCList>
+  <button.mdc-list-item type=submit
+    .mdc-list-item--with-leading-image.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon>
+    <span.mdc-list-item__ripple>
+    <span.mdc-list-item__start style="text-align:center;color:var(--mdc-theme-primary)">
+      <i.material-symbols-outlined style="font-size:3rem">diversity_2
+    <span.mdc-list-item__content>
+      <div.mdc-list-item__primary-text>
+        _{MsgNoPreference}
+      <div.mdc-list-item__secondary-text>
+        _{MsgMaximumAvailability}
+      <div.mdc-list-item__secondary-text>
+    <span.mdc-list-item__end>
+      <i.material-symbols-outlined>arrow_forward_ios
+  <div.mdc-list-divider role=separator>
+  $forall e@(Entity sid (Staff sname _ _ _ _ _), Entity rid (Role _ _ rname rating)) <- roles
+    $with checked <- isChecked val e
+      <button.mdc-list-item.mdc-list-item--with-leading-image type=submit
+        .mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon
+        name=#{name} value=#{fromSqlKey rid} *{attrs}>
+        <span.mdc-list-item__ripple>
+        <sgpan.mdc-list-item__start>
+          <img src=@{AdminR $ AdmStaffPhotoR sid} width=56 height=56 alt=_{MsgPhoto} loading=lazy>
+        <span.mdc-list-item__content>
+          <div.mdc-list-item__primary-text>
+            #{sname}
+          <div.mdc-list-item__secondary-text>
+            #{rname}
+          <div.mdc-list-item__secondary-text>
+            $maybe rating <- rating
+              $forall _ <- range 1 rating
+                <span style="color:#FFBF00">&starf;
+              $forall _ <- range 1 (5 - rating)
+                &starf;
+        <span.mdc-list-item__end>
+          <i.material-symbols-outlined>arrow_forward_ios
+      <div.mdc-list-divider role=separator>

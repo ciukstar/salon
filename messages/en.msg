@@ -1,3 +1,5 @@
+ReceptionTime: Reception time
+AppointmentTime: Appointment time
 SelectAtLeastOneServicePlease: Please select at least one service
 SelectStaff: Select staff
 MaximumAvailability: Maximum availability

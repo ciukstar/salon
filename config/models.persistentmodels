@@ -17,6 +17,7 @@ Role
   name Text
   rating Int Maybe
   UniqueRole staff service name
+  deriving Eq
 
 StaffPhoto
   staff StaffId OnDeleteCascade
@@ -32,6 +33,7 @@ Staff
   email Text Maybe
   user UserId Maybe OnDeleteSetNull
   UniqueStaff name
+  deriving Eq
 
 Thumbnail
   service ServiceId OnDeleteCascade

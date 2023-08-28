@@ -1,3 +1,5 @@
+ReceptionTime: Ora de receptie
+AppointmentTime: Ora programării
 SelectAtLeastOneServicePlease: Selectați cel puțin un serviciu
 SelectStaff: Selectați personalul
 MaximumAvailability: Disponibilitate maxima
