@@ -49,7 +49,10 @@ import System.Environment.Blank (getEnv)
 -- Import all relevant handler modules here.
 -- Don't forget to add new modules to your cabal file!
 import Handler.Contacts (getContactR)
-import Handler.Book (getBookR, postBookR, getBookStaffR, postBookStaffR)
+import Handler.Book
+    ( getBookR, postBookR, getBookStaffR, postBookStaffR
+    , postBookTimeR
+    )
 import Handler.AboutUs (getAboutUsR)
 import Handler.Services
     ( getServicesR, getServiceThumbnailR, getServiceR

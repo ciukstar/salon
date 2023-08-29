@@ -9,7 +9,13 @@ Book
   offer OfferId OnDeleteCascade
   role RoleId Maybe OnDeleteCascade
   day Day
-  time UTCTime
+  time TimeOfDay
+
+Schedule
+  role RoleId OnDeleteCascade
+  day Day
+  time TimeOfDay
+  
 
 Role
   staff StaffId OnDeleteCascade

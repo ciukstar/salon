@@ -1,3 +1,4 @@
+SignUpToContinue: Înregistrează-te pentru a continua
 ReceptionTime: Ora de receptie
 AppointmentTime: Ora programării
 SelectAtLeastOneServicePlease: Selectați cel puțin un serviciu

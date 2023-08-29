@@ -1,7 +1,7 @@
 <header.mdc-top-app-bar.mdc-top-app-bar--prominent.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section-align-start>
-      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=@{BookStaffR} role=button>
+      <button.mdc-top-app-bar__navigation-icon.mdc-icon-button type=submit form=formBack>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
@@ -15,8 +15,17 @@
         <i.material-symbols-outlined>search
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
-  <div>FormSuccess: offers selected: #{length (fst r)}
-  $maybe (_,Entity _ (Role _ _ rname _)) <- snd r
-    FormSuccess: role selected: #{rname}
-  $nothing
-    FormSuccess: no role selected
+  <p>
+    <div>FormSuccess: offers selected: #{length items}
+    $maybe (_,Entity _ (Role _ _ rname _)) <- role
+      FormSuccess: role selected: #{rname}
+    $nothing
+      FormSuccess: no role selected
+  <hr>
+  <form method=post action=@{BookR} enctype=#{et2} #formBack hidden>
+    ^{fw2}
+
+  <form method=post action=@{BookTimeR} enctype=#{et3}>
+    ^{fw3}
+    <div.form-actions>
+      <button type=submit>Submit

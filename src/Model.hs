@@ -17,7 +17,10 @@
 module Model where
 
 import Data.Proxy (Proxy)
-import Data.Time (Day, UTCTime, DiffTime, diffTimeToPicoseconds, picosecondsToDiffTime)
+import Data.Time
+    ( Day, TimeOfDay, LocalTime, DiffTime, diffTimeToPicoseconds, picosecondsToDiffTime
+    , localTimeToUTC, utc, utcToLocalTime
+    )
 import Prelude (Int, fromIntegral)
 import Data.Either (Either (Left, Right))
 import Data.Bool (Bool)
@@ -26,7 +29,7 @@ import Data.Maybe (Maybe (Just))
 import ClassyPrelude.Yesod
     ( Typeable , Text , ByteString , mkMigrate , mkPersist
     , persistFileWith , share , sqlSettings , Textarea
-    , derivePersistField
+    , derivePersistField, PersistValue (PersistUTCTime)
     )
 import Database.Persist.Quasi (lowerCaseSettings)
 import Data.Fixed (Centi)
@@ -40,7 +43,7 @@ import Data.Functor ((<$>))
 import Control.Monad (mapM)
 import Database.Esqueleto.Experimental (SqlString)
 import Database.Persist.Class (PersistField, toPersistValue, fromPersistValue)
-import Database.Persist.Types (PersistValue (PersistInt64), SqlType (SqlInt32))
+import Database.Persist.Types (PersistValue (PersistInt64), SqlType (SqlInt32, SqlDayTime))
 import Database.Persist.Sql (fromSqlKey, toSqlKey, PersistFieldSql, sqlType)
 
 
@@ -50,6 +53,18 @@ data ServiceStatus = ServiceStatusPulished | ServiceStatusUnpublished
 data EmplStatus = EmplStatusEmployed | EmplStatusDismissed
     deriving (Show, Read, Eq)
 derivePersistField "EmplStatus"
+
+instance PersistField LocalTime where
+    toPersistValue :: LocalTime -> PersistValue
+    toPersistValue x = toPersistValue (localTimeToUTC utc x)
+
+    fromPersistValue :: PersistValue -> Either Text LocalTime
+    fromPersistValue (PersistUTCTime x) = Right (utcToLocalTime utc x)
+    fromPersistValue _ = Left "Invalid LocalTime"
+
+instance PersistFieldSql LocalTime where
+    sqlType :: Proxy LocalTime -> SqlType
+    sqlType _ = SqlDayTime
 
 
 instance PersistField DiffTime where

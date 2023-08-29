@@ -1,3 +1,4 @@
+SignUpToContinue: Inscrivez-vous pour continuer
 ReceptionTime: Heure d'accueil
 AppointmentTime: Heure du rendez-vous
 SelectAtLeastOneServicePlease: Sélectionnez au moins un service

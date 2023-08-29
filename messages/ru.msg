@@ -1,3 +1,4 @@
+SignUpToContinue: Зарегистрируйтесь, чтобы продолжить
 ReceptionTime: Время приема
 AppointmentTime: Время встречи
 SelectAtLeastOneServicePlease: Пожалуйста, выберите хотя бы одну услугу

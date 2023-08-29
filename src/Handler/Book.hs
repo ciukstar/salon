@@ -9,14 +9,17 @@ module Handler.Book
   , postBookR
   , getBookStaffR
   , postBookStaffR
+  , postBookTimeR
   ) where
 
-import Control.Monad (forM)
+import Control.Monad (unless)
+import Control.Monad.Trans.Reader (ReaderT)
 import Data.Fixed (Centi)
 import qualified Data.List.Safe as LS (head)
-import Data.Text (Text, unpack, intercalate, pack)
+import Data.Text (unpack, intercalate, pack)
+import Data.Time (Day)
 import Data.Time.Format (formatTime, defaultTimeLocale)
-import Data.Traversable (traverse)
+import Data.Time.LocalTime (TimeOfDay)
 import Text.Hamlet (Html)
 import Text.Shakespeare.I18N (renderMessage, SomeMessage (SomeMessage))
 import Yesod.Core
@@ -32,13 +35,13 @@ import Yesod.Form.Types
     , FieldView (fvInput, fvErrors)
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
     )
-import Yesod.Form.Fields (hiddenField, selectFieldList, multiSelectFieldList)
+import Yesod.Form.Fields (multiSelectFieldList, timeField, dayField, selectFieldList)
 import Yesod.Form.Functions (mreq, generateFormPost, runFormPost, check, mopt)
 import Settings (widgetFile)
 
 import Yesod.Persist.Core (runDB)
 import Database.Persist ( Entity(Entity) )
-import Database.Persist.Sql ( fromSqlKey, toSqlKey )
+import Database.Persist.Sql ( fromSqlKey, toSqlKey, SqlBackend )
 
 import Database.Esqueleto.Experimental
     ( select, from, table, where_, innerJoin, on
@@ -48,13 +51,15 @@ import Database.Esqueleto.Experimental
 
 import Foundation
     ( Handler, Widget
-    , Route (BookStaffR, BookR, AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR)
+    , Route (BookTimeR, BookStaffR, BookR, AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR)
     , AdminR (AdmStaffPhotoR)
     , AppMessage
       ( MsgBook, MsgPhoto, MsgLogout, MsgChooseServicesToBook
       , MsgServices, MsgSymbolHour, MsgSymbolMinute, MsgStaff
       , MsgNoPreference, MsgMaximumAvailability, MsgSelectStaff
-      , MsgSelectAtLeastOneServicePlease, MsgAdd, MsgOffers, MsgOffer, MsgInvalidValue, MsgAppointmentTime
+      , MsgSelectAtLeastOneServicePlease, MsgAdd, MsgOffers, MsgOffer
+      , MsgInvalidValue, MsgAppointmentTime, MsgRole, MsgSignUpToContinue
+      , MsgLogin
       )
     )
 
@@ -62,7 +67,8 @@ import Model
     ( Service(Service)
     , Offer (Offer), OfferId
     , Staff (Staff)
-    , Role (Role), RoleId
+    , Role (Role)
+    , User (User)
     , EntityField
       ( StaffId, RoleId, ServiceId, OfferService, ServicePublished
       , ServiceName, RoleStaff, RoleRating, RoleService, OfferId
@@ -70,56 +76,96 @@ import Model
     )
 
 
+postBookTimeR :: Handler Html
+postBookTimeR = do
+    offers <- runDB queryOffers
+    roles <- runDB $ queryRoles []
+    ((fr,fw), et) <- runFormPost $ formTime [] offers Nothing roles
+    case fr of
+      FormSuccess (items,role,day,time) -> defaultLayout $ do
+          user <- maybeAuth
+          setTitleI MsgAppointmentTime
+          $(widgetFile "book/book")
+      _ -> defaultLayout [whamlet|^{fw}|]
+
+
 postBookStaffR :: Handler Html
 postBookStaffR = do
-    offers <- runDB $ select $ do
-        x :& p <- from $ table @Service `innerJoin` table @Offer
-            `on` (\(x :& p) -> x ^. ServiceId ==. p ^. OfferService)
-        where_ $ x ^. ServicePublished
-        return (x,p)
-    roles <- runDB $ select $ do
-        x :& s <- from $ table @Role
-            `innerJoin` table @Staff `on` (\(x :& s) -> x ^. RoleStaff ==. s ^. StaffId)
-        orderBy [desc (x ^. RoleRating), asc (x ^. RoleId)]
-        return (s, x)
-    ((fr,fw),et) <- runFormPost $ formStaff [] offers roles
-    case fr of
-      FormSuccess r -> defaultLayout $ do
-          setTitleI MsgAppointmentTime
-          $(widgetFile "book/time")
-      _ -> undefined
+    offers <- runDB queryOffers
+    roles <- runDB $ queryRoles []
+    ((fr2,fw2),et2) <- runFormPost $ formStaff [] offers roles
+    case fr2 of
+      FormSuccess (items,role) -> do
+          (fw3,et3) <- generateFormPost $ formTime items offers role roles
+          defaultLayout $ do
+              setTitleI MsgAppointmentTime
+              $(widgetFile "book/time")
+      _ -> defaultLayout $ do
+          setTitleI MsgStaff
+          let oids = []
+          $(widgetFile "book/staff")
+
+
+formTime :: [(Entity Service, Entity Offer)]
+         -> [(Entity Service, Entity Offer)]
+         -> Maybe (Entity Staff, Entity Role)
+         -> [(Entity Staff, Entity Role)]
+         -> Html
+         -> MForm Handler ( FormResult ( [(Entity Service, Entity Offer)]
+                                       , Maybe (Entity Staff, Entity Role)
+                                       , Day
+                                       , TimeOfDay
+                                       )
+                           , Widget
+                           )
+formTime items offers role roles extra = do
+
+    (offersR,offersV) <- mreq (multiSelectFieldList ((MsgOffer,) <$> offers)) FieldSettings
+        { fsLabel = SomeMessage MsgOffer
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("hidden","hidden")]
+        } (Just items)
+
+    (roleR,roleV) <- mopt (selectFieldList ((MsgRole,) <$> roles)) FieldSettings
+        { fsLabel = SomeMessage MsgRole
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("hidden","hidden")]
+        } (Just role)
+    
+    (dayR,dayV) <- mreq dayField "" Nothing
+    (timeR,timeV) <- mreq timeField "" Nothing
+    let r = (,,,) <$> offersR <*> roleR <*> dayR <*> timeR
+    let w = [whamlet|
+#{extra}
+^{fvInput offersV}
+^{fvInput roleV}
+$forall v <- [dayV,timeV]
+  ^{fvInput v}
+  <div style="margin-bottom: 1rem">
+    $maybe errs <- fvErrors timeV
+      #{errs}
+|]
+    return (r,w)
 
 
 getBookStaffR :: Handler Html
 getBookStaffR = do
-    roles <- runDB $ select $ do
-        x :& s <- from $ table @Role
-            `innerJoin` table @Staff `on` (\(x :& s) -> x ^. RoleStaff ==. s ^. StaffId)
-        orderBy [desc (x ^. RoleRating), asc (x ^. RoleId)]
-        return (s, x)
-    let oids = []
+    offers <- runDB queryOffers
+    roles <- runDB $ queryRoles []
+    (fw2,et2) <- generateFormPost $ formStaff [] offers roles
     defaultLayout $ do
+        let oids = []
         setTitleI MsgStaff
-        -- $(widgetFile "book/staff")
+        $(widgetFile "book/staff")
 
 
 postBookR :: Handler Html
 postBookR = do
-    offers <- runDB $ select $ do
-        x :& o <- from $ table @Service `innerJoin` table @Offer
-            `on` (\(x :& o) -> x ^. ServiceId ==. o ^. OfferService)
-        where_ $ x ^. ServicePublished
-        orderBy [asc (x ^. ServiceName),asc (o ^. OfferId)]
-        return (x,o)
+    offers <- runDB queryOffers
     ((fr,fw),et) <- runFormPost $ formOffers offers
     case fr of
       FormSuccess r -> do
-          roles <- runDB $ select $ do
-              x :& s <- from $ table @Role
-                  `innerJoin` table @Staff `on` (\(x :& s) -> x ^. RoleStaff ==. s ^. StaffId)
-              where_ $ x ^. RoleService `in_` valList ((\(Entity sid _,_) -> sid) <$> r)
-              orderBy [desc (x ^. RoleRating), asc (x ^. RoleId)]
-              return (s,x)
+          roles <- runDB $ queryRoles r
           (fw2,et2) <- generateFormPost $ formStaff r offers roles
           let oids = (\(_,Entity oid _) -> ("oid",pack $ show $ fromSqlKey oid)) <$> r
           defaultLayout $(widgetFile "book/staff")
@@ -127,17 +173,17 @@ postBookR = do
           muid <- maybeAuth
           oids <- (toSqlKey . read . unpack . snd <$>) . filter ((== "oid") . fst) . reqGetParams <$> getRequest
           setTitleI MsgBook
-          $(widgetFile "book/book")
+          $(widgetFile "book/offers")
 
 
 formStaff :: [(Entity Service, Entity Offer)]
           -> [(Entity Service, Entity Offer)]
           -> [(Entity Staff, Entity Role)]
           -> Html
-          -> MForm Handler (FormResult ( [(Entity Service, Entity Offer)]
-                                       , Maybe (Entity Staff, Entity Role)
-                                       )
-                           ,Widget
+          -> MForm Handler ( FormResult ( [(Entity Service, Entity Offer)]
+                                        , Maybe (Entity Staff, Entity Role)
+                                        )
+                           , Widget
                            )
 formStaff items offers roles extra = do
 
@@ -177,17 +223,12 @@ getBookR :: Handler Html
 getBookR = do
     muid <- maybeAuth
     oids <- (toSqlKey . read . unpack . snd <$>) . filter ((== "oid") . fst) . reqGetParams <$> getRequest
-    offers <- runDB $ select $ do
-        x :& o <- from $ table @Service `innerJoin` table @Offer
-            `on` (\(x :& o) -> x ^. ServiceId ==. o ^. OfferService)
-        where_ $ x ^. ServicePublished
-        orderBy [asc (x ^. ServiceName), asc (o ^. OfferId)]
-        return (x,o)
+    offers <- runDB queryOffers
     (fw,et) <- generateFormPost $ formOffers offers
     setUltDestCurrent
     defaultLayout $ do
         setTitleI MsgBook
-        $(widgetFile "book/book")
+        $(widgetFile "book/offers")
 
 
 formOffers :: [(Entity Service, Entity Offer)]
@@ -233,6 +274,24 @@ $maybe errs <- fvErrors v
           }
 
 
+queryRoles :: [(Entity Service, Entity Offer)] -> ReaderT SqlBackend Handler [(Entity Staff, Entity Role)]
+queryRoles roles = select $ do
+    x :& s <- from $ table @Role
+        `innerJoin` table @Staff `on` (\(x :& s) -> x ^. RoleStaff ==. s ^. StaffId)
+    unless (null roles) $ where_ $ x ^. RoleService `in_` valList ((\(Entity sid _,_) -> sid) <$> roles)
+    orderBy [desc (x ^. RoleRating), asc (x ^. RoleId)]
+    return (s,x)
+
+
+queryOffers :: ReaderT SqlBackend Handler [(Entity Service, Entity Offer)]
+queryOffers  = select $ do
+    x :& o <- from $ table @Service `innerJoin` table @Offer
+        `on` (\(x :& o) -> x ^. ServiceId ==. o ^. OfferService)
+    where_ $ x ^. ServicePublished
+    orderBy [asc (x ^. ServiceName), asc (o ^. OfferId)]
+    return (x,o)
+
+
 amount :: [OfferId] -> [(Entity Service, Entity Offer)] -> Centi
 amount oids xs = sum (
     (\(_,Entity _ (Offer _ _ price _ _ _)) -> price)
@@ -242,3 +301,4 @@ amount oids xs = sum (
 
 range :: Enum a => a -> a -> [a]
 range a b = [a..b]
+
