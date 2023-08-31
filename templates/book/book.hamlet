@@ -39,7 +39,7 @@
         <i.material-symbols-outlined>info
       <span.mdc-list-item__content>
         <div.mdc-list-item__primary-text>
-          _{MsgAppointmentTime}
+          _{MsgReceptionTime}
       <span.mdc-list-item__end>
         <i.material-symbols-outlined>expand_more
     <div.mdc-list-item.mdc-list-item--with-two-lines>

@@ -50,8 +50,8 @@ import System.Environment.Blank (getEnv)
 -- Don't forget to add new modules to your cabal file!
 import Handler.Contacts (getContactR)
 import Handler.Book
-    ( getBookR, postBookR, getBookStaffR, postBookStaffR
-    , postBookTimeR
+    ( getBookStartR, getBookOffersR, postBookR, getBookStaffR
+    , getBookTimeR
     )
 import Handler.AboutUs (getAboutUsR)
 import Handler.Services

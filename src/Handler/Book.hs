@@ -5,20 +5,19 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module Handler.Book
-  ( getBookR
-  , postBookR
+  ( getBookStartR
+  , getBookOffersR
   , getBookStaffR
-  , postBookStaffR
-  , postBookTimeR
+  , getBookTimeR
+  , postBookR
   ) where
 
-import Control.Applicative ((<|>))
 import Control.Monad (unless)
 import Control.Monad.Trans.Reader (ReaderT)
 import Data.Fixed (Centi)
 import qualified Data.List.Safe as LS (head)
-import Data.Text (unpack, intercalate, pack, split)
-import Data.Time (Day, LocalTime (LocalTime))
+import Data.Text (unpack, intercalate, pack, Text)
+import Data.Time (Day)
 import Data.Time.Format (formatTime, defaultTimeLocale)
 import Data.Time.LocalTime (TimeOfDay)
 import Text.Hamlet (Html)
@@ -34,10 +33,10 @@ import Yesod.Form.Types
     , Field (Field, fieldParse, fieldView, fieldEnctype)
     , Enctype (UrlEncoded)
     , FieldView (fvInput, fvErrors)
-    , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs), FormMessage (MsgInvalidTimeFormat)
+    , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
     )
-import Yesod.Form.Fields (multiSelectFieldList, timeField, dayField, selectFieldList, parseDate, parseTime)
-import Yesod.Form.Functions (mreq, generateFormPost, runFormPost, check, mopt, parseHelper)
+import Yesod.Form.Fields (multiSelectFieldList, timeField, dayField, selectFieldList)
+import Yesod.Form.Functions (mreq, generateFormPost, runFormPost, check, mopt, generateFormGet, generateFormGet', runFormGet)
 import Settings (widgetFile)
 
 import Yesod.Persist.Core (runDB)
@@ -52,16 +51,16 @@ import Database.Esqueleto.Experimental
 
 import Foundation
     ( Handler, Widget
-    , Route (BookTimeR, BookStaffR, BookR, AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR)
+    , Route (BookOffersR, BookTimeR, BookStaffR, BookR, AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR)
     , AdminR (AdmStaffPhotoR)
     , AppMessage
       ( MsgBook, MsgPhoto, MsgLogout, MsgChooseServicesToBook
       , MsgServices, MsgSymbolHour, MsgSymbolMinute, MsgStaff
       , MsgNoPreference, MsgMaximumAvailability, MsgSelectStaff
-      , MsgSelectAtLeastOneServicePlease, MsgAdd, MsgOffers, MsgOffer
-      , MsgInvalidValue, MsgAppointmentTime, MsgRole, MsgSignUpToContinue
-      , MsgLogin, MsgSignUp, MsgSignIn, MsgSelectedServices, MsgSelectedStaff
-      , MsgProceed, MsgInvalidDurationHourMinute
+      , MsgSelectAtLeastOneServicePlease, MsgOffer
+      , MsgAppointmentTime, MsgRole, MsgSignUpToContinue
+      , MsgSignUp, MsgSignIn, MsgSelectedServices, MsgSelectedStaff
+      , MsgProceed, MsgReceptionTime, MsgOffers
       )
     )
 
@@ -76,42 +75,92 @@ import Model
       , ServiceName, RoleStaff, RoleRating, RoleService, OfferId
       )
     )
-import Control.Arrow (ArrowChoice(left))
 
 
-postBookTimeR :: Handler Html
-postBookTimeR = do
+postBookR :: Handler Html
+postBookR = undefined
+
+
+getBookTimeR :: Handler Html
+getBookTimeR = do
     offers <- runDB queryOffers
     roles <- runDB $ queryRoles []
-    ((fr2,fw2),et2) <- runFormPost $ formStaff [] offers roles
-    let role = Nothing
-    let items = []
-    ((fr3,fw3), et3) <- runFormPost $ formTime [] offers Nothing roles
-    case fr3 of
-      FormSuccess (items,role,day,time,daytime) -> defaultLayout $ do
-          user <- maybeAuth
-          setTitleI MsgAppointmentTime
-          $(widgetFile "book/book")
-      _ -> defaultLayout $ do
+    ((fr,fw),et) <- runFormGet $ formTime [] offers Nothing roles
+    case fr of
+      FormSuccess (items,role,day,time) -> do
+        (fw,et) <- generateFormGet' formCustomer
+        defaultLayout $ do
           setTitleI MsgAppointmentTime
           $(widgetFile "book/time")
-
-
-postBookStaffR :: Handler Html
-postBookStaffR = do
-    offers <- runDB queryOffers
-    roles <- runDB $ queryRoles []
-    ((fr2,fw2),et2) <- runFormPost $ formStaff [] offers roles
-    case fr2 of
-      FormSuccess (items,role) -> do
-          (fw3,et3) <- generateFormPost $ formTime items offers role roles
-          defaultLayout $ do
-              setTitleI MsgAppointmentTime
-              $(widgetFile "book/time")
       _ -> defaultLayout $ do
           setTitleI MsgStaff
-          let oids = []
+          let items = []
+          let role = Nothing
           $(widgetFile "book/staff")
+
+
+formCustomer :: Html -> MForm Handler (FormResult Text, Widget)
+formCustomer extra = return (pure "Cutomer",[whamlet|
+#{extra}
+<div #customerInfo>
+    <button.mdc-button.mdc-button--outlined type=button>
+      <span.mdc-button__ripple>
+      <span.mdc-button__focus-ring>
+      <span.mdc-button__label>_{MsgSignUp}
+    <div style="display:inherit;flex-direction:inherit">
+      <div>
+        <small>Already have an account?
+      <button.mdc-button.mdc-button--outlined type=button>
+        <span.mdc-button__ripple>
+        <span.mdc-button__focus-ring>
+        <span.mdc-button__label>_{MsgSignIn}
+|])
+
+    
+getBookStaffR :: Handler Html
+getBookStaffR = do
+    offers <- runDB queryOffers
+    roles <- runDB $ queryRoles []
+    ((fr,fw),et) <- runFormGet $ formStaff [] offers roles
+    case fr of
+      FormSuccess (items,role) -> do
+          (fw,et) <- generateFormGet' $ formTime items offers role roles
+          defaultLayout $ do
+              setTitleI MsgStaff
+              $(widgetFile "book/staff")
+      _ -> defaultLayout $ do
+              setTitleI MsgOffers
+              let items = []
+              $(widgetFile "book/offers")
+
+
+getBookOffersR :: Handler Html
+getBookOffersR = do
+    muid <- maybeAuth
+    oids <- (toSqlKey . read . unpack . snd <$>) . filter ((== "oid") . fst) . reqGetParams <$> getRequest
+    offers <- runDB queryOffers
+    ((fr,fw),et) <- runFormGet $ formOffers oids offers
+    case fr of
+      FormSuccess items -> do
+          roles <- runDB $ queryRoles items
+          (fw,et) <- generateFormGet' $ formStaff items offers roles
+          defaultLayout $ do
+              setTitleI MsgOffers
+              $(widgetFile "book/offers")
+      _ -> defaultLayout $ do
+        setTitleI MsgOffers
+        $(widgetFile "book/start")
+
+
+getBookStartR :: Handler Html
+getBookStartR = do
+    muid <- maybeAuth
+    oids <- (toSqlKey . read . unpack . snd <$>) . filter ((== "oid") . fst) . reqGetParams <$> getRequest
+    offers <- runDB queryOffers
+    (fw,et) <- generateFormGet' $ formOffers oids offers
+    defaultLayout $ do
+        setTitleI MsgOffers
+        $(widgetFile "book/start")
 
 
 formTime :: [(Entity Service, Entity Offer)]
@@ -123,7 +172,6 @@ formTime :: [(Entity Service, Entity Offer)]
                                        , Maybe (Entity Staff, Entity Role)
                                        , Day
                                        , TimeOfDay
-                                       , LocalTime
                                        )
                            , Widget
                            )
@@ -143,15 +191,13 @@ formTime items offers role roles extra = do
     
     (dayR,dayV) <- mreq dayField "" Nothing
     (timeR,timeV) <- mreq timeField "" Nothing
-
-    (appointmentTimeR,appointmentTimeV) <- mreq datetimeLocalField "" Nothing
     
-    let r = (,,,,) <$> offersR <*> roleR <*> dayR <*> timeR <*> appointmentTimeR
+    let r = (,,,) <$> offersR <*> roleR <*> dayR <*> timeR
     let w = [whamlet|
 #{extra}
 ^{fvInput offersV}
 ^{fvInput roleV}
-$forall v <- [dayV,timeV,appointmentTimeV]
+$forall v <- [dayV,timeV]
   <div.form-field>
     ^{fvInput v}
     <div>
@@ -159,51 +205,6 @@ $forall v <- [dayV,timeV,appointmentTimeV]
         #{errs}
 |]
     return (r,w)
-  where
-
-      showVal = either id (pack . show)
-      
-      datetimeLocalField :: Field Handler LocalTime
-      datetimeLocalField = Field
-          { fieldParse = parseHelper $ \s -> case split (\c -> (c == 'T') || (c == ' ')) s of
-              [d,t] -> do
-                  day <- parseDate $ unpack d
-                  time <- parseTime t
-                  Right $ LocalTime day time
-              _ -> Left MsgInvalidTimeFormat
-          , fieldView = \theId name attrs val isReq -> [whamlet|
-<input type=datetime-local ##{theId} name=#{name} value=#{showVal val} *{attrs} :isReq:required>
-|]
-          , fieldEnctype = UrlEncoded
-          }
-      
-
-getBookStaffR :: Handler Html
-getBookStaffR = do
-    offers <- runDB queryOffers
-    roles <- runDB $ queryRoles []
-    (fw2,et2) <- generateFormPost $ formStaff [] offers roles
-    defaultLayout $ do
-        let oids = []
-        setTitleI MsgStaff
-        $(widgetFile "book/staff")
-
-
-postBookR :: Handler Html
-postBookR = do
-    offers <- runDB queryOffers
-    ((fr,fw),et) <- runFormPost $ formOffers offers
-    case fr of
-      FormSuccess r -> do
-          roles <- runDB $ queryRoles r
-          (fw2,et2) <- generateFormPost $ formStaff r offers roles
-          let oids = (\(_,Entity oid _) -> ("oid",pack $ show $ fromSqlKey oid)) <$> r
-          defaultLayout $(widgetFile "book/staff")
-      _ -> defaultLayout $ do
-          muid <- maybeAuth
-          oids <- (toSqlKey . read . unpack . snd <$>) . filter ((== "oid") . fst) . reqGetParams <$> getRequest
-          setTitleI MsgBook
-          $(widgetFile "book/offers")
 
 
 formStaff :: [(Entity Service, Entity Offer)]
@@ -248,23 +249,10 @@ formStaff items offers roles extra = do
           }
 
 
-
-getBookR :: Handler Html
-getBookR = do
-    muid <- maybeAuth
-    oids <- (toSqlKey . read . unpack . snd <$>) . filter ((== "oid") . fst) . reqGetParams <$> getRequest
-    offers <- runDB queryOffers
-    (fw,et) <- generateFormPost $ formOffers offers
-    setUltDestCurrent
-    defaultLayout $ do
-        setTitleI MsgBook
-        $(widgetFile "book/offers")
-
-
-formOffers :: [(Entity Service, Entity Offer)]
+formOffers :: [OfferId]
+           -> [(Entity Service, Entity Offer)]
            -> Html -> MForm Handler (FormResult [(Entity Service, Entity Offer)], Widget)
-formOffers offers extra = do
-    oids <- (toSqlKey . read . unpack . snd <$>) . filter ((== "oid") . fst) . reqGetParams <$> getRequest
+formOffers oids offers extra = do
     (r,v) <- mreq (check notNull (optionsField offers)) "" (Just (filter (\(_,Entity oid _) -> oid `elem` oids) offers))
     let w = [whamlet|
 $maybe errs <- fvErrors v

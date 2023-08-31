@@ -6,7 +6,7 @@
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light style="white-space:normal">
-        _{MsgAppointmentTime}
+        _{MsgSignUpToContinue}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
       <a.mdc-top-app-bar__action-item.mdc-icon-button href=# role=button>
@@ -15,16 +15,29 @@
         <i.material-symbols-outlined>search
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
-  <form method=post action=@{BookR} enctype=#{et2} #formBack hidden>
-    ^{fw2}
 
-  <form method=post action=@{BookTimeR} enctype=#{et3} #formTime novalidate>
-    ^{fw3}
+  <form method=get action=# enctype=#{et} #formTime novalidate>
+    ^{fw}
     <div.form-actions>
       <button.mdc-button.mdc-button--raised type=submit>
         <span.mdc-button__ripple>
         <span.mdc-button__focus-ring>
         <span.mdc-button__label>_{MsgProceed}
+
+  <details.mdc-list>
+    <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+      <span.mdc-list-item__ripple>
+      <span.mdc-list-item__start>
+        <i.material-symbols-outlined>info
+      <span.mdc-list-item__content>
+        <div.mdc-list-item__primary-text>
+          _{MsgReceptionTime}
+      <span.mdc-list-item__end>
+        <i.material-symbols-outlined>expand_more
+    <div.mdc-list-item.mdc-list-item--with-two-lines>
+      <span.mdc-list-item__content>
+        <div.mdc-list-item__primary-text>
+          #{show day}T#{show time}
   
   $maybe (Entity _ (Staff sname _ _ _ _ _),Entity _ (Role _ _ rname _)) <- role
     <details.mdc-list>

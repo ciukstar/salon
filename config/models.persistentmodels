@@ -10,7 +10,6 @@ Book
   role RoleId Maybe OnDeleteCascade
   day Day
   time TimeOfDay
-  daytime LocalTime
 
 Schedule
   role RoleId OnDeleteCascade
