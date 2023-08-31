@@ -1,3 +1,6 @@
+Proceed: Продолжить
+SelectedStaff: Избранный персонал
+SelectedServices: Выбранные услуги
 SignUpToContinue: Зарегистрируйтесь, чтобы продолжить
 ReceptionTime: Время приема
 AppointmentTime: Время встречи

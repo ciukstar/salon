@@ -15,17 +15,55 @@
         <i.material-symbols-outlined>search
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
-  <p>
-    <div>FormSuccess: offers selected: #{length items}
-    $maybe (_,Entity _ (Role _ _ rname _)) <- role
-      FormSuccess: role selected: #{rname}
-    $nothing
-      FormSuccess: no role selected
-  <hr>
   <form method=post action=@{BookR} enctype=#{et2} #formBack hidden>
     ^{fw2}
 
-  <form method=post action=@{BookTimeR} enctype=#{et3}>
+  <form method=post action=@{BookTimeR} enctype=#{et3} #formTime novalidate>
     ^{fw3}
     <div.form-actions>
-      <button type=submit>Submit
+      <button.mdc-button.mdc-button--raised type=submit>
+        <span.mdc-button__ripple>
+        <span.mdc-button__focus-ring>
+        <span.mdc-button__label>_{MsgProceed}
+  
+  $maybe (Entity _ (Staff sname _ _ _ _ _),Entity _ (Role _ _ rname _)) <- role
+    <details.mdc-list>
+      <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+        <span.mdc-list-item__ripple>
+        <span.mdc-list-item__start>
+          <i.material-symbols-outlined>info
+        <span.mdc-list-item__content>
+          <div.mdc-list-item__primary-text>
+            _{MsgSelectedStaff}
+        <span.mdc-list-item__end>
+          <i.material-symbols-outlined>expand_more
+      <div.mdc-list-item.mdc-list-item--with-one-line>
+        <span.mdc-list-item__content>
+          <div.mdc-list-item__primary-text>
+            #{sname}
+          <div.mdc-list-item__secondary-text>
+            #{rname}
+            
+  <details.mdc-list>
+    <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-two-lines.mdc-list-item--with-trailing-icon>
+      <span.mdc-list-item__ripple>
+      <span.mdc-list-item__start>
+        <i.material-symbols-outlined>info
+      <span.mdc-list-item__content>
+        <div.mdc-list-item__primary-text>
+          _{MsgSelectedServices}
+      <span.mdc-list-item__end>
+        <i.material-symbols-outlined>expand_more
+    $forall (Entity _ (Service sname _ _ _ _ _),Entity _ (Offer _ _ price prefix suffix _)) <- items
+      <div.mdc-list-item.mdc-list-item--with-two-lines>
+        <span.mdc-list-item__content>
+          <div.mdc-list-item__primary-text>
+            #{sname} 
+          <div.mdc-list-item__secondary-text>
+            $maybe prefix <- prefix
+              #{prefix}
+            #{show price}
+            $maybe _ <- prefix
+            $nothing
+              $maybe suffix <- suffix
+                #{suffix}

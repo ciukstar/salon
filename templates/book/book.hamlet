@@ -16,20 +16,75 @@
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
 
-  $maybe Entity uid (User uname _ _ _ _) <- user
-  $nothing
-    <button.mdc-button.mdc-button--outlined type=button>
-      <span.mdc-button__ripple>
-      <span.mdc-button__focus-ring>
-      <span.mdc-button__label>_{MsgLogin}
+  <div #customerInfo>
+    $maybe Entity uid (User uname _ _ _ _) <- user
+      
+    $nothing
+      <button.mdc-button.mdc-button--outlined type=button>
+        <span.mdc-button__ripple>
+        <span.mdc-button__focus-ring>
+        <span.mdc-button__label>_{MsgSignUp}
+      <div style="display:inherit;flex-direction:inherit">
+        <div>
+          <small>Already have an account?
+        <button.mdc-button.mdc-button--outlined type=button>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgSignIn}
 
-  <details open>
-    <summary>
-      Appointment info
-    $forall (Entity _ (Service sname _ _ _ _ _),Entity _ (Offer _ _ price _ _ _)) <- items
-      <div>
-        Item: #{sname}: Price: #{show price}
-    <div>
-      $maybe (Entity _ (Staff sname _ _ _ _ _),Entity _ (Role _ _ rname _)) <- role
-        Empl: #{sname}: Role: #{rname}
-    <div>At: #{show day}T#{show time}
+  <details.mdc-list>
+    <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+      <span.mdc-list-item__ripple>
+      <span.mdc-list-item__start>
+        <i.material-symbols-outlined>info
+      <span.mdc-list-item__content>
+        <div.mdc-list-item__primary-text>
+          _{MsgAppointmentTime}
+      <span.mdc-list-item__end>
+        <i.material-symbols-outlined>expand_more
+    <div.mdc-list-item.mdc-list-item--with-two-lines>
+      <span.mdc-list-item__content>
+        <div.mdc-list-item__primary-text>
+          #{show day}T#{show time}
+
+  $maybe (Entity _ (Staff sname _ _ _ _ _),Entity _ (Role _ _ rname _)) <- role  
+    <details.mdc-list>
+      <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+        <span.mdc-list-item__ripple>
+        <span.mdc-list-item__start>
+          <i.material-symbols-outlined>info
+        <span.mdc-list-item__content>
+          <div.mdc-list-item__primary-text>
+            _{MsgSelectedStaff}
+        <span.mdc-list-item__end>
+          <i.material-symbols-outlined>expand_more
+      <div.mdc-list-item.mdc-list-item--with-two-lines>
+        <span.mdc-list-item__content>
+          <div.mdc-list-item__primary-text>
+            #{sname}
+          <div.mdc-list-item__secondary-text>
+            #{rname}
+        
+  <details.mdc-list>
+    <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+      <span.mdc-list-item__ripple>
+      <span.mdc-list-item__start>
+        <i.material-symbols-outlined>info
+      <span.mdc-list-item__content>
+        <div.mdc-list-item__primary-text>
+          _{MsgSelectedServices}
+      <span.mdc-list-item__end>
+        <i.material-symbols-outlined>expand_more
+    $forall (Entity _ (Service sname _ _ _ _ _),Entity _ (Offer _ _ price prefix suffix _)) <- items
+      <div.mdc-list-item.mdc-list-item--with-two-lines>
+        <span.mdc-list-item__content>
+          <div.mdc-list-item__primary-text>
+            #{sname} 
+          <div.mdc-list-item__secondary-text>
+            $maybe prefix <- prefix
+              #{prefix}
+            #{show price}
+            $maybe _ <- prefix
+            $nothing
+              $maybe suffix <- suffix
+                #{suffix}

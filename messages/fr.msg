@@ -1,3 +1,6 @@
+Proceed: Continue
+SelectedStaff: Le personnel sélectionné
+SelectedServices: Les services sélectionnés
 SignUpToContinue: Inscrivez-vous pour continuer
 ReceptionTime: Heure d'accueil
 AppointmentTime: Heure du rendez-vous

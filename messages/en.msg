@@ -1,3 +1,6 @@
+Proceed: Proceed
+SelectedStaff: Selected staff
+SelectedServices: Selected services
 SignUpToContinue: Sign up to continue
 ReceptionTime: Reception time
 AppointmentTime: Appointment time

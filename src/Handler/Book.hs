@@ -12,12 +12,13 @@ module Handler.Book
   , postBookTimeR
   ) where
 
+import Control.Applicative ((<|>))
 import Control.Monad (unless)
 import Control.Monad.Trans.Reader (ReaderT)
 import Data.Fixed (Centi)
 import qualified Data.List.Safe as LS (head)
-import Data.Text (unpack, intercalate, pack)
-import Data.Time (Day)
+import Data.Text (unpack, intercalate, pack, split)
+import Data.Time (Day, LocalTime (LocalTime))
 import Data.Time.Format (formatTime, defaultTimeLocale)
 import Data.Time.LocalTime (TimeOfDay)
 import Text.Hamlet (Html)
@@ -33,10 +34,10 @@ import Yesod.Form.Types
     , Field (Field, fieldParse, fieldView, fieldEnctype)
     , Enctype (UrlEncoded)
     , FieldView (fvInput, fvErrors)
-    , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
+    , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs), FormMessage (MsgInvalidTimeFormat)
     )
-import Yesod.Form.Fields (multiSelectFieldList, timeField, dayField, selectFieldList)
-import Yesod.Form.Functions (mreq, generateFormPost, runFormPost, check, mopt)
+import Yesod.Form.Fields (multiSelectFieldList, timeField, dayField, selectFieldList, parseDate, parseTime)
+import Yesod.Form.Functions (mreq, generateFormPost, runFormPost, check, mopt, parseHelper)
 import Settings (widgetFile)
 
 import Yesod.Persist.Core (runDB)
@@ -59,7 +60,8 @@ import Foundation
       , MsgNoPreference, MsgMaximumAvailability, MsgSelectStaff
       , MsgSelectAtLeastOneServicePlease, MsgAdd, MsgOffers, MsgOffer
       , MsgInvalidValue, MsgAppointmentTime, MsgRole, MsgSignUpToContinue
-      , MsgLogin
+      , MsgLogin, MsgSignUp, MsgSignIn, MsgSelectedServices, MsgSelectedStaff
+      , MsgProceed, MsgInvalidDurationHourMinute
       )
     )
 
@@ -74,19 +76,25 @@ import Model
       , ServiceName, RoleStaff, RoleRating, RoleService, OfferId
       )
     )
+import Control.Arrow (ArrowChoice(left))
 
 
 postBookTimeR :: Handler Html
 postBookTimeR = do
     offers <- runDB queryOffers
     roles <- runDB $ queryRoles []
-    ((fr,fw), et) <- runFormPost $ formTime [] offers Nothing roles
-    case fr of
-      FormSuccess (items,role,day,time) -> defaultLayout $ do
+    ((fr2,fw2),et2) <- runFormPost $ formStaff [] offers roles
+    let role = Nothing
+    let items = []
+    ((fr3,fw3), et3) <- runFormPost $ formTime [] offers Nothing roles
+    case fr3 of
+      FormSuccess (items,role,day,time,daytime) -> defaultLayout $ do
           user <- maybeAuth
           setTitleI MsgAppointmentTime
           $(widgetFile "book/book")
-      _ -> defaultLayout [whamlet|^{fw}|]
+      _ -> defaultLayout $ do
+          setTitleI MsgAppointmentTime
+          $(widgetFile "book/time")
 
 
 postBookStaffR :: Handler Html
@@ -115,6 +123,7 @@ formTime :: [(Entity Service, Entity Offer)]
                                        , Maybe (Entity Staff, Entity Role)
                                        , Day
                                        , TimeOfDay
+                                       , LocalTime
                                        )
                            , Widget
                            )
@@ -134,19 +143,40 @@ formTime items offers role roles extra = do
     
     (dayR,dayV) <- mreq dayField "" Nothing
     (timeR,timeV) <- mreq timeField "" Nothing
-    let r = (,,,) <$> offersR <*> roleR <*> dayR <*> timeR
+
+    (appointmentTimeR,appointmentTimeV) <- mreq datetimeLocalField "" Nothing
+    
+    let r = (,,,,) <$> offersR <*> roleR <*> dayR <*> timeR <*> appointmentTimeR
     let w = [whamlet|
 #{extra}
 ^{fvInput offersV}
 ^{fvInput roleV}
-$forall v <- [dayV,timeV]
-  ^{fvInput v}
-  <div style="margin-bottom: 1rem">
-    $maybe errs <- fvErrors timeV
-      #{errs}
+$forall v <- [dayV,timeV,appointmentTimeV]
+  <div.form-field>
+    ^{fvInput v}
+    <div>
+      $maybe errs <- fvErrors v
+        #{errs}
 |]
     return (r,w)
+  where
 
+      showVal = either id (pack . show)
+      
+      datetimeLocalField :: Field Handler LocalTime
+      datetimeLocalField = Field
+          { fieldParse = parseHelper $ \s -> case split (\c -> (c == 'T') || (c == ' ')) s of
+              [d,t] -> do
+                  day <- parseDate $ unpack d
+                  time <- parseTime t
+                  Right $ LocalTime day time
+              _ -> Left MsgInvalidTimeFormat
+          , fieldView = \theId name attrs val isReq -> [whamlet|
+<input type=datetime-local ##{theId} name=#{name} value=#{showVal val} *{attrs} :isReq:required>
+|]
+          , fieldEnctype = UrlEncoded
+          }
+      
 
 getBookStaffR :: Handler Html
 getBookStaffR = do

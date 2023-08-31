@@ -1,3 +1,6 @@
+Proceed: Continuă
+SelectedStaff: Personalul selectat
+SelectedServices: Serviciile selectate
 SignUpToContinue: Înregistrează-te pentru a continua
 ReceptionTime: Ora de receptie
 AppointmentTime: Ora programării
