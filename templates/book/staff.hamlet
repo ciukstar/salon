@@ -1,7 +1,7 @@
 <header.mdc-top-app-bar.mdc-top-app-bar--prominent.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section-align-start>
-      <button.mdc-top-app-bar__navigation-icon.mdc-icon-button type=submit form=formBack>
+      <button.mdc-top-app-bar__navigation-icon.mdc-icon-button type=submit form=#{idFormBack}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
@@ -15,7 +15,10 @@
         <i.material-symbols-outlined>search
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
-  <form method=get action=@{BookTimeR} enctype=#{et} novalidate>
+
+  ^{formBack}
+
+  <form method=get action=@{BookTimeR} enctype=#{et} novalidate ##{idFormNext}>
     ^{fw}
     <div.form-actions>
       <button.mdc-button.mdc-button--raised type=submit>

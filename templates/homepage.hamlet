@@ -52,7 +52,7 @@
       <a.mdc-button href=@{AboutUsR}>
         <span.mdc-button__ripple>
         <span.mdc-button__label>_{MsgAboutUs}
-      <a.mdc-button href=@{BookR}>
+      <a.mdc-button href=@{BookStartR}>
         <span.mdc-button__ripple>
         <span.mdc-button__label>_{MsgBook}
 
