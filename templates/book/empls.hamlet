@@ -1,4 +1,4 @@
-<ul.mdc-list ##{theId} tabindex=-1 data-mdc-auto-init=MDCList>
+<ul.mdc-list role=listbox ##{theId} tabindex=-1 data-mdc-auto-init=MDCList>
   <button.mdc-list-item type=submit
     .mdc-list-item--with-leading-image.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon>
     <span.mdc-list-item__ripple>
@@ -15,11 +15,21 @@
   <div.mdc-list-divider role=separator>
   $forall e@(Entity sid (Staff sname _ _ _ _ _), Entity rid (Role _ _ rname rating)) <- roles
     $with checked <- isChecked val e
-      <button.mdc-list-item.mdc-list-item--with-leading-image type=submit
+      <li.mdc-list-item.mdc-list-item--with-leading-image
         .mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon
-        name=#{name} value=#{fromSqlKey rid} *{attrs}>
+        :checked:aria-checked=true
+        :not checked:aria-checked=false
+        onclick="this.querySelector('input.mdc-radio__native-control').dispatchEvent(new Event('change'))">
         <span.mdc-list-item__ripple>
-        <sgpan.mdc-list-item__start>
+        <span.mdc-list-item__start>
+          <div.mdc-radio tabindex=-1 data-mdc-auto-init=MDCRadio style="display:none">
+            <input.mdc-radio__native-control type=radio name=#{name} value=#{fromSqlKey rid} *{attrs} :checked:checked
+              onchange="this.form.submit()">
+            <div.mdc-radio__background>
+              <div.mdc-radio__outer-circle>
+              <div.mdc-radio__inner-circle>
+            <div.mdc-radio__ripple>
+            <div.mdc-radio__focus-ring>
           <img src=@{AdminR $ AdmStaffPhotoR sid} width=56 height=56 alt=_{MsgPhoto} loading=lazy>
         <span.mdc-list-item__content>
           <div.mdc-list-item__primary-text>

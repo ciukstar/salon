@@ -17,14 +17,14 @@ import Control.Monad.Trans.Reader (ReaderT)
 import Data.Fixed (Centi)
 import qualified Data.List.Safe as LS (head)
 import Data.Text (unpack, intercalate, Text)
-import Data.Time (Day)
+import Data.Time (Day, TimeOfDay (TimeOfDay))
 import Data.Time.Format (formatTime, defaultTimeLocale)
 import Data.Time.LocalTime (TimeOfDay)
 import Text.Hamlet (Html)
 import Text.Shakespeare.I18N (renderMessage, SomeMessage (SomeMessage))
 import Yesod.Core
     ( Yesod(defaultLayout), getRequest, YesodRequest (reqGetParams)
-    , getYesod, languages, whamlet, newIdent, setUltDestCurrent
+    , getYesod, languages, whamlet, newIdent, setUltDestCurrent, MonadTrans (lift)
     )
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Auth (maybeAuth, Route (LoginR, LogoutR))
@@ -35,7 +35,7 @@ import Yesod.Form.Types
     , FieldView (fvInput, fvErrors)
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
     )
-import Yesod.Form.Fields (multiSelectFieldList, timeField, dayField, selectFieldList)
+import Yesod.Form.Fields (timeField, dayField)
 import Yesod.Form.Functions (mreq, check, mopt, runFormGet)
 import Settings (widgetFile)
 
@@ -71,7 +71,7 @@ import Foundation
 
 import Model
     ( Service(Service)
-    , Offer (Offer), OfferId
+    , Offer (Offer)
     , Staff (Staff)
     , Role (Role)
     , User (User)
@@ -80,6 +80,7 @@ import Model
       , ServiceName, RoleStaff, RoleRating, RoleService, OfferId
       )
     )
+import Data.Maybe (maybeToList)
 
 
 postBookRecordR :: Handler Html
@@ -90,15 +91,12 @@ getBookTimeR :: Handler Html
 getBookTimeR = do
     user <- maybeAuth
     offers <- runDB queryOffers
-    roles <- runDB $ queryRoles []
+    roles <- runDB $ queryRoles offers
     ((fr,fw),et) <- runFormGet $ formTime Nothing Nothing [] offers Nothing roles
     case fr of
       FormSuccess (items,role,day,time) -> do
           idFormBack <- newIdent
-          let formBack = [whamlet|
-<form method=get action=@{BookStaffR} enctype=#{et} novalidate ##{idFormBack} hidden>
-  ^{fw}
-|]
+          let formBack = [whamlet|<form method=get action=@{BookStaffR} enctype=#{et} novalidate ##{idFormBack} hidden>^{fw}|]
           ((fr,fw),et) <- runFormGet formCustomer
           defaultLayout $ do
               idFormNext <- newIdent
@@ -107,13 +105,8 @@ getBookTimeR = do
               $(widgetFile "book/time")
       _ -> defaultLayout $ do
           idFormBack <- newIdent
-          let formBack = [whamlet|
-<form method=get action=@{BookOffersR} enctype=#{et} novalidate ##{idFormBack} hidden>
-  ^{fw}
-|]
+          let formBack = [whamlet|<form method=get action=@{BookOffersR} enctype=#{et} novalidate ##{idFormBack} hidden>^{fw}|]
           idFormNext <- newIdent
-          let items = []
-          let role = Nothing
           setTitleI MsgStaff
           $(widgetFile "book/staff")
 
@@ -121,48 +114,37 @@ getBookTimeR = do
 getBookStaffR :: Handler Html
 getBookStaffR = do
     offers <- runDB queryOffers
-    roles <- runDB $ queryRoles []
+    roles <- runDB $ queryRoles offers
     ((fr,fw),et) <- runFormGet $ formStaff [] offers roles
     case fr of
       FormSuccess (items,role) -> do
           idFormBack <- newIdent
-          let formBack = [whamlet|
-<form method=get action=@{BookOffersR} enctype=#{et} novalidate ##{idFormBack} hidden>
-  ^{fw}
-|]
+          let formBack = [whamlet|<form method=get action=@{BookOffersR} enctype=#{et} novalidate ##{idFormBack} hidden>^{fw}|]
           idFormNext <- newIdent
-          ((fr,fw),et) <- runFormGet $ formTime Nothing Nothing items offers role roles
+          ((fr,fw),et) <- runFormGet $ formTime Nothing Nothing items items role (maybeToList role)
           defaultLayout $ do
               setTitleI MsgStaff
               $(widgetFile "book/staff")
       _ -> defaultLayout $ do
           idFormBack <- newIdent
-          let formBack = [whamlet|
-<form method=get action=@{BookR} enctype=#{et} ##{idFormBack} novalidate hidden>
-  ^{fw}
-|]
+          let formBack = [whamlet|<form method=get action=@{BookR} enctype=#{et} ##{idFormBack} novalidate hidden>^{fw}|]
           idFormNext <- newIdent
           setTitleI MsgOffers
-          let items = []
           $(widgetFile "book/offers")
 
 
 getBookOffersR :: Handler Html
 getBookOffersR = do
     muid <- maybeAuth
-    oids <- (toSqlKey . read . unpack . snd <$>) . filter ((== "oid") . fst) . reqGetParams <$> getRequest
     offers <- runDB queryOffers
-    ((fr,fw),et) <- runFormGet $ formOffers oids offers
+    ((fr,fw),et) <- runFormGet $ formOffers [] offers
     case fr of
       FormSuccess items -> do
           idFormBack <- newIdent
-          let formBack = [whamlet|
-<form method=get action=@{BookR} enctype=#{et} ##{idFormBack} novalidate hidden>
-  ^{fw}
-|]
+          let formBack = [whamlet|<form method=get action=@{BookR} enctype=#{et} ##{idFormBack} novalidate hidden>^{fw}|]
           idFormNext <- newIdent
           roles <- runDB $ queryRoles items
-          ((fr,fw),et) <- runFormGet $ formStaff items offers roles
+          ((fr,fw),et) <- runFormGet $ formStaff items items roles
           defaultLayout $ do
               setTitleI MsgOffers
               $(widgetFile "book/offers")
@@ -208,17 +190,16 @@ formTime :: Maybe Day
                            , Widget
                            )
 formTime day time items offers role roles extra = do
-
-    (offersR,offersV) <- mreq (multiSelectFieldList ((MsgOffer,) <$> offers)) FieldSettings
+    (offersR,offersV) <- mreq (check notNull (offersField offers)) FieldSettings
         { fsLabel = SomeMessage MsgOffer
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
-        , fsAttrs = [("hidden","hidden")]
+        , fsAttrs = []
         } (Just items)
 
-    (roleR,roleV) <- mopt (selectFieldList ((MsgRole,) <$> roles)) FieldSettings
+    (roleR,roleV) <- mopt (rolesField roles) FieldSettings
         { fsLabel = SomeMessage MsgRole
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
-        , fsAttrs = [("hidden","hidden")]
+        , fsAttrs = []
         } (Just role)
     
     (dayR,dayV) <- mreq dayField "" day
@@ -227,16 +208,60 @@ formTime day time items offers role roles extra = do
     let r = (,,,) <$> offersR <*> roleR <*> dayR <*> timeR
     let w = [whamlet|
 #{extra}
-^{fvInput offersV}
-^{fvInput roleV}
 $forall v <- [dayV,timeV]
   <div.form-field>
     ^{fvInput v}
     <div>
       $maybe errs <- fvErrors v
         #{errs}
+<div.form-actions>
+  <button.mdc-button.mdc-button--raised.mdc-button--icon-trailing type=submit>
+    <span.mdc-button__ripple>
+    <span.mdc-button__focus-ring>
+    <span.mdc-button__label>_{MsgContinue}
+    <i.mdc-button__icon.material-symbols-outlined>arrow_forward_ios
+<p>
+<details>
+  <summary>_{MsgSelectedStaff}
+  ^{fvInput roleV}
+<p>
+<details>
+  <summary>_{MsgSelectedServices}
+  ^{fvInput offersV}
 |]
     return (r,w)
+  where
+
+      notNull xs = case xs of
+        [] -> Left MsgSelectAtLeastOneServicePlease
+        _ -> Right xs
+
+      offersField :: [(Entity Service, Entity Offer)]
+                  -> Field Handler [(Entity Service, Entity Offer)]
+      offersField options = Field
+          { fieldParse = \xs _ -> return $
+            (Right . Just . filter (\(_, Entity oid _) -> oid `elem` (toSqlKey . read . unpack <$> xs))) options
+          , fieldView = \theId name attrs vals _isReq -> do
+                app <- getYesod
+                langs <- languages
+                let isChecked (Left _) _ = False
+                    isChecked (Right xs) x = x `elem` xs
+                $(widgetFile "book/items")
+          , fieldEnctype = UrlEncoded
+          }
+
+      rolesField :: [(Entity Staff, Entity Role)]
+                 -> Field Handler (Entity Staff, Entity Role)
+      rolesField options = Field
+          { fieldParse = \xs _ -> return $ case xs of
+              (x:_) -> (Right . LS.head . filter (\(_, Entity rid _) -> rid == toSqlKey (read $ unpack x))) options
+              _ -> Right Nothing
+          , fieldView = \theId name attrs val _isReq -> do
+                let isChecked (Left _) _ = False
+                    isChecked (Right y) x = x == y
+                $(widgetFile "book/empls")
+          , fieldEnctype = UrlEncoded
+          }
 
 
 formStaff :: [(Entity Service, Entity Offer)]
@@ -249,27 +274,47 @@ formStaff :: [(Entity Service, Entity Offer)]
                            , Widget
                            )
 formStaff items offers roles extra = do
-
-    (offersR,offersV) <- mreq (multiSelectFieldList ((MsgOffer,) <$> offers)) FieldSettings
+    (offersR,offersV) <- mreq (check notNull (offersField offers)) FieldSettings
         { fsLabel = SomeMessage MsgOffer
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
-        , fsAttrs = [("hidden","hidden")]
+        , fsAttrs = []
         } (Just items)
 
-    (rolesR,rolesV) <- mopt (optionsField roles) "" Nothing
+    (rolesR,rolesV) <- mopt (rolesField roles) "" Nothing
 
     let r = (,) <$> offersR <*> rolesR
     let w = [whamlet|
 #{extra}
-^{fvInput offersV}
 ^{fvInput rolesV}
+<p>
+<details>
+  <summary>_{MsgSelectedServices}
+  ^{fvInput offersV}
 |]
     return (r,w)
   where
 
-      optionsField :: [(Entity Staff, Entity Role)]
+      notNull xs = case xs of
+        [] -> Left MsgSelectAtLeastOneServicePlease
+        _ -> Right xs
+
+      offersField :: [(Entity Service, Entity Offer)]
+                  -> Field Handler [(Entity Service, Entity Offer)]
+      offersField items = Field
+          { fieldParse = \xs _ -> return $
+            (Right . Just . filter (\(_, Entity oid _) -> oid `elem` (toSqlKey . read . unpack <$> xs))) items
+          , fieldView = \theId name attrs vals _isReq -> do
+                app <- getYesod
+                langs <- languages
+                let isChecked (Left _) _ = False
+                    isChecked (Right xs) x = x `elem` xs
+                $(widgetFile "book/items")
+          , fieldEnctype = UrlEncoded
+          }
+
+      rolesField :: [(Entity Staff, Entity Role)]
                    -> Field Handler (Entity Staff, Entity Role)
-      optionsField items = Field
+      rolesField items = Field
           { fieldParse = \xs _ -> return $ case xs of
               (x:_) -> (Right . LS.head . filter (\(_, Entity rid _) -> rid == toSqlKey (read $ unpack x))) items
               _ -> Right Nothing
@@ -281,11 +326,15 @@ formStaff items offers roles extra = do
           }
 
 
-formOffers :: [OfferId]
+formOffers :: [(Entity Service, Entity Offer)]
            -> [(Entity Service, Entity Offer)]
            -> Html -> MForm Handler (FormResult [(Entity Service, Entity Offer)], Widget)
-formOffers oids offers extra = do
-    (r,v) <- mreq (check notNull (optionsField offers)) "" (Just (filter (\(_,Entity oid _) -> oid `elem` oids) offers))
+formOffers items offers extra = do
+    (r,v) <- mreq (check notNull (offersField offers)) FieldSettings
+        { fsLabel = SomeMessage MsgOffer
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = []
+        } (Just (filter (`elem` items) offers))
     let w = [whamlet|
 $maybe errs <- fvErrors v
   <div.mdc-banner role=banner data-mdc-auto-init=MDCBanner>
@@ -309,9 +358,9 @@ $maybe errs <- fvErrors v
         [] -> Left MsgSelectAtLeastOneServicePlease
         _ -> Right xs
 
-      optionsField :: [(Entity Service, Entity Offer)]
+      offersField :: [(Entity Service, Entity Offer)]
                    -> Field Handler [(Entity Service, Entity Offer)]
-      optionsField items = Field
+      offersField items = Field
           { fieldParse = \xs _ -> return $
             (Right . Just . filter (\(_, Entity oid _) -> oid `elem` (toSqlKey . read . unpack <$> xs))) items
           , fieldView = \theId name attrs vals _isReq -> do

@@ -2,7 +2,7 @@
 window.mdc.autoInit();
 
 
-const serviceList = document.getElementById(#{theId}).MDCList;
+var serviceList = document.getElementById(#{theId}).MDCList;
 
 serviceList.selectedIndex = serviceList.listElements.map(
   (x,i) => x.matches('[aria-checked=true]') ? [i] : []

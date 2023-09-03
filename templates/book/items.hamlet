@@ -5,7 +5,7 @@
       <li.mdc-list-item tabindex=0 role=option
         .mdc-list-item--with-leading-checkbox.mdc-list-item--with-three-lines
         :checked:aria-checked=true
-        :checked:aria-checked=false data-amount=#{show price}>
+        :not checked:aria-checked=false data-amount=#{show price}>
         <span.mdc-list-item__ripple>
         <span.mdc-list-item__start>
           <div.mdc-checkbox :checked:checked tabindex=-1 data-mdc-auto-init=MDCCheckbox>
