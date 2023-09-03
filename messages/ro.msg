@@ -1,3 +1,10 @@
+NotYourAccount: Nu e contul dvs.
+Continue: Continuați
+Next: Urmatorul
+StepNofM n m: Pasul #{show n} din #{show m}
+MyContacts: Contactele mele
+TellUsAboutYourself: Spune-ne despre tine
+CustomerInformation: Informații despre client
 Proceed: Continuă
 SelectedStaff: Personalul selectat
 SelectedServices: Serviciile selectate

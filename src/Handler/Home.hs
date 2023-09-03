@@ -24,7 +24,7 @@ import Foundation
     ( Handler
     , Route
       ( StaticR, ServicesR, AboutUsR, AuthR, AccountPhotoR
-      , PhotoPlaceholderR, BookStartR, AdminR
+      , PhotoPlaceholderR, BookR, AdminR
       )
     , AdminR (BrandMarkR)
     , AppMessage

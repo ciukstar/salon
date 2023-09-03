@@ -1,3 +1,10 @@
+NotYourAccount: Не ваша учетная запись
+Continue: Продолжить
+Next: Следующий
+StepNofM n m: Шаг #{show n} из #{show m}
+MyContacts: Мои контакты
+TellUsAboutYourself: Расскажите нам о себе
+CustomerInformation: Информация о заказчике
 Proceed: Продолжить
 SelectedStaff: Избранный персонал
 SelectedServices: Выбранные услуги

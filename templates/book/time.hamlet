@@ -5,8 +5,12 @@
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
-      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light style="white-space:normal">
-        _{MsgSignUpToContinue}
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light style="white-space:normal;line-height:1">
+        <div #divStepCounter style="margin-bottom:1rem;overflow:hidden">
+          <small>
+            <small>_{MsgStepNofM 4 4}
+        <div style="white-space:inherit;overflow:inherit;text-overflow:inherit;line-height:inherit">
+          _{MsgCustomerInformation}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
       <a.mdc-top-app-bar__action-item.mdc-icon-button href=# role=button>
@@ -18,13 +22,50 @@
 
   ^{formBack}
 
-  <form method=get action=# enctype=#{et} #formTime novalidate ##{idFormNext}>
-    ^{fw}
-    <div.form-actions>
-      <button.mdc-button.mdc-button--raised type=submit>
+  $maybe Entity uid (User name _ _ fname email) <- user
+    <div style="margin:1rem;display:flex;flex-direction:column">
+      <button.mdc-button.mdc-button--raised type=button>
         <span.mdc-button__ripple>
         <span.mdc-button__focus-ring>
-        <span.mdc-button__label>_{MsgProceed}
+        <span.mdc-button__label>_{MsgBook}
+
+    <details.mdc-list open>
+      <summary.mdc-list-item--with-leading-icon.mdc-list-item.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+        <span.mdc-list-item__ripple>
+        <span.mdc-list-item__start>
+          <i.material-symbols-outlined>info
+        <span.mdc-list-item__content>
+          <div.mdc-list-item__primary-text>_{MsgCustomer}
+        <span.mdc-list-item__end>
+          <i.material-symbols-outlined>expand_more
+      <div.mdc-list-item.mdc-list-item--with-three-lines>
+        <span.mdc-list-item__content>
+          <div.mdc-list-item__primary-text>
+            #{name}
+          <div.mdc-list-item__secondary-text>
+            $maybe email <- email
+              #{email}
+          <div.mdc-list-item__secondary-text>
+            $maybe fname <- fname
+              #{fname}
+
+      <small style="margin:1rem">
+        <span>_{MsgNotYourAccount}?
+        <a href=@{AuthR LoginR}>_{MsgLogin}
+  $nothing
+    <div #divActions>
+      <a.mdc-button.mdc-button--outlined href=@{AccountR} role=button>
+        <span.mdc-button__ripple>
+        <span.mdc-button__focus-ring>
+        <span.mdc-button__label>_{MsgSignUp}
+      <div style="display:inherit;flex-direction:inherit">
+        <div style="text-align:center">
+          <small>Already have an account?
+        <a.mdc-button.mdc-button--outlined href=@{AuthR LoginR} role=button>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgSignIn}
+
 
   <details.mdc-list>
     <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
@@ -32,8 +73,7 @@
       <span.mdc-list-item__start>
         <i.material-symbols-outlined>info
       <span.mdc-list-item__content>
-        <div.mdc-list-item__primary-text>
-          _{MsgReceptionTime}
+        <div.mdc-list-item__primary-text>_{MsgReceptionTime}
       <span.mdc-list-item__end>
         <i.material-symbols-outlined>expand_more
     <div.mdc-list-item.mdc-list-item--with-two-lines>
@@ -60,7 +100,7 @@
             #{rname}
             
   <details.mdc-list>
-    <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-two-lines.mdc-list-item--with-trailing-icon>
+    <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
       <span.mdc-list-item__ripple>
       <span.mdc-list-item__start>
         <i.material-symbols-outlined>info

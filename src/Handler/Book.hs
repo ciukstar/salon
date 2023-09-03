@@ -5,26 +5,26 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module Handler.Book
-  ( getBookStartR
+  ( getBookR
   , getBookOffersR
   , getBookStaffR
   , getBookTimeR
-  , postBookR
+  , postBookRecordR
   ) where
 
 import Control.Monad (unless)
 import Control.Monad.Trans.Reader (ReaderT)
 import Data.Fixed (Centi)
 import qualified Data.List.Safe as LS (head)
-import Data.Text (unpack, intercalate, pack, Text)
+import Data.Text (unpack, intercalate, Text)
 import Data.Time (Day)
 import Data.Time.Format (formatTime, defaultTimeLocale)
 import Data.Time.LocalTime (TimeOfDay)
 import Text.Hamlet (Html)
 import Text.Shakespeare.I18N (renderMessage, SomeMessage (SomeMessage))
 import Yesod.Core
-    ( Yesod(defaultLayout), setUltDestCurrent, getRequest
-    , YesodRequest (reqGetParams), getYesod, languages, whamlet, newIdent
+    ( Yesod(defaultLayout), getRequest, YesodRequest (reqGetParams)
+    , getYesod, languages, whamlet, newIdent, setUltDestCurrent
     )
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Auth (maybeAuth, Route (LoginR, LogoutR))
@@ -51,7 +51,10 @@ import Database.Esqueleto.Experimental
 
 import Foundation
     ( Handler, Widget
-    , Route (BookStartR, BookOffersR, BookTimeR, BookStaffR, BookR, AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR)
+    , Route
+      ( BookR, BookOffersR, BookTimeR, BookStaffR, BookRecordR
+      , AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR, AccountR
+      )
     , AdminR (AdmStaffPhotoR)
     , AppMessage
       ( MsgBook, MsgPhoto, MsgLogout, MsgChooseServicesToBook
@@ -60,7 +63,9 @@ import Foundation
       , MsgSelectAtLeastOneServicePlease, MsgOffer
       , MsgAppointmentTime, MsgRole, MsgSignUpToContinue
       , MsgSignUp, MsgSignIn, MsgSelectedServices, MsgSelectedStaff
-      , MsgProceed, MsgReceptionTime, MsgOffers
+      , MsgProceed, MsgReceptionTime, MsgOffers, MsgCustomerInformation
+      , MsgTellUsAboutYourself, MsgCustomer, MsgStepNofM, MsgNext
+      , MsgContinue, MsgNotYourAccount, MsgLogin
       )
     )
 
@@ -77,12 +82,13 @@ import Model
     )
 
 
-postBookR :: Handler Html
-postBookR = undefined
+postBookRecordR :: Handler Html
+postBookRecordR = undefined
 
 
 getBookTimeR :: Handler Html
 getBookTimeR = do
+    user <- maybeAuth
     offers <- runDB queryOffers
     roles <- runDB $ queryRoles []
     ((fr,fw),et) <- runFormGet $ formTime Nothing Nothing [] offers Nothing roles
@@ -97,6 +103,7 @@ getBookTimeR = do
           defaultLayout $ do
               idFormNext <- newIdent
               setTitleI MsgAppointmentTime
+              setUltDestCurrent
               $(widgetFile "book/time")
       _ -> defaultLayout $ do
           idFormBack <- newIdent
@@ -131,7 +138,7 @@ getBookStaffR = do
       _ -> defaultLayout $ do
           idFormBack <- newIdent
           let formBack = [whamlet|
-<form method=get action=@{BookStartR} enctype=#{et} ##{idFormBack} novalidate hidden>
+<form method=get action=@{BookR} enctype=#{et} ##{idFormBack} novalidate hidden>
   ^{fw}
 |]
           idFormNext <- newIdent
@@ -150,7 +157,7 @@ getBookOffersR = do
       FormSuccess items -> do
           idFormBack <- newIdent
           let formBack = [whamlet|
-<form method=get action=@{BookStartR} enctype=#{et} ##{idFormBack} novalidate hidden>
+<form method=get action=@{BookR} enctype=#{et} ##{idFormBack} novalidate hidden>
   ^{fw}
 |]
           idFormNext <- newIdent
@@ -160,16 +167,19 @@ getBookOffersR = do
               setTitleI MsgOffers
               $(widgetFile "book/offers")
       _ -> defaultLayout $ do
-        setTitleI MsgOffers
-        $(widgetFile "book/start")
+          let items = []
+          setTitleI MsgOffers
+          $(widgetFile "book/start")
 
 
-getBookStartR :: Handler Html
-getBookStartR = do
+getBookR :: Handler Html
+getBookR = do
     muid <- maybeAuth
-    oids <- (toSqlKey . read . unpack . snd <$>) . filter ((== "oid") . fst) . reqGetParams <$> getRequest
     offers <- runDB queryOffers
-    ((fr,fw),et) <- runFormGet $ formOffers oids offers
+    ((fr,fw),et) <- runFormGet $ formOffers [] offers
+    items <- case fr of
+      FormSuccess items -> return items
+      _ -> return []
     defaultLayout $ do
         setTitleI MsgOffers
         $(widgetFile "book/start")
@@ -179,17 +189,7 @@ formCustomer :: Html -> MForm Handler (FormResult Text, Widget)
 formCustomer extra = return (pure "Cutomer",[whamlet|
 #{extra}
 <div #customerInfo>
-    <button.mdc-button.mdc-button--outlined type=button>
-      <span.mdc-button__ripple>
-      <span.mdc-button__focus-ring>
-      <span.mdc-button__label>_{MsgSignUp}
-    <div style="display:inherit;flex-direction:inherit">
-      <div>
-        <small>Already have an account?
-      <button.mdc-button.mdc-button--outlined type=button>
-        <span.mdc-button__ripple>
-        <span.mdc-button__focus-ring>
-        <span.mdc-button__label>_{MsgSignIn}
+  Cutomer info form ...
 |])
 
 
@@ -342,10 +342,10 @@ queryOffers  = select $ do
     return (x,o)
 
 
-amount :: [OfferId] -> [(Entity Service, Entity Offer)] -> Centi
+amount :: [(Entity Service, Entity Offer)] -> [(Entity Service, Entity Offer)] -> Centi
 amount oids xs = sum (
     (\(_,Entity _ (Offer _ _ price _ _ _)) -> price)
-      <$> filter (\(_,Entity oid _) -> oid `elem` oids) xs
+      <$> filter (`elem` oids) xs
     )
 
 

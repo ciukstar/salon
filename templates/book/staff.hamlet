@@ -5,8 +5,12 @@
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
-      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light style="white-space:normal">
-        _{MsgAppointmentTime}
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light style="white-space:normal;line-height:1">
+        <div #divStepCounter style="margin-bottom:1rem;overflow:hidden">
+          <small>
+            <small>_{MsgStepNofM 3 4}
+        <div style="white-space:inherit;overflow:inherit;text-overflow:inherit;line-height:inherit">
+          _{MsgAppointmentTime}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
       <a.mdc-top-app-bar__action-item.mdc-icon-button href=# role=button>
@@ -21,10 +25,11 @@
   <form method=get action=@{BookTimeR} enctype=#{et} novalidate ##{idFormNext}>
     ^{fw}
     <div.form-actions>
-      <button.mdc-button.mdc-button--raised type=submit>
+      <button.mdc-button.mdc-button--raised.mdc-button--icon-trailing type=submit>
         <span.mdc-button__ripple>
         <span.mdc-button__focus-ring>
-        <span.mdc-button__label>_{MsgProceed}
+        <span.mdc-button__label>_{MsgContinue}
+        <i.mdc-button__icon.material-symbols-outlined>arrow_forward_ios
   
   $maybe (Entity _ (Staff sname _ _ _ _ _),Entity _ (Role _ _ rname _)) <- role
     <details.mdc-list>

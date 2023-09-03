@@ -4,8 +4,12 @@
       <button.mdc-top-app-bar__navigation-icon.mdc-icon-button #btnMainMenu>
         <span.mdc-icon-button__ripple>
         <i.material-symbols-outlined>menu
-      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light style="white-space:normal">
-        _{MsgChooseServicesToBook}
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light style="white-space:normal;line-height:1">
+        <div #divStepCounter style="margin-bottom:1rem;overflow:hidden">
+          <small>
+            <small>_{MsgStepNofM 1 4}
+        <div style="white-space:inherit;overflow:inherit;text-overflow:inherit;line-height:inherit">
+          _{MsgChooseServicesToBook}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
       <a.mdc-top-app-bar__action-item.mdc-icon-button href=# role=button>
@@ -43,9 +47,9 @@
   <div #footerContent>
     <section #footerSectionStart>
       <div #footerBookCountLabel>
-        <span #footerBookCount>#{length oids}
+        <span #footerBookCount>#{length items}
         <span>_{MsgServices}
-      $with amount <- show $ amount oids offers
+      $with amount <- show $ amount items offers
         <div #footerBookAmount>
           $maybe (_,Entity _ (Offer _ _ _ prefix _ _)) <- LS.head offers
             $maybe prefix <- prefix
@@ -57,8 +61,8 @@
               $maybe suffix <- suffix
                 #{suffix}
     <section #footerSectionEnd>
-      <button.mdc-button.mdc-button--raised type=submit form=formOffers #btnSubmitForm>
+      <button.mdc-button.mdc-button--raised.mdc-button--icon-trailing type=submit form=formOffers #btnSubmitForm>
         <span.mdc-button__ripple>
         <span.mdc-button__focus-ring>
-        <i.mdc-button__icon.material-symbols-outlined>check
-        <span.mdc-button__label>_{MsgBook}
+        <span.mdc-button__label>_{MsgContinue}
+        <i.mdc-button__icon.material-symbols-outlined>arrow_forward_ios

@@ -1,3 +1,10 @@
+NotYourAccount: Pas votre compte 
+Continue: Continuez
+Next: Suivante
+StepNofM n m: Étape #{show n} de #{show m}
+MyContacts: Mes contacts
+TellUsAboutYourself: Parle-nous de toi
+CustomerInformation: Informations client
 Proceed: Continue
 SelectedStaff: Le personnel sélectionné
 SelectedServices: Les services sélectionnés

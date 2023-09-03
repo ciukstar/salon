@@ -1,11 +1,11 @@
 
 /contact ContactR GET
 
-/book 	     BookR       POST
+/book/post   BookRecordR POST
 /book/time   BookTimeR   GET
 /book/staff  BookStaffR  GET
 /book/offers BookOffersR GET
-/book/start  BookStartR  GET
+/book  	     BookR  	 GET
 
 /aboutus AboutUsR GET
 

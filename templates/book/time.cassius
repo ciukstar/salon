@@ -1,20 +1,12 @@
 
+header.mdc-top-app-bar
+  div.mdc-top-app-bar__row
+    transition: height 0.3s ease-out
+    
 main
-  #formTime
+  #divActions
     margin: 1rem
     display: flex
     flex-direction: column
-    div.form-field
-      margin-bottom: 1rem
-      display: flex
-      flex-direction: column
-      input[type=date], input[type=time]
-        width: 100%
-        font-size: 1.2rem
-        min-height: 2rem
-        border: none
-        border-bottom: 2px solid var(--mdc-theme-primary)
-    div.form-actions
-      display: flex
-      flex-direction: row
-      justify-content: flex-end
+    gap: 1rem
+    
