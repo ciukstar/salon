@@ -33,6 +33,13 @@
           <span.mdc-deprecated-list-item__ripple>
           <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>book_online
           <span.mdc-deprecated-list-item__text>_{MsgBook}
+        <a.mdc-deprecated-list-item href=@{AppointmentsR}
+          :Just AppointmentsR /= curr:tabindex=-1
+          :Just AppointmentsR == curr:tabindex=0
+          :Just AppointmentsR == curr:.mdc-deprecated-list-item--activated>
+          <span.mdc-deprecated-list-item__ripple>
+          <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>pending_actions
+          <span.mdc-deprecated-list-item__text>_{MsgMyAppointments}
         <a.mdc-deprecated-list-item href=@{AboutUsR}
           :Just AboutUsR /= curr:tabindex=-1
           :Just AboutUsR == curr:tabindex=0

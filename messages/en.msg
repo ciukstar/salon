@@ -1,3 +1,11 @@
+RescheduleAppointment: Reschedule appointment
+CancelAppointment: Cancel appointment
+Appointment: Appointment
+NoAppointmentsYet: You have no appointments yet
+LoginToSeeYourAppointments: Please login to see your appointments
+MyAppointments: My appointments
+Time: Time
+Day: Day
 NotYourAccount: Not your account
 Continue: Continue
 Next: Next

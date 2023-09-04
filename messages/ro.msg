@@ -1,3 +1,11 @@
+RescheduleAppointment: Reprogramează întâlnirea
+CancelAppointment: Anulează programarea
+Appointment: Programare
+NoAppointmentsYet: Nu aveți încă programări
+LoginToSeeYourAppointments: Vă rugăm să vă autentificați pentru a vă vedea programările
+MyAppointments: Programările mele
+Time: Ora
+Day: Ziua
 NotYourAccount: Nu e contul dvs.
 Continue: Continuați
 Next: Urmatorul

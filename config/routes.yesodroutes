@@ -1,6 +1,9 @@
 
 /contact ContactR GET
 
+/appointments/#BookId AppointmentR  GET
+/appointments 	      AppointmentsR GET
+
 /book/post   BookRecordR POST
 /book/time   BookTimeR   GET
 /book/staff  BookStaffR  GET

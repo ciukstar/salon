@@ -1,3 +1,11 @@
+RescheduleAppointment: Перенести встречу
+CancelAppointment: Отменить запись
+Appointment: Запись
+NoAppointmentsYet: У вас еще нет записей
+LoginToSeeYourAppointments: Пожалуйста, войдите, чтобы увидеть ваши записи
+MyAppointments: Мои записи
+Time: Время
+Day: День
 NotYourAccount: Не ваша учетная запись
 Continue: Продолжить
 Next: Следующий

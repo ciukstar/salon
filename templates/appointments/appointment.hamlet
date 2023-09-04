@@ -1,0 +1,22 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button href=@{AppointmentsR}>
+        <span.mdc-icon-button__ripple>
+        <spam.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgAppointment}
+          
+<main.mdc-top-app-bar--prominent-fixed-adjust>
+  $maybe Entity _ (Book _ _ _ date time) <- book
+    #{show date} #{show time}
+    <p>
+      <button.mdc-button.mdc-button--raised type=button>
+        <span.mdc-button__ripple>
+        <span.mdc-button__focus-ring>
+        <span.mdc-button__label>_{MsgRescheduleAppointment}
+    <p>
+      <button.mdc-button.mdc-button--raised type=button>
+        <span.mdc-button__ripple>
+        <span.mdc-button__focus-ring>
+        <span.mdc-button__label>_{MsgCancelAppointment}

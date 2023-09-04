@@ -1,3 +1,11 @@
+RescheduleAppointment: Reprogrammer le rendez-vous
+CancelAppointment: Annuler le rendez-vous
+Appointment: Rendez-vous
+NoAppointmentsYet: Vous n'avez pas encore de rendez-vous
+LoginToSeeYourAppointments: Veuillez vous connecter pour voir vos rendez-vous
+MyAppointments: Mes rendez-vous
+Time: Heure
+Day: Jour
 NotYourAccount: Pas votre compte 
 Continue: Continuez
 Next: Suivante
