@@ -12,18 +12,24 @@ module Handler.Book
   , postBookRecordR
   ) where
 
-import Control.Monad (unless, forM, join, forM_)
+import Control.Monad (unless, forM)
 import Control.Monad.Trans.Reader (ReaderT)
+import Data.Either (isLeft)
+import Data.Maybe (maybeToList)
 import Data.Fixed (Centi)
 import qualified Data.List.Safe as LS (head)
-import Data.Text (unpack, intercalate, Text, pack)
-import Data.Time (Day, TimeOfDay, getCurrentTime, UTCTime (utctDay, utctDayTime), timeToTimeOfDay)
+import Data.Text (unpack, intercalate)
+import qualified Data.Text as T (null)
+import Data.Time
+    ( Day, TimeOfDay, getCurrentTime, UTCTime (utctDay, utctDayTime)
+    , timeToTimeOfDay
+    )
 import Data.Time.Format (formatTime, defaultTimeLocale)
 import Text.Hamlet (Html)
 import Text.Shakespeare.I18N (renderMessage, SomeMessage (SomeMessage))
 import Yesod.Core
-    ( Yesod(defaultLayout)
-    , getYesod, languages, whamlet, newIdent, setUltDestCurrent, MonadIO (liftIO)
+    ( Yesod(defaultLayout), getYesod, languages, whamlet, newIdent
+    , setUltDestCurrent, MonadIO (liftIO)
     )
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Auth (maybeAuth, Route (LoginR, LogoutR))
@@ -35,7 +41,7 @@ import Yesod.Form.Types
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
     )
 import Yesod.Form.Fields (timeField, dayField)
-import Yesod.Form.Functions (mreq, check, mopt, runFormPost, runFormGet, generateFormGet', generateFormPost)
+import Yesod.Form.Functions (mreq, check, mopt, runFormPost, runFormGet, generateFormPost)
 import Settings (widgetFile)
 
 import Yesod.Persist.Core (runDB)
@@ -53,6 +59,7 @@ import Foundation
     , Route
       ( BookR, BookOffersR, BookTimeR, BookStaffR, BookRecordR
       , AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR, AccountR
+      , HomeR, AppointmentsR, AppointmentR
       )
     , AdminR (AdmStaffPhotoR)
     , AppMessage
@@ -60,26 +67,23 @@ import Foundation
       , MsgServices, MsgSymbolHour, MsgSymbolMinute, MsgStaff
       , MsgNoPreference, MsgMaximumAvailability, MsgSelectStaff
       , MsgSelectAtLeastOneServicePlease, MsgOffer
-      , MsgAppointmentTime, MsgRole, MsgSignUpToContinue
+      , MsgAppointmentTime, MsgRole
       , MsgSignUp, MsgSignIn, MsgSelectedServices, MsgSelectedStaff
-      , MsgProceed, MsgReceptionTime, MsgOffers, MsgCustomerInformation
-      , MsgTellUsAboutYourself, MsgCustomer, MsgStepNofM, MsgNext
+      , MsgOffers, MsgCustomerInformation
+      , MsgCustomer, MsgStepNofM
       , MsgContinue, MsgNotYourAccount, MsgLogin, MsgDay, MsgTime
       )
     )
 
 import Model
-    ( Service(Service)
-    , Offer (Offer)
-    , Staff (Staff)
-    , Role (Role)
-    , User (User)
+    ( Service(Service), Offer (Offer), Staff (Staff), Role (Role)
+    , User (User), Book (Book)
     , EntityField
       ( StaffId, RoleId, ServiceId, OfferService, ServicePublished, BookId
-      , ServiceName, RoleStaff, RoleRating, RoleService, OfferId, BookOffer, BookUser, UserId, BookRole
-      ), Book (Book)
+      , ServiceName, RoleStaff, RoleRating, RoleService, OfferId, BookOffer
+      , BookUser, UserId, BookRole
+      )
     )
-import Data.Maybe (maybeToList)
 
 
 postBookRecordR :: Handler Html
@@ -87,10 +91,11 @@ postBookRecordR = do
     user <- maybeAuth
     offers <- runDB queryOffers
     roles <- runDB $ queryRoles offers    
-    ((fr,fw),et) <- runFormPost $ formBook user Nothing Nothing [] offers Nothing roles
+    ((fr,fw),et) <- runFormPost $ formBook Nothing Nothing [] offers Nothing roles
     case (fr,user) of
       (FormSuccess (items,role,day,time), Just (Entity uid _)) -> do
-          bids <- forM items $ \(_,Entity oid _) -> runDB $ insert $ Book uid oid ((\(_,Entity rid _) -> rid) <$> role) day time
+          bids <- forM items $ \(_,Entity oid _) -> runDB $
+              insert $ Book uid oid ((\(_,Entity rid _) -> rid) <$> role) day time
           books <- runDB $ select $ do
               x :& o :& r :& u <- from $ table @Book
                   `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
@@ -98,18 +103,8 @@ postBookRecordR = do
                   `innerJoin` table @User `on` (\(x :& _ :& _ :& u) -> x ^. BookUser ==. u ^. UserId)
               where_ $ x ^. BookId `in_` valList bids
               return (x,o,r,u)
-          defaultLayout [whamlet|
-<ul>
-  $forall (Entity _ (Book _ _ _ date time),Entity _ (Offer _ oname price _ _ _),role, Entity _ (User uname _ _ _ _)) <- books
-    $maybe Entity _ (Role _ _ rname _) <- role
-      <li>#{show date}T#{show time}, #{oname}, #{rname}, #{uname}
-    $nothing
-      <li>#{show date}T#{show time}, #{oname}, #{uname}
-<a.mdc-button.mdc-button--raised href=@{BookR} role=button>
-  <span.mdc-button__ripple>
-  <span.mdc-button__focus-ring>
-  <span.mdc-button__label>OK
-|]
+          defaultLayout $ do
+              $(widgetFile "book/end")
               
       (FormFailure msgs,_) -> defaultLayout [whamlet|
 <ul>
@@ -129,8 +124,13 @@ getBookTimeR = do
     case fr of
       FormSuccess (items,role,day,time) -> do
           idFormBack <- newIdent
-          let formBack = [whamlet|<form method=get action=@{BookTimeR} enctype=#{et} novalidate ##{idFormBack} hidden>^{fw}|]
-          (fw,et) <- generateFormPost $ formBook user (Just day) (Just time) items items role (maybeToList role)
+          let formBack = [whamlet|
+                                 <details>
+                                   <summary>Form back 3
+                                   <form method=get action=@{BookStaffR} enctype=#{et} ##{idFormBack} novalidate>
+                                     ^{fw}
+                                 |]
+          (fw,et) <- generateFormPost $ formBook (Just day) (Just time) items items role (maybeToList role)
           defaultLayout $ do
               idFormNext <- newIdent
               setTitleI MsgAppointmentTime
@@ -139,7 +139,7 @@ getBookTimeR = do
               
       FormFailure msgs -> do
           idFormBack <- newIdent
-          let formBack = [whamlet|<form method=get action=@{BookStaffR} enctype=#{et} novalidate ##{idFormBack} hidden>^{fw}|]
+          let formBack = [whamlet|<form method=get action=@{BookOffersR} enctype=#{et} novalidate ##{idFormBack} hidden>^{fw}|]
           idFormNext <- newIdent
           defaultLayout $ do
               setTitleI MsgStaff
@@ -169,10 +169,15 @@ getBookStaffR = do
     case fr of
       FormSuccess (items,role) -> do
           idFormBack <- newIdent
-          let formBack = [whamlet|<form method=get action=@{BookOffersR} enctype=#{et} novalidate ##{idFormBack} hidden>^{fw}|]
+          let formBack = [whamlet|
+                                 <details>
+                                   <summary>Form back 2
+                                   <form method=get action=@{BookOffersR} enctype=#{et} ##{idFormBack} novalidate>
+                                     ^{fw}
+                                 |]
           idFormNext <- newIdent
           now <- liftIO getCurrentTime
-          (fw,et) <- generateFormGet' $ formTime
+          ((fr,fw),et) <- runFormGet $ formTime
               (Just $ utctDay now)
               (Just $ timeToTimeOfDay $ utctDayTime now)
               items items
@@ -211,7 +216,12 @@ getBookOffersR = do
     case fr of
       FormSuccess items -> do
           idFormBack <- newIdent
-          let formBack = [whamlet|<form method=get action=@{BookR} enctype=#{et} ##{idFormBack} novalidate hidden>^{fw}|]
+          let formBack = [whamlet|
+                                 <details>
+                                   <summary>Form back 1
+                                   <form method=get action=@{BookR} enctype=#{et} ##{idFormBack} novalidate>
+                                     ^{fw}
+                                 |]
           idFormNext <- newIdent
           roles <- runDB $ queryRoles items
           ((fr,fw),et) <- runFormGet $ formStaff items items roles
@@ -229,16 +239,15 @@ getBookR = do
     muid <- maybeAuth
     offers <- runDB queryOffers
     ((fr,fw),et) <- runFormGet $ formOffers [] offers
-    items <- case fr of
-      FormSuccess items -> return items
-      _ -> return []
+    let items = case fr of
+          FormSuccess xs -> xs
+          _ -> []
     defaultLayout $ do
         setTitleI MsgOffers
         $(widgetFile "book/start")
 
 
-formBook :: Maybe (Entity User)
-         -> Maybe Day
+formBook :: Maybe Day
          -> Maybe TimeOfDay
          -> [(Entity Service, Entity Offer)]
          -> [(Entity Service, Entity Offer)]
@@ -251,7 +260,7 @@ formBook :: Maybe (Entity User)
                                        )
                                   , Widget
                                   )
-formBook user day time items offers role roles extra = do
+formBook day time items offers role roles extra = do
     
     (offersR,offersV) <- mreq (check notNull (offersField offers)) FieldSettings
         { fsLabel = SomeMessage MsgOffer
@@ -276,10 +285,6 @@ formBook user day time items offers role roles extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = []
         } time
-
-    let uid = case user of
-          Just (Entity userid _) -> FormSuccess userid
-          Nothing -> FormFailure ["User undeined"]
     
     let r = (,,,) <$> offersR <*> roleR <*> dayR <*> timeR
     let w = [whamlet|
@@ -322,9 +327,10 @@ $forall v <- [dayV,timeV]
 
       rolesField :: [(Entity Staff, Entity Role)]
                  -> Field Handler (Entity Staff, Entity Role)
-      rolesField options = Field
+      rolesField roles = Field
           { fieldParse = \xs _ -> return $ case xs of
-              (x:_) -> (Right . LS.head . filter (\(_, Entity rid _) -> rid == toSqlKey (read $ unpack x))) options
+              (x:_) | T.null x -> Right Nothing
+                    | otherwise -> (Right . LS.head . filter (\(_, Entity rid _) -> rid == toSqlKey (read $ unpack x))) roles
               _ -> Right Nothing
           , fieldView = \theId name attrs val _isReq -> do
                 let isChecked (Left _) _ = False
@@ -401,9 +407,9 @@ $forall v <- [dayV,timeV]
 
       offersField :: [(Entity Service, Entity Offer)]
                   -> Field Handler [(Entity Service, Entity Offer)]
-      offersField options = Field
+      offersField items = Field
           { fieldParse = \xs _ -> return $
-            (Right . Just . filter (\(_, Entity oid _) -> oid `elem` (toSqlKey . read . unpack <$> xs))) options
+            (Right . Just . filter (\(_, Entity oid _) -> oid `elem` (toSqlKey . read . unpack <$> xs))) items
           , fieldView = \theId name attrs vals _isReq -> do
                 app <- getYesod
                 langs <- languages
@@ -415,9 +421,10 @@ $forall v <- [dayV,timeV]
 
       rolesField :: [(Entity Staff, Entity Role)]
                  -> Field Handler (Entity Staff, Entity Role)
-      rolesField options = Field
+      rolesField roles = Field
           { fieldParse = \xs _ -> return $ case xs of
-              (x:_) -> (Right . LS.head . filter (\(_, Entity rid _) -> rid == toSqlKey (read $ unpack x))) options
+              (x:_) | T.null x -> Right Nothing
+                    | otherwise -> (Right . LS.head . filter (\(_, Entity rid _) -> rid == toSqlKey (read $ unpack x))) roles
               _ -> Right Nothing
           , fieldView = \theId name attrs val _isReq -> do
                 let isChecked (Left _) _ = False
@@ -476,10 +483,11 @@ formStaff items offers roles extra = do
           }
 
       rolesField :: [(Entity Staff, Entity Role)]
-                   -> Field Handler (Entity Staff, Entity Role)
-      rolesField items = Field
+                 -> Field Handler (Entity Staff, Entity Role)
+      rolesField roles = Field
           { fieldParse = \xs _ -> return $ case xs of
-              (x:_) -> (Right . LS.head . filter (\(_, Entity rid _) -> rid == toSqlKey (read $ unpack x))) items
+              (x:_) | T.null x -> Right Nothing
+                    | otherwise -> (Right . LS.head . filter (\(_, Entity rid _) -> rid == toSqlKey (read $ unpack x))) roles
               _ -> Right Nothing
           , fieldView = \theId name attrs val _isReq -> do
                 let isChecked (Left _) _ = False
@@ -522,7 +530,7 @@ $maybe errs <- fvErrors v
         _ -> Right xs
 
       offersField :: [(Entity Service, Entity Offer)]
-                   -> Field Handler [(Entity Service, Entity Offer)]
+                  -> Field Handler [(Entity Service, Entity Offer)]
       offersField items = Field
           { fieldParse = \xs _ -> return $
             (Right . Just . filter (\(_, Entity oid _) -> oid `elem` (toSqlKey . read . unpack <$> xs))) items

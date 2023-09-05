@@ -1,6 +1,6 @@
 <ul.mdc-list role=listbox ##{theId} tabindex=-1 data-mdc-auto-init=MDCList>
-  <button.mdc-list-item type=submit
-    .mdc-list-item--with-leading-image.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon>
+  <li.mdc-list-item.mdc-list-item--with-leading-image
+    .mdc-list-item--with-three-lines.mdc-list-item--with-trailing-radio>
     <span.mdc-list-item__ripple>
     <span.mdc-list-item__start style="text-align:center;color:var(--mdc-theme-primary)">
       <i.material-symbols-outlined style="font-size:3rem">diversity_2
@@ -11,25 +11,22 @@
         _{MsgMaximumAvailability}
       <div.mdc-list-item__secondary-text>
     <span.mdc-list-item__end>
-      <i.material-symbols-outlined>arrow_forward_ios
+      <div.mdc-radio tabindex=-1 data-mdc-auto-init=MDCRadio>
+        <input.mdc-radio__native-control type=radio name=#{name} value *{attrs} :isLeft val:checked>
+        <div.mdc-radio__background>
+          <div.mdc-radio__outer-circle>
+          <div.mdc-radio__inner-circle>
+        <div.mdc-radio__ripple>
+        <div.mdc-radio__focus-ring>
   <div.mdc-list-divider role=separator>
   $forall e@(Entity sid (Staff sname _ _ _ _ _), Entity rid (Role _ _ rname rating)) <- roles
     $with checked <- isChecked val e
       <li.mdc-list-item.mdc-list-item--with-leading-image
-        .mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon
+        .mdc-list-item--with-three-lines.mdc-list-item--with-trailing-radio
         :checked:aria-checked=true
-        :not checked:aria-checked=false
-        onclick="this.querySelector('input.mdc-radio__native-control').dispatchEvent(new Event('change'))">
+        :not checked:aria-checked=false>
         <span.mdc-list-item__ripple>
         <span.mdc-list-item__start>
-          <div.mdc-radio tabindex=-1 data-mdc-auto-init=MDCRadio style="display:none">
-            <input.mdc-radio__native-control type=radio name=#{name} value=#{fromSqlKey rid} *{attrs} :checked:checked
-              onchange="this.form.submit()">
-            <div.mdc-radio__background>
-              <div.mdc-radio__outer-circle>
-              <div.mdc-radio__inner-circle>
-            <div.mdc-radio__ripple>
-            <div.mdc-radio__focus-ring>
           <img src=@{AdminR $ AdmStaffPhotoR sid} width=56 height=56 alt=_{MsgPhoto} loading=lazy>
         <span.mdc-list-item__content>
           <div.mdc-list-item__primary-text>
@@ -43,5 +40,11 @@
               $forall _ <- range 1 (5 - rating)
                 &starf;
         <span.mdc-list-item__end>
-          <i.material-symbols-outlined>arrow_forward_ios
+          <div.mdc-radio tabindex=-1 data-mdc-auto-init=MDCRadio>
+            <input.mdc-radio__native-control type=radio name=#{name} value=#{fromSqlKey rid} *{attrs} :checked:checked>
+            <div.mdc-radio__background>
+              <div.mdc-radio__outer-circle>
+              <div.mdc-radio__inner-circle>
+            <div.mdc-radio__ripple>
+            <div.mdc-radio__focus-ring>
       <div.mdc-list-divider role=separator>

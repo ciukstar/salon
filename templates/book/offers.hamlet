@@ -25,3 +25,10 @@
 
   <form method=get action=@{BookStaffR} enctype=#{et} ##{idFormNext} novalidate>
     ^{fw}
+
+<footer>
+  <button.mdc-button.mdc-button--raised.mdc-button--icon-trailing type=submit form=#{idFormNext}>
+    <span.mdc-button__ripple>
+    <span.mdc-button__focus-ring>
+    <span.mdc-button__label>_{MsgContinue}
+    <i.mdc-button__icon.material-symbols-outlined>arrow_forward_ios

@@ -4,6 +4,7 @@ header.mdc-top-app-bar
     transition: height 0.3s ease-out
 
 main
+  margin-bottom: 4rem
   ##{idFormNext}
     margin: 1rem
     display: flex
@@ -18,7 +19,14 @@ main
         min-height: 2rem
         border: none
         border-bottom: 2px solid var(--mdc-theme-primary)
-    div.form-actions
-      display: flex
-      flex-direction: row
-      justify-content: flex-end
+
+#footerActions
+  position: fixed
+  bottom: 0
+  box-sizing: border-box
+  width: 100%
+  padding: 1rem
+  display: flex
+  flex-direction: row
+  justify-content: flex-end
+  background-color: var(--mdc-theme-secondary)

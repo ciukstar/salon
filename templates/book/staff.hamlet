@@ -24,10 +24,11 @@
 
   <form method=get action=@{BookTimeR} enctype=#{et} novalidate ##{idFormNext}>
     ^{fw}
-    <div.form-actions>
-      <button.mdc-button.mdc-button--raised.mdc-button--icon-trailing type=submit>
-        <span.mdc-button__ripple>
-        <span.mdc-button__focus-ring>
-        <span.mdc-button__label>_{MsgContinue}
-        <i.mdc-button__icon.material-symbols-outlined>arrow_forward_ios
+
+<footer #footerActions>
+  <button.mdc-button.mdc-button--raised.mdc-button--icon-trailing type=submit form=#{idFormNext}>
+    <span.mdc-button__ripple>
+    <span.mdc-button__focus-ring>
+    <span.mdc-button__label>_{MsgContinue}
+    <i.mdc-button__icon.material-symbols-outlined>arrow_forward_ios
     

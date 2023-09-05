@@ -8,12 +8,8 @@ document.getElementById(#{theId}).MDCList.selectedIndex = document.getElementByI
 ).flat()[0];
 
 document.getElementById(#{theId}).MDCList.listen('MDCList:selectionChange',function (e) {
-  console.log(e);
   this.MDCList.selectedIndex = e.detail.changedIndices[0];
   document.getElementById(#{theId}).MDCList.listElements[this.MDCList.selectedIndex].querySelector(
     'input.mdc-radio__native-control'
   ).checked = true;
-  document.getElementById(#{theId}).MDCList.listElements[this.MDCList.selectedIndex].querySelector(
-    'input.mdc-radio__native-control'
-  ).dispatchEvent(new Event('change'));
 });

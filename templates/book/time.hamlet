@@ -69,4 +69,11 @@
   <form method=post action=@{BookRecordR} enctype=#{et} ##{idFormNext} novalidate>
     ^{fw}
 
+<footer #footerActions>
+  <button.mdc-button.mdc-button--raised.mdc-button--icon-leading type=submit form=#{idFormNext}>
+    <span.mdc-button__ripple>
+    <span.mdc-button__focus-ring>
+    <i.mdc-button__icon.material-symbols-outlined>download
+    <span.mdc-button__label>_{MsgBook}
+
 
