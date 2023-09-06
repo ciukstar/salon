@@ -1,3 +1,4 @@
+AlreadyHaveAnAccount: Avoir déjà un compte
 ContactUs: Contactez-nous
 LoginToSeeYourProfile: Veuillez vous connecter pour voir votre profil
 End: La fin

@@ -1,3 +1,4 @@
+AlreadyHaveAnAccount: Уже есть учетная запись
 ContactUs: Свяжитесь с нами
 LoginToSeeYourProfile: Пожалуйста, войдите, чтобы увидеть свой профиль
 End: Конец

@@ -53,7 +53,7 @@ import Foundation
     )
     
 import Model
-    (BrandId
+    ( BrandId
     , Brand
       (Brand, brandName, brandStrapline, brandMore, brandMark, brandIco
       , brandMarkMime, brandIcoMime

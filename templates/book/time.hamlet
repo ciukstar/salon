@@ -13,24 +13,27 @@
           _{MsgCustomerInformation}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
-      <a.mdc-top-app-bar__action-item.mdc-icon-button href=# role=button>
-        <span.mdc-icon-button__ripple>
-        <span.mdc-icon-button__focus-ring>
-        <i.material-symbols-outlined>search
+      $maybe Entity uid _ <- user
+        <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{ProfileR} role=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" alt=_{MsgPhoto}
+            onerror="this.src = '@{PhotoPlaceholderR}'">
+      $nothing
+        <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{AuthR LoginR} role=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>login
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
 
   ^{formBack}
 
   $maybe Entity _ (User name _ _ fname email) <- user
-    <div style="margin:1rem;display:flex;flex-direction:column">
-      <button.mdc-button.mdc-button--raised type=submit form=#{idFormNext}>
-        <span.mdc-button__ripple>
-        <span.mdc-button__focus-ring>
-        <span.mdc-button__label>_{MsgBook}
 
     <details.mdc-list open>
-      <summary.mdc-list-item--with-leading-icon.mdc-list-item.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+      <summary.mdc-list-item--with-leading-icon.mdc-list-item
+        .mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
         <span.mdc-list-item__ripple>
         <span.mdc-list-item__start>
           <i.material-symbols-outlined>info
@@ -60,7 +63,7 @@
         <span.mdc-button__label>_{MsgSignUp}
       <div style="display:inherit;flex-direction:inherit">
         <div style="text-align:center">
-          <small>Already have an account?
+          <small>_{MsgAlreadyHaveAnAccount}?
         <a.mdc-button.mdc-button--outlined href=@{AuthR LoginR} role=button>
           <span.mdc-button__ripple>
           <span.mdc-button__focus-ring>

@@ -1,3 +1,4 @@
+AlreadyHaveAnAccount: Aveți deja un cont
 ContactUs: Contactaţi-ne
 LoginToSeeYourProfile: Vă rugăm să vă autentificați pentru a vă vedea profilul
 End: Sfârșit

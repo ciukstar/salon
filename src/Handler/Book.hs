@@ -70,7 +70,7 @@ import Foundation
       , MsgRole, MsgSignUp, MsgSignIn, MsgSelectedServices
       , MsgSelectedStaff, MsgOffers, MsgCustomerInformation
       , MsgCustomer, MsgStepNofM, MsgContinue, MsgNotYourAccount
-      , MsgLogin, MsgDay, MsgTime , MsgEnd
+      , MsgLogin, MsgDay, MsgTime , MsgEnd, MsgAlreadyHaveAnAccount
       )
     )
 
@@ -87,6 +87,7 @@ import Model
 
 postBookRecordR :: Handler Html
 postBookRecordR = do
+    setUltDestCurrent
     user <- maybeAuth
     offers <- runDB queryOffers
     roles <- runDB $ queryRoles offers    
@@ -128,6 +129,7 @@ postBookRecordR = do
 
 getBookTimeR :: Handler Html
 getBookTimeR = do
+    setUltDestCurrent
     user <- maybeAuth
     offers <- runDB queryOffers
     roles <- runDB $ queryRoles offers
@@ -146,7 +148,6 @@ getBookTimeR = do
           defaultLayout $ do
               idFormNext <- newIdent
               setTitleI MsgAppointmentTime
-              setUltDestCurrent
               $(widgetFile "book/time")
               
       FormFailure errs -> do
@@ -177,6 +178,8 @@ getBookTimeR = do
     
 getBookStaffR :: Handler Html
 getBookStaffR = do
+    setUltDestCurrent
+    user <- maybeAuth
     offers <- runDB queryOffers
     roles <- runDB $ queryRoles offers
     ((fr,fw),et) <- runFormGet $ formStaff [] offers roles
@@ -227,6 +230,7 @@ getBookStaffR = do
 
 getBookOffersR :: Handler Html
 getBookOffersR = do
+    setUltDestCurrent
     user <- maybeAuth
     offers <- runDB queryOffers
     ((fr,fw),et) <- runFormGet $ formOffers [] offers
@@ -481,8 +485,16 @@ formStaff items offers roles extra = do
 #{extra}
 ^{fvInput rolesV}
 <p>
-<details>
-  <summary>_{MsgSelectedServices}
+<details.mdc-list data-mdc-auto-init=MDCList>
+  <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+    <span.mdc-list-item__ripple>
+    <span.mdc-list-item__start>
+      <i.material-symbols-outlined>info
+    <span.mdc-list-item__content>
+      <div.mdc-list-item__primary-text>
+        _{MsgSelectedServices}
+    <span.mdc-list-item__end>
+      <i.material-symbols-outlined>expand_more
   ^{fvInput offersV}
 |]
     return (r,w)
