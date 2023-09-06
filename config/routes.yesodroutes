@@ -17,8 +17,9 @@
 /info/services/+Services ServiceR	   GET
 /services   	 	 ServicesR	   GET
 
+/profile               ProfileR      GET
 /account/#UserId/photo AccountPhotoR GET
-/account               AccountR GET POST
+/account               AccountR      GET POST
 
 / HomeR GET
 

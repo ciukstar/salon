@@ -3,26 +3,18 @@
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
       <button.mdc-top-app-bar__navigation-icon.mdc-icon-button #btnMainMenu>
         <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>menu
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
         _{MsgAboutUs}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
-      $maybe Entity uid _ <- muid
-        <button.mdc-top-app-bar__action-item.mdc-icon-button type=button #buttonProfile>
+      $maybe Entity uid _ <- user
+        <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{ProfileR} role=button>
           <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
           <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" alt=_{MsgPhoto}
             onerror="this.src = '@{PhotoPlaceholderR}'">
-          
-          <div.mdc-menu-surface--anchor>
-            <div.mdc-menu.mdc-menu-surface data-mdc-auto-init=MDCMenuSurface>
-              <ul.mdc-deprecated-list.mdc-deprecated-list--icon-list
-                role=menu aria-hidden=true aria-orientation=vertical tabindex=-1>
-
-                <a.mdc-deprecated-list-item role=menuitem href=@{AuthR LogoutR}>
-                  <span.mdc-deprecated-list-item__ripple>
-                  <i.material-symbols-outlined style="margin-right:1rem">logout
-                  <span.mdc-deprecated-list-item__text>_{MsgLogout}
       $nothing
         <a.mdc-top-app-bar__action-item.mdc-icon-button role=button
           href=@{AuthR LoginR}>
@@ -33,3 +25,13 @@
 <main.mdc-top-app-bar--prominent-fixed-adjust>
   $maybe Entity _ (Contents _ content) <- content
     #{preEscapedToMarkup $ unTextarea content}
+
+$forall (_,msg) <- msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
+    <div.mdc-snackbar__surface role=status aria-relevant=additions>
+      <div.mdc-snackbar__label aria-atomic=false>
+        #{msg}
+      <div.mdc-snackbar__actions aria-atomic=true>
+        <button.mdc-snackbar__dismiss.mdc-icon-button>
+          <span.mdc-icon-button__ripple>
+          <i.material-symbols-outlined>close

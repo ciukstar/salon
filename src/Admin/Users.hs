@@ -22,7 +22,7 @@ import Data.Text (Text, intercalate)
 import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import Text.Hamlet (Html)
 import Yesod.Auth.Util.PasswordStore (makePassword)
-import Yesod.Auth (maybeAuth, Route (LoginR, LogoutR))
+import Yesod.Auth (maybeAuth, Route (LoginR))
 import Yesod.Auth.HashDB (setPassword)
 import Yesod.Core
     ( Yesod(defaultLayout), setTitleI, setUltDestCurrent
@@ -58,10 +58,10 @@ import Database.Esqueleto.Experimental
 
 import Foundation
     ( Handler, Widget
-    , Route (AuthR, AdminR, PhotoPlaceholderR, AccountPhotoR, AdminR, StaticR)
+    , Route (ProfileR, AuthR, AdminR, PhotoPlaceholderR, AccountPhotoR, AdminR, StaticR)
     , AdminR (UsersSearchR, UserCreateFormR, UsersR, UserR, UserEditFormR, UserDeleteR, UserPwdResetR)
     , AppMessage
-      ( MsgUsers, MsgNoUsersYet, MsgLogout, MsgPhoto, MsgSave
+      ( MsgUsers, MsgNoUsersYet, MsgPhoto, MsgSave
       , MsgUser, MsgCancel, MsgUsername, MsgPassword, MsgFullName, MsgEmail
       , MsgRecordAdded, MsgAlreadyExists, MsgYesDelete, MsgDeleteAreYouSure
       , MsgPleaseConfirm, MsgRecordDeleted, MsgRecordEdited, MsgResetPassword
@@ -292,7 +292,7 @@ getUserCreateFormR = do
 
 getUsersR :: Handler Html
 getUsersR = do
-    muid <- maybeAuth
+    user <- maybeAuth
     users <- runDB $ select $ do
         x <- from $ table @User
         orderBy [desc (x ^. UserId)]

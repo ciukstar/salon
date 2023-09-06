@@ -30,6 +30,10 @@ import Data.FileEmbed (embedFile)
 import qualified Data.List.Safe as LS (last)
 import Text.Hamlet (Html)
 import Text.Shakespeare.I18N (renderMessage)
+import Data.Time.Clock (DiffTime)
+import Data.Time.Format (formatTime, defaultTimeLocale, parseTimeM)
+
+import Yesod.Auth (Route (LoginR), maybeAuth)
 import Yesod.Core
     ( Yesod(defaultLayout), setTitleI, setUltDestCurrent
     , FileInfo (fileContentType), SomeMessage (SomeMessage)
@@ -37,11 +41,6 @@ import Yesod.Core
     , TypedContent (TypedContent), ToContent (toContent), typeSvg
     , whamlet, preEscapedToMarkup, newIdent, getRequest
     , YesodRequest (reqGetParams), getYesod, languages
-    )
-import Settings (widgetFile)
-import Settings.StaticFiles
-    ( img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg
-    , img_photo_FILL0_wght400_GRAD0_opsz48_svg
     )
     
 import Yesod.Form
@@ -53,18 +52,25 @@ import Yesod.Form
     , generateFormPost, runFormPost, unTextarea, withRadioField
     , OptionList, optionsPairs, searchField, Textarea (Textarea), check
     )
-
-import Yesod.Auth (Route (LoginR, LogoutR), maybeAuth)
+import Settings (widgetFile)
+import Settings.StaticFiles
+    ( img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg
+    , img_photo_FILL0_wght400_GRAD0_opsz48_svg
+    )
+    
 import Foundation
     ( Handler, Widget
-    , Route (StaticR, AuthR, PhotoPlaceholderR, AdminR, AccountPhotoR, ServiceThumbnailR)
+    , Route
+      ( ProfileR, StaticR, AuthR, PhotoPlaceholderR, AdminR, AccountPhotoR
+      , ServiceThumbnailR
+      )
     , AdminR
       ( AdmServiceCreateFormR, AdmServiceEditFormR, AdmServicesR, AdmServiceR
       , AdmServiceDeleteR, AdmServiceImageR, AdmOfferCreateR, AdmOfferR
       , AdmPriceR, AdmPriceEditR, AdmPriceDeleteR, AdmServicesSearchR
       )
     , AppMessage
-      ( MsgServices, MsgPhoto, MsgLogout, MsgTheName
+      ( MsgServices, MsgPhoto, MsgTheName
       , MsgPrice, MsgDescription, MsgRecordEdited
       , MsgService, MsgSave, MsgCancel, MsgRecordAdded, MsgImage
       , MsgSubservices, MsgAddService, MsgAddSubservice, MsgNoServicesYet
@@ -109,8 +115,6 @@ import Database.Esqueleto.Experimental
     , (^.), (==.), (%), (++.), (||.)
     , isNothing, select, orderBy, asc, upper_, like, not_, exists
     )
-import Data.Time.Clock (DiffTime)
-import Data.Time.Format (formatTime, defaultTimeLocale, parseTimeM)
 
 
 getAdmServicesSearchR :: Handler Html
@@ -416,7 +420,7 @@ getAdmServicesR (Services sids) = do
     scrollY <- fromMaybe "0" <$> runInputGet (iopt textField "scrollY")
     mpid <- (toSqlKey <$>) <$> runInputGet (iopt intField "pid")
     msid <- (toSqlKey <$>) <$> runInputGet (iopt intField "sid")
-    muid <- maybeAuth
+    user <- maybeAuth
     service <- case sids of
       [] -> return Nothing
       (last -> sid) -> runDB $ selectOne $ do

@@ -1,3 +1,7 @@
+ContactUs: Contactaţi-ne
+LoginToSeeYourProfile: Vă rugăm să vă autentificați pentru a vă vedea profilul
+End: Sfârșit
+UserProfile: Profilul utilizatorului
 RescheduleAppointment: Reprogramează întâlnirea
 CancelAppointment: Anulează programarea
 Appointment: Programare

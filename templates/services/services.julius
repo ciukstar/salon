@@ -2,6 +2,10 @@
 window.scroll(0,#{fromMaybe "0" scrollY});
 window.mdc.autoInit();
 
+document.getElementById('btnMainMenu').addEventListener('click',function (e) {
+  document.getElementById('asideMainMenu').MDCDrawer.open = true;
+});
+
 Array.from (
   document.querySelectorAll('span.numeric-format')
 ).forEach(function (x) {
@@ -34,30 +38,4 @@ Array.from(
 
 Array.from(
   document.querySelectorAll('aside.mdc-snackbar')
-).map(x => x.MDCSnackbar).forEach(function (x) {
-  x.open();
-});
-
-document.getElementById('btnMainMenu').addEventListener('click',function (e) {
-  document.getElementById('asideMainMenu').MDCDrawer.open = true;
-});
-
-const menuElem = document.querySelector('div.mdc-menu.mdc-menu-surface');
-
-if (!!menuElem) {
-  const menu = menuElem.MDCMenuSurface;
-  [document.getElementById('buttonProfile')].filter(x => !!x).forEach(function (x) {    
-    x.addEventListener('click',function (e) {
-      
-      if (menu.isOpen()) {
-        menu.close(true);
-      } else {
-        menu.open();
-      }
-      
-      document.body.addEventListener(
-        'click', e => e.stopPropagation(), {capture: true, once: true}
-      );
-    });
-  })
-}
+).map(x => x.MDCSnackbar).forEach(function (x) { x.open(); });

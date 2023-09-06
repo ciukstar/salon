@@ -30,9 +30,22 @@
           
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
-  <p>
-    _{MsgLoginToSeeYourAppointments}
+  <figure>
+    <i.material-symbols-outlined>key
+    <figcaption>
+      _{MsgLoginToSeeYourAppointments}.
+      
   <a.mdc-button.mdc-button--raised href=@{AuthR LoginR} role=button>
     <span.mdc-button__ripple>
     <span.mdc-button__focus-ring>
     <span.mdc-button__label>_{MsgLogin}
+
+$forall (_,msg) <- msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
+    <div.mdc-snackbar__surface>
+      <div.mdc-snackbar__label>#{msg}
+      <div.mdc-snackbar__actions>
+        <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>close

@@ -21,7 +21,7 @@ import Yesod.Core
     )
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Form.Fields (Textarea(unTextarea), textareaField)
-import Yesod.Auth (Route (LoginR, LogoutR), maybeAuth)
+import Yesod.Auth (Route (LoginR), maybeAuth)
 import Settings (widgetFile)
 import Yesod.Form.Types
     ( MForm, FormResult (FormSuccess), FieldView (fvInput, fvErrors)
@@ -40,10 +40,10 @@ import Database.Esqueleto.Experimental
     
 import Foundation
     ( Handler, Widget
-    , Route (AdminR, AuthR, PhotoPlaceholderR, AccountPhotoR)
+    , Route (AdminR, AuthR, PhotoPlaceholderR, AccountPhotoR, ProfileR)
     , AdminR (AdmAboutCreateR, AdmAboutR, AdmAboutEditR, AdmAboutDeleteR)
     , AppMessage
-      ( MsgAboutUs, MsgLogout, MsgPhoto, MsgNoContentYet
+      ( MsgAboutUs, MsgPhoto, MsgNoContentYet
       , MsgContent, MsgCancel, MsgSave, MsgRecordAdded, MsgAlreadyExists
       , MsgRecordEdited, MsgYesDelete, MsgPleaseConfirm, MsgDeleteAreYouSure
       , MsgRecordDeleted
@@ -156,7 +156,7 @@ formAbout c extra = do
 
 getAdmAboutR :: Handler Html
 getAdmAboutR = do
-    muid <- maybeAuth
+    user <- maybeAuth
     contents <- runDB $ selectOne $ do
         x <- from $ table @Contents
         where_ $ x ^. ContentsSection ==. val section

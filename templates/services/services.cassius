@@ -5,4 +5,4 @@ header.mdc-top-app-bar
 
 main
   .mdc-list-item--activated .mdc-list-item__primary-text
-    color: rgba(98, 0, 238, 0.87)
+    color: var(--theme-accent)

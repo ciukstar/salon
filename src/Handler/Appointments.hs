@@ -9,7 +9,7 @@ module Handler.Appointments
 import Text.Hamlet (Html)
 
 import Yesod.Auth (maybeAuth, Route (LoginR, LogoutR))
-import Yesod.Core (Yesod(defaultLayout))
+import Yesod.Core (Yesod(defaultLayout), getMessages)
 import Yesod.Core.Handler (setUltDestCurrent)
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Persist (Entity (Entity), YesodPersist(runDB))
@@ -22,7 +22,7 @@ import Database.Esqueleto.Experimental
 
 import Foundation
     ( Handler
-    , Route (AppointmentsR, AppointmentR, BookR, AuthR, PhotoPlaceholderR, AccountPhotoR)
+    , Route (ProfileR, AppointmentsR, AppointmentR, BookR, AuthR, PhotoPlaceholderR, AccountPhotoR)
     , AppMessage
       ( MsgMyAppointments, MsgLogin, MsgLogout, MsgPhoto
       , MsgLoginToSeeYourAppointments, MsgNoAppointmentsYet
@@ -55,12 +55,12 @@ getAppointmentR bid = do
 getAppointmentsR :: Handler Html
 getAppointmentsR = do
     user <- maybeAuth
+    setUltDestCurrent
+    msgs <- getMessages
     case user of
-      Nothing -> do
-          setUltDestCurrent
-          defaultLayout $ do
-              setTitleI MsgMyAppointments
-              $(widgetFile "appointments/login")
+      Nothing -> defaultLayout $ do
+          setTitleI MsgMyAppointments
+          $(widgetFile "appointments/login")
       Just (Entity uid _) -> do
           books <- runDB $ select $ do
               x <- from $ table @Book

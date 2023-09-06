@@ -1,3 +1,7 @@
+ContactUs: Contactez-nous
+LoginToSeeYourProfile: Veuillez vous connecter pour voir votre profil
+End: La fin
+UserProfile: Profil de l'utilisateur
 RescheduleAppointment: Reprogrammer le rendez-vous
 CancelAppointment: Annuler le rendez-vous
 Appointment: Rendez-vous

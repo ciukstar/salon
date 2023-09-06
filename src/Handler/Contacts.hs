@@ -5,8 +5,8 @@
 module Handler.Contacts (getContactR) where
 
 import Text.Hamlet (Html)
-import Yesod.Auth (maybeAuth, Route (LoginR, LogoutR))
-import Yesod.Core (Yesod(defaultLayout), preEscapedToMarkup, setUltDestCurrent)
+import Yesod.Auth (maybeAuth, Route (LoginR))
+import Yesod.Core (Yesod(defaultLayout), preEscapedToMarkup, setUltDestCurrent, getMessages)
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Form.Fields (unTextarea)
 import Settings (widgetFile)
@@ -21,8 +21,8 @@ import Database.Esqueleto.Experimental
 
 import Foundation
     ( Handler
-    , Route (AuthR, PhotoPlaceholderR, AccountPhotoR)
-    , AppMessage (MsgContact, MsgPhoto, MsgLogout)
+    , Route (ProfileR, AuthR, PhotoPlaceholderR, AccountPhotoR)
+    , AppMessage (MsgContactUs, MsgContact, MsgPhoto)
     )
     
 import Model (Contents(Contents), EntityField (ContentsSection))
@@ -34,8 +34,9 @@ getContactR = do
         x <- from $ table @Contents
         where_ $ x ^. ContentsSection ==. val section
         return x
-    muid <- maybeAuth
+    user <- maybeAuth
     setUltDestCurrent
+    msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgContact
         $(widgetFile "contacts/contact")

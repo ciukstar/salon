@@ -30,3 +30,6 @@ main
   flex-direction: row
   justify-content: flex-end
   background-color: var(--mdc-theme-secondary)
+
+aside.mdc-snackbar
+  bottom: calc(4rem + 8px)

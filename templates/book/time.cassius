@@ -4,6 +4,7 @@ header.mdc-top-app-bar
     transition: height 0.3s ease-out
     
 main
+  margin-bottom: 4rem
   #divActions
     margin: 1rem
     display: flex
@@ -20,4 +21,6 @@ main
   flex-direction: row
   justify-content: flex-end
   background-color: var(--mdc-theme-secondary)
-    
+
+aside.mdc-snackbar
+  bottom: calc(4rem + 8px)

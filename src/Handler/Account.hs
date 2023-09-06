@@ -7,6 +7,7 @@ module Handler.Account
   ( getAccountR
   , postAccountR
   , getAccountPhotoR
+  , getProfileR
   ) where
 
 import Data.Text (Text)
@@ -36,16 +37,17 @@ import Yesod.Form
     ( generateFormPost, mreq, textField, mopt
     , fileField, emailField, runFormPost, checkBoxField
     )
-import Yesod.Auth (Route (LoginR))
+import Yesod.Auth (Route (LoginR, LogoutR), maybeAuth)
 
 import Foundation
     ( Handler, Widget
-    , Route (HomeR, AccountR, PhotoPlaceholderR, AuthR)
+    , Route (AccountPhotoR, HomeR, AccountR, PhotoPlaceholderR, AuthR)
     , AppMessage
       ( MsgAccount, MsgCancel, MsgUsername, MsgPassword
       , MsgPhoto, MsgFullName, MsgEmail, MsgSignUp
       , MsgConfirmPassword, MsgYouMustEnterTwoValues
       , MsgPasswordsDoNotMatch, MsgRegistration, MsgAdministrator
+      , MsgUserProfile, MsgLogout, MsgLogin, MsgLoginToSeeYourProfile
       )
     )
 
@@ -64,6 +66,15 @@ import Database.Esqueleto.Experimental
     (selectOne, from, table, where_
     , (^.), (==.), val
     )
+
+
+getProfileR :: Handler Html
+getProfileR = do
+    user <- maybeAuth
+    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupSession ultDestKey
+    defaultLayout $ do
+        setTitleI MsgUserProfile
+        $(widgetFile "profile")
 
 
 getAccountPhotoR :: UserId -> Handler TypedContent

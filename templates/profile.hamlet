@@ -1,0 +1,42 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=#{ult} role=button>
+        <span.mdc-icon-button__ripple>
+        <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgUserProfile}
+
+<main.mdc-top-app-bar--fixed-adjust>
+
+  $maybe Entity uid (User uname _ _ fname email) <- user
+    <figure>
+      <img src=@{AccountPhotoR uid} height=56 width=56 style="clip-path:circle(50%)" alt=_{MsgPhoto} 
+        onerror="this.src = '@{PhotoPlaceholderR}'">
+      <figcaption>
+        #{uname}
+    $maybe fname <- fname
+      <p>
+        <span>#{fname}
+        $maybe email <- email
+          <div>
+            <small>
+              #{email}
+    $nothing
+      $maybe email <- email
+        <p>
+          #{email}
+    
+    <a.mdc-button.mdc-button--outlined href=@{AuthR LogoutR} role=button>
+      <span.mdc-button__ripple>
+      <span.mdc-button__focus-ring>
+      <span.mdc-button__label>_{MsgLogout}
+
+  $nothing
+    <figure>
+      <i.material-symbols-outlined style="font-size:4rem;color:var(--mdc-theme-primary)">key
+      <figcaption>
+        _{MsgLoginToSeeYourProfile}.
+    <a.mdc-button.mdc-button--raised href=@{AuthR LoginR} role=button>
+      <span.mdc-button__ripple>
+      <span.mdc-button__focus-ring>
+      <span.mdc-button__label>_{MsgLogin}

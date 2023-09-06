@@ -12,7 +12,7 @@ import Yesod.Core
     ( Yesod(defaultLayout), setTitleI, setUltDestCurrent
     , getMessages, preEscapedToMarkup
     )
-import Yesod.Auth ( Route(LoginR, LogoutR), maybeAuth )
+import Yesod.Auth (Route(LoginR), maybeAuth)
 import Yesod.Form.Fields (unTextarea)
 import Settings.StaticFiles (img_salon_svg)
 
@@ -24,19 +24,19 @@ import Foundation
     ( Handler
     , Route
       ( StaticR, ServicesR, AboutUsR, AuthR, AccountPhotoR
-      , PhotoPlaceholderR, BookR, AdminR
+      , PhotoPlaceholderR, BookR, AdminR, ProfileR
       )
     , AdminR (BrandMarkR)
     , AppMessage
       ( MsgSalon, MsgWelcome, MsgServices, MsgAboutUs
-      , MsgBook, MsgLogout, MsgPhoto, MsgBrandMark
+      , MsgBook, MsgPhoto, MsgBrandMark
       )
     )
 import Model (Brand(Brand))
 
 getHomeR :: Handler Html
 getHomeR = do
-    muid <- maybeAuth
+    user <- maybeAuth
     brand <- runDB $ selectOne $ from $ table @Brand
     msgs <- getMessages
     setUltDestCurrent

@@ -15,7 +15,7 @@ module Admin.Contacts
 import Text.Hamlet (Html)
 import Data.Text (Text)
 import Data.Maybe (isJust)
-import Yesod.Auth (maybeAuth, Route (LoginR, LogoutR))
+import Yesod.Auth (maybeAuth, Route (LoginR))
 import Yesod.Persist.Core (YesodPersist(runDB))
 import Yesod.Form.Types
     ( MForm, FormResult (FormSuccess)
@@ -33,10 +33,10 @@ import Settings (widgetFile)
 
 import Foundation
     ( Handler, Widget
-    , Route (AdminR, AuthR, PhotoPlaceholderR, AccountPhotoR)
+    , Route (ProfileR, AdminR, AuthR, PhotoPlaceholderR, AccountPhotoR)
     , AdminR (AdmContactsR, AdmContactsCreateR, AdmContactsEditR, AdmContactsDeleteR)
     , AppMessage
-      ( MsgContact, MsgNoContentYet, MsgLogout, MsgPhoto
+      ( MsgContact, MsgNoContentYet, MsgPhoto
       , MsgYesDelete, MsgCancel, MsgDeleteAreYouSure, MsgPleaseConfirm
       , MsgAlreadyExists, MsgContent, MsgCancel, MsgSave
       , MsgRecordDeleted, MsgRecordEdited, MsgRecordAdded
@@ -115,7 +115,7 @@ postAdmContactsR = do
 
 getAdmContactsR :: Handler Html
 getAdmContactsR = do
-    muid <- maybeAuth
+    user <- maybeAuth
     contents <- runDB $ selectOne $ do
         x <- from $ table @Contents
         where_ $ x ^. ContentsSection ==. val section

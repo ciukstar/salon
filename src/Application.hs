@@ -59,7 +59,7 @@ import Handler.Services
     ( getServicesR, getServiceThumbnailR, getServiceR
     , getServicesSearchR
     )
-import Handler.Account (getAccountR, postAccountR, getAccountPhotoR)
+import Handler.Account (getProfileR, getAccountR, postAccountR, getAccountPhotoR)
 import Handler.Home (getHomeR)
 import Handler.Resources (getDocsR)
 

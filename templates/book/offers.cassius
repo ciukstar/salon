@@ -16,3 +16,6 @@ footer
   background-color: var(--mdc-theme-secondary)
   padding: 1rem
   box-sizing: border-box
+
+aside.mdc-snackbar
+  bottom: calc(4rem + 8px)

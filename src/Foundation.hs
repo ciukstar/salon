@@ -192,6 +192,8 @@ instance Yesod App where
     
     isAuthorized AccountR _ = return Authorized
     isAuthorized (AccountPhotoR _) _ = return Authorized
+    isAuthorized ProfileR _ = return Authorized
+    
     isAuthorized ServicesR _ = return Authorized
     isAuthorized (ServiceR _) _ = return Authorized
     isAuthorized (ServiceThumbnailR _) _ = return Authorized

@@ -31,4 +31,14 @@
     <span.mdc-button__focus-ring>
     <span.mdc-button__label>_{MsgContinue}
     <i.mdc-button__icon.material-symbols-outlined>arrow_forward_ios
+
+$forall (_,msg) <- msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
+    <div.mdc-snackbar__surface>
+      <div.mdc-snackbar__label>#{msg}
+      <div.mdc-snackbar__actions>
+        <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>close
     

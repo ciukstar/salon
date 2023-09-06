@@ -43,7 +43,7 @@ import Yesod.Core
     , YesodRequest (reqGetParams)
     )
 import Yesod.Core.Widget (setTitleI)
-import Yesod.Auth (maybeAuth, Route (LoginR, LogoutR))
+import Yesod.Auth (maybeAuth, Route (LoginR))
 
 import Yesod.Form.Types
     ( MForm, FormResult (FormSuccess), FieldView (fvInput, fvLabel, fvId, fvErrors)
@@ -84,9 +84,9 @@ import Foundation
       , AdmRoleEditR, AdmRoleDeleteR, AdmEmplUserR, AdmEmplUnregR
       , AdmStaffSearchR
       )
-    , Route (AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR, StaticR)
+    , Route (AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR, StaticR, ProfileR)
     , AppMessage
-      ( MsgStaff, MsgLogout, MsgPhoto, MsgCancel, MsgSave
+      ( MsgStaff, MsgPhoto, MsgCancel, MsgSave
       , MsgNoStaffYet, MsgEmployee, MsgRecordEdited, MsgName
       , MsgRole, MsgPhone, MsgMobile, MsgEmail, MsgRecordAdded
       , MsgEmployeeAlreadyInTheList, MsgDeleteAreYouSure, MsgYesDelete
@@ -662,7 +662,7 @@ postAdmStaffR = do
 
 getAdmStaffR :: Handler Html
 getAdmStaffR = do
-    muid <- maybeAuth
+    user <- maybeAuth
     msid <- (toSqlKey <$>) <$> runInputGet (iopt intField "sid")
     scrollY <- runInputGet (iopt textField "scrollY")
     staff <- runDB $ select $ do

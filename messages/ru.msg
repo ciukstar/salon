@@ -1,3 +1,7 @@
+ContactUs: Свяжитесь с нами
+LoginToSeeYourProfile: Пожалуйста, войдите, чтобы увидеть свой профиль
+End: Конец
+UserProfile: Профиль пользователя
 RescheduleAppointment: Перенести встречу
 CancelAppointment: Отменить запись
 Appointment: Запись

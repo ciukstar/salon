@@ -4,12 +4,14 @@
       $if null sids
         <button.mdc-top-app-bar__navigation-icon.mdc-icon-button #btnMainMenu>
           <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>menu
       $else
         $with sid <- fromSqlKey $ last sids
           <a.mdc-top-app-bar__navigation-icon.mdc-icon-button 
             href="@{AdminR $ AdmServicesR (Services (init sids))}?sid=#{sid}&scrollY=#{scrollY}&open=subservices">
             <span.mdc-icon-button__ripple>
+            <span.mdc-icon-button__focus-ring>
             <i.material-symbols-outlined>arrow_back
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
         $if null sids
@@ -22,24 +24,16 @@
         <span.mdc-icon-button__ripple>
         <i.material-symbols-outlined>search
       $if null sids
-        $maybe Entity uid _ <- muid
-          <button.mdc-top-app-bar__action-item.mdc-icon-button type=button #buttonProfile>
+        $maybe Entity uid _ <- user
+          <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{ProfileR} role=button>
             <span.mdc-icon-button__ripple>
+            <span.mdc-icon-button__focus-ring>
             <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" alt=_{MsgPhoto}
               onerror="this.src = '@{PhotoPlaceholderR}'">
-
-            <div.mdc-menu-surface--anchor>
-              <div.mdc-menu.mdc-menu-surface data-mdc-auto-init=MDCMenuSurface>
-                <ul.mdc-deprecated-list.mdc-deprecated-list--icon-list
-                  role=menu aria-hidden=true aria-orientation=vertical tabindex=-1>
-
-                  <a.mdc-deprecated-list-item role=menuitem href=@{AuthR LogoutR}>
-                    <span.mdc-deprecated-list-item__ripple>
-                    <i.material-symbols-outlined style="margin-right:1rem">logout
-                    <span.mdc-deprecated-list-item__text>_{MsgLogout}
         $nothing
           <a.mdc-top-app-bar__action-item.mdc-icon-button role=button href=@{AuthR LoginR}>
             <span.mdc-icon-button__ripple>
+            <span.mdc-icon-button__focus-ring>
             <i.material-symbols-outlined>login
       $else
         <button.mdc-top-app-bar__action-item.mdc-icon-button type=button #btnDelete>

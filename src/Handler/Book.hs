@@ -29,10 +29,10 @@ import Text.Hamlet (Html)
 import Text.Shakespeare.I18N (renderMessage, SomeMessage (SomeMessage))
 import Yesod.Core
     ( Yesod(defaultLayout), getYesod, languages, whamlet, newIdent
-    , setUltDestCurrent, MonadIO (liftIO)
+    , setUltDestCurrent, MonadIO (liftIO), getMessages
     )
 import Yesod.Core.Widget (setTitleI)
-import Yesod.Auth (maybeAuth, Route (LoginR, LogoutR))
+import Yesod.Auth (maybeAuth, Route (LoginR))
 import Yesod.Form.Types
     ( MForm, FormResult (FormSuccess, FormFailure, FormMissing)
     , Field (Field, fieldParse, fieldView, fieldEnctype)
@@ -59,19 +59,18 @@ import Foundation
     , Route
       ( BookR, BookOffersR, BookTimeR, BookStaffR, BookRecordR
       , AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR, AccountR
-      , HomeR, AppointmentsR, AppointmentR
+      , HomeR, AppointmentsR, AppointmentR, ProfileR
       )
     , AdminR (AdmStaffPhotoR)
     , AppMessage
-      ( MsgBook, MsgPhoto, MsgLogout, MsgChooseServicesToBook
-      , MsgServices, MsgSymbolHour, MsgSymbolMinute, MsgStaff
-      , MsgNoPreference, MsgMaximumAvailability, MsgSelectStaff
-      , MsgSelectAtLeastOneServicePlease, MsgOffer
-      , MsgAppointmentTime, MsgRole
-      , MsgSignUp, MsgSignIn, MsgSelectedServices, MsgSelectedStaff
-      , MsgOffers, MsgCustomerInformation
-      , MsgCustomer, MsgStepNofM
-      , MsgContinue, MsgNotYourAccount, MsgLogin, MsgDay, MsgTime
+      ( MsgBook, MsgPhoto, MsgChooseServicesToBook, MsgServices
+      , MsgSymbolHour, MsgSymbolMinute, MsgStaff, MsgNoPreference
+      , MsgMaximumAvailability, MsgSelectStaff
+      , MsgSelectAtLeastOneServicePlease, MsgOffer, MsgAppointmentTime
+      , MsgRole, MsgSignUp, MsgSignIn, MsgSelectedServices
+      , MsgSelectedStaff, MsgOffers, MsgCustomerInformation
+      , MsgCustomer, MsgStepNofM, MsgContinue, MsgNotYourAccount
+      , MsgLogin, MsgDay, MsgTime , MsgEnd
       )
     )
 
@@ -91,9 +90,9 @@ postBookRecordR = do
     user <- maybeAuth
     offers <- runDB queryOffers
     roles <- runDB $ queryRoles offers    
-    ((fr,fw),et) <- runFormPost $ formBook Nothing Nothing [] offers Nothing roles
-    case (fr,user) of
-      (FormSuccess (items,role,day,time), Just (Entity uid _)) -> do
+    ((fr,fw),et) <- runFormPost $ formBook user Nothing Nothing [] offers Nothing roles
+    case fr of
+      FormSuccess (items,role,day,time,Entity uid _) -> do
           bids <- forM items $ \(_,Entity oid _) -> runDB $
               insert $ Book uid oid ((\(_,Entity rid _) -> rid) <$> role) day time
           books <- runDB $ select $ do
@@ -103,13 +102,25 @@ postBookRecordR = do
                   `innerJoin` table @User `on` (\(x :& _ :& _ :& u) -> x ^. BookUser ==. u ^. UserId)
               where_ $ x ^. BookId `in_` valList bids
               return (x,o,r,u)
+          msgs <- getMessages
           defaultLayout $ do
               $(widgetFile "book/end")
               
-      (FormFailure msgs,_) -> defaultLayout [whamlet|
+      FormFailure errs -> defaultLayout $ do
+          msgs <- getMessages
+          idFormBack <- newIdent
+          let formBack = [whamlet|
+                                 <details>
+                                   <summary>Form back 4
+                                   <form method=get action=@{BookStaffR} enctype=#{et} ##{idFormBack} novalidate>
+                                     ^{fw}
+                                 |]
+          idFormNext <- newIdent
+          $(widgetFile "book/time")
+          [whamlet|
 <ul>
-  $forall msg <- msgs
-    <li style="color:red">#{msg}
+  $forall err <- errs
+    <li style="color:red">#{err}
 |]
       _ -> defaultLayout [whamlet|Unknown error|]
     
@@ -130,27 +141,30 @@ getBookTimeR = do
                                    <form method=get action=@{BookStaffR} enctype=#{et} ##{idFormBack} novalidate>
                                      ^{fw}
                                  |]
-          (fw,et) <- generateFormPost $ formBook (Just day) (Just time) items items role (maybeToList role)
+          (fw,et) <- generateFormPost $ formBook user (Just day) (Just time) items items role (maybeToList role)
+          msgs <- getMessages
           defaultLayout $ do
               idFormNext <- newIdent
               setTitleI MsgAppointmentTime
               setUltDestCurrent
               $(widgetFile "book/time")
               
-      FormFailure msgs -> do
+      FormFailure errs -> do
           idFormBack <- newIdent
           let formBack = [whamlet|<form method=get action=@{BookOffersR} enctype=#{et} novalidate ##{idFormBack} hidden>^{fw}|]
           idFormNext <- newIdent
+          msgs <- getMessages
           defaultLayout $ do
               setTitleI MsgStaff
               $(widgetFile "book/staff")
               [whamlet|
 <ul>
-  $forall msg <- msgs
-    <li><b style="color:red">#{msg}
+  $forall err <- errs
+    <li><b style="color:red">#{err}
 |]
           
       FormMissing -> defaultLayout $ do
+          msgs <- getMessages
           idFormBack <- newIdent
           let formBack = [whamlet|<form method=get action=@{BookOffersR} enctype=#{et} novalidate ##{idFormBack} hidden>^{fw}|]
           idFormNext <- newIdent
@@ -182,22 +196,25 @@ getBookStaffR = do
               (Just $ timeToTimeOfDay $ utctDayTime now)
               items items
               role (maybeToList role)
+          msgs <- getMessages
           defaultLayout $ do
               setTitleI MsgStaff
               $(widgetFile "book/staff")
-      FormFailure msgs -> defaultLayout $ do
+      FormFailure errs -> defaultLayout $ do
+          msgs <- getMessages
           idFormBack <- newIdent
           let formBack = [whamlet|<form method=get action=@{BookR} enctype=#{et} ##{idFormBack} novalidate hidden>^{fw}|]
           idFormNext <- newIdent
           setTitleI MsgOffers
           [whamlet|
 <ul>
-  $forall msg <- msgs
+  $forall err <- errs
     <li>
-      <b style="color:red">#{msg}
+      <b style="color:red">#{err}
 |]
           $(widgetFile "book/offers")
       FormMissing -> defaultLayout $ do
+          msgs <- getMessages
           idFormBack <- newIdent
           let formBack = [whamlet|<form method=get action=@{BookR} enctype=#{et} ##{idFormBack} novalidate hidden>^{fw}|]
           idFormNext <- newIdent
@@ -210,7 +227,7 @@ getBookStaffR = do
 
 getBookOffersR :: Handler Html
 getBookOffersR = do
-    muid <- maybeAuth
+    user <- maybeAuth
     offers <- runDB queryOffers
     ((fr,fw),et) <- runFormGet $ formOffers [] offers
     case fr of
@@ -225,10 +242,12 @@ getBookOffersR = do
           idFormNext <- newIdent
           roles <- runDB $ queryRoles items
           ((fr,fw),et) <- runFormGet $ formStaff items items roles
+          msgs <- getMessages
           defaultLayout $ do
               setTitleI MsgOffers
               $(widgetFile "book/offers")
       _ -> defaultLayout $ do
+          msgs <- getMessages
           let items = []
           setTitleI MsgOffers
           $(widgetFile "book/start")
@@ -236,31 +255,35 @@ getBookOffersR = do
 
 getBookR :: Handler Html
 getBookR = do
-    muid <- maybeAuth
+    user <- maybeAuth
     offers <- runDB queryOffers
     ((fr,fw),et) <- runFormGet $ formOffers [] offers
     let items = case fr of
           FormSuccess xs -> xs
           _ -> []
+    msgs <- getMessages
+    setUltDestCurrent
     defaultLayout $ do
         setTitleI MsgOffers
         $(widgetFile "book/start")
 
 
-formBook :: Maybe Day
+formBook :: Maybe (Entity User)
+         -> Maybe Day
          -> Maybe TimeOfDay
          -> [(Entity Service, Entity Offer)]
          -> [(Entity Service, Entity Offer)]
          -> Maybe (Entity Staff, Entity Role)
          -> [(Entity Staff, Entity Role)]
          -> Html -> MForm Handler ( FormResult ( [(Entity Service, Entity Offer)]
-                                       , Maybe (Entity Staff, Entity Role)
-                                       , Day
-                                       , TimeOfDay
-                                       )
+                                               , Maybe (Entity Staff, Entity Role)
+                                               , Day
+                                               , TimeOfDay
+                                               , Entity User
+                                               )
                                   , Widget
                                   )
-formBook day time items offers role roles extra = do
+formBook user day time items offers role roles extra = do
     
     (offersR,offersV) <- mreq (check notNull (offersField offers)) FieldSettings
         { fsLabel = SomeMessage MsgOffer
@@ -286,7 +309,8 @@ formBook day time items offers role roles extra = do
         , fsAttrs = []
         } time
     
-    let r = (,,,) <$> offersR <*> roleR <*> dayR <*> timeR
+    let r = (,,,,) <$> offersR <*> roleR <*> dayR <*> timeR
+            <*> (case user of Just u -> FormSuccess u; Nothing -> FormFailure ["Please login"])
     let w = [whamlet|
 #{extra}
 $forall v <- [dayV,timeV]
@@ -313,9 +337,9 @@ $forall v <- [dayV,timeV]
 
       offersField :: [(Entity Service, Entity Offer)]
                   -> Field Handler [(Entity Service, Entity Offer)]
-      offersField options = Field
+      offersField items = Field
           { fieldParse = \xs _ -> return $
-            (Right . Just . filter (\(_, Entity oid _) -> oid `elem` (toSqlKey . read . unpack <$> xs))) options
+            (Right . Just . filter (\(_, Entity oid _) -> oid `elem` (toSqlKey . read . unpack <$> xs))) items
           , fieldView = \theId name attrs vals _isReq -> do
                 app <- getYesod
                 langs <- languages

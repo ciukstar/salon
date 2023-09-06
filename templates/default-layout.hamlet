@@ -53,7 +53,7 @@
           :Just ContactR == curr:.mdc-deprecated-list-item--activated>
           <span.mdc-deprecated-list-item__ripple>
           <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>contact_support
-          <span.mdc-deprecated-list-item__text>_{MsgContact}
+          <span.mdc-deprecated-list-item__text>_{MsgContactUs}
       <hr.mdc-deprecated-list-divider role=separator>
       
       <details :elem curr [Just (AdminR $ AdmServicesR (Services [])),Just (AdminR AdmStaffR),Just (AdminR AdmAboutR),Just (AdminR AdmContactsR),Just (AdminR UsersR), Just (AdminR BrandR)]:open

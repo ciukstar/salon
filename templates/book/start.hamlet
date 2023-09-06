@@ -16,21 +16,12 @@
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>search
-      $maybe Entity uid _ <- muid
-        <button.mdc-top-app-bar__action-item.mdc-icon-button type=button #buttonProfile>
+      $maybe Entity uid _ <- user
+        <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{ProfileR} role=button>
           <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
           <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" alt=_{MsgPhoto}
             onerror="this.src = '@{PhotoPlaceholderR}'">
-          
-          <div.mdc-menu-surface--anchor>
-            <div.mdc-menu.mdc-menu-surface data-mdc-auto-init=MDCMenuSurface>
-              <ul.mdc-deprecated-list.mdc-deprecated-list--icon-list
-                role=menu aria-hidden=true aria-orientation=vertical tabindex=-1>
-
-                <a.mdc-deprecated-list-item role=menuitem href=@{AuthR LogoutR}>
-                  <span.mdc-deprecated-list-item__ripple>
-                  <i.material-symbols-outlined style="margin-right:1rem">logout
-                  <span.mdc-deprecated-list-item__text>_{MsgLogout}
       $nothing
         <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{AuthR LoginR} role=button>
           <span.mdc-icon-button__ripple>
@@ -66,3 +57,13 @@
         <span.mdc-button__focus-ring>
         <span.mdc-button__label>_{MsgContinue}
         <i.mdc-button__icon.material-symbols-outlined>arrow_forward_ios
+
+$forall (_,msg) <- msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
+    <div.mdc-snackbar__surface>
+      <div.mdc-snackbar__label>#{msg}
+      <div.mdc-snackbar__actions>
+        <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>close

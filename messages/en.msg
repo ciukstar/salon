@@ -1,3 +1,7 @@
+ContactUs: Contact Us
+LoginToSeeYourProfile: Please login to see your profile 
+End: End
+UserProfile: User profile
 RescheduleAppointment: Reschedule appointment
 CancelAppointment: Cancel appointment
 Appointment: Appointment

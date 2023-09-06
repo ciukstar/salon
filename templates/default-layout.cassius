@@ -1,5 +1,8 @@
 :root
 
+  --theme-success: #98FB98
+  --theme-on-success: #FFFFFF
+
   --theme-accent: #6200ee
   --theme-on-accent: #FFFFFF
 

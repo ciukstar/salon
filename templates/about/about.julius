@@ -12,3 +12,7 @@ window.onscroll = function (e) {
     document.querySelector('header.mdc-top-app-bar').classList.add('mdc-top-app-bar--prominent');
   }
 };
+
+Array.from(
+  document.querySelectorAll('aside.mdc-snackbar')
+).map(x => x.MDCSnackbar).forEach(function (x) { x.open(); });

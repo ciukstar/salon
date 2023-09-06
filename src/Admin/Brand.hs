@@ -18,7 +18,7 @@ module Admin.Brand
 import Control.Monad (void)
 import Text.Hamlet (Html)
 import Data.Text.Encoding (encodeUtf8)
-import Yesod.Auth (maybeAuth, Route (LoginR, LogoutR))
+import Yesod.Auth (maybeAuth, Route (LoginR))
 import Yesod.Core
     ( Yesod(defaultLayout), setTitleI, TypedContent (TypedContent)
     , preEscapedToMarkup, getMessages, FileInfo (fileContentType), redirect
@@ -43,11 +43,11 @@ import Database.Esqueleto.Experimental
 
 import Foundation
     ( Handler, Widget
-    , Route (AdminR, AuthR, PhotoPlaceholderR, AccountPhotoR, StaticR)
+    , Route (ProfileR, AdminR, AuthR, PhotoPlaceholderR, AccountPhotoR, StaticR)
     , AdminR (BrandR, BrandCreateR, BrandEditR, BrandDeleteR, BrandMarkR, BrandIcoR)
     , AppMessage
-      ( MsgBrand, MsgYesDelete, MsgPleaseConfirm, MsgPhoto, MsgLogout
-      , MsgDeleteAreYouSure, MsgLogout, MsgSave, MsgCancel, MsgBrandMark
+      ( MsgBrand, MsgYesDelete, MsgPleaseConfirm, MsgPhoto
+      , MsgDeleteAreYouSure, MsgSave, MsgCancel, MsgBrandMark
       , MsgNoBrandYet, MsgBrandName, MsgBrandStrapline, MsgFavicon, MsgMore
       )
     )
@@ -201,7 +201,7 @@ formBrand brand extra = do
 
 getBrandR :: Handler Html
 getBrandR = do
-    muid <- maybeAuth
+    user <- maybeAuth
     brand <- runDB $ selectOne $ from $ table @Brand
     msgs <- getMessages
     setUltDestCurrent

@@ -24,7 +24,7 @@ import Yesod.Core
     , whamlet, getRequest, YesodRequest (reqGetParams)
     )
 import Yesod.Core.Handler (newIdent)
-import Yesod.Auth (Route (LoginR, LogoutR), maybeAuth)
+import Yesod.Auth (Route (LoginR), maybeAuth)
 import Yesod.Form.Input (iopt, runInputGet)
 import Yesod.Form.Fields
     ( textField, intField, searchField, unTextarea, Textarea (Textarea))
@@ -35,10 +35,11 @@ import Foundation
     , Route
       ( AuthR, AccountPhotoR, PhotoPlaceholderR, ServicesR
       , ServiceR, ServiceThumbnailR, ServicesSearchR, StaticR
+      , ProfileR
       )
     , AppMessage
       ( MsgServices, MsgPhoto, MsgService, MsgThumbnail
-      , MsgNoServicesYet, MsgBookAppointment, MsgLogout
+      , MsgNoServicesYet, MsgBookAppointment
       , MsgSearch, MsgSelect, MsgCancel, MsgCategories
       , MsgNoServicesFound, MsgStatus, MsgCategories
       , MsgCategory, MsgUnpublished, MsgPublished
@@ -134,7 +135,7 @@ getServicesR = do
     msid <- (toSqlKey <$>) <$> runInputGet (iopt intField "sid")
     srvs <- fetchServices Nothing
     let Srvs offer = srvs
-    muid <- maybeAuth
+    user <- maybeAuth
     msgs <- getMessages
     setUltDestCurrent
     defaultLayout $ do

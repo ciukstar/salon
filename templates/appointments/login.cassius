@@ -5,3 +5,11 @@ header.mdc-top-app-bar
 
 main
   margin: 0 1rem
+  display: flex
+  flex-direction: column
+  align-items: center
+  figure
+    text-align: center
+    i.material-symbols-outlined
+      font-size: 4rem
+      color: var(--mdc-theme-primary)
