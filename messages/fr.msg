@@ -1,3 +1,5 @@
+SelectedTime: Heure sélectionnée
+LoginToIdentifyCustomer: Veuillez vous connecter pour identifier le client
 AlreadyHaveAnAccount: Avoir déjà un compte
 ContactUs: Contactez-nous
 LoginToSeeYourProfile: Veuillez vous connecter pour voir votre profil

@@ -16,6 +16,7 @@ module Admin.Users
   , getUsersSearchR
   ) where
 
+import Control.Monad (when)
 import Data.Maybe (isJust, fromMaybe)
 import qualified Data.List.Safe as LS (head)
 import Data.Text (Text, intercalate)
@@ -82,7 +83,8 @@ import Model
     )
 
 import Settings.StaticFiles (img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg)
-import Control.Monad (when)
+
+import Menu (menu)
 
 
 getUsersSearchR :: Handler Html

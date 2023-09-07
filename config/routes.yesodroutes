@@ -8,7 +8,7 @@
 /book/time   BookTimeR   GET
 /book/staff  BookStaffR  GET
 /book/offers BookOffersR GET
-/book  	     BookR  	 GET
+/book  	     BookStartR	 GET
 
 /aboutus AboutUsR GET
 

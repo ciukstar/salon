@@ -6,11 +6,10 @@ header.mdc-top-app-bar
 main
   margin-bottom: 4rem
   ##{idFormNext}
-    margin: 1rem
     display: flex
     flex-direction: column
     div.form-field
-      margin-bottom: 1rem
+      margin: 1rem
       display: flex
       flex-direction: column
       input[type=date], input[type=time]

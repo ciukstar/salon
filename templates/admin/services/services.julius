@@ -57,9 +57,3 @@ Array.from(
   });
   x.open();
 });
-
-[document.getElementById('btnMainMenu')].filter(x => !!x).forEach(function (x) {
-  x.addEventListener('click',function (e) {
-    document.getElementById('asideMainMenu').MDCDrawer.open = true;
-  })
-});

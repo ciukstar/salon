@@ -1,3 +1,6 @@
+
+$if null sids
+  ^{menu}
 <header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row :not $ null sids:.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
@@ -7,9 +10,9 @@
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>menu
       $else
-        $with sid <- fromSqlKey $ last sids
+        $with sid <- pack $ show $ fromSqlKey $ last sids
           <a.mdc-top-app-bar__navigation-icon.mdc-icon-button 
-            href="@{AdminR $ AdmServicesR (Services (init sids))}?sid=#{sid}&scrollY=#{scrollY}&open=subservices">
+            href=@?{(AdminR $ AdmServicesR (Services (init sids)),[("sid",sid),("scrollY",scrollY),("open","subservices")])}>
             <span.mdc-icon-button__ripple>
             <span.mdc-icon-button__focus-ring>
             <i.material-symbols-outlined>arrow_back

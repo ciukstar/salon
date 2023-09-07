@@ -22,7 +22,10 @@ import Database.Esqueleto.Experimental
 
 import Foundation
     ( Handler
-    , Route (ProfileR, AppointmentsR, AppointmentR, BookR, AuthR, PhotoPlaceholderR, AccountPhotoR)
+    , Route
+      ( ProfileR, AppointmentsR, AppointmentR, BookStartR, AuthR
+      , PhotoPlaceholderR, AccountPhotoR
+      )
     , AppMessage
       ( MsgMyAppointments, MsgLogin, MsgLogout, MsgPhoto
       , MsgLoginToSeeYourAppointments, MsgNoAppointmentsYet
@@ -36,6 +39,7 @@ import Model
     , EntityField (BookOffer, OfferId, BookUser, UserId, BookId)
     )
 
+import Menu (menu)
 
 getAppointmentR :: BookId -> Handler Html
 getAppointmentR bid = do

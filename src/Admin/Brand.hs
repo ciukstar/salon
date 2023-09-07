@@ -66,6 +66,8 @@ import Model
     
 import Settings.StaticFiles (img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg)
 
+import Menu (menu)
+
 
 getBrandIcoR :: BrandId -> Handler TypedContent
 getBrandIcoR bid = do

@@ -55,6 +55,8 @@ import Model
     , EntityField (ContentsSection)
     )
 
+import Menu (menu)
+
 
 postAdmAboutDeleteR :: ContentsId -> Handler ()
 postAdmAboutDeleteR cid = do

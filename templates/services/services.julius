@@ -2,10 +2,6 @@
 window.scroll(0,#{fromMaybe "0" scrollY});
 window.mdc.autoInit();
 
-document.getElementById('btnMainMenu').addEventListener('click',function (e) {
-  document.getElementById('asideMainMenu').MDCDrawer.open = true;
-});
-
 Array.from (
   document.querySelectorAll('span.numeric-format')
 ).forEach(function (x) {

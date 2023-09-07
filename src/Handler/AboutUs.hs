@@ -28,6 +28,7 @@ import Database.Esqueleto.Experimental
     )
 import Model (Contents(Contents), EntityField (ContentsSection))
 
+import Menu (menu)
 
 getAboutUsR :: Handler Html
 getAboutUsR = do

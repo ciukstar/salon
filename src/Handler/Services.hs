@@ -71,6 +71,8 @@ import Model
 
 import Settings.StaticFiles (img_photo_FILL0_wght400_GRAD0_opsz48_svg)
 
+import Menu (menu)
+
 getServicesSearchR :: Handler Html
 getServicesSearchR = do
     formSearch <- newIdent

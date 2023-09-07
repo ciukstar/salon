@@ -5,7 +5,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module Handler.Book
-  ( getBookR
+  ( getBookStartR
   , getBookOffersR
   , getBookStaffR
   , getBookTimeR
@@ -57,7 +57,7 @@ import Database.Esqueleto.Experimental
 import Foundation
     ( Handler, Widget
     , Route
-      ( BookR, BookOffersR, BookTimeR, BookStaffR, BookRecordR
+      ( BookStartR, BookOffersR, BookTimeR, BookStaffR, BookRecordR
       , AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR, AccountR
       , HomeR, AppointmentsR, AppointmentR, ProfileR
       )
@@ -71,6 +71,7 @@ import Foundation
       , MsgSelectedStaff, MsgOffers, MsgCustomerInformation
       , MsgCustomer, MsgStepNofM, MsgContinue, MsgNotYourAccount
       , MsgLogin, MsgDay, MsgTime , MsgEnd, MsgAlreadyHaveAnAccount
+      , MsgLoginToIdentifyCustomer, MsgSelectedTime
       )
     )
 
@@ -84,10 +85,11 @@ import Model
       )
     )
 
+import Menu (menu)
+
 
 postBookRecordR :: Handler Html
 postBookRecordR = do
-    setUltDestCurrent
     user <- maybeAuth
     offers <- runDB queryOffers
     roles <- runDB $ queryRoles offers    
@@ -112,7 +114,7 @@ postBookRecordR = do
           idFormBack <- newIdent
           let formBack = [whamlet|
                                  <details>
-                                   <summary>Form back 4
+                                   <summary>Form back 5
                                    <form method=get action=@{BookStaffR} enctype=#{et} ##{idFormBack} novalidate>
                                      ^{fw}
                                  |]
@@ -139,7 +141,7 @@ getBookTimeR = do
           idFormBack <- newIdent
           let formBack = [whamlet|
                                  <details>
-                                   <summary>Form back 3
+                                   <summary>Form back 4
                                    <form method=get action=@{BookStaffR} enctype=#{et} ##{idFormBack} novalidate>
                                      ^{fw}
                                  |]
@@ -152,7 +154,12 @@ getBookTimeR = do
               
       FormFailure errs -> do
           idFormBack <- newIdent
-          let formBack = [whamlet|<form method=get action=@{BookOffersR} enctype=#{et} novalidate ##{idFormBack} hidden>^{fw}|]
+          let formBack = [whamlet|
+                                 <details>
+                                   <summary>Form back 3
+                                   <form method=get action=@{BookOffersR} enctype=#{et} ##{idFormBack} novalidate>
+                                     ^{fw}
+                                 |]
           idFormNext <- newIdent
           msgs <- getMessages
           defaultLayout $ do
@@ -206,7 +213,7 @@ getBookStaffR = do
       FormFailure errs -> defaultLayout $ do
           msgs <- getMessages
           idFormBack <- newIdent
-          let formBack = [whamlet|<form method=get action=@{BookR} enctype=#{et} ##{idFormBack} novalidate hidden>^{fw}|]
+          let formBack = [whamlet|<form method=get action=@{BookStartR} enctype=#{et} ##{idFormBack} novalidate hidden>^{fw}|]
           idFormNext <- newIdent
           setTitleI MsgOffers
           [whamlet|
@@ -219,7 +226,7 @@ getBookStaffR = do
       FormMissing -> defaultLayout $ do
           msgs <- getMessages
           idFormBack <- newIdent
-          let formBack = [whamlet|<form method=get action=@{BookR} enctype=#{et} ##{idFormBack} novalidate hidden>^{fw}|]
+          let formBack = [whamlet|<form method=get action=@{BookStartR} enctype=#{et} ##{idFormBack} novalidate hidden>^{fw}|]
           idFormNext <- newIdent
           setTitleI MsgOffers
           [whamlet|
@@ -240,7 +247,7 @@ getBookOffersR = do
           let formBack = [whamlet|
                                  <details>
                                    <summary>Form back 1
-                                   <form method=get action=@{BookR} enctype=#{et} ##{idFormBack} novalidate>
+                                   <form method=get action=@{BookStartR} enctype=#{et} ##{idFormBack} novalidate>
                                      ^{fw}
                                  |]
           idFormNext <- newIdent
@@ -257,8 +264,8 @@ getBookOffersR = do
           $(widgetFile "book/start")
 
 
-getBookR :: Handler Html
-getBookR = do
+getBookStartR :: Handler Html
+getBookStartR = do
     user <- maybeAuth
     offers <- runDB queryOffers
     ((fr,fw),et) <- runFormGet $ formOffers [] offers
@@ -312,24 +319,56 @@ formBook user day time items offers role roles extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = []
         } time
+
+    app <- getYesod
+    langs <- languages
     
     let r = (,,,,) <$> offersR <*> roleR <*> dayR <*> timeR
-            <*> (case user of Just u -> FormSuccess u; Nothing -> FormFailure ["Please login"])
+            <*> case user of
+                  Just u -> FormSuccess u
+                  Nothing -> FormFailure [renderMessage app langs MsgLoginToIdentifyCustomer]
+                  
     let w = [whamlet|
 #{extra}
-$forall v <- [dayV,timeV]
-  <div.form-field>
-    ^{fvInput v}
-    <div>
-      $maybe errs <- fvErrors v
-        #{errs}
-<p>
-<details>
-  <summary>_{MsgSelectedStaff}
+<details.mdc-list data-mdc-auto-init=MDCList
+  ontoggle="document.getElementById('iconExpandTime').textContent = this.open ? 'expand_less' : 'expand_more'">
+  <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+    <span.mdc-list-item__start>
+      <i.material-symbols-outlined>info
+    <span.mdc-list-item__content>
+      <div.mdc-list-item__primary-text>
+        _{MsgSelectedTime}
+    <span.mdc-list-item__end>
+      <i.material-symbols-outlined #iconExpandTime>expand_more
+  $forall v <- [dayV,timeV]
+    <div.form-field>
+      ^{fvInput v}
+      <div>
+        $maybe errs <- fvErrors v
+          #{errs}
+
+<details.mdc-list data-mdc-auto-init=MDCList
+  ontoggle="document.getElementById('iconExpandRoles').textContent = this.open ? 'expand_less' : 'expand_more'">
+  <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+    <span.mdc-list-item__start>
+      <i.material-symbols-outlined>info
+    <span.mdc-list-item__content>
+      <div.mdc-list-item__primary-text>
+        _{MsgSelectedStaff}
+    <span.mdc-list-item__end>
+      <i.material-symbols-outlined #iconExpandRoles>expand_more
   ^{fvInput roleV}
-<p>
-<details>
-  <summary>_{MsgSelectedServices}
+  
+<details.mdc-list data-mdc-auto-init=MDCList
+  ontoggle="document.getElementById('iconExpandOffers').textContent = this.open ? 'expand_less' : 'expand_more'">
+  <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+    <span.mdc-list-item__start>
+      <i.material-symbols-outlined>info
+    <span.mdc-list-item__content>
+      <div.mdc-list-item__primary-text>
+        _{MsgSelectedServices}
+    <span.mdc-list-item__end>
+      <i.material-symbols-outlined #iconExpandOffers>expand_more
   ^{fvInput offersV}
 |]
     return (r,w)
@@ -341,9 +380,9 @@ $forall v <- [dayV,timeV]
 
       offersField :: [(Entity Service, Entity Offer)]
                   -> Field Handler [(Entity Service, Entity Offer)]
-      offersField items = Field
+      offersField options = Field
           { fieldParse = \xs _ -> return $
-            (Right . Just . filter (\(_, Entity oid _) -> oid `elem` (toSqlKey . read . unpack <$> xs))) items
+            (Right . Just . filter (\(_, Entity oid _) -> oid `elem` (toSqlKey . read . unpack <$> xs))) options
           , fieldView = \theId name attrs vals _isReq -> do
                 app <- getYesod
                 langs <- languages
@@ -355,10 +394,10 @@ $forall v <- [dayV,timeV]
 
       rolesField :: [(Entity Staff, Entity Role)]
                  -> Field Handler (Entity Staff, Entity Role)
-      rolesField roles = Field
+      rolesField options = Field
           { fieldParse = \xs _ -> return $ case xs of
               (x:_) | T.null x -> Right Nothing
-                    | otherwise -> (Right . LS.head . filter (\(_, Entity rid _) -> rid == toSqlKey (read $ unpack x))) roles
+                    | otherwise -> (Right . LS.head . filter (\(_, Entity rid _) -> rid == toSqlKey (read $ unpack x))) options
               _ -> Right Nothing
           , fieldView = \theId name attrs val _isReq -> do
                 let isChecked (Left _) _ = False
@@ -417,13 +456,29 @@ $forall v <- [dayV,timeV]
     <div>
       $maybe errs <- fvErrors v
         #{errs}
-<p>
-<details>
-  <summary>_{MsgSelectedStaff}
+
+<details.mdc-list data-mdc-auto-init=MDCList
+  ontoggle="document.getElementById('iconExpandRoles').textContent = this.open ? 'expand_less' : 'expand_more'">
+  <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+    <span.mdc-list-item__start>
+      <i.material-symbols-outlined>info
+    <span.mdc-list-item__content>
+      <div.mdc-list-item__primary-text>
+        _{MsgSelectedStaff}
+    <span.mdc-list-item__end>
+      <i.material-symbols-outlined #iconExpandRoles>expand_more
   ^{fvInput roleV}
-<p>
-<details>
-  <summary>_{MsgSelectedServices}
+
+<details.mdc-list data-mdc-auto-init=MDCList
+  ontoggle="document.getElementById('iconExpandOffers').textContent = this.open ? 'expand_less' : 'expand_more'">
+  <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+    <span.mdc-list-item__start>
+      <i.material-symbols-outlined>info
+    <span.mdc-list-item__content>
+      <div.mdc-list-item__primary-text>
+        _{MsgSelectedServices}
+    <span.mdc-list-item__end>
+      <i.material-symbols-outlined #iconExpandOffers>expand_more
   ^{fvInput offersV}
 |]
     return (r,w)
@@ -435,9 +490,9 @@ $forall v <- [dayV,timeV]
 
       offersField :: [(Entity Service, Entity Offer)]
                   -> Field Handler [(Entity Service, Entity Offer)]
-      offersField items = Field
+      offersField options = Field
           { fieldParse = \xs _ -> return $
-            (Right . Just . filter (\(_, Entity oid _) -> oid `elem` (toSqlKey . read . unpack <$> xs))) items
+            (Right . Just . filter (\(_, Entity oid _) -> oid `elem` (toSqlKey . read . unpack <$> xs))) options
           , fieldView = \theId name attrs vals _isReq -> do
                 app <- getYesod
                 langs <- languages
@@ -449,10 +504,10 @@ $forall v <- [dayV,timeV]
 
       rolesField :: [(Entity Staff, Entity Role)]
                  -> Field Handler (Entity Staff, Entity Role)
-      rolesField roles = Field
+      rolesField options = Field
           { fieldParse = \xs _ -> return $ case xs of
               (x:_) | T.null x -> Right Nothing
-                    | otherwise -> (Right . LS.head . filter (\(_, Entity rid _) -> rid == toSqlKey (read $ unpack x))) roles
+                    | otherwise -> (Right . LS.head . filter (\(_, Entity rid _) -> rid == toSqlKey (read $ unpack x))) options
               _ -> Right Nothing
           , fieldView = \theId name attrs val _isReq -> do
                 let isChecked (Left _) _ = False
@@ -472,6 +527,7 @@ formStaff :: [(Entity Service, Entity Offer)]
                            , Widget
                            )
 formStaff items offers roles extra = do
+    
     (offersR,offersV) <- mreq (check notNull (offersField offers)) FieldSettings
         { fsLabel = SomeMessage MsgOffer
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
@@ -484,8 +540,9 @@ formStaff items offers roles extra = do
     let w = [whamlet|
 #{extra}
 ^{fvInput rolesV}
-<p>
-<details.mdc-list data-mdc-auto-init=MDCList>
+
+<details.mdc-list data-mdc-auto-init=MDCList
+  ontoggle="document.getElementById('iconExpandOffers').textContent = this.open ? 'expand_less' : 'expand_more'">
   <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
     <span.mdc-list-item__ripple>
     <span.mdc-list-item__start>
@@ -494,7 +551,7 @@ formStaff items offers roles extra = do
       <div.mdc-list-item__primary-text>
         _{MsgSelectedServices}
     <span.mdc-list-item__end>
-      <i.material-symbols-outlined>expand_more
+      <i.material-symbols-outlined #iconExpandOffers>expand_more
   ^{fvInput offersV}
 |]
     return (r,w)
@@ -506,9 +563,9 @@ formStaff items offers roles extra = do
 
       offersField :: [(Entity Service, Entity Offer)]
                   -> Field Handler [(Entity Service, Entity Offer)]
-      offersField items = Field
+      offersField options = Field
           { fieldParse = \xs _ -> return $
-            (Right . Just . filter (\(_, Entity oid _) -> oid `elem` (toSqlKey . read . unpack <$> xs))) items
+            (Right . Just . filter (\(_, Entity oid _) -> oid `elem` (toSqlKey . read . unpack <$> xs))) options
           , fieldView = \theId name attrs vals _isReq -> do
                 app <- getYesod
                 langs <- languages
@@ -520,10 +577,10 @@ formStaff items offers roles extra = do
 
       rolesField :: [(Entity Staff, Entity Role)]
                  -> Field Handler (Entity Staff, Entity Role)
-      rolesField roles = Field
+      rolesField options = Field
           { fieldParse = \xs _ -> return $ case xs of
               (x:_) | T.null x -> Right Nothing
-                    | otherwise -> (Right . LS.head . filter (\(_, Entity rid _) -> rid == toSqlKey (read $ unpack x))) roles
+                    | otherwise -> (Right . LS.head . filter (\(_, Entity rid _) -> rid == toSqlKey (read $ unpack x))) options
               _ -> Right Nothing
           , fieldView = \theId name attrs val _isReq -> do
                 let isChecked (Left _) _ = False
@@ -567,9 +624,9 @@ $maybe errs <- fvErrors v
 
       offersField :: [(Entity Service, Entity Offer)]
                   -> Field Handler [(Entity Service, Entity Offer)]
-      offersField items = Field
+      offersField options = Field
           { fieldParse = \xs _ -> return $
-            (Right . Just . filter (\(_, Entity oid _) -> oid `elem` (toSqlKey . read . unpack <$> xs))) items
+            (Right . Just . filter (\(_, Entity oid _) -> oid `elem` (toSqlKey . read . unpack <$> xs))) options
           , fieldView = \theId name attrs vals _isReq -> do
                 app <- getYesod
                 langs <- languages

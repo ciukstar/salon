@@ -60,22 +60,6 @@
   --mdc-checkbox-checked-color: var(--mdc-theme-primary)
   --mdc-checkbox-ink-color: var(--mdc-theme-on-primary)
 
-html
-  body
-    margin: 0
-    padding: 0
-    #drawerTitle
-      display: flex
-      flex-direction: row
-      justify-content: space-between
-      align-items: center
-      #drawerTitleStart
-        display: flex
-        flex-direction: row
-        justify-content: flex-start
-        align-items: center
-        gap: 2rem
-      #drawerTitleEnd
-        color: gray
-      #drawerTitleEnd:hover
-        cursor: pointer
+html body
+  margin: 0
+  padding: 0

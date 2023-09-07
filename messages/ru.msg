@@ -1,3 +1,5 @@
+SelectedTime: Выбранное время
+LoginToIdentifyCustomer: Пожалуйста, войдите, чтобы идентифицировать клиента
 AlreadyHaveAnAccount: Уже есть учетная запись
 ContactUs: Свяжитесь с нами
 LoginToSeeYourProfile: Пожалуйста, войдите, чтобы увидеть свой профиль

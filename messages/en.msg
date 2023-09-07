@@ -1,3 +1,5 @@
+SelectedTime: Selected time
+LoginToIdentifyCustomer: Please login to identify the customer
 AlreadyHaveAnAccount: Already have an account
 ContactUs: Contact Us
 LoginToSeeYourProfile: Please login to see your profile 

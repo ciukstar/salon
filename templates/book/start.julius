@@ -1,10 +1,6 @@
 
 window.mdc.autoInit();
 
-document.getElementById('btnMainMenu').addEventListener('click',function (e) {
-  document.getElementById('asideMainMenu').MDCDrawer.open = true;
-});
-
 window.onscroll = function (e) {
   if (document.body.scrollTop > 128 || document.documentElement.scrollTop > 128) {
     document.getElementById('divStepCounter').style.display = 'none';

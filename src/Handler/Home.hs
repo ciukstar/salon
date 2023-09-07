@@ -24,7 +24,7 @@ import Foundation
     ( Handler
     , Route
       ( StaticR, ServicesR, AboutUsR, AuthR, AccountPhotoR
-      , PhotoPlaceholderR, BookR, AdminR, ProfileR
+      , PhotoPlaceholderR, BookStartR, AdminR, ProfileR
       )
     , AdminR (BrandMarkR)
     , AppMessage
@@ -33,6 +33,8 @@ import Foundation
       )
     )
 import Model (Brand(Brand))
+
+import Menu (menu)
 
 getHomeR :: Handler Html
 getHomeR = do

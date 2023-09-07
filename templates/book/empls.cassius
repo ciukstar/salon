@@ -1,8 +1,11 @@
 
-main
-  .mdc-radio .mdc-radio__native-control:enabled:checked+.mdc-radio__background
-    .mdc-radio__outer-circle, .mdc-radio__inner-circle
-      border-color: var(--theme-accent,#018786)
-  .mdc-text-field:not(.mdc-text-field--disabled)
-    .mdc-text-field__input
-      caret-color: var(--theme-accent,#018786)
+ul.mdc-list##{theId}
+  li.mdc-list-item[aria-checked=true]
+    span.mdc-list-item__content
+      div.mdc-list-item__primary-text
+        color: var(--theme-accent)
+  li.mdc-list-item
+    span.mdc-list-item__end
+      .mdc-radio .mdc-radio__native-control:enabled:checked+.mdc-radio__background
+        .mdc-radio__outer-circle, .mdc-radio__inner-circle
+          border-color: var(--theme-accent,#018786)

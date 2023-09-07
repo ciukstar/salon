@@ -27,6 +27,7 @@ import Foundation
     
 import Model (Contents(Contents), EntityField (ContentsSection))
 
+import Menu (menu)
 
 getContactR :: Handler Html
 getContactR = do

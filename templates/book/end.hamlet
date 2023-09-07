@@ -48,7 +48,7 @@
       <span.mdc-button__focus-ring>
       <span.mdc-button__label>View all my appointments
   <p>
-    <a.mdc-button.mdc-button--raised href=@{BookR} role=button>
+    <a.mdc-button.mdc-button--raised href=@{BookStartR} role=button>
       <span.mdc-button__ripple>
       <span.mdc-button__focus-ring>
       <span.mdc-button__label>Make new appointment

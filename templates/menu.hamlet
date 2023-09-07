@@ -1,0 +1,137 @@
+
+<aside.mdc-drawer.mdc-drawer--modal data-mdc-auto-init=MDCDrawer #asideMainMenu>
+  <div.mdc-drawer__header.mdc-ripple-surface data-mdc-auto-init=MDCRipple #drawerHeader>
+    <h3.mdc-drawer__title>
+      <div #drawerTitle>
+        <div #drawerTitleStart>
+          <img src=@{StaticR img_salon_svg} height=24 width=24 loading=lazy>
+          _{MsgSalon}
+        <div #drawerTitleEnd>
+          &#x2715;
+  <div.mdc-drawer__content>
+    <div.mdc-deprecated-list-group>
+      <hr.mdc-deprecated-list-divider role=separator>
+      <nav.mdc-deprecated-list>
+        <a.mdc-deprecated-list-item href=@{HomeR}
+          :Just HomeR /= curr:tabindex=-1
+          :Just HomeR == curr:tabindex=0
+          :Just HomeR == curr:.mdc-deprecated-list-item--activated>
+          <span.mdc-deprecated-list-item__ripple>
+          <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>home
+          <span.mdc-deprecated-list-item__text>_{MsgWelcome}
+        <a.mdc-deprecated-list-item href=@{ServicesR}
+          :Just ServicesR /= curr:tabindex=-1
+          :Just ServicesR == curr:tabindex=0
+          :Just ServicesR == curr:.mdc-deprecated-list-item--activated>
+          <span.mdc-deprecated-list-item__ripple>
+          <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>volunteer_activism
+          <span.mdc-deprecated-list-item__text>_{MsgServices}
+        <a.mdc-deprecated-list-item href=@{BookStartR}
+          :Just BookStartR /= curr:tabindex=-1
+          :Just BookStartR == curr:tabindex=0
+          :Just BookStartR == curr:.mdc-deprecated-list-item--activated>
+          <span.mdc-deprecated-list-item__ripple>
+          <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>book_online
+          <span.mdc-deprecated-list-item__text>_{MsgBook}
+        <a.mdc-deprecated-list-item href=@{AppointmentsR}
+          :Just AppointmentsR /= curr:tabindex=-1
+          :Just AppointmentsR == curr:tabindex=0
+          :Just AppointmentsR == curr:.mdc-deprecated-list-item--activated>
+          <span.mdc-deprecated-list-item__ripple>
+          <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>pending_actions
+          <span.mdc-deprecated-list-item__text>_{MsgMyAppointments}
+        <a.mdc-deprecated-list-item href=@{AboutUsR}
+          :Just AboutUsR /= curr:tabindex=-1
+          :Just AboutUsR == curr:tabindex=0
+          :Just AboutUsR == curr:.mdc-deprecated-list-item--activated>
+          <span.mdc-deprecated-list-item__ripple>
+          <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>info
+          <span.mdc-deprecated-list-item__text>_{MsgAboutUs}
+        <a.mdc-deprecated-list-item href=@{ContactR}
+          :Just ContactR /= curr:tabindex=-1
+          :Just ContactR == curr:tabindex=0
+          :Just ContactR == curr:.mdc-deprecated-list-item--activated>
+          <span.mdc-deprecated-list-item__ripple>
+          <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>contact_support
+          <span.mdc-deprecated-list-item__text>_{MsgContactUs}
+      <hr.mdc-deprecated-list-divider role=separator>
+      
+      <details :elem curr [Just (AdminR $ AdmServicesR (Services [])),Just (AdminR AdmStaffR),Just (AdminR AdmAboutR),Just (AdminR AdmContactsR),Just (AdminR UsersR), Just (AdminR BrandR)]:open
+        ontoggle="document.getElementById('iconDataExpand').textContent = this.open ? 'expand_less' : 'expand_more'">
+        <summary.mdc-deprecated-list>
+          <li.mdc-deprecated-list-item>
+            <span.mdc-deprecated-list-item__ripple>
+            <span.mdc-deprecated-list-item__graphic.material-symbols-outlined #iconDataExpand>expand_more
+            <span.mdc-deprecated-list-item__text>_{MsgData}
+        <nav.mdc-deprecated-list>
+          <a.mdc-deprecated-list-item href=@{AdminR $ AdmServicesR (Services [])}
+            :Just (AdminR $ AdmServicesR (Services [])) /= curr:tabindex=-1
+            :Just (AdminR $ AdmServicesR (Services [])) == curr:tabindex=0
+            :Just (AdminR $ AdmServicesR (Services [])) == curr:.mdc-deprecated-list-item--activated>
+            <span.mdc-deprecated-list-item__ripple>
+            <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>edit_note
+            <span.mdc-deprecated-list-item__text>_{MsgServices}
+
+          <a.mdc-deprecated-list-item href=@{AdminR AdmStaffR}
+            :Just (AdminR AdmStaffR) /= curr:tabindex=-1
+            :Just (AdminR AdmStaffR) == curr:tabindex=0
+            :Just (AdminR AdmStaffR) == curr:.mdc-deprecated-list-item--activated>
+            <span.mdc-deprecated-list-item__ripple>
+            <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>edit_note
+            <span.mdc-deprecated-list-item__text>_{MsgStaff}
+
+          <a.mdc-deprecated-list-item href=@{AdminR AdmAboutR}
+            :Just (AdminR AdmAboutR) /= curr:tabindex=-1
+            :Just (AdminR AdmAboutR) == curr:tabindex=0
+            :Just (AdminR AdmAboutR) == curr:.mdc-deprecated-list-item--activated>
+            <span.mdc-deprecated-list-item__ripple>
+            <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>edit_note
+            <span.mdc-deprecated-list-item__text>_{MsgAboutUs}
+
+          <a.mdc-deprecated-list-item href=@{AdminR AdmContactsR}
+            :Just (AdminR AdmContactsR) /= curr:tabindex=-1
+            :Just (AdminR AdmContactsR) == curr:tabindex=0
+            :Just (AdminR AdmContactsR) == curr:.mdc-deprecated-list-item--activated>
+            <span.mdc-deprecated-list-item__ripple>
+            <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>edit_note
+            <span.mdc-deprecated-list-item__text>_{MsgContact}
+
+          <a.mdc-deprecated-list-item href=@{AdminR UsersR}
+            :Just (AdminR UsersR) /= curr:tabindex=-1
+            :Just (AdminR UsersR) == curr:tabindex=0
+            :Just (AdminR UsersR) == curr:.mdc-deprecated-list-item--activated>
+            <span.mdc-deprecated-list-item__ripple>
+            <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>edit_note
+            <span.mdc-deprecated-list-item__text>_{MsgUsers}
+
+          <a.mdc-deprecated-list-item href=@{AdminR BrandR}
+            :Just (AdminR BrandR) /= curr:tabindex=-1
+            :Just (AdminR BrandR) == curr:tabindex=0
+            :Just (AdminR BrandR) == curr:.mdc-deprecated-list-item--activated>
+            <span.mdc-deprecated-list-item__ripple>
+            <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>edit_note
+            <span.mdc-deprecated-list-item__text>_{MsgBrand}
+
+      <hr.mdc-deprecated-list-divider role=separator>
+      <details :elem curr [Just (ResourcesR DocsR)]:open
+        ontoggle="document.getElementById('iconResourcesExpand').textContent = this.open ? 'expand_less' : 'expand_more'">
+        <summary.mdc-deprecated-list>
+          <li.mdc-deprecated-list-item>
+            <span.mdc-deprecated-list-item__ripple>
+            <span.mdc-deprecated-list-item__graphic.material-symbols-outlined #iconResourcesExpand>expand_more
+            <span.mdc-deprecated-list-item__text>_{MsgResources}
+        <nav.mdc-deprecated-list>
+          <a.mdc-deprecated-list-item href=@{ResourcesR DocsR}
+            :Just (ResourcesR DocsR) /= curr:tabindex=-1
+            :Just (ResourcesR DocsR) == curr:tabindex=0
+            :Just (ResourcesR DocsR) == curr:.mdc-deprecated-list-item--activated>
+            <span.mdc-deprecated-list-item__ripple>
+            <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>quick_reference
+            <span.mdc-deprecated-list-item__text>_{MsgDocumentation}
+
+          <a.mdc-deprecated-list-item href="https://github.com/ciukstar/salon" target=_blank>
+            <span.mdc-deprecated-list-item__ripple>
+            <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>code
+            <span.mdc-deprecated-list-item__text>_{MsgSourceCode}
+
+<div.mdc-drawer-scrim>

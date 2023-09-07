@@ -116,6 +116,8 @@ import Database.Esqueleto.Experimental
     , isNothing, select, orderBy, asc, upper_, like, not_, exists
     )
 
+import Menu (menu) 
+
 
 getAdmServicesSearchR :: Handler Html
 getAdmServicesSearchR = do
