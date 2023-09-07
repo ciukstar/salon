@@ -331,15 +331,16 @@ formBook user day time items offers role roles extra = do
     let w = [whamlet|
 #{extra}
 <details.mdc-list data-mdc-auto-init=MDCList
-  ontoggle="document.getElementById('iconExpandTime').textContent = this.open ? 'expand_less' : 'expand_more'">
+  ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
   <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+    <span.mdc-list-item__ripple>
     <span.mdc-list-item__start>
       <i.material-symbols-outlined>info
     <span.mdc-list-item__content>
       <div.mdc-list-item__primary-text>
         _{MsgSelectedTime}
     <span.mdc-list-item__end>
-      <i.material-symbols-outlined #iconExpandTime>expand_more
+      <i.expand.material-symbols-outlined>expand_more
   $forall v <- [dayV,timeV]
     <div.form-field>
       ^{fvInput v}
@@ -348,27 +349,29 @@ formBook user day time items offers role roles extra = do
           #{errs}
 
 <details.mdc-list data-mdc-auto-init=MDCList
-  ontoggle="document.getElementById('iconExpandRoles').textContent = this.open ? 'expand_less' : 'expand_more'">
+  ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
   <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+    <span.mdc-list-item__ripple>
     <span.mdc-list-item__start>
       <i.material-symbols-outlined>info
     <span.mdc-list-item__content>
       <div.mdc-list-item__primary-text>
         _{MsgSelectedStaff}
     <span.mdc-list-item__end>
-      <i.material-symbols-outlined #iconExpandRoles>expand_more
+      <i.expand.material-symbols-outlined>expand_more
   ^{fvInput roleV}
   
 <details.mdc-list data-mdc-auto-init=MDCList
-  ontoggle="document.getElementById('iconExpandOffers').textContent = this.open ? 'expand_less' : 'expand_more'">
+  ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
   <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+    <span.mdc-list-item__ripple>
     <span.mdc-list-item__start>
       <i.material-symbols-outlined>info
     <span.mdc-list-item__content>
       <div.mdc-list-item__primary-text>
         _{MsgSelectedServices}
     <span.mdc-list-item__end>
-      <i.material-symbols-outlined #iconExpandOffers>expand_more
+      <i.expand.material-symbols-outlined>expand_more
   ^{fvInput offersV}
 |]
     return (r,w)
@@ -458,27 +461,29 @@ $forall v <- [dayV,timeV]
         #{errs}
 
 <details.mdc-list data-mdc-auto-init=MDCList
-  ontoggle="document.getElementById('iconExpandRoles').textContent = this.open ? 'expand_less' : 'expand_more'">
+  ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
   <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+    <span.mdc-list-item__ripple>
     <span.mdc-list-item__start>
       <i.material-symbols-outlined>info
     <span.mdc-list-item__content>
       <div.mdc-list-item__primary-text>
         _{MsgSelectedStaff}
     <span.mdc-list-item__end>
-      <i.material-symbols-outlined #iconExpandRoles>expand_more
+      <i.expand.material-symbols-outlined>expand_more
   ^{fvInput roleV}
 
 <details.mdc-list data-mdc-auto-init=MDCList
-  ontoggle="document.getElementById('iconExpandOffers').textContent = this.open ? 'expand_less' : 'expand_more'">
+  ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
   <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+    <span.mdc-list-item__ripple>
     <span.mdc-list-item__start>
       <i.material-symbols-outlined>info
     <span.mdc-list-item__content>
       <div.mdc-list-item__primary-text>
         _{MsgSelectedServices}
     <span.mdc-list-item__end>
-      <i.material-symbols-outlined #iconExpandOffers>expand_more
+      <i.expand.material-symbols-outlined>expand_more
   ^{fvInput offersV}
 |]
     return (r,w)
@@ -542,7 +547,7 @@ formStaff items offers roles extra = do
 ^{fvInput rolesV}
 
 <details.mdc-list data-mdc-auto-init=MDCList
-  ontoggle="document.getElementById('iconExpandOffers').textContent = this.open ? 'expand_less' : 'expand_more'">
+  ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
   <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
     <span.mdc-list-item__ripple>
     <span.mdc-list-item__start>
@@ -551,7 +556,7 @@ formStaff items offers roles extra = do
       <div.mdc-list-item__primary-text>
         _{MsgSelectedServices}
     <span.mdc-list-item__end>
-      <i.material-symbols-outlined #iconExpandOffers>expand_more
+      <i.expand.material-symbols-outlined>expand_more
   ^{fvInput offersV}
 |]
     return (r,w)
