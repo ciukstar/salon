@@ -10,7 +10,7 @@ module Handler.Book
   , getBookStaffR
   , getBookStaffBackR
   , getBookTimeR
-  , postBookRecordR
+  , getBookRecordR
   ) where
 
 import Control.Monad (unless, forM)
@@ -89,12 +89,12 @@ import Model
 import Menu (menu)
 
 
-postBookRecordR :: Handler Html
-postBookRecordR = do
+getBookRecordR :: Handler Html
+getBookRecordR = do
     user <- maybeAuth
     offers <- runDB queryOffers
     roles <- runDB $ queryRoles offers    
-    ((fr,fw),et) <- runFormPost $ formBook user Nothing Nothing [] offers Nothing roles
+    ((fr,fw),et) <- runFormGet $ formBook user Nothing Nothing [] offers Nothing roles
     case fr of
       FormSuccess (items,role,day,time,Entity uid _) -> do
           bids <- forM items $ \(_,Entity oid _) -> runDB $
@@ -141,7 +141,7 @@ getBookTimeR = do
                                      ^{fw}
                                  |]
           msgs <- getMessages
-          (fw,et) <- generateFormPost $ formBook user (Just day) (Just time) items items role (maybeToList role)
+          (fw,et) <- generateFormGet' $ formBook user (Just day) (Just time) items items role (maybeToList role)
           defaultLayout $ do
               idFormNext <- newIdent
               setTitleI MsgAppointmentTime
@@ -179,34 +179,17 @@ getBookStaffBackR = do
                                  |]
           idFormNext <- newIdent
           now <- liftIO getCurrentTime
-          ((fr,fw),et) <- runFormGet $ formTime
-              Nothing Nothing items items role (maybeToList role)
+          ((fr,fw),et) <- runFormGet $ formTime Nothing Nothing items items role (maybeToList role)
           msgs <- getMessages
           defaultLayout $ do
               setTitleI MsgStaff
               $(widgetFile "book/staff")
-      FormFailure errs -> defaultLayout $ do
+      _ -> defaultLayout $ do
           msgs <- getMessages
           idFormBack <- newIdent
           let formBack = [whamlet|<form method=get action=@{BookStartR} enctype=#{et} ##{idFormBack} novalidate hidden>^{fw}|]
           idFormNext <- newIdent
           setTitleI MsgOffers
-          [whamlet|
-<ul>
-  $forall err <- errs
-    <li>
-      <b style="color:red">#{err}
-|]
-          $(widgetFile "book/offers")
-      FormMissing -> defaultLayout $ do
-          msgs <- getMessages
-          idFormBack <- newIdent
-          let formBack = [whamlet|<form method=get action=@{BookStartR} enctype=#{et} ##{idFormBack} novalidate hidden>^{fw}|]
-          idFormNext <- newIdent
-          setTitleI MsgOffers
-          [whamlet|
-<b style="color:red">Missing form
-|]
           $(widgetFile "book/offers")
 
     

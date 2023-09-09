@@ -33,7 +33,7 @@
   <details>
     <summary>View details
     <ul>
-      $forall (Entity bid (Book _ _ _ date time),Entity _ (Offer _ oname price _ _ _),role,Entity _ (User uname _ _ _ _)) <- books
+      $forall (Entity bid (Book _ _ _ date time),Entity _ (Offer _ oname _ _ _ _),role,Entity _ (User uname _ _ _ _)) <- books
         $maybe Entity _ (Role _ _ rname _) <- role
           <li>#{show date}T#{show time}, #{oname}, #{rname}, #{uname}
         $nothing

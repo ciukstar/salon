@@ -1,6 +1,6 @@
 
 header
-  #dlgBrandDelete
+  #dlgAboutUsDelete
     div.mdc-dialog__actions
       gap: 0.5rem
 

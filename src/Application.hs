@@ -52,7 +52,7 @@ import Handler.Appointments (getAppointmentsR, getAppointmentR)
 import Handler.Contacts (getContactR)
 import Handler.Book
     ( getBookStartR, getBookOffersR, getBookStaffR, getBookStaffBackR
-    , getBookTimeR, postBookRecordR
+    , getBookTimeR, getBookRecordR
     )
 import Handler.AboutUs (getAboutUsR)
 import Handler.Services

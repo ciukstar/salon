@@ -34,6 +34,21 @@
 
   ^{formBack}
 
+  $case fr
+    $of FormSuccess _
+    $of _
+      <div.mdc-banner role=banner data-mdc-auto-init=MDCBanner>
+        <div.mdc-banner__content role=alertdialog aria-live=assertive>
+          <div.mdc-banner__graphic-text-wrapper>
+            <div.mdc-banner__graphic role=img style="background-color:var(--mdc-theme-error)">
+              <i.mdc-banner__icon.material-symbols-outlined>warning
+            <div.mdc-banner__text>
+              _{MsgInvalidFormData}
+          <div.mdc-banner__actions>
+            <button.mdc-banner__primary-action.mdc-icon-button type=button>
+              <span.mdc-icon-button__ripple>
+              <i.material-symbols-outlined>close
+
   <form method=get action=@{BookStaffR} enctype=#{et} ##{idFormNext} novalidate>
     ^{fw}
 

@@ -97,7 +97,7 @@
           <span.mdc-button__focus-ring>
           <span.mdc-button__label>_{MsgSignIn}
 
-  <form method=post action=@{BookRecordR} enctype=#{et} ##{idFormNext} novalidate>
+  <form method=get action=@{BookRecordR} enctype=#{et} ##{idFormNext} novalidate>
     ^{fw}
 
 <footer #footerActions>
