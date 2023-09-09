@@ -1,3 +1,5 @@
+InvalidFormData: Date de formular nevalide
+MissingForm: Lipsește formularul
 SelectedTime: Ora selectată
 LoginToIdentifyCustomer: Vă rugăm să vă autentificați pentru a identifica clientul
 AlreadyHaveAnAccount: Aveți deja un cont

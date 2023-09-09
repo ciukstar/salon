@@ -51,7 +51,7 @@ import System.Environment.Blank (getEnv)
 import Handler.Appointments (getAppointmentsR, getAppointmentR)
 import Handler.Contacts (getContactR)
 import Handler.Book
-    ( getBookStartR, getBookOffersR, getBookStaffR
+    ( getBookStartR, getBookOffersR, getBookStaffR, getBookStaffBackR
     , getBookTimeR, postBookRecordR
     )
 import Handler.AboutUs (getAboutUsR)

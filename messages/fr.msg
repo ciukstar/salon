@@ -1,3 +1,5 @@
+InvalidFormData: Données de formulaire incorrectes
+MissingForm: Formulaire manquant
 SelectedTime: Heure sélectionnée
 LoginToIdentifyCustomer: Veuillez vous connecter pour identifier le client
 AlreadyHaveAnAccount: Avoir déjà un compte

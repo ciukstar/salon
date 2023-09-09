@@ -4,11 +4,12 @@
 /appointments/#BookId AppointmentR  GET
 /appointments 	      AppointmentsR GET
 
-/book/post   BookRecordR POST
-/book/time   BookTimeR   GET
-/book/staff  BookStaffR  GET
-/book/offers BookOffersR GET
-/book  	     BookStartR	 GET
+/book/post        BookRecordR    POST
+/book/time   	  BookTimeR      GET
+/book/staff/back  BookStaffBackR GET
+/book/staff  	  BookStaffR     GET
+/book/offers 	  BookOffersR    GET
+/book  	     	  BookStartR	 GET
 
 /aboutus AboutUsR GET
 

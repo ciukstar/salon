@@ -1,3 +1,5 @@
+InvalidFormData: Неверные данные формы
+MissingForm: Отсутствует форма
 SelectedTime: Выбранное время
 LoginToIdentifyCustomer: Пожалуйста, войдите, чтобы идентифицировать клиента
 AlreadyHaveAnAccount: Уже есть учетная запись

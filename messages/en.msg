@@ -1,3 +1,5 @@
+InvalidFormData: Invalid form data
+MissingForm: Missing form
 SelectedTime: Selected time
 LoginToIdentifyCustomer: Please login to identify the customer
 AlreadyHaveAnAccount: Already have an account

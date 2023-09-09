@@ -8,6 +8,7 @@ module Handler.Book
   ( getBookStartR
   , getBookOffersR
   , getBookStaffR
+  , getBookStaffBackR
   , getBookTimeR
   , postBookRecordR
   ) where
@@ -41,7 +42,7 @@ import Yesod.Form.Types
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
     )
 import Yesod.Form.Fields (timeField, dayField)
-import Yesod.Form.Functions (mreq, check, mopt, runFormPost, runFormGet, generateFormPost)
+import Yesod.Form.Functions (mreq, check, mopt, runFormPost, runFormGet, generateFormPost, generateFormGet')
 import Settings (widgetFile)
 
 import Yesod.Persist.Core (runDB)
@@ -57,7 +58,7 @@ import Database.Esqueleto.Experimental
 import Foundation
     ( Handler, Widget
     , Route
-      ( BookStartR, BookOffersR, BookTimeR, BookStaffR, BookRecordR
+      ( BookStartR, BookOffersR, BookStaffBackR, BookStaffR, BookTimeR, BookRecordR
       , AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR, AccountR
       , HomeR, AppointmentsR, AppointmentR, ProfileR
       )
@@ -65,13 +66,13 @@ import Foundation
     , AppMessage
       ( MsgBook, MsgPhoto, MsgChooseServicesToBook, MsgServices
       , MsgSymbolHour, MsgSymbolMinute, MsgStaff, MsgNoPreference
-      , MsgMaximumAvailability, MsgSelectStaff
+      , MsgMaximumAvailability, MsgSelectStaff, MsgInvalidFormData
       , MsgSelectAtLeastOneServicePlease, MsgOffer, MsgAppointmentTime
       , MsgRole, MsgSignUp, MsgSignIn, MsgSelectedServices
       , MsgSelectedStaff, MsgOffers, MsgCustomerInformation
       , MsgCustomer, MsgStepNofM, MsgContinue, MsgNotYourAccount
       , MsgLogin, MsgDay, MsgTime , MsgEnd, MsgAlreadyHaveAnAccount
-      , MsgLoginToIdentifyCustomer, MsgSelectedTime
+      , MsgLoginToIdentifyCustomer, MsgSelectedTime, MsgMissingForm
       )
     )
 
@@ -109,23 +110,17 @@ postBookRecordR = do
           defaultLayout $ do
               $(widgetFile "book/end")
               
-      FormFailure errs -> defaultLayout $ do
+      _ -> defaultLayout $ do
           msgs <- getMessages
           idFormBack <- newIdent
           let formBack = [whamlet|
                                  <details>
                                    <summary>Form back 5
-                                   <form method=get action=@{BookStaffR} enctype=#{et} ##{idFormBack} novalidate>
+                                   <form method=get action=@{BookStaffBackR} enctype=#{et} ##{idFormBack} novalidate>
                                      ^{fw}
                                  |]
           idFormNext <- newIdent
           $(widgetFile "book/time")
-          [whamlet|
-<ul>
-  $forall err <- errs
-    <li style="color:red">#{err}
-|]
-      _ -> defaultLayout [whamlet|Unknown error|]
     
 
 
@@ -136,51 +131,83 @@ getBookTimeR = do
     offers <- runDB queryOffers
     roles <- runDB $ queryRoles offers
     ((fr,fw),et) <- runFormGet $ formTime Nothing Nothing [] offers Nothing roles
+    idFormBack <- newIdent
     case fr of
       FormSuccess (items,role,day,time) -> do
-          idFormBack <- newIdent
           let formBack = [whamlet|
                                  <details>
                                    <summary>Form back 4
-                                   <form method=get action=@{BookStaffR} enctype=#{et} ##{idFormBack} novalidate>
+                                   <form method=get action=@{BookStaffBackR} enctype=#{et} ##{idFormBack} novalidate>
                                      ^{fw}
                                  |]
-          (fw,et) <- generateFormPost $ formBook user (Just day) (Just time) items items role (maybeToList role)
           msgs <- getMessages
+          (fw,et) <- generateFormPost $ formBook user (Just day) (Just time) items items role (maybeToList role)
           defaultLayout $ do
               idFormNext <- newIdent
               setTitleI MsgAppointmentTime
               $(widgetFile "book/time")
               
-      FormFailure errs -> do
-          idFormBack <- newIdent
+      _ -> do
           let formBack = [whamlet|
                                  <details>
                                    <summary>Form back 3
                                    <form method=get action=@{BookOffersR} enctype=#{et} ##{idFormBack} novalidate>
                                      ^{fw}
                                  |]
+          msgs <- getMessages
+          defaultLayout $ do
+              idFormNext <- newIdent
+              setTitleI MsgAppointmentTime
+              $(widgetFile "book/staff")
+
+    
+getBookStaffBackR :: Handler Html
+getBookStaffBackR = do
+    setUltDestCurrent
+    user <- maybeAuth
+    offers <- runDB queryOffers
+    roles <- runDB $ queryRoles offers
+    ((fr,fw),et) <- runFormGet $ formStaff [] offers roles
+    case fr of
+      FormSuccess (items,role) -> do
+          idFormBack <- newIdent
+          let formBack = [whamlet|
+                                 <details>
+                                   <summary>Form back 2
+                                   <form method=get action=@{BookOffersR} enctype=#{et} ##{idFormBack} novalidate>
+                                     ^{fw}
+                                 |]
           idFormNext <- newIdent
+          now <- liftIO getCurrentTime
+          ((fr,fw),et) <- runFormGet $ formTime
+              Nothing Nothing items items role (maybeToList role)
           msgs <- getMessages
           defaultLayout $ do
               setTitleI MsgStaff
               $(widgetFile "book/staff")
-              [whamlet|
+      FormFailure errs -> defaultLayout $ do
+          msgs <- getMessages
+          idFormBack <- newIdent
+          let formBack = [whamlet|<form method=get action=@{BookStartR} enctype=#{et} ##{idFormBack} novalidate hidden>^{fw}|]
+          idFormNext <- newIdent
+          setTitleI MsgOffers
+          [whamlet|
 <ul>
   $forall err <- errs
-    <li><b style="color:red">#{err}
+    <li>
+      <b style="color:red">#{err}
 |]
-          
+          $(widgetFile "book/offers")
       FormMissing -> defaultLayout $ do
           msgs <- getMessages
           idFormBack <- newIdent
-          let formBack = [whamlet|<form method=get action=@{BookOffersR} enctype=#{et} novalidate ##{idFormBack} hidden>^{fw}|]
+          let formBack = [whamlet|<form method=get action=@{BookStartR} enctype=#{et} ##{idFormBack} novalidate hidden>^{fw}|]
           idFormNext <- newIdent
-          setTitleI MsgStaff
+          setTitleI MsgOffers
           [whamlet|
 <b style="color:red">Missing form
 |]
-          $(widgetFile "book/staff")
+          $(widgetFile "book/offers")
 
     
 getBookStaffR :: Handler Html
@@ -201,9 +228,9 @@ getBookStaffR = do
                                  |]
           idFormNext <- newIdent
           now <- liftIO getCurrentTime
-          ((fr,fw),et) <- runFormGet $ formTime
-              (Just $ utctDay now)
-              (Just $ timeToTimeOfDay $ utctDayTime now)
+          (fw,et) <- generateFormGet' $ formTime
+              Nothing
+              Nothing
               items items
               role (maybeToList role)
           msgs <- getMessages
@@ -269,11 +296,11 @@ getBookStartR = do
     user <- maybeAuth
     offers <- runDB queryOffers
     ((fr,fw),et) <- runFormGet $ formOffers [] offers
+    msgs <- getMessages
+    setUltDestCurrent
     let items = case fr of
           FormSuccess xs -> xs
           _ -> []
-    msgs <- getMessages
-    setUltDestCurrent
     defaultLayout $ do
         setTitleI MsgOffers
         $(widgetFile "book/start")
@@ -605,18 +632,6 @@ formOffers items offers extra = do
         , fsAttrs = []
         } (Just (filter (`elem` items) offers))
     let w = [whamlet|
-$maybe errs <- fvErrors v
-  <div.mdc-banner role=banner data-mdc-auto-init=MDCBanner>
-    <div.mdc-banner__content role=alertdialog aria-live=assertive>
-      <div.mdc-banner__graphic-text-wrapper>
-        <div.mdc-banner__graphic role=img style="background-color:var(--mdc-theme-error)">
-          <i.mdc-banner__icon.material-symbols-outlined>warning
-        <div.mdc-banner__text>
-          #{errs}
-      <div.mdc-banner__actions>
-        <button.mdc-banner__primary-action.mdc-icon-button type=button>
-          <span.mdc-icon-button__ripple>
-          <i.material-symbols-outlined>close
 #{extra}
 ^{fvInput v}
 |]
