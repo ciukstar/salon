@@ -7,7 +7,8 @@ import Foundation
     ( Widget
     , ResourcesR (DocsR)
     , Route
-      ( ResourcesR, AdminR, ContactR, AboutUsR, AppointmentsR, BookStartR
+      ( ResourcesR, AdminR, ContactR, AboutUsR, AppointmentsR
+      , V2BookOffersR, BookStartR
       , ServicesR, HomeR, StaticR
       )
     , AdminR

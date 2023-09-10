@@ -101,7 +101,6 @@ instance Yesod App where
     defaultLayout :: Widget -> Handler Html
     defaultLayout widget = do
         master <- getYesod
-        curr <- getCurrentRoute
         langs <- languages
         let lang = fromMaybe "en" . LS.head $ langs
         pc <- widgetToPageContent $ do
@@ -180,6 +179,12 @@ instance Yesod App where
     
     
     isAuthorized ContactR _ = return Authorized
+
+    
+    isAuthorized V2BookCustomerR _ = return Authorized
+    isAuthorized V2BookTimeR _ = return Authorized
+    isAuthorized V2BookStaffR _ = return Authorized
+    isAuthorized V2BookOffersR _ = return Authorized
     
     isAuthorized BookStartR _ = return Authorized
     isAuthorized BookOffersR _ = return Authorized

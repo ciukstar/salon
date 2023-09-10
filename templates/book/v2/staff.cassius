@@ -1,0 +1,21 @@
+
+header.mdc-top-app-bar
+  div.mdc-top-app-bar__row
+    transition: height 0.3s ease-out
+
+main
+  margin-bottom: 4rem
+
+footer
+  position: fixed
+  bottom: 0
+  width: 100%
+  display: flex
+  flex-direction: row
+  justify-content: flex-end
+  background-color: var(--mdc-theme-secondary)
+  padding: 1rem
+  box-sizing: border-box
+
+aside.mdc-snackbar
+  bottom: calc(4rem + 8px)

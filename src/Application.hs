@@ -53,6 +53,11 @@ import Handler.Contacts (getContactR)
 import Handler.Book
     ( getBookStartR, getBookOffersR, getBookStaffR, getBookStaffBackR
     , getBookTimeR, getBookRecordR
+
+    , getV2BookOffersR, postV2BookOffersR
+    , getV2BookStaffR, postV2BookStaffR
+    , getV2BookTimeR, postV2BookTimeR
+    , getV2BookCustomerR, postV2BookCustomerR
     )
 import Handler.AboutUs (getAboutUsR)
 import Handler.Services

@@ -26,6 +26,13 @@
           <span.mdc-deprecated-list-item__ripple>
           <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>volunteer_activism
           <span.mdc-deprecated-list-item__text>_{MsgServices}
+        <a.mdc-deprecated-list-item href=@{V2BookOffersR}
+          :Just V2BookOffersR /= curr:tabindex=-1
+          :Just V2BookOffersR == curr:tabindex=0
+          :Just V2BookOffersR == curr:.mdc-deprecated-list-item--activated>
+          <span.mdc-deprecated-list-item__ripple>
+          <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>book_online
+          <span.mdc-deprecated-list-item__text>_{MsgBook} v2
         <a.mdc-deprecated-list-item href=@{BookStartR}
           :Just BookStartR /= curr:tabindex=-1
           :Just BookStartR == curr:tabindex=0

@@ -1,0 +1,89 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--prominent.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section-align-start>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button
+        href=@?{(V2BookTimeR,(((oids <> rids) <> dates) <> times))}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light style="white-space:normal;line-height:1">
+        <div #divStepCounter style="margin-bottom:1rem;overflow:hidden">
+          <small>
+            <small>_{MsgStepNofM 4 4}
+        <div style="white-space:inherit;overflow:inherit;text-overflow:inherit;line-height:inherit">
+          _{MsgCustomerInformation}
+
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
+      $maybe Entity uid _ <- user
+        <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{ProfileR} role=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" alt=_{MsgPhoto}
+            onerror="this.src = '@{PhotoPlaceholderR}'">
+      $nothing
+        <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{AuthR LoginR} role=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>login
+
+<main.mdc-top-app-bar--prominent-fixed-adjust>
+
+  $maybe Entity _ (User name _ _ fname email) <- user
+
+    <details.mdc-list open>
+      <summary.mdc-list-item--with-leading-icon.mdc-list-item
+        .mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+        <span.mdc-list-item__ripple>
+        <span.mdc-list-item__start>
+          <i.material-symbols-outlined>info
+        <span.mdc-list-item__content>
+          <div.mdc-list-item__primary-text>_{MsgCustomer}
+        <span.mdc-list-item__end>
+          <i.material-symbols-outlined>expand_more
+      <div.mdc-list-item.mdc-list-item--with-three-lines>
+        <span.mdc-list-item__content>
+          <div.mdc-list-item__primary-text>
+            #{name}
+          <div.mdc-list-item__secondary-text>
+            $maybe email <- email
+              #{email}
+          <div.mdc-list-item__secondary-text>
+            $maybe fname <- fname
+              #{fname}
+
+      <small style="margin:1rem">
+        <span>_{MsgNotYourAccount}?
+        <a href=@{AuthR LoginR}>_{MsgLogin}
+  $nothing
+    <div #divActions>
+      <a.mdc-button.mdc-button--outlined href=@{AccountR} role=button>
+        <span.mdc-button__ripple>
+        <span.mdc-button__focus-ring>
+        <span.mdc-button__label>_{MsgSignUp}
+      <div style="display:inherit;flex-direction:inherit">
+        <div style="text-align:center">
+          <small>_{MsgAlreadyHaveAnAccount}?
+        <a.mdc-button.mdc-button--outlined href=@{AuthR LoginR} role=button>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgSignIn}
+
+  <form method=post action=@{V2BookCustomerR} enctype=#{et} #formCustomer novalidate>
+    ^{fw}
+
+<footer #footerActions>
+  <button.mdc-button.mdc-button--raised.mdc-button--icon-leading type=submit form=formCustomer>
+    <span.mdc-button__ripple>
+    <span.mdc-button__focus-ring>
+    <i.mdc-button__icon.material-symbols-outlined>download_done
+    <span.mdc-button__label>_{MsgBook}
+
+$forall (_,msg) <- msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
+    <div.mdc-snackbar__surface>
+      <div.mdc-snackbar__label>#{msg}
+      <div.mdc-snackbar__actions>
+        <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>close

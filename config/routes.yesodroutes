@@ -4,6 +4,12 @@
 /appointments/#BookId AppointmentR  GET
 /appointments 	      AppointmentsR GET
 
+
+/v2/book/customer V2BookCustomerR GET POST
+/v2/book/time     V2BookTimeR     GET POST
+/v2/book/staff    V2BookStaffR    GET POST
+/v2/book/offers   V2BookOffersR   GET POST
+
 /book/record      BookRecordR    GET
 /book/time   	  BookTimeR      GET
 /book/staff/back  BookStaffBackR GET
