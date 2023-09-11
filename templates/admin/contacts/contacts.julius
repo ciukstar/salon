@@ -3,16 +3,4 @@ window.mdc.autoInit();
 
 Array.from(
   document.querySelectorAll('aside.mdc-snackbar')
-).map(x => x.MDCSnackbar).forEach(function (x) {
-  x.listen('MDCSnackbar:opening',function (e) {
-    [document.getElementById('fabAddContacts')].filter(x => !!x).forEach(function (x) {
-      x.style.bottom = '4rem';
-    });
-  });
-  x.listen('MDCSnackbar:closing',function (e) {
-    [document.getElementById('fabAddContacts')].filter(x => !!x).forEach(function (x) {
-      x.style.bottom = '1rem';
-    });
-  });
-  x.open();
-});
+).map(x => x.MDCSnackbar).forEach(function (x) { x.open(); });

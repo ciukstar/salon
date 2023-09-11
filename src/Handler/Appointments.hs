@@ -23,7 +23,7 @@ import Database.Esqueleto.Experimental
 import Foundation
     ( Handler
     , Route
-      ( ProfileR, AppointmentsR, AppointmentR, BookStartR, AuthR
+      ( ProfileR, AppointmentsR, AppointmentR, BookOffersR, AuthR
       , PhotoPlaceholderR, AccountPhotoR
       )
     , AppMessage

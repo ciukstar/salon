@@ -48,7 +48,7 @@
                 <i.material-symbols-outlined>close
     $of _
 
-  <form method=post action=@{V2BookOffersR} enctype=#{et} #formOffers novalidate>
+  <form method=post action=@?{(BookOffersR,oids)} enctype=#{et} #formOffers novalidate>
     ^{fw}
 
 <footer>

@@ -1,7 +1,8 @@
 <header.mdc-top-app-bar.mdc-top-app-bar--prominent.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section-align-start>
-      <button.mdc-top-app-bar__navigation-icon.mdc-icon-button type=submit form=#{idFormBack}>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button
+        href=@?{(BookOffersR,oids)}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
@@ -32,28 +33,11 @@
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
 
-  ^{formBack}
-
-  $case fr
-    $of FormSuccess _
-    $of _
-      <div.mdc-banner role=banner data-mdc-auto-init=MDCBanner>
-        <div.mdc-banner__content role=alertdialog aria-live=assertive>
-          <div.mdc-banner__graphic-text-wrapper>
-            <div.mdc-banner__graphic role=img style="background-color:var(--mdc-theme-error)">
-              <i.mdc-banner__icon.material-symbols-outlined>warning
-            <div.mdc-banner__text>
-              _{MsgInvalidFormData}
-          <div.mdc-banner__actions>
-            <button.mdc-banner__primary-action.mdc-icon-button type=button>
-              <span.mdc-icon-button__ripple>
-              <i.material-symbols-outlined>close
-
-  <form method=get action=@{BookStaffR} enctype=#{et} ##{idFormNext} novalidate>
+  <form method=post action=@?{(BookStaffR,oids)} enctype=#{et} #formStaff novalidate>
     ^{fw}
 
 <footer>
-  <button.mdc-button.mdc-button--raised.mdc-button--icon-trailing type=submit form=#{idFormNext}>
+  <button.mdc-button.mdc-button--raised.mdc-button--icon-trailing type=submit form=formStaff>
     <span.mdc-button__ripple>
     <span.mdc-button__focus-ring>
     <span.mdc-button__label>_{MsgContinue}

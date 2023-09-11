@@ -27,31 +27,40 @@
   <figure style="text-align:center">
     <i.material-symbols-outlined style="font-size:4rem;color:var(--theme-success)">check_circle
     <figcaption>
-      You successfully created your booking.
-
-
-  <details>
-    <summary>View details
-    <ul>
-      $forall (Entity bid (Book _ _ _ date time),Entity _ (Offer _ oname _ _ _ _),role,Entity _ (User uname _ _ _ _)) <- books
-        $maybe Entity _ (Role _ _ rname _) <- role
-          <li>#{show date}T#{show time}, #{oname}, #{rname}, #{uname}
-        $nothing
-          <li>#{show date}T#{show time}, #{oname}, #{uname}
-        <a.mdc-button.mdc-button--raised href=@{AppointmentR bid} role=button>
-          <span.mdc-button__ripple>
-          <span.mdc-button__focus-ring>
-          <span.mdc-button__label>Go to
+      _{MsgYouSuccessfullyCreatedYourBooking}.
   <p>
-    <a.mdc-button.mdc-button--raised href=@{AppointmentsR} role=button>
+    <a.mdc-button.mdc-button--raised href=@{BookOffersR} role=button>
       <span.mdc-button__ripple>
       <span.mdc-button__focus-ring>
-      <span.mdc-button__label>View all my appointments
-  <p>
-    <a.mdc-button.mdc-button--raised href=@{BookStartR} role=button>
-      <span.mdc-button__ripple>
-      <span.mdc-button__focus-ring>
-      <span.mdc-button__label>Make new appointment
+      <span.mdc-button__label>_{MsgBookNewAppointment}
+
+<details.mdc-list data-mdc-auto-init=MDCList
+  ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+  <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+    <span.mdc-list-item__ripple>
+    <span.mdc-list-item__start>
+      <i.material-symbols-outlined>info
+    <span.mdc-list-item__content>
+      <div.mdc-list-item__primary-text>
+        _{MsgShowDetails}
+    <span.mdc-list-item__end>
+      <i.expand.material-symbols-outlined>expand_more
+
+  $forall (Entity bid (Book _ _ _ date time),Entity _ (Offer _ oname price _ _ _),Entity _ (Service sname _ _ _ _ _),role,empl,Entity _ (User uname _ _ _ _)) <- books
+    <a.mdc-list-item.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon href=@{AppointmentR bid}>
+      <span.mdc-list-item__ripple>
+      <span.mdc-list-item__content>
+        <div.mdc-list-item__primary-text>
+          #{sname} (#{oname}: #{show price})
+        <div.mdc-list-item__secondary-text>
+          #{show date} #{show time}
+          $maybe Entity _ (Role _ _ rname _) <- role
+            $maybe Entity _ (Staff ename _ _ _ _ _) <- empl
+              \ #{ename} (#{rname})
+        <div.mdc-list-item__secondary-text>
+          #{uname}
+      <span.mdc-list-item__end>
+        <i.material-symbols-outlined>arrow_forward_ios
 
 $forall (_,msg) <- msgs
   <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>

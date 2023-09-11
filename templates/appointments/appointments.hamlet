@@ -29,7 +29,7 @@
       <figcaption>
         _{MsgNoAppointmentsYet}.
         <p>
-          <a.mdc-button.mdc-button--raised href=@{BookStartR} role=button>
+          <a.mdc-button.mdc-button--raised href=@{BookOffersR} role=button>
             <span.mdc-button__ripple>
             <span.mdc-button__focus-ring>
             <span.mdc-button__label>_{MsgBookAppointment}

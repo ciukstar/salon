@@ -8,7 +8,7 @@ import Foundation
     , ResourcesR (DocsR)
     , Route
       ( ResourcesR, AdminR, ContactR, AboutUsR, AppointmentsR
-      , V2BookOffersR, BookStartR
+      , BookOffersR
       , ServicesR, HomeR, StaticR
       )
     , AdminR

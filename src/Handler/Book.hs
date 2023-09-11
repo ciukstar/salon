@@ -5,24 +5,18 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module Handler.Book
-  ( getBookStartR
-  , getBookOffersR
+  ( getBookOffersR
+  , postBookOffersR
   , getBookStaffR
-  , getBookStaffBackR
+  , postBookStaffR
   , getBookTimeR
-  , getBookRecordR
-
-  , getV2BookOffersR
-  , postV2BookOffersR
-  , getV2BookStaffR
-  , postV2BookStaffR
-  , getV2BookTimeR
-  , postV2BookTimeR
-  , getV2BookCustomerR
-  , postV2BookCustomerR
+  , postBookTimeR
+  , getBookCustomerR
+  , postBookCustomerR
+  , getBookEndR
   ) where
 
-import Control.Monad (unless, forM, when, forM_)
+import Control.Monad (unless, forM, when)
 import Control.Monad.Trans.Reader (ReaderT)
 import Data.Either (isLeft)
 import Data.Maybe (maybeToList)
@@ -30,28 +24,26 @@ import Data.Fixed (Centi)
 import qualified Data.List.Safe as LS (head)
 import Data.Text (unpack, intercalate, pack)
 import qualified Data.Text as T (null)
-import Data.Time
-    ( Day, TimeOfDay, getCurrentTime, UTCTime (utctDay, utctDayTime)
-    , timeToTimeOfDay
-    )
+import Data.Time (Day, TimeOfDay)
 import Data.Time.Format (formatTime, defaultTimeLocale)
 import Text.Hamlet (Html)
 import Text.Shakespeare.I18N (renderMessage, SomeMessage (SomeMessage))
 import Yesod.Core
-    ( Yesod(defaultLayout), getYesod, languages, whamlet, newIdent
-    , setUltDestCurrent, MonadIO (liftIO), getMessages, redirect, getRequest, YesodRequest (reqGetParams), addMessage, addMessageI
+    ( Yesod(defaultLayout), getYesod, languages, whamlet
+    , setUltDestCurrent, getMessages, redirect, getRequest
+    , YesodRequest (reqGetParams), addMessageI
     )
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Auth (maybeAuth, Route (LoginR))
 import Yesod.Form.Types
-    ( MForm, FormResult (FormSuccess, FormFailure, FormMissing)
+    ( MForm, FormResult (FormSuccess, FormFailure)
     , Field (Field, fieldParse, fieldView, fieldEnctype)
     , Enctype (UrlEncoded)
     , FieldView (fvInput, fvErrors)
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
     )
 import Yesod.Form.Fields (timeField, dayField)
-import Yesod.Form.Functions (mreq, check, mopt, runFormPost, runFormGet, generateFormPost, generateFormGet')
+import Yesod.Form.Functions (mreq, check, mopt, runFormPost, generateFormPost)
 import Settings (widgetFile)
 
 import Yesod.Persist.Core (runDB)
@@ -67,11 +59,9 @@ import Database.Esqueleto.Experimental
 import Foundation
     ( Handler, Widget
     , Route
-      ( BookStartR, BookOffersR, BookStaffBackR, BookStaffR, BookTimeR, BookRecordR
-      , AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR, AccountR
-      , HomeR, AppointmentsR, AppointmentR, ProfileR
-
-      , V2BookOffersR, V2BookStaffR, V2BookTimeR, V2BookCustomerR
+      ( AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR, AccountR
+      , HomeR, AppointmentR, ProfileR
+      , BookOffersR, BookStaffR, BookTimeR, BookCustomerR, BookEndR
       )
     , AdminR (AdmStaffPhotoR)
     , AppMessage
@@ -83,7 +73,9 @@ import Foundation
       , MsgSelectedStaff, MsgOffers, MsgCustomerInformation
       , MsgCustomer, MsgStepNofM, MsgContinue, MsgNotYourAccount
       , MsgLogin, MsgDay, MsgTime , MsgEnd, MsgAlreadyHaveAnAccount
-      , MsgLoginToIdentifyCustomer, MsgSelectedTime, MsgMissingForm
+      , MsgLoginToIdentifyCustomer, MsgSelectedTime, MsgRecordAdded
+      , MsgYouSuccessfullyCreatedYourBooking, MsgShowDetails
+      , MsgBookNewAppointment
       )
     )
 
@@ -101,39 +93,50 @@ import Model
 import Menu (menu)
 
 
-postV2BookCustomerR :: Handler Html
-postV2BookCustomerR = do
+getBookEndR :: Handler Html
+getBookEndR = do
+    bids <- (toSqlKey . read . unpack . snd <$>) . filter ((== "bid") . fst) . reqGetParams <$> getRequest
+    books <- runDB $ select $ do
+        x :& o :& s :& r :& e :& u <- from $ table @Book
+            `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
+            `innerJoin` table @Service `on` (\(_ :& o :& s) -> o ^. OfferService ==. s ^. ServiceId)
+            `leftJoin` table @Role `on` (\(x :& _ :& _ :& r) -> x ^. BookRole ==. r ?. RoleId)
+            `leftJoin` table @Staff `on` (\(_ :& _ :& _ :& r :& e) -> r ?. RoleStaff ==. e ?. StaffId)
+            `innerJoin` table @User `on` (\(x :& _ :& _ :& _ :& _ :& u) -> x ^. BookUser ==. u ^. UserId)
+        where_ $ x ^. BookId `in_` valList bids
+        return (x,o, s,r,e,u)
     user <- maybeAuth
-    offers <- runDB $ queryOffers2 []
-    roles <- runDB $ queryRoles offers
-    ((fr,fw),et) <- runFormPost $ formBook user Nothing Nothing [] offers Nothing roles
+    msgs <- getMessages
+    defaultLayout $ do
+        setTitleI MsgEnd
+        $(widgetFile "book/end")
+
+
+postBookCustomerR :: Handler Html
+postBookCustomerR = do
+    rids <- filter ((== "rid") . fst) . reqGetParams <$> getRequest
+    oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
+    dates <- filter ((== "date") . fst) . reqGetParams <$> getRequest
+    times <- filter ((== "time") . fst) . reqGetParams <$> getRequest
+    user <- maybeAuth
+    ioffers <- runDB $ queryOffers (toSqlKey . read . unpack . snd <$> oids)
+    irole <- runDB $ queryRole (toSqlKey . read . unpack . snd <$> LS.head rids)
+    ((fr,fw),et) <- runFormPost $ formBook user Nothing Nothing ioffers ioffers irole (maybeToList irole)
     case fr of
       FormSuccess (items,role,day,time,Entity uid _) -> do
           bids <- forM items $ \(_,Entity oid _) -> runDB $
               insert $ Book uid oid ((\(_,Entity rid _) -> rid) <$> role) day time
-          books <- runDB $ select $ do
-              x :& o :& r :& u <- from $ table @Book
-                  `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
-                  `leftJoin` table @Role `on` (\(x :& _ :& r) -> x ^. BookRole ==. r ?. RoleId)
-                  `innerJoin` table @User `on` (\(x :& _ :& _ :& u) -> x ^. BookUser ==. u ^. UserId)
-              where_ $ x ^. BookId `in_` valList bids
-              return (x,o,r,u)
-          msgs <- getMessages
-          defaultLayout $ do
-              $(widgetFile "book/end")
+          addMessageI "info" MsgRecordAdded
+          redirect (BookEndR, ("bid",) . pack . show . fromSqlKey <$> bids)
       _ -> do
-          rids <- filter ((== "rid") . fst) . reqGetParams <$> getRequest
-          oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
-          dates <- filter ((== "date") . fst) . reqGetParams <$> getRequest
-          times <- filter ((== "time") . fst) . reqGetParams <$> getRequest
           msgs <- getMessages
           defaultLayout $ do
               setTitleI MsgCustomer
-              $(widgetFile "book/v2/customer")
+              $(widgetFile "book/customer/banner")
 
 
-getV2BookCustomerR :: Handler Html
-getV2BookCustomerR = do
+getBookCustomerR :: Handler Html
+getBookCustomerR = do
     user <- maybeAuth
     rids <- filter ((== "rid") . fst) . reqGetParams <$> getRequest
     oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
@@ -153,33 +156,32 @@ getV2BookCustomerR = do
     setUltDestCurrent
     defaultLayout $ do
         setTitleI MsgCustomer
-        $(widgetFile "book/v2/customer")
+        $(widgetFile "book/customer/customer")
 
 
-postV2BookTimeR :: Handler Html
-postV2BookTimeR = do
+postBookTimeR :: Handler Html
+postBookTimeR = do
+    oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
+    rids <- filter ((== "rid") . fst) . reqGetParams <$> getRequest
     user <- maybeAuth
-    offers <- runDB $ queryOffers2 []
-    roles <- runDB $ queryRoles offers
-    ((fr,fw),et) <- runFormPost $ formTime Nothing Nothing [] offers Nothing roles
+    ioffers <- runDB $ queryOffers (toSqlKey . read . unpack . snd <$> oids)
+    irole <- runDB $ queryRole (toSqlKey . read . unpack . snd <$> LS.head rids)
+    ((fr,fw),et) <- runFormPost $ formTime Nothing Nothing ioffers ioffers irole (maybeToList irole)
     msgs <- getMessages
     case fr of
       FormSuccess (items,role,date,time) -> do
-          redirect ( V2BookCustomerR
+          redirect ( BookCustomerR
                    , maybeToList (("rid",) . (\(_,Entity rid _) -> pack $ show $ fromSqlKey rid) <$> role)
                      <> ((\(_,Entity oid _) -> ("oid",pack $ show $ fromSqlKey oid)) <$> items)
                      <> [("date",pack $ show date),("time",pack $ show time)]
                    )
-      _ -> do
-          oids <- filter ((== "oid") . fst)  . reqGetParams <$> getRequest
-          rids <- filter ((== "rid") . fst)  . reqGetParams <$> getRequest
-          defaultLayout $ do
-              setTitleI MsgAppointmentTime
-              $(widgetFile "book/v2/time")
+      _ -> defaultLayout $ do
+          setTitleI MsgAppointmentTime
+          $(widgetFile "book/time/banner")
 
 
-getV2BookTimeR :: Handler Html
-getV2BookTimeR = do
+getBookTimeR :: Handler Html
+getBookTimeR = do
     rids <- filter ((== "rid") . fst) . reqGetParams <$> getRequest
     oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
     date <- (read . unpack . snd <$>) . LS.head . filter ((== "date") . fst) . reqGetParams <$> getRequest
@@ -194,273 +196,71 @@ getV2BookTimeR = do
     msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgAppointmentTime
-        $(widgetFile "book/v2/time")
+        $(widgetFile "book/time/time")
 
 
-postV2BookStaffR :: Handler Html
-postV2BookStaffR = do
+postBookStaffR :: Handler Html
+postBookStaffR = do
+    oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
     user <- maybeAuth
-    offers <- runDB $ queryOffers2 []
+    offers <- runDB $ queryOffers (toSqlKey . read . unpack . snd <$> oids)
     roles <- runDB $ queryRoles offers
     ((fr,fw),et) <- runFormPost $ formStaff [] offers Nothing roles
     msgs <- getMessages
     case fr of
       FormSuccess (items,role) -> do
-          redirect ( V2BookTimeR
+          redirect ( BookTimeR
                    , maybeToList (("rid",) . (\(_,Entity rid _) -> pack $ show $ fromSqlKey rid) <$> role)
                      <> ((\(_,Entity oid _) -> ("oid",pack $ show $ fromSqlKey oid)) <$> items)
                    )
-      _ -> do
-          oids <- filter ((== "oid") . fst)  . reqGetParams <$> getRequest
-          defaultLayout $ do
-              setTitleI MsgStaff
-              $(widgetFile "book/v2/staff")
+      _ -> defaultLayout $ do
+          setTitleI MsgStaff
+          $(widgetFile "book/staff/banner")
 
 
-getV2BookStaffR :: Handler Html
-getV2BookStaffR = do
+getBookStaffR :: Handler Html
+getBookStaffR = do
     user <- maybeAuth
     oids <- filter ((== "oid") . fst)  . reqGetParams <$> getRequest
     rids <- filter ((== "rid") . fst)  . reqGetParams <$> getRequest
-    items <- runDB $ queryOffers2 (toSqlKey . read . unpack . snd <$> oids)
+    items <- runDB $ queryOffers (toSqlKey . read . unpack . snd <$> oids)
     roles <- runDB $ queryRoles items
     role <- runDB $ queryRole (toSqlKey . read . unpack . snd <$> rids)
     (fw,et) <- generateFormPost $ formStaff items items role roles
     msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgStaff
-        $(widgetFile "book/v2/staff")
+        $(widgetFile "book/staff/staff")
 
 
-postV2BookOffersR :: Handler Html
-postV2BookOffersR = do
+postBookOffersR :: Handler Html
+postBookOffersR = do
+    oids <- filter ((== "oid") . fst)  . reqGetParams <$> getRequest
     user <- maybeAuth
-    offers <- runDB $ queryOffers2 []
-    ((fr,fw),et) <- runFormPost $ formOffers [] offers
+    offers <- runDB $ queryOffers []
+    ioffers <- runDB $ queryItems (toSqlKey . read . unpack . snd <$> oids)
+    ((fr,fw),et) <- runFormPost $ formOffers ioffers offers
     case fr of
-      FormSuccess items -> redirect (V2BookStaffR,(\(_,Entity oid _) -> ("oid",pack $ show $ fromSqlKey oid)) <$> items)
+      FormSuccess items -> redirect (BookStaffR,(\(_,Entity oid _) -> ("oid",pack $ show $ fromSqlKey oid)) <$> items)
       _ -> do          
           msgs <- getMessages
-          let items = []
+          let items = ioffers
           defaultLayout $ do
               setTitleI MsgOffers
               $(widgetFile "book/offers/banner")
 
 
-getV2BookOffersR :: Handler Html
-getV2BookOffersR = do
+getBookOffersR :: Handler Html
+getBookOffersR = do
+    oids <- filter ((== "oid") . fst)  . reqGetParams <$> getRequest
     user <- maybeAuth
-    offers <- runDB $ queryOffers2 []
-    items <- do
-        oids <- (toSqlKey . read . unpack . snd <$>) . filter ((== "oid") . fst)  . reqGetParams <$> getRequest
-        runDB $ queryItems oids
+    offers <- runDB $ queryOffers []
+    items <- runDB $ queryItems (toSqlKey . read . unpack . snd <$> oids)
     (fw,et) <- generateFormPost $ formOffers items offers
     msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgOffers
         $(widgetFile "book/offers/offers")
-
-
--- ^ Version 2
-
-getBookRecordR :: Handler Html
-getBookRecordR = do
-    user <- maybeAuth
-    offers <- runDB queryOffers
-    roles <- runDB $ queryRoles offers
-    ((fr,fw),et) <- runFormGet $ formBook user Nothing Nothing [] offers Nothing roles
-    case fr of
-      FormSuccess (items,role,day,time,Entity uid _) -> do
-          bids <- forM items $ \(_,Entity oid _) -> runDB $
-              insert $ Book uid oid ((\(_,Entity rid _) -> rid) <$> role) day time
-          books <- runDB $ select $ do
-              x :& o :& r :& u <- from $ table @Book
-                  `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
-                  `leftJoin` table @Role `on` (\(x :& _ :& r) -> x ^. BookRole ==. r ?. RoleId)
-                  `innerJoin` table @User `on` (\(x :& _ :& _ :& u) -> x ^. BookUser ==. u ^. UserId)
-              where_ $ x ^. BookId `in_` valList bids
-              return (x,o,r,u)
-          msgs <- getMessages
-          defaultLayout $ do
-              $(widgetFile "book/end")
-
-      _ -> defaultLayout $ do
-          msgs <- getMessages
-          idFormBack <- newIdent
-          let formBack = [whamlet|
-                                 <details>
-                                   <summary>Form back 5
-                                   <form method=get action=@{BookStaffBackR} enctype=#{et} ##{idFormBack} novalidate>
-                                     ^{fw}
-                                 |]
-          idFormNext <- newIdent
-          $(widgetFile "book/time")
-
-
-
-getBookTimeR :: Handler Html
-getBookTimeR = do
-    setUltDestCurrent
-    user <- maybeAuth
-    offers <- runDB queryOffers
-    roles <- runDB $ queryRoles offers
-    ((fr,fw),et) <- runFormGet $ formTime Nothing Nothing [] offers Nothing roles
-    idFormBack <- newIdent
-    case fr of
-      FormSuccess (items,role,day,time) -> do
-          let formBack = [whamlet|
-                                 <details>
-                                   <summary>Form back 4
-                                   <form method=get action=@{BookStaffBackR} enctype=#{et} ##{idFormBack} novalidate>
-                                     ^{fw}
-                                 |]
-          msgs <- getMessages
-          (fw,et) <- generateFormGet' $ formBook user (Just day) (Just time) items items role (maybeToList role)
-          defaultLayout $ do
-              idFormNext <- newIdent
-              setTitleI MsgAppointmentTime
-              $(widgetFile "book/time")
-
-      _ -> do
-          let formBack = [whamlet|
-                                 <details>
-                                   <summary>Form back 3
-                                   <form method=get action=@{BookOffersR} enctype=#{et} ##{idFormBack} novalidate>
-                                     ^{fw}
-                                 |]
-          msgs <- getMessages
-          defaultLayout $ do
-              idFormNext <- newIdent
-              setTitleI MsgAppointmentTime
-              $(widgetFile "book/staff")
-
-
-getBookStaffBackR :: Handler Html
-getBookStaffBackR = do
-    setUltDestCurrent
-    user <- maybeAuth
-    offers <- runDB queryOffers
-    roles <- runDB $ queryRoles offers
-    ((fr,fw),et) <- runFormGet $ formStaff [] offers Nothing roles
-    case fr of
-      FormSuccess (items,role) -> do
-          idFormBack <- newIdent
-          let formBack = [whamlet|
-                                 <details>
-                                   <summary>Form back 2
-                                   <form method=get action=@{BookOffersR} enctype=#{et} ##{idFormBack} novalidate>
-                                     ^{fw}
-                                 |]
-          idFormNext <- newIdent
-          now <- liftIO getCurrentTime
-          ((fr,fw),et) <- runFormGet $ formTime Nothing Nothing items items role (maybeToList role)
-          msgs <- getMessages
-          defaultLayout $ do
-              setTitleI MsgStaff
-              $(widgetFile "book/staff")
-      _ -> defaultLayout $ do
-          msgs <- getMessages
-          idFormBack <- newIdent
-          let formBack = [whamlet|<form method=get action=@{BookStartR} enctype=#{et} ##{idFormBack} novalidate hidden>^{fw}|]
-          idFormNext <- newIdent
-          setTitleI MsgOffers
-          $(widgetFile "book/offers")
-
-
-getBookStaffR :: Handler Html
-getBookStaffR = do
-    setUltDestCurrent
-    user <- maybeAuth
-    offers <- runDB queryOffers
-    roles <- runDB $ queryRoles offers
-    ((fr,fw),et) <- runFormGet $ formStaff [] offers Nothing roles
-    case fr of
-      FormSuccess (items,role) -> do
-          idFormBack <- newIdent
-          let formBack = [whamlet|
-                                 <details>
-                                   <summary>Form back 2
-                                   <form method=get action=@{BookOffersR} enctype=#{et} ##{idFormBack} novalidate>
-                                     ^{fw}
-                                 |]
-          idFormNext <- newIdent
-          now <- liftIO getCurrentTime
-          (fw,et) <- generateFormGet' $ formTime
-              Nothing
-              Nothing
-              items items
-              role (maybeToList role)
-          msgs <- getMessages
-          defaultLayout $ do
-              setTitleI MsgStaff
-              $(widgetFile "book/staff")
-      FormFailure errs -> defaultLayout $ do
-          msgs <- getMessages
-          idFormBack <- newIdent
-          let formBack = [whamlet|<form method=get action=@{BookStartR} enctype=#{et} ##{idFormBack} novalidate hidden>^{fw}|]
-          idFormNext <- newIdent
-          setTitleI MsgOffers
-          [whamlet|
-<ul>
-  $forall err <- errs
-    <li>
-      <b style="color:red">#{err}
-|]
-          $(widgetFile "book/offers")
-      FormMissing -> defaultLayout $ do
-          msgs <- getMessages
-          idFormBack <- newIdent
-          let formBack = [whamlet|<form method=get action=@{BookStartR} enctype=#{et} ##{idFormBack} novalidate hidden>^{fw}|]
-          idFormNext <- newIdent
-          setTitleI MsgOffers
-          [whamlet|
-<b style="color:red">Missing form
-|]
-          $(widgetFile "book/offers")
-
-
-getBookOffersR :: Handler Html
-getBookOffersR = do
-    setUltDestCurrent
-    user <- maybeAuth
-    offers <- runDB queryOffers
-    ((fr,fw),et) <- runFormGet $ formOffers [] offers
-    case fr of
-      FormSuccess items -> do
-          idFormBack <- newIdent
-          let formBack = [whamlet|
-                                 <details>
-                                   <summary>Form back 1
-                                   <form method=get action=@{BookStartR} enctype=#{et} ##{idFormBack} novalidate>
-                                     ^{fw}
-                                 |]
-          idFormNext <- newIdent
-          roles <- runDB $ queryRoles items
-          ((fr,fw),et) <- runFormGet $ formStaff items items Nothing roles
-          msgs <- getMessages
-          defaultLayout $ do
-              setTitleI MsgOffers
-              $(widgetFile "book/offers")
-      _ -> defaultLayout $ do
-          msgs <- getMessages
-          let items = []
-          setTitleI MsgOffers
-          $(widgetFile "book/start")
-
-
-getBookStartR :: Handler Html
-getBookStartR = do
-    user <- maybeAuth
-    offers <- runDB queryOffers
-    ((fr,fw),et) <- runFormGet $ formOffers [] offers
-    msgs <- getMessages
-    setUltDestCurrent
-    let items = case fr of
-          FormSuccess xs -> xs
-          _ -> []
-    defaultLayout $ do
-        setTitleI MsgOffers
-        $(widgetFile "book/start")
 
 
 formBook :: Maybe (Entity User)
@@ -586,7 +386,7 @@ formBook user day time items offers role roles extra = do
               (x:_) | T.null x -> Right Nothing
                     | otherwise -> (Right . LS.head . filter (\(_, Entity rid _) -> rid == toSqlKey (read $ unpack x))) options
               _ -> Right Nothing
-          , fieldView = \theId name attrs val _isReq -> do
+          , fieldView = \theId name attrs eval _isReq -> do
                 let isChecked (Left _) _ = False
                     isChecked (Right y) x = x == y
                 $(widgetFile "book/empls")
@@ -640,9 +440,11 @@ formTime day time items offers role roles extra = do
 $forall v <- [dayV,timeV]
   <div.form-field>
     ^{fvInput v}
-    <div>
-      $maybe errs <- fvErrors v
-        #{errs}
+    $maybe errs <- fvErrors v
+      <label.mdc-text-field.mdc-text-field--invalid>
+      <div.mdc-text-field-helper-line>
+        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+          #{errs}
 
 <details.mdc-list data-mdc-auto-init=MDCList
   ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
@@ -698,7 +500,7 @@ $forall v <- [dayV,timeV]
               (x:_) | T.null x -> Right Nothing
                     | otherwise -> (Right . LS.head . filter (\(_, Entity rid _) -> rid == toSqlKey (read $ unpack x))) options
               _ -> Right Nothing
-          , fieldView = \theId name attrs val _isReq -> do
+          , fieldView = \theId name attrs eval _isReq -> do
                 let isChecked (Left _) _ = False
                     isChecked (Right y) x = x == y
                 $(widgetFile "book/empls")
@@ -772,7 +574,7 @@ formStaff items offers role roles extra = do
               (x:_) | T.null x -> Right Nothing
                     | otherwise -> (Right . LS.head . filter (\(_, Entity rid _) -> rid == toSqlKey (read $ unpack x))) options
               _ -> Right Nothing
-          , fieldView = \theId name attrs val _isReq -> do
+          , fieldView = \theId name attrs eval _isReq -> do
                 let isChecked (Left _) _ = False
                     isChecked (Right y) x = x == y
                 $(widgetFile "book/empls")
@@ -845,21 +647,12 @@ queryItems oids = select $ do
     return (x,o)
 
 
-queryOffers2 :: [OfferId] -> ReaderT SqlBackend Handler [(Entity Service, Entity Offer)]
-queryOffers2 oids = select $ do
+queryOffers :: [OfferId] -> ReaderT SqlBackend Handler [(Entity Service, Entity Offer)]
+queryOffers oids = select $ do
     x :& o <- from $ table @Service `innerJoin` table @Offer
         `on` (\(x :& o) -> x ^. ServiceId ==. o ^. OfferService)
     where_ $ x ^. ServicePublished
     unless (null oids) $ where_ $ o ^. OfferId `in_` valList oids
-    orderBy [asc (x ^. ServiceName), asc (o ^. OfferId)]
-    return (x,o)
-
-
-queryOffers :: ReaderT SqlBackend Handler [(Entity Service, Entity Offer)]
-queryOffers  = select $ do
-    x :& o <- from $ table @Service `innerJoin` table @Offer
-        `on` (\(x :& o) -> x ^. ServiceId ==. o ^. OfferService)
-    where_ $ x ^. ServicePublished
     orderBy [asc (x ^. ServiceName), asc (o ^. OfferId)]
     return (x,o)
 

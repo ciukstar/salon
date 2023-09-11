@@ -1,3 +1,7 @@
+BookNewAppointment: Rezervă o nouă programare
+ShowDetails: Arata detaliile
+YouSuccessfullyCreatedYourBooking: Ați creat cu succes rezervarea
+BookingStateDiagram: Diagrama de tranziție a stării pentru rezervare
 InvalidFormData: Date de formular nevalide
 MissingForm: Lipsește formularul
 SelectedTime: Ora selectată

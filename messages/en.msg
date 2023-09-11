@@ -1,3 +1,7 @@
+BookNewAppointment: Book new appointment 
+ShowDetails: Show details
+YouSuccessfullyCreatedYourBooking: You successfully created your booking
+BookingStateDiagram: State transition diagram for booking
 InvalidFormData: Invalid form data
 MissingForm: Missing form
 SelectedTime: Selected time

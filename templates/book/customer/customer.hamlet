@@ -1,7 +1,8 @@
 <header.mdc-top-app-bar.mdc-top-app-bar--prominent.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section-align-start>
-      <button.mdc-top-app-bar__navigation-icon.mdc-icon-button type=submit form=#{idFormBack}>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button
+        href=@?{(BookTimeR,(((oids <> rids) <> dates) <> times))}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
@@ -27,39 +28,10 @@
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
 
-  ^{formBack}
-
-  $case fr
-    $of FormSuccess _
-    $of FormFailure errs
-      $forall err <- errs
-        <div.mdc-banner role=banner data-mdc-auto-init=MDCBanner>
-          <div.mdc-banner__content role=alertdialog aria-live=assertive>
-            <div.mdc-banner__graphic-text-wrapper>
-              <div.mdc-banner__graphic role=img style="background-color:var(--mdc-theme-error)">
-                <i.mdc-banner__icon.material-symbols-outlined>warning
-              <div.mdc-banner__text>
-                #{err}
-            <div.mdc-banner__actions>
-              <button.mdc-banner__primary-action.mdc-icon-button type=button>
-                <span.mdc-icon-button__ripple>
-                <i.material-symbols-outlined>close
-    $of FormMissing
-      <div.mdc-banner role=banner data-mdc-auto-init=MDCBanner>
-        <div.mdc-banner__content role=alertdialog aria-live=assertive>
-          <div.mdc-banner__graphic-text-wrapper>
-            <div.mdc-banner__graphic role=img style="background-color:var(--mdc-theme-error)">
-              <i.mdc-banner__icon.material-symbols-outlined>warning
-            <div.mdc-banner__text>
-              _{MsgInvalidFormData}
-          <div.mdc-banner__actions>
-            <button.mdc-banner__primary-action.mdc-icon-button type=button>
-              <span.mdc-icon-button__ripple>
-              <i.material-symbols-outlined>close
-
   $maybe Entity _ (User name _ _ fname email) <- user
 
-    <details.mdc-list open>
+    <details.mdc-list open
+      ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
       <summary.mdc-list-item--with-leading-icon.mdc-list-item
         .mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
         <span.mdc-list-item__ripple>
@@ -68,7 +40,7 @@
         <span.mdc-list-item__content>
           <div.mdc-list-item__primary-text>_{MsgCustomer}
         <span.mdc-list-item__end>
-          <i.material-symbols-outlined>expand_more
+          <i.expand.material-symbols-outlined>expand_less
       <div.mdc-list-item.mdc-list-item--with-three-lines>
         <span.mdc-list-item__content>
           <div.mdc-list-item__primary-text>
@@ -90,18 +62,18 @@
         <span.mdc-button__focus-ring>
         <span.mdc-button__label>_{MsgSignUp}
       <div style="display:inherit;flex-direction:inherit">
-        <div style="text-align:center">
+        <div style="text-align:center;margin-bottom:0.3rem;color:var(--mdc-theme-text-secondary-on-light);opacity:0.8">
           <small>_{MsgAlreadyHaveAnAccount}?
         <a.mdc-button.mdc-button--outlined href=@{AuthR LoginR} role=button>
           <span.mdc-button__ripple>
           <span.mdc-button__focus-ring>
           <span.mdc-button__label>_{MsgSignIn}
 
-  <form method=get action=@{BookRecordR} enctype=#{et} ##{idFormNext} novalidate>
+  <form method=post action=@?{(BookCustomerR,(((oids <> rids) <> dates) <> times))} enctype=#{et} #formCustomer novalidate>
     ^{fw}
 
 <footer #footerActions>
-  <button.mdc-button.mdc-button--raised.mdc-button--icon-leading type=submit form=#{idFormNext}>
+  <button.mdc-button.mdc-button--raised.mdc-button--icon-leading type=submit form=formCustomer>
     <span.mdc-button__ripple>
     <span.mdc-button__focus-ring>
     <i.mdc-button__icon.material-symbols-outlined>download_done

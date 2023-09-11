@@ -71,7 +71,8 @@
         <span.mdc-fab__touch>
 
 $forall (_,msg) <- msgs
-  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar
+    :isNothing brand:style="bottom:5rem">
     <div.mdc-snackbar__surface>
       <div.mdc-snackbar__label>#{msg}
       <div.mdc-snackbar__actions>

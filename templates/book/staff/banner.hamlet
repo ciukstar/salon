@@ -1,16 +1,17 @@
-^{menu}
 <header.mdc-top-app-bar.mdc-top-app-bar--prominent.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
-  <div.mdc-top-app-bar__row>
-    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <button.mdc-top-app-bar__navigation-icon.mdc-icon-button #btnMainMenu>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section-align-start>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button
+        href=@?{(BookOffersR,oids)}>
         <span.mdc-icon-button__ripple>
-        <i.material-symbols-outlined>menu
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>arrow_back
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light style="white-space:normal;line-height:1">
         <div #divStepCounter style="margin-bottom:1rem;overflow:hidden">
           <small>
-            <small>_{MsgStepNofM 1 4}
+            <small>_{MsgStepNofM 2 4}
         <div style="white-space:inherit;overflow:inherit;text-overflow:inherit;line-height:inherit">
-          _{MsgChooseServicesToBook}
+          _{MsgSelectStaff}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
       <a.mdc-top-app-bar__action-item.mdc-icon-button href=# role=button>
@@ -48,32 +49,15 @@
                 <i.material-symbols-outlined>close
     $of _
 
-  <form method=get action=@{BookOffersR} enctype=#{et} #formOffers novalidate>
+  <form method=post action=@?{(BookStaffR,oids)} enctype=#{et} #formStaff novalidate>
     ^{fw}
 
 <footer>
-  <div #footerContent>
-    <section #footerSectionStart>
-      <div #footerBookCountLabel>
-        <span #footerBookCount>#{length items}
-        <span>_{MsgServices}
-      $with amount <- show $ amount items offers
-        <div #footerBookAmount>
-          $maybe (_,Entity _ (Offer _ _ _ prefix _ _)) <- LS.head offers
-            $maybe prefix <- prefix
-              #{prefix}
-          <span data-amount=#{amount}>#{amount}
-          $maybe (_,Entity _ (Offer _ _ _ prefix suffix _)) <- LS.head offers
-            $maybe _ <- prefix
-            $nothing
-              $maybe suffix <- suffix
-                #{suffix}
-    <section #footerSectionEnd>
-      <button.mdc-button.mdc-button--raised.mdc-button--icon-trailing type=submit form=formOffers #btnSubmitForm>
-        <span.mdc-button__ripple>
-        <span.mdc-button__focus-ring>
-        <span.mdc-button__label>_{MsgContinue}
-        <i.mdc-button__icon.material-symbols-outlined>arrow_forward_ios
+  <button.mdc-button.mdc-button--raised.mdc-button--icon-trailing type=submit form=formStaff>
+    <span.mdc-button__ripple>
+    <span.mdc-button__focus-ring>
+    <span.mdc-button__label>_{MsgContinue}
+    <i.mdc-button__icon.material-symbols-outlined>arrow_forward_ios
 
 $forall (_,msg) <- msgs
   <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>

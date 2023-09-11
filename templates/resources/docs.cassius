@@ -1,6 +1,6 @@
 
 main
   margin: 0 1rem
-  #imgErdDiagram
+  #imgErdDiagram, #imgBookingStateDiagram
     width: 100%
     

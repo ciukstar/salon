@@ -2,16 +2,16 @@
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section-align-start>
       <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button
-        href=@?{(V2BookOffersR,oids)}>
+        href=@?{(BookStaffR,rids <> oids)}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light style="white-space:normal;line-height:1">
         <div #divStepCounter style="margin-bottom:1rem;overflow:hidden">
           <small>
-            <small>_{MsgStepNofM 2 4}
+            <small>_{MsgStepNofM 3 4}
         <div style="white-space:inherit;overflow:inherit;text-overflow:inherit;line-height:inherit">
-          _{MsgSelectStaff}
+          _{MsgAppointmentTime}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
       <a.mdc-top-app-bar__action-item.mdc-icon-button href=# role=button>
@@ -29,15 +29,14 @@
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>login
-          
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
 
-  <form method=post action=@{V2BookStaffR} enctype=#{et} #formStaff novalidate>
+  <form method=post action=@?{(BookTimeR,oids <> rids)} enctype=#{et} #formTime novalidate>
     ^{fw}
 
-<footer>
-  <button.mdc-button.mdc-button--raised.mdc-button--icon-trailing type=submit form=formStaff>
+<footer #footerActions>
+  <button.mdc-button.mdc-button--raised.mdc-button--icon-trailing type=submit form=formTime>
     <span.mdc-button__ripple>
     <span.mdc-button__focus-ring>
     <span.mdc-button__label>_{MsgContinue}

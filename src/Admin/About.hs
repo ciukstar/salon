@@ -12,7 +12,7 @@ module Admin.About
   , postAdmAboutDeleteR
   ) where
 
-import Data.Maybe (isJust)
+import Data.Maybe (isJust, isNothing)
 import Data.Text (Text)
 import Text.Hamlet (Html)
 import Yesod.Core

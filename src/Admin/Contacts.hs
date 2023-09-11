@@ -14,7 +14,7 @@ module Admin.Contacts
 
 import Text.Hamlet (Html)
 import Data.Text (Text)
-import Data.Maybe (isJust)
+import Data.Maybe (isJust, isNothing)
 import Yesod.Auth (maybeAuth, Route (LoginR))
 import Yesod.Persist.Core (YesodPersist(runDB))
 import Yesod.Form.Types

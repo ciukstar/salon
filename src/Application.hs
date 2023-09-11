@@ -51,13 +51,11 @@ import System.Environment.Blank (getEnv)
 import Handler.Appointments (getAppointmentsR, getAppointmentR)
 import Handler.Contacts (getContactR)
 import Handler.Book
-    ( getBookStartR, getBookOffersR, getBookStaffR, getBookStaffBackR
-    , getBookTimeR, getBookRecordR
-
-    , getV2BookOffersR, postV2BookOffersR
-    , getV2BookStaffR, postV2BookStaffR
-    , getV2BookTimeR, postV2BookTimeR
-    , getV2BookCustomerR, postV2BookCustomerR
+    ( getBookOffersR, postBookOffersR
+    , getBookStaffR, postBookStaffR
+    , getBookTimeR, postBookTimeR
+    , getBookCustomerR, postBookCustomerR
+    , getBookEndR
     )
 import Handler.AboutUs (getAboutUsR)
 import Handler.Services

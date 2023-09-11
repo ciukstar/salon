@@ -16,6 +16,7 @@ module Admin.Brand
   ) where
 
 import Control.Monad (void)
+import Data.Maybe (isNothing)
 import Text.Hamlet (Html)
 import Data.Text.Encoding (encodeUtf8)
 import Yesod.Auth (maybeAuth, Route (LoginR))
@@ -23,7 +24,7 @@ import Yesod.Core
     ( Yesod(defaultLayout), setTitleI, TypedContent (TypedContent)
     , preEscapedToMarkup, getMessages, FileInfo (fileContentType), redirect
     , SomeMessage (SomeMessage), setUltDestCurrent, fileSourceByteString
-    , typeSvg, ToContent (toContent), emptyContent
+    , typeSvg, ToContent (toContent), emptyContent, addMessageI
     )
 import Yesod.Form.Fields (unTextarea, fileField, textareaField)
 import Yesod.Form.Functions (generateFormPost, mopt, runFormPost)
@@ -49,6 +50,7 @@ import Foundation
       ( MsgBrand, MsgYesDelete, MsgPleaseConfirm, MsgPhoto
       , MsgDeleteAreYouSure, MsgSave, MsgCancel, MsgBrandMark
       , MsgNoBrandYet, MsgBrandName, MsgBrandStrapline, MsgFavicon, MsgMore
+      , MsgRecordAdded, MsgRecordEdited, MsgRecordDeleted
       )
     )
     
@@ -94,6 +96,7 @@ getBrandMarkR bid = do
 postBrandDeleteR :: Handler Html
 postBrandDeleteR = do
     runDB $ delete $ void $ from (table @Brand)
+    addMessageI "info" MsgRecordDeleted
     redirect $ AdminR BrandR
 
 
@@ -120,6 +123,7 @@ postBrandEditR bid = do
               set y [ BrandIco =. val (Just x), BrandIcoMime =. val icoMime ]
               where_ $ y ^. BrandId ==. val bid
             Nothing -> return ()
+          addMessageI "info" MsgRecordEdited
           redirect $ AdminR BrandR
       _ -> defaultLayout $ do
           setTitleI MsgBrand
@@ -153,6 +157,7 @@ postBrandR = do
                                   , brandIcoMime = icoMime
                                   , brandMore = brandMore r
                                   }
+          addMessageI "info" MsgRecordAdded
           redirect $ AdminR BrandR
       _ -> defaultLayout $ do
           setTitleI MsgBrand

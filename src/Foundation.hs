@@ -180,18 +180,11 @@ instance Yesod App where
     
     isAuthorized ContactR _ = return Authorized
 
-    
-    isAuthorized V2BookCustomerR _ = return Authorized
-    isAuthorized V2BookTimeR _ = return Authorized
-    isAuthorized V2BookStaffR _ = return Authorized
-    isAuthorized V2BookOffersR _ = return Authorized
-    
-    isAuthorized BookStartR _ = return Authorized
-    isAuthorized BookOffersR _ = return Authorized
-    isAuthorized BookStaffR _ = return Authorized
-    isAuthorized BookStaffBackR _ = return Authorized
+    isAuthorized BookEndR _ = return Authorized
+    isAuthorized BookCustomerR _ = return Authorized
     isAuthorized BookTimeR _ = return Authorized
-    isAuthorized BookRecordR _ = return Authorized
+    isAuthorized BookStaffR _ = return Authorized
+    isAuthorized BookOffersR _ = return Authorized
     
     isAuthorized AppointmentsR _ = return Authorized
     isAuthorized (AppointmentR _) _ = return Authorized

@@ -26,6 +26,10 @@
   <div.mdc-typography--headline4>
     _{MsgErdDiagram}
   <img #imgErdDiagram src=@{StaticR img_Salon_ERD_svg} alt=_{MsgErdDiagram} loading=lazy>
+  
+  <div.mdc-typography--headline4>
+    _{MsgBookingStateDiagram}
+  <img #imgBookingStateDiagram src=@{StaticR img_Booking_State_Diagram_svg} alt=_{MsgBookingStateDiagram} loading=lazy>
 
 
 $forall (_,msg) <- msgs

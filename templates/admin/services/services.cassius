@@ -36,3 +36,6 @@ main
     bottom: 1rem
     right: 1rem
     z-index: 1
+
+aside.mdc-snackbar
+  bottom: 5rem

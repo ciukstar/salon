@@ -9,3 +9,6 @@ nav.mdc-list
   margin-bottom: 4rem
   .mdc-list-item--activated .mdc-list-item__primary-text
     color: var(--theme-accent)
+
+aside.mdc-snackbar
+  bottom: 5rem

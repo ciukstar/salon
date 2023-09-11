@@ -1,3 +1,7 @@
+BookNewAppointment: Записаться на новый прием
+ShowDetails: Показать детали
+YouSuccessfullyCreatedYourBooking: Вы успешно создали бронирование
+BookingStateDiagram: Диаграмма перехода состояний для бронирования
 InvalidFormData: Неверные данные формы
 MissingForm: Отсутствует форма
 SelectedTime: Выбранное время

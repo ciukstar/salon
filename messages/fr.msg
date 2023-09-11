@@ -1,3 +1,7 @@
+BookNewAppointment: Prendre un nouveau rendez-vous
+ShowDetails: Afficher les détails
+YouSuccessfullyCreatedYourBooking: Vous avez créé avec succès votre réservation
+BookingStateDiagram: Schéma de transition d'état pour la réservation
 InvalidFormData: Données de formulaire incorrectes
 MissingForm: Formulaire manquant
 SelectedTime: Heure sélectionnée
