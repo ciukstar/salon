@@ -16,7 +16,7 @@ import Foundation
       )
     , AppMessage
       ( MsgSourceCode, MsgDocumentation, MsgBrand, MsgContactUs
-      , MsgAboutUs, MsgMyAppointments, MsgBook, MsgServices
+      , MsgAboutUs, MsgMyAppointments, MsgServices, MsgBookAppointment
       , MsgWelcome, MsgSalon, MsgUsers, MsgContact, MsgStaff, MsgData
       , MsgResources
       )

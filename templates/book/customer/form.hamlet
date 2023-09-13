@@ -1,0 +1,60 @@
+
+#{extra}
+<details.mdc-list data-mdc-auto-init=MDCList
+  ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+  <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+    <span.mdc-list-item__ripple>
+    <span.mdc-list-item__start>
+      <i.material-symbols-outlined>info
+    <span.mdc-list-item__content>
+      <div.mdc-list-item__primary-text>
+        _{MsgSelectedTime}
+    <span.mdc-list-item__end>
+      <i.expand.material-symbols-outlined>expand_more
+  <div.mdc-list-item.mdc-list-item--with-leading-image.mdc-list-item--with-three-lines>
+    <span.mdc-list-item__ripple>
+    <span.mdc-list-item__start style="text-align:center">
+      <i.material-symbols-outlined style="font-size:3rem;color:var(--mdc-theme-primary)">
+        schedule
+    <span.mdc-list-item__content>
+      $case (day,time,dayR,timeR)
+        $of (Just day,Just time,_,_)
+          <div.mdc-list-item__primary-text style="color:var(--theme-accent)" #appointmentTime>
+            #{show day} #{show time}
+          <div.mdc-list-item__secondary-text #appointmentFullLongTime>
+            #{show day} #{show time}
+        $of (_,_,FormSuccess day,FormSuccess time)
+          <div.mdc-list-item__primary-text style="color:var(--theme-accent)" #appointmentTime>
+            #{show day} #{show time}
+          <div.mdc-list-item__secondary-text #appointmentFullLongTime>
+            #{show day} #{show time}
+        $of _
+          
+  $forall v <- [dayV,timeV]
+    ^{fvInput v}
+
+<details.mdc-list data-mdc-auto-init=MDCList
+  ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+  <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+    <span.mdc-list-item__ripple>
+    <span.mdc-list-item__start>
+      <i.material-symbols-outlined>info
+    <span.mdc-list-item__content>
+      <div.mdc-list-item__primary-text>
+        _{MsgSelectedStaff}
+    <span.mdc-list-item__end>
+      <i.expand.material-symbols-outlined>expand_more
+  ^{fvInput roleV}
+
+<details.mdc-list data-mdc-auto-init=MDCList
+  ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+  <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+    <span.mdc-list-item__ripple>
+    <span.mdc-list-item__start>
+      <i.material-symbols-outlined>info
+    <span.mdc-list-item__content>
+      <div.mdc-list-item__primary-text>
+        _{MsgSelectedServices}
+    <span.mdc-list-item__end>
+      <i.expand.material-symbols-outlined>expand_more
+  ^{fvInput offersV}

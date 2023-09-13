@@ -1,0 +1,13 @@
+
+window.mdc.autoInit();
+
+Array.from(
+  document.getElementById(#{theId}).querySelectorAll('.mdc-list-item .mdc-list-item__content span[data-amount]')
+).forEach(function (x) {
+  x.textContent = Number(x.dataset.amount).toLocaleString(
+    navigator.language,
+    { minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    }
+  );
+});

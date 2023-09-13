@@ -1,0 +1,13 @@
+
+document.getElementById('appointmentFullLongTime').textContent = new Date(
+  document.getElementById('appointmentTime').textContent
+).toLocaleDateString(
+  navigator.language,
+  { weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: "numeric",
+    minute: "numeric"
+  }
+);

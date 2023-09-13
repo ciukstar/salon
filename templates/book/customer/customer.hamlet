@@ -28,11 +28,11 @@
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
 
-  $maybe Entity _ (User name _ _ fname email) <- user
+  $maybe Entity uid (User uname _ _ fname email) <- user
 
     <details.mdc-list open
       ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
-      <summary.mdc-list-item--with-leading-icon.mdc-list-item
+      <summary.mdc-list-item.mdc-list-item--with-leading-icon
         .mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
         <span.mdc-list-item__ripple>
         <span.mdc-list-item__start>
@@ -41,10 +41,14 @@
           <div.mdc-list-item__primary-text>_{MsgCustomer}
         <span.mdc-list-item__end>
           <i.expand.material-symbols-outlined>expand_less
-      <div.mdc-list-item.mdc-list-item--with-three-lines>
+      <div.mdc-list-item.mdc-list-item--with-leading-image.mdc-list-item--with-three-lines>
+        <span.mdc-list-item__ripple>
+        <span.mdc-list-item__start>
+          <img src=@{AccountPhotoR uid} width=56 height=56 alt=_{MsgPhoto} loading=lazy
+            onerror="this.src = '@{PhotoPlaceholderR}'">
         <span.mdc-list-item__content>
           <div.mdc-list-item__primary-text>
-            #{name}
+            #{uname}
           <div.mdc-list-item__secondary-text>
             $maybe email <- email
               #{email}

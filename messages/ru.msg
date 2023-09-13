@@ -1,3 +1,6 @@
+BookingSequenceRestarted: Последовательность бронирования возобновлена
+StartAnew: Начать заново
+InvalidBookingEntryPoint: Неверная точка входа для бронирования
 BookNewAppointment: Записаться на новый прием
 ShowDetails: Показать детали
 YouSuccessfullyCreatedYourBooking: Вы успешно создали бронирование
@@ -50,7 +53,7 @@ ChooseServiceToBook: Выберите услугу для бронировани
 Unregister: Отменить регистрацию
 NoServicesFound: Услуги не найдены
 Administrator: Администратор
-Customer: Клиент
+Customer: Заказчик
 NoUsersFound: Пользователей не найдено
 More: Больше
 Favicon: Значок

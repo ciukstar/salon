@@ -1,3 +1,6 @@
+BookingSequenceRestarted: Secvența de rezervare a fost repornită
+StartAnew: Începe din nou
+InvalidBookingEntryPoint: Punct de intrare nevalid pentru rezervare
 BookNewAppointment: Rezervă o nouă programare
 ShowDetails: Arata detaliile
 YouSuccessfullyCreatedYourBooking: Ați creat cu succes rezervarea

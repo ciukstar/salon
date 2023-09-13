@@ -1,0 +1,30 @@
+ 
+<ul.mdc-list ##{theId} role=listbox aria-multiselectable=true tabindex=-1 data-mdc-auto-init=MDCList>
+  $forall e@(Entity sid (Service sname _ _ duration _ _),Entity oid (Offer _ pname price prefix suffix _)) <- options
+    $with checked <- isChecked vals e
+      <input type=checkbox name=#{name} value=#{fromSqlKey oid} *{attrs} :checked:checked hidden>
+      <li.mdc-list-item tabindex=-1 role=option data-amount=#{show price}
+        .mdc-list-item--with-leading-image.mdc-list-item--with-three-lines
+        :checked:aria-checked=true :not checked:aria-checked=false>
+        <span.mdc-list-item__ripple>
+        <span.mdc-list-item__start>
+          <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail} loading=lazy>
+        <span.mdc-list-item__content>
+          <div.mdc-list-item__primary-text>
+            #{sname}
+          <div.mdc-list-item__secondary-text>
+            $maybe duration <- duration
+              $with translate <- renderMessage app langs
+                $with pat <- intercalate "" ["%H",translate MsgSymbolHour," %M",translate MsgSymbolMinute]
+                  $with duration <- formatTime defaultTimeLocale (unpack pat) duration
+                    #{duration}
+
+          <div.mdc-list-item__secondary-text style="white-space:nowrap">
+            #{pname}: 
+            $maybe prefix <- prefix
+              #{prefix}
+            $with amount <- show price
+              <span data-amount=#{amount}>#{amount}
+            $maybe suffix <- suffix
+              #{suffix}
+      <li.mdc-list-divider role=separator>

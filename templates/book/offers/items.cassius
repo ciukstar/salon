@@ -1,0 +1,7 @@
+ul.mdc-list##{theId}
+  li.mdc-list-item[aria-checked=true]
+    span.mdc-list-item__content
+      div.mdc-list-item__primary-text
+        color: var(--theme-accent)
+      
+  

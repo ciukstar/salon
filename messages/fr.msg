@@ -1,3 +1,6 @@
+BookingSequenceRestarted: La séquence de réservation a redémarré
+StartAnew: Recommencer à nouveau
+InvalidBookingEntryPoint: Point d'entrée invalide pour la réservation
 BookNewAppointment: Prendre un nouveau rendez-vous
 ShowDetails: Afficher les détails
 YouSuccessfullyCreatedYourBooking: Vous avez créé avec succès votre réservation

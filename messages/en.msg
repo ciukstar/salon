@@ -1,3 +1,6 @@
+BookingSequenceRestarted: Booking sequence restarted
+StartAnew: Start anew
+InvalidBookingEntryPoint: Invalid entry point for booking
 BookNewAppointment: Book new appointment 
 ShowDetails: Show details
 YouSuccessfullyCreatedYourBooking: You successfully created your booking
@@ -90,7 +93,7 @@ Ratings: Ratings
 Rating: Rating
 AddRole: Add role
 NoRolesYes: There are no roles yet
-BookAppointment: Book an appointment
+BookAppointment: Book appointment
 EmployeeAlreadyInTheList: Employee already in the list
 Mobile: Mobile
 Phone: Phone

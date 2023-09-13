@@ -1,0 +1,35 @@
+<ul.mdc-list role=listbox ##{theId} tabindex=-1 data-mdc-auto-init=MDCList>
+  $if null options
+    <li.mdc-list-item.mdc-list-item--with-leading-image.mdc-list-item--with-three-lines
+      :isLeft eval:aria-checked=true :not (isLeft eval):aria-checked=false>
+      <span.mdc-list-item__ripple>
+      <span.mdc-list-item__start style="text-align:center">
+        <i.material-symbols-outlined style="font-size:3rem;color:var(--mdc-theme-primary)">diversity_2
+      <span.mdc-list-item__content>
+        <div.mdc-list-item__primary-text>
+          _{MsgNoPreference}
+        <div.mdc-list-item__secondary-text>
+          _{MsgMaximumAvailability}
+        <div.mdc-list-item__secondary-text>
+          <div.mdc-radio__focus-ring>
+    <div.mdc-list-divider role=separator>
+  $forall e@(Entity sid (Staff sname _ _ _ _ _), Entity rid (Role _ _ rname rating)) <- options
+    $with checked <- isChecked eval e
+      <input type=radio name=#{name} value=#{fromSqlKey rid} *{attrs} :checked:checked hidden>
+      <li.mdc-list-item.mdc-list-item--with-leading-image.mdc-list-item--with-three-lines
+        :checked:aria-checked=true :not checked:aria-checked=false>
+        <span.mdc-list-item__ripple>
+        <span.mdc-list-item__start>
+          <img src=@{AdminR $ AdmStaffPhotoR sid} width=56 height=56 alt=_{MsgPhoto} loading=lazy>
+        <span.mdc-list-item__content>
+          <div.mdc-list-item__primary-text>
+            #{sname}
+          <div.mdc-list-item__secondary-text>
+            #{rname}
+          <div.mdc-list-item__secondary-text>
+            $maybe rating <- rating
+              $forall _ <- range 1 rating
+                <span style="color:#FFBF00">&starf;
+              $forall _ <- range 1 (5 - rating)
+                &starf;
+      <div.mdc-list-divider role=separator>

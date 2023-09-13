@@ -9,7 +9,7 @@ serviceList.selectedIndex = serviceList.listElements.map(
 ).flat();
 
 Array.from(
-  document.getElementById(#{theId}).querySelectorAll('.mdc-list-item .mdc-list-item__end span[data-amount]')
+  document.getElementById(#{theId}).querySelectorAll('.mdc-list-item .mdc-list-item__content span[data-amount]')
 ).forEach(function (x) {
   x.textContent = Number(x.dataset.amount).toLocaleString(
     navigator.language,

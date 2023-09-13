@@ -32,7 +32,7 @@
           :Just BookOffersR == curr:.mdc-deprecated-list-item--activated>
           <span.mdc-deprecated-list-item__ripple>
           <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>book_online
-          <span.mdc-deprecated-list-item__text>_{MsgBook}
+          <span.mdc-deprecated-list-item__text>_{MsgBookAppointment}
         <a.mdc-deprecated-list-item href=@{AppointmentsR}
           :Just AppointmentsR /= curr:tabindex=-1
           :Just AppointmentsR == curr:tabindex=0
