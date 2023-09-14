@@ -10,16 +10,14 @@ main
   #formTime
     display: flex
     flex-direction: column
-    div.form-field
+    #sectionDateTime
       margin: 1rem
       display: flex
       flex-direction: column
-      input[type=date], input[type=time]
-        width: 100%
-        font-size: 1.2rem
-        min-height: 2rem
-        border: none
-        border-bottom: 2px solid var(--mdc-theme-primary)
+      gap: 1rem
+      div.form-field
+        display: flex
+        flex-direction: column
 
 #footerActions
   position: fixed

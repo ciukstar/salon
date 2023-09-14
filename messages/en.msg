@@ -1,3 +1,5 @@
+AppointmentTimeIsInThePast: Appointment time is in the past
+AppointmentDayIsInThePast: Appointment day is in the past
 BookingSequenceRestarted: Booking sequence restarted
 StartAnew: Start anew
 InvalidBookingEntryPoint: Invalid entry point for booking

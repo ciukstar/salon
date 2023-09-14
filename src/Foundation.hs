@@ -296,7 +296,7 @@ isAuthenticated = do
 
 formLogin :: Route App -> Widget
 formLogin route = do
-    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$>  lookupSession "_ULT"
+    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$>  lookupSession ultDestKey
     msgs <- getMessages
     $(widgetFile "login")
 

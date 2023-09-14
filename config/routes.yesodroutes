@@ -42,18 +42,18 @@
     /delete/about/#ContentsId AdmAboutDeleteR POST
     /about                    AdmAboutR       GET POST
 
-    /search/services	      		  AdmServicesSearchR	GET
-    /form/pricelist/+Services             AdmOfferCreateR   GET
-    /form/price/#OfferId/+Services    AdmPriceEditR   	GET
-    /delete/prices/#OfferId/+Services AdmPriceDeleteR	POST
-    /prices/#OfferId/+Services        AdmPriceR	        GET POST
-    /pricelist/+Services       	       	  AdmOfferR	        POST
-    /form/services/+Services   	       	  AdmServiceEditFormR   GET
-    /form/service/+Services    	          AdmServiceCreateFormR GET
-    /delete/services/+Services 	       	  AdmServiceDeleteR     POST
-    /edit/services/+Services   	       	  AdmServiceR	     	POST
-    /image/services/#ServiceId 	       	  AdmServiceImageR	GET
-    /services/+Services        	       	  AdmServicesR          GET POST
+    /search/services	              AdmServicesSearchR    GET
+    /form/pricelist/+Services         AdmOfferCreateR       GET
+    /form/price/#OfferId/+Services    AdmPriceEditR   	    GET
+    /delete/prices/#OfferId/+Services AdmPriceDeleteR	    POST
+    /prices/#OfferId/+Services        AdmPriceR	            GET POST
+    /pricelist/+Services       	      AdmOfferR	            POST
+    /form/services/+Services   	      AdmServiceEditFormR   GET
+    /form/service/+Services    	      AdmServiceCreateFormR GET
+    /delete/services/+Services 	      AdmServiceDeleteR     POST
+    /edit/services/+Services   	      AdmServiceR	    POST
+    /image/services/#ServiceId 	      AdmServiceImageR	    GET
+    /services/+Services        	      AdmServicesR          GET POST
 
 
     /search/staff			 AdmStaffSearchR GET

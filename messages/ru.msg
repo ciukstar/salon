@@ -1,3 +1,5 @@
+AppointmentTimeIsInThePast: Время приема в прошлом
+AppointmentDayIsInThePast: День приема в прошлом
 BookingSequenceRestarted: Последовательность бронирования возобновлена
 StartAnew: Начать заново
 InvalidBookingEntryPoint: Неверная точка входа для бронирования

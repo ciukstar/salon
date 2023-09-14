@@ -19,12 +19,15 @@ module Handler.Book
 import Control.Monad (unless, forM, when)
 import Control.Monad.Trans.Reader (ReaderT)
 import Data.Either (isLeft)
-import Data.Maybe (maybeToList)
+import Data.Maybe (maybeToList, isJust)
 import Data.Fixed (Centi)
 import qualified Data.List.Safe as LS (head)
 import Data.Text (unpack, intercalate, pack, Text)
 import qualified Data.Text as T (null)
-import Data.Time (Day, TimeOfDay)
+import Data.Time
+    ( Day, TimeOfDay, UTCTime (utctDay), getCurrentTime
+    , LocalTime (LocalTime), utcToLocalTime, utc
+    )
 import Data.Time.Format (formatTime, defaultTimeLocale)
 import Text.Hamlet (Html)
 import Text.Shakespeare.I18N (renderMessage, SomeMessage (SomeMessage))
@@ -32,7 +35,7 @@ import Yesod.Core
     ( Yesod(defaultLayout), YesodRequest (reqGetParams)
     , getYesod, languages, whamlet, setUltDestCurrent, getMessages
     , redirect, getRequest, addMessageI, deleteSession, lookupSession
-    , setSession
+    , setSession, MonadIO (liftIO)
     )
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Auth (maybeAuth, Route (LoginR))
@@ -40,11 +43,11 @@ import Yesod.Form.Types
     ( MForm, FormResult (FormSuccess, FormFailure)
     , Field (Field, fieldParse, fieldView, fieldEnctype)
     , Enctype (UrlEncoded)
-    , FieldView (fvInput, fvErrors)
+    , FieldView (fvInput, fvErrors, fvId, fvLabel)
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
     )
 import Yesod.Form.Fields (timeField, dayField)
-import Yesod.Form.Functions (mreq, check, mopt, runFormPost, generateFormPost)
+import Yesod.Form.Functions (mreq, check, mopt, runFormPost, generateFormPost, checkM)
 import Settings (widgetFile)
 
 import Yesod.Persist.Core (runDB)
@@ -54,7 +57,8 @@ import Database.Persist.Sql ( fromSqlKey, toSqlKey, SqlBackend )
 import Database.Esqueleto.Experimental
     ( select, from, table, where_, innerJoin, on
     , (^.), (?.), (==.), (:&)((:&))
-    , orderBy, asc, desc, in_, valList, leftJoin, val, selectOne
+    , orderBy, asc, desc, in_, valList, leftJoin, val
+    , selectOne, exists, not_, except_, subSelectList
     )
 
 import Foundation
@@ -76,8 +80,8 @@ import Foundation
       , MsgLogin, MsgDay, MsgTime , MsgEnd, MsgAlreadyHaveAnAccount
       , MsgLoginToIdentifyCustomer, MsgSelectedTime, MsgRecordAdded
       , MsgYouSuccessfullyCreatedYourBooking, MsgShowDetails
-      , MsgBookNewAppointment, MsgBookingSequenceRestarted
-      , MsgThumbnail
+      , MsgBookNewAppointment, MsgBookingSequenceRestarted, MsgThumbnail
+      , MsgAppointmentDayIsInThePast, MsgAppointmentTimeIsInThePast
       )
     )
 
@@ -393,38 +397,49 @@ formTime day time items offers role roles extra = do
     (offersR,offersV) <- mreq (check notNull (offersField offers)) FieldSettings
         { fsLabel = SomeMessage MsgOffer
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
-        , fsAttrs = []
+        , fsAttrs = [("hidden","hidden")]
         } (Just items)
 
     (roleR,roleV) <- mopt (rolesField roles) FieldSettings
         { fsLabel = SomeMessage MsgRole
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
-        , fsAttrs = []
+        , fsAttrs = [("hidden","hidden")]
         } (Just role)
 
-    (dayR,dayV) <- mreq dayField FieldSettings
+    (dayR,dayV) <- mreq futureDayField FieldSettings
         { fsLabel = SomeMessage MsgDay
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
-        , fsAttrs = []
+        , fsAttrs = [("class","mdc-text-field__input")]
         } day
 
-    (timeR,timeV) <- mreq timeField FieldSettings
+    (timeR,timeV) <- mreq (futureTimeField dayR) FieldSettings
         { fsLabel = SomeMessage MsgTime
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
-        , fsAttrs = []
+        , fsAttrs = [("class","mdc-text-field__input")]
         } time
 
     let r = (,,,) <$> offersR <*> roleR <*> dayR <*> timeR
     let w = [whamlet|
 #{extra}
-$forall v <- [dayV,timeV]
-  <div.form-field>
-    ^{fvInput v}
-    $maybe errs <- fvErrors v
-      <label.mdc-text-field.mdc-text-field--invalid>
-      <div.mdc-text-field-helper-line>
-        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
-          #{errs}
+<section #sectionDateTime>
+  $forall (v,icon) <- [(dayV,"event"),(timeV,"schedule")]
+    <div.form-field>
+      <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--with-trailing-icon data-mdc-auto-init=MDCTextField
+        :isJust (fvErrors v):.mdc-text-field--invalid>
+        <span.mdc-text-field__ripple>
+        <span.mdc-floating-label>#{fvLabel v}
+        ^{fvInput v}
+        <button.mdc-icon-button.mdc-text-field__icon.mdc-text-field__icon--trailing.material-symbols-outlined
+          tabindex=0 role=button onclick="document.getElementById('#{fvId v}').showPicker()"
+          style="position:absolute;right:2px;background-color:inherit">
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          #{pack icon}
+        <div.mdc-line-ripple>
+      $maybe errs <- fvErrors v
+        <div.mdc-text-field-helper-line>
+          <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+            #{errs}
 
 <details.mdc-list data-mdc-auto-init=MDCList
   ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
@@ -455,6 +470,27 @@ $forall v <- [dayV,timeV]
     return (r,w)
   where
 
+      futureTimeField dayR = checkM (futureTime dayR) timeField
+
+      futureTime :: FormResult Day -> TimeOfDay -> Handler (Either AppMessage TimeOfDay)
+      futureTime dayR t = do
+          now <- liftIO getCurrentTime
+          return $ case dayR of
+            FormSuccess d -> if LocalTime d t < utcToLocalTime utc now
+                then Left MsgAppointmentTimeIsInThePast
+                else Right t
+            _ -> Right t
+          
+      
+      futureDayField = checkM futureDay dayField
+
+      futureDay :: Day -> Handler (Either AppMessage Day)
+      futureDay d = do
+          today <- liftIO $ utctDay <$> getCurrentTime
+          return $ if d < today
+              then Left MsgAppointmentDayIsInThePast
+              else Right d
+      
       notNull xs = case xs of
         [] -> Left MsgSelectAtLeastOneServicePlease
         _ -> Right xs
@@ -605,15 +641,38 @@ queryRole rids = selectOne $ do
     when (null rids) $ where_ $ val False
     orderBy [desc (x ^. RoleRating), asc (x ^. RoleId)]
     return (s,x)
-
+    
 
 queryRoles :: [(Entity Service, Entity Offer)] -> ReaderT SqlBackend Handler [(Entity Staff, Entity Role)]
 queryRoles services = select $ do
-    x :& s <- from $ table @Role
-        `innerJoin` table @Staff `on` (\(x :& s) -> x ^. RoleStaff ==. s ^. StaffId)
+    x :& e <- from $ table @Role `innerJoin` table @Staff `on` (\(x :& e) -> x ^. RoleStaff ==. e ^. StaffId)
+        
+    where_ $ not_ $ exists $ do
+        _ <- from (
+            ( do
+                  r <- from $ table @Role
+                  where_ $ r ^. RoleService `in_` valList ((\(Entity sid _,_) -> sid) <$> services)
+                  return (r ^. RoleService)
+            )
+            `except_`
+            ( do  
+                  r <- from $ table @Role
+                  where_ $ r ^. RoleStaff ==. e ^. StaffId
+                  return (r ^. RoleService)
+            ) )
+        return ()
+
+    where_ $ not_ $ exists $ do
+        s <- from $ table @Service
+        where_ $ s ^. ServiceId `in_` valList ((\(Entity sid _,_) -> sid) <$> services)
+        where_ $ not_ $ s ^. ServiceId `in_` subSelectList ( do
+                                                                 r <- from $ table @Role
+                                                                 return $ r ^. RoleService
+                                                           )
+        
     unless (null services) $ where_ $ x ^. RoleService `in_` valList ((\(Entity sid _,_) -> sid) <$> services)
     orderBy [desc (x ^. RoleRating), asc (x ^. RoleId)]
-    return (s,x)
+    return (e,x)
 
 
 queryItems :: [OfferId] -> ReaderT SqlBackend Handler [(Entity Service, Entity Offer)]

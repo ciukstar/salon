@@ -1,3 +1,5 @@
+AppointmentTimeIsInThePast: Ora programării este în trecut
+AppointmentDayIsInThePast: Ziua programării este în trecut
 BookingSequenceRestarted: Secvența de rezervare a fost repornită
 StartAnew: Începe din nou
 InvalidBookingEntryPoint: Punct de intrare nevalid pentru rezervare
