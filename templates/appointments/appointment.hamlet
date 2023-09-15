@@ -8,7 +8,7 @@
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgAppointment}
           
 <main.mdc-top-app-bar--prominent-fixed-adjust>
-  $maybe Entity _ (Book _ _ _ date time) <- book
+  $maybe Entity _ (Book _ _ _ date time _) <- book
     #{show date} #{show time}
     <p>
       <button.mdc-button.mdc-button--raised type=button>

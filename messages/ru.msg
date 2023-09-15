@@ -1,3 +1,5 @@
+Minutes: Минуты
+Timezone: Часовой пояс
 AppointmentTimeIsInThePast: Время приема в прошлом
 AppointmentDayIsInThePast: День приема в прошлом
 BookingSequenceRestarted: Последовательность бронирования возобновлена

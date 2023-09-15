@@ -1,4 +1,6 @@
 
+window.scroll("0",#{fromMaybe "0" scrollY});
+
 window.mdc.autoInit();
 
 window.onscroll = function (e) {

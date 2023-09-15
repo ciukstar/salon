@@ -17,20 +17,20 @@
       <i.material-symbols-outlined style="font-size:3rem;color:var(--mdc-theme-primary)">
         schedule
     <span.mdc-list-item__content>
-      $case (day,time,dayR,timeR)
-        $of (Just day,Just time,_,_)
+      $case (day,time,tz,dayR,timeR,tzR)
+        $of (Just day,Just time,Just tz,_,_,_)
           <div.mdc-list-item__primary-text style="color:var(--theme-accent)" #appointmentTime>
-            #{show day} #{show time}
+            #{show day} #{show time} #{show tz}
           <div.mdc-list-item__secondary-text #appointmentFullLongTime>
             #{show day} #{show time}
-        $of (_,_,FormSuccess day,FormSuccess time)
+        $of (_,_,_,FormSuccess day,FormSuccess time, FormSuccess tz)
           <div.mdc-list-item__primary-text style="color:var(--theme-accent)" #appointmentTime>
-            #{show day} #{show time}
+            #{show day} #{show time} #{show tz}
           <div.mdc-list-item__secondary-text #appointmentFullLongTime>
-            #{show day} #{show time}
+            #{show day} #{show time} #{show tz}
         $of _
           
-  $forall v <- [dayV,timeV]
+  $forall v <- [dayV,timeV,tzV]
     ^{fvInput v}
 
 <details.mdc-list data-mdc-auto-init=MDCList

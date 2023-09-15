@@ -10,14 +10,6 @@ main
   #formTime
     display: flex
     flex-direction: column
-    #sectionDateTime
-      margin: 1rem
-      display: flex
-      flex-direction: column
-      gap: 1rem
-      div.form-field
-        display: flex
-        flex-direction: column
 
 #footerActions
   position: fixed

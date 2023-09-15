@@ -35,7 +35,7 @@
             <span.mdc-button__label>_{MsgBookAppointment}
   $else
     <nav.mdc-list data-mdc-auto-init=MDCList>
-      $forall Entity bid (Book _ _ _ date time) <- books
+      $forall Entity bid (Book _ _ _ date time _) <- books
         <a.mdc-list-item href=@{AppointmentR bid}
           .mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon>
           <span.mdc-list-item__ripple>

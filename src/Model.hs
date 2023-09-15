@@ -18,18 +18,19 @@ module Model where
 
 import Data.Proxy (Proxy)
 import Data.Time
-    ( Day, TimeOfDay, LocalTime, DiffTime, diffTimeToPicoseconds, picosecondsToDiffTime
-    , localTimeToUTC, utc, utcToLocalTime
+    ( Day, TimeOfDay, LocalTime, DiffTime, diffTimeToPicoseconds
+    , picosecondsToDiffTime, localTimeToUTC, utc, utcToLocalTime
+    , TimeZone (timeZoneMinutes), minutesToTimeZone
     )
 import Prelude (Int, fromIntegral)
 import Data.Either (Either (Left, Right))
 import Data.Bool (Bool)
-import Data.Function ((.))
+import Data.Function ((.),($))
 import Data.Maybe (Maybe (Just))
 import ClassyPrelude.Yesod
     ( Typeable , Text , ByteString , mkMigrate , mkPersist
     , persistFileWith , share , sqlSettings , Textarea
-    , derivePersistField, PersistValue (PersistUTCTime)
+    , derivePersistField, PersistValue (PersistUTCTime), SqlType (SqlInt64)
     )
 import Database.Persist.Quasi (lowerCaseSettings)
 import Data.Fixed (Centi)
@@ -43,7 +44,10 @@ import Data.Functor ((<$>))
 import Control.Monad (mapM)
 import Database.Esqueleto.Experimental (SqlString)
 import Database.Persist.Class (PersistField, toPersistValue, fromPersistValue)
-import Database.Persist.Types (PersistValue (PersistInt64), SqlType (SqlInt32, SqlDayTime))
+import Database.Persist.Types
+    ( PersistValue (PersistInt64)
+    , SqlType (SqlDayTime)
+    )
 import Database.Persist.Sql (fromSqlKey, toSqlKey, PersistFieldSql, sqlType)
 
 
@@ -53,6 +57,20 @@ data ServiceStatus = ServiceStatusPulished | ServiceStatusUnpublished
 data EmplStatus = EmplStatusEmployed | EmplStatusDismissed
     deriving (Show, Read, Eq)
 derivePersistField "EmplStatus"
+
+
+instance PersistField TimeZone where
+  toPersistValue :: TimeZone -> PersistValue
+  toPersistValue x = toPersistValue $ timeZoneMinutes x
+
+  fromPersistValue :: PersistValue -> Either Text TimeZone
+  fromPersistValue (PersistInt64 x) = Right $ minutesToTimeZone $ fromIntegral x
+  fromPersistValue _ = Left "Invalid TimeZone"
+
+instance PersistFieldSql TimeZone where
+    sqlType :: Proxy TimeZone -> SqlType
+    sqlType _ = SqlInt64
+
 
 instance PersistField LocalTime where
     toPersistValue :: LocalTime -> PersistValue
@@ -78,7 +96,7 @@ instance PersistField DiffTime where
 
 instance PersistFieldSql DiffTime where
     sqlType :: Proxy DiffTime -> SqlType
-    sqlType _ = SqlInt32
+    sqlType _ = SqlInt64
 
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"]

@@ -1,3 +1,5 @@
+Minutes: Minutes
+Timezone: Timezone
 AppointmentTimeIsInThePast: Appointment time is in the past
 AppointmentDayIsInThePast: Appointment day is in the past
 BookingSequenceRestarted: Booking sequence restarted

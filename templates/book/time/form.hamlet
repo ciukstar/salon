@@ -1,0 +1,69 @@
+
+#{extra}
+<section #sectionDateTime>
+  $forall (v,icon) <- [(dayV,"event"),(timeV,"schedule")]
+    <div.form-field>
+      <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--with-trailing-icon data-mdc-auto-init=MDCTextField
+        :isJust (fvErrors v):.mdc-text-field--invalid>
+        <span.mdc-text-field__ripple>
+        <span.mdc-floating-label>#{fvLabel v}
+        ^{fvInput v}
+        <button.mdc-icon-button.mdc-text-field__icon.mdc-text-field__icon--trailing.material-symbols-outlined
+          tabindex=0 role=button onclick="document.getElementById('#{fvId v}').showPicker()"
+          style="position:absolute;right:2px;background-color:inherit">
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          #{pack icon}
+        <div.mdc-line-ripple>
+      $maybe errs <- fvErrors v
+        <div.mdc-text-field-helper-line>
+          <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+            #{errs}
+
+<details.mdc-list #detailsTimezone data-mdc-auto-init=MDCList :isJust (fvErrors tzV):open
+  ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+  <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+    <span.mdc-list-item__ripple>
+    <span.mdc-list-item__start>
+      <i.material-symbols-outlined>language
+    <span.mdc-list-item__content>
+      <div.mdc-list-item__primary-text>_{MsgTimezone}
+    <span.mdc-list-item__end>
+      <i.expand.material-symbols-outlined>expand_more
+  <div.form-field>
+    <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--no-label 
+      :isJust (fvErrors tzV):.mdc-text-field--invalid data-mdc-auto-init=MDCTextField>
+      <span.mdc-text-field__ripple>
+      ^{fvInput tzV}
+      <span.mdc-text-field__affix.mdc-text-field__affix--suffix>_{MsgMinutes}
+      <div.mdc-line-ripple>
+    $maybe errs <- fvErrors tzV
+      <div.mdc-text-field-helper-line>
+        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+          #{errs}
+
+<details.mdc-list data-mdc-auto-init=MDCList
+  ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+  <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+    <span.mdc-list-item__ripple>
+    <span.mdc-list-item__start>
+      <i.material-symbols-outlined>info
+    <span.mdc-list-item__content>
+      <div.mdc-list-item__primary-text>
+        _{MsgSelectedStaff}
+    <span.mdc-list-item__end>
+      <i.expand.material-symbols-outlined>expand_more
+  ^{fvInput roleV}
+
+<details.mdc-list data-mdc-auto-init=MDCList
+  ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+  <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+    <span.mdc-list-item__ripple>
+    <span.mdc-list-item__start>
+      <i.material-symbols-outlined>info
+    <span.mdc-list-item__content>
+      <div.mdc-list-item__primary-text>
+        _{MsgSelectedServices}
+    <span.mdc-list-item__end>
+      <i.expand.material-symbols-outlined>expand_more
+  ^{fvInput offersV}

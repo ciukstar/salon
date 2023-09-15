@@ -1,3 +1,5 @@
+Minutes: Minutes
+Timezone: Fuseau horaire
 AppointmentTimeIsInThePast: L'heure du rendez-vous est passée
 AppointmentDayIsInThePast: Le jour du rendez-vous est passé
 BookingSequenceRestarted: La séquence de réservation a redémarré
