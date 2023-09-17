@@ -1,3 +1,7 @@
+ChoosePhoto: Choose photo
+ChooseImage: Choose image
+Attribution: Attribution
+AddOffer: Add offer
 Minutes: Minutes
 Timezone: Timezone
 AppointmentTimeIsInThePast: Appointment time is in the past

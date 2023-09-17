@@ -1,6 +1,25 @@
 
 #{extra}
 <div.form-field>
+  <div.mdc-card>
+    <div.mdc-card__primary-action>
+      <div.mdc-card__media style="text-align:center">
+        $maybe Entity sid _ <- service
+          <img #imgThumbnail src=@{ServiceThumbnailR sid} alt=_{MsgPhoto} width=56 height=56
+             onerror="this.src = '@{StaticR img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg}'">
+        $nothing
+          <img #imgThumbnail src=@{StaticR img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg} height=56 alt=_{MsgPhoto}>
+      <div.mdc-card__ripple>
+    <div.mdc-card__actions>
+      <div.mdc-card__action-buttons>
+        <button.mdc-card__action.mdc-card__action--button.mdc-button type=button>
+          <span.mdc-button__ripple>
+          <span.mdc-button__label>_{MsgChoosePhoto}
+      <div.mdc-card__action-icons>
+        <button.mdc-card__action.mdc-card__action--icon.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>attribution
   <label for=#{fvId thumbnailV}>
     <figure>
       $maybe Entity sid _ <- service
@@ -40,17 +59,18 @@ $forall v <- [nameV,overviewV,durationV]
         <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
           #{errs}
 
-<div.form-field>
-  <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--textarea data-mdc-auto-init=MDCTextField
-    :isJust (fvErrors descrV):.mdc-text-field--invalid>
-    <span.mdc-text-field__ripple>
-    <span.mdc-floating-label>#{fvLabel descrV}
-    <span.mdc-text-field__resizer>
-      ^{fvInput descrV}
-    <span.mdc-line-ripple>
-  $maybe errs <- fvErrors descrV 
-    <div.mdc-text-field-helper-line>
-      <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
-        #{errs}
+$forall v <- [descrV,attributionV]
+  <div.form-field>
+    <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--textarea data-mdc-auto-init=MDCTextField
+      :isJust (fvErrors v):.mdc-text-field--invalid>
+      <span.mdc-text-field__ripple>
+      <span.mdc-floating-label>#{fvLabel v}
+      <span.mdc-text-field__resizer>
+        ^{fvInput v}
+      <span.mdc-line-ripple>
+    $maybe err <- fvErrors v 
+      <div.mdc-text-field-helper-line>
+        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+          #{err}
 
 ^{fvInput groupV}

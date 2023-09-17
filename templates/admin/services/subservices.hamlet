@@ -19,7 +19,9 @@
           <div.mdc-list-item__primary-text>#{name}
         <span.mdc-list-item__end>
           <i.material-symbols-outlined>arrow_forward_ios
-      <div.mdc-list-divider role=separator>
+      <div.mdc-list-divider role=separator style="position:relative">
+        <a href="https://www.freepik.com/free-photo/handsome-man-barber-shop-styling-hair_7435510.htm#query=man%20haircut&position=0&from_view=search&track=ais" style="position:absolute;bottom:4px;left:4px;line-height:0.5;font-size:0.5rem">
+            Designed by Freepik
 
   <div.mdc-touch-target-wrapper #fabAddSubservice>
     <a.mdc-fab.mdc-fab--extended.mdc-fab--touch

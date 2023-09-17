@@ -24,7 +24,7 @@ import Model
       ( Service, serviceName, serviceDescr, serviceGroup, serviceOverview
       , servicePublished, serviceDuration
       )
-    , Thumbnail (Thumbnail, thumbnailService, thumbnailPhoto, thumbnailMime)
+    , Thumbnail (Thumbnail, thumbnailService, thumbnailPhoto, thumbnailMime, thumbnailAttribution)
     , Offer
       ( Offer, offerName, offerPrice, offerPrefix
       , offerSuffix, offerDescr, offerService
@@ -338,6 +338,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Thumbnail { thumbnailService = s1
                         , thumbnailPhoto = $(embedFile "static/img/hair-care.svg")
                         , thumbnailMime = "image/svg+xml"
+                        , thumbnailAttribution = Nothing
                         }
 
     s11 <- insert $ Service { serviceName = "Men hair cuts"
@@ -365,6 +366,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Thumbnail { thumbnailService = s11
                         , thumbnailPhoto = $(embedFile "static/img/man-haircut.svg")
                         , thumbnailMime = "image/svg+xml"
+                        , thumbnailAttribution = Nothing
                         }
 
     s12 <- insert $ Service { serviceName = "Women hair cuts (above shoulders)"
@@ -386,6 +388,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Thumbnail { thumbnailService = s12
                         , thumbnailPhoto = $(embedFile "static/img/women-profile-hair-short.svg")
                         , thumbnailMime = "image/svg+xml"
+                        , thumbnailAttribution = Nothing
                         }
 
     insert_ $ Role { roleStaff = e2
@@ -413,6 +416,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Thumbnail { thumbnailService = s13
                         , thumbnailPhoto = $(embedFile "static/img/women-profile-hair-long.svg")
                         , thumbnailMime = "image/svg+xml"
+                        , thumbnailAttribution = Nothing
                         }
 
     insert_ $ Role { roleStaff = e11
@@ -446,6 +450,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Thumbnail { thumbnailService = s14
                         , thumbnailPhoto = $(embedFile "static/img/child-haircut.svg")
                         , thumbnailMime = "image/svg+xml"
+                        , thumbnailAttribution = Nothing
                         }
 
     insert_ $ Role { roleStaff = e4
@@ -465,6 +470,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Thumbnail { thumbnailService = s15
                         , thumbnailPhoto = $(embedFile "static/img/conditioning.svg")
                         , thumbnailMime = "image/svg+xml"
+                        , thumbnailAttribution = Nothing
                         }
 
     s151 <- insert $ Service { serviceName = "Conditioning"
@@ -478,6 +484,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Thumbnail { thumbnailService = s151
                         , thumbnailPhoto = $(embedFile "static/img/chemical-services.svg")
                         , thumbnailMime = "image/svg+xml"
+                        , thumbnailAttribution = Nothing
                         }
 
     s1511 <- insert $ Service { serviceName = "After Perm Conditioner"
@@ -529,6 +536,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Thumbnail { thumbnailService = s152
                         , thumbnailPhoto = $(embedFile "static/img/hair-highlights-color.svg")
                         , thumbnailMime = "image/svg+xml"
+                        , thumbnailAttribution = Nothing
                         }
 
     s1521 <- insert $ Service { serviceName = "Full"
@@ -652,6 +660,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Thumbnail { thumbnailService = s2
                         , thumbnailPhoto = $(embedFile "static/img/facial-treatments.svg")
                         , thumbnailMime = "image/svg+xml"
+                        , thumbnailAttribution = Nothing
                         }
 
     s21 <- insert $ Service { serviceName = "Basic Facial (60 min)"
@@ -791,6 +800,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Thumbnail { thumbnailService = s3
                         , thumbnailPhoto = $(embedFile "static/img/advanced-facial-treatments.svg")
                         , thumbnailMime = "image/svg+xml"
+                        , thumbnailAttribution = Nothing
                         }
 
     s4 <- insert $ Service { serviceName = "Anti-Aging Treatments"
@@ -804,6 +814,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Thumbnail { thumbnailService = s4
                         , thumbnailPhoto = $(embedFile "static/img/anti-aging-treatments.svg")
                         , thumbnailMime = "image/svg+xml"
+                        , thumbnailAttribution = Nothing
                         }
 
     s5 <- insert $ Service { serviceName = "Eye Treatment Center"
@@ -817,6 +828,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Thumbnail { thumbnailService = s5
                         , thumbnailPhoto = $(embedFile "static/img/eye-treatment-center.svg")
                         , thumbnailMime = "image/svg+xml"
+                        , thumbnailAttribution = Nothing
                         }
 
     s6 <- insert $ Service { serviceName = "Body Massage"
@@ -830,6 +842,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Thumbnail { thumbnailService = s6
                         , thumbnailPhoto = $(embedFile "static/img/body-massage.svg")
                         , thumbnailMime = "image/svg+xml"
+                        , thumbnailAttribution = Nothing
                         }
 
     insert_ $ Role { roleStaff = e9
@@ -849,6 +862,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Thumbnail { thumbnailService = s7
                         , thumbnailPhoto = $(embedFile "static/img/makeup-services.svg")
                         , thumbnailMime = "image/svg+xml"
+                        , thumbnailAttribution = Nothing
                         }
 
     s8 <- insert $ Service { serviceName = "Waxing"
@@ -862,6 +876,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Thumbnail { thumbnailService = s8
                         , thumbnailPhoto = $(embedFile "static/img/waxing.svg")
                         , thumbnailMime = "image/svg+xml"
+                        , thumbnailAttribution = Nothing
                         }
 
     insert_ $ Role { roleStaff = e6
@@ -881,6 +896,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Thumbnail { thumbnailService = s9
                         , thumbnailPhoto = $(embedFile "static/img/nail-care.svg")
                         , thumbnailMime = "image/svg+xml"
+                        , thumbnailAttribution = Nothing
                         }
 
     insert_ $ Role { roleStaff = e7
@@ -900,6 +916,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Thumbnail { thumbnailService = s10
                         , thumbnailPhoto = $(embedFile "static/img/body-shaping-fitness.svg")
                         , thumbnailMime = "image/svg+xml"
+                        , thumbnailAttribution = Nothing
                         }
 
     return ()

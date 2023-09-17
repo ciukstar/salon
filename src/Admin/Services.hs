@@ -42,7 +42,7 @@ import Yesod.Core
     , whamlet, preEscapedToMarkup, newIdent, getRequest
     , YesodRequest (reqGetParams), getYesod, languages
     )
-    
+
 import Yesod.Form
     ( FormResult(FormSuccess), Field, MForm
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
@@ -50,14 +50,14 @@ import Yesod.Form
     , hiddenField, runInputGet, iopt, intField, checkM
     , mreq, textField, doubleField, mopt, textareaField, fileField
     , generateFormPost, runFormPost, unTextarea, withRadioField
-    , OptionList, optionsPairs, searchField, Textarea (Textarea), check
+    , OptionList, optionsPairs, searchField, Textarea (Textarea), check, htmlField
     )
 import Settings (widgetFile)
 import Settings.StaticFiles
     ( img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg
     , img_photo_FILL0_wght400_GRAD0_opsz48_svg
     )
-    
+
 import Foundation
     ( Handler, Widget
     , Route
@@ -70,12 +70,12 @@ import Foundation
       , AdmPriceR, AdmPriceEditR, AdmPriceDeleteR, AdmServicesSearchR
       )
     , AppMessage
-      ( MsgServices, MsgPhoto, MsgTheName
-      , MsgPrice, MsgDescription, MsgRecordEdited
+      ( MsgServices, MsgPhoto, MsgTheName, MsgAttribution
+      , MsgPrice, MsgDescription, MsgRecordEdited, MsgChoosePhoto
       , MsgService, MsgSave, MsgCancel, MsgRecordAdded, MsgImage
       , MsgSubservices, MsgAddService, MsgAddSubservice, MsgNoServicesYet
       , MsgDeleteAreYouSure, MsgYesDelete, MsgPleaseConfirm, MsgRecordDeleted
-      , MsgPrefix, MsgSuffix, MsgServisAlreadyInTheList, MsgAddPrice
+      , MsgPrefix, MsgSuffix, MsgServisAlreadyInTheList, MsgAddOffer
       , MsgNoPriceSetYet, MsgPriceAlreadyInTheList, MsgOverview, MsgPublished
       , MsgYes, MsgNo, MsgSearch, MsgNoServicesFound, MsgSelect, MsgCategory
       , MsgCategories, MsgStatus, MsgUnpublished, MsgOffers, MsgDuration
@@ -93,12 +93,12 @@ import Model
       ( Service, serviceName, serviceDescr, serviceGroup, serviceOverview
       , servicePublished, serviceDuration
       )
-    , Thumbnail (Thumbnail, thumbnailService, thumbnailPhoto, thumbnailMime)
+    , Thumbnail (Thumbnail, thumbnailService, thumbnailPhoto, thumbnailMime, thumbnailAttribution)
     , Services (Services)
     , EntityField
       ( ServiceId, ThumbnailPhoto, ThumbnailMime, ServiceGroup, ThumbnailService
       , ServiceName, OfferService, OfferId, OfferName, ServiceOverview
-      , ServiceDescr, ServicePublished
+      , ServiceDescr, ServicePublished, ThumbnailAttribution
       )
     , Offer
       ( Offer, offerName, offerPrice, offerPrefix, offerSuffix
@@ -112,11 +112,12 @@ import Yesod.Persist (YesodPersist(runDB), (=.), PersistUniqueWrite (upsert))
 import Database.Persist.Sql (fromSqlKey, toSqlKey, delete)
 import Database.Esqueleto.Experimental
     ( selectOne, from, table, where_, val, in_, valList, just, justList
-    , (^.), (==.), (%), (++.), (||.)
+    , (^.), (?.), (==.), (%), (++.), (||.), (:&) ((:&))
     , isNothing, select, orderBy, asc, upper_, like, not_, exists
+    , leftJoin, on
     )
 
-import Menu (menu) 
+import Menu (menu)
 
 
 getAdmServicesSearchR :: Handler Html
@@ -128,7 +129,7 @@ getAdmServicesSearchR = do
     categs <- (toSqlKey . read . unpack . snd <$>) . filter ((== "categ") . fst) . reqGetParams <$> getRequest
     stati <- (read . unpack . snd <$>) . filter ((== "status") . fst) . reqGetParams <$> getRequest
     services <- runDB $ select $ do
-        x <- from $ table @Service 
+        x <- from $ table @Service
         case mq of
           Just q -> where_ $ ( upper_ (x ^. ServiceName) `like` (%) ++. upper_ (val q) ++. (%) )
               ||. ( upper_ (x ^. ServiceOverview) `like` (%) ++. upper_ (just (val q)) ++. (%) )
@@ -284,7 +285,7 @@ $forall v <- [nameV,priceV,prefV,suffV]
       $maybe _ <- fvErrors v
         <i.mdc-text-field__icon.mdc-text-field__icon--trailing.material-symbols-outlined>error
       <span.mdc-line-ripple>
-    $maybe errs <- fvErrors v 
+    $maybe errs <- fvErrors v
       <div.mdc-text-field-helper-line>
         <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
           #{errs}
@@ -297,7 +298,7 @@ $forall v <- [nameV,priceV,prefV,suffV]
     <span.mdc-text-field__resizer>
       ^{fvInput descrV}
     <span.mdc-line-ripple>
-  $maybe errs <- fvErrors descrV 
+  $maybe errs <- fvErrors descrV
     <div.mdc-text-field-helper-line>
       <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
         #{errs}
@@ -329,7 +330,7 @@ getAdmServiceImageR sid = do
         where_ $ x ^. ThumbnailService ==. val sid
         return x
     return $ case img of
-      Just (Entity _ (Thumbnail _ photo mime)) -> TypedContent (encodeUtf8 mime) (toContent photo)
+      Just (Entity _ (Thumbnail _ photo mime _)) -> TypedContent (encodeUtf8 mime) (toContent photo)
       Nothing -> TypedContent typeSvg $ toContent $(embedFile "static/img/photo_FILL0_wght400_GRAD0_opsz48.svg")
 
 
@@ -344,21 +345,22 @@ postAdmServiceDeleteR (Services sids) = do
 postAdmServiceR :: Services -> Handler Html
 postAdmServiceR (Services sids) = do
     service <- runDB $ selectOne $ do
-        x <- from $ table @Service
+        x :& t <- from $ table @Service `leftJoin` table @Thumbnail
+            `on` (\(x :& t) -> just (x ^. ServiceId) ==. t ?. ThumbnailService)
         where_ $ x ^. ServiceId ==. val (last sids)
-        return x    
-    ((fr,widget),enctype) <- runFormPost $ formService service Nothing
+        return (x,t)
+    ((fr,widget),enctype) <- runFormPost $ formService (fst <$> service) Nothing (snd =<< service)
     scrollY <- fromMaybe "0" <$> runInputGet (iopt textField "scrollY")
     case fr of
-      FormSuccess (s,mfi) -> do
+      FormSuccess (s,mfi,ma) -> do
           _ <- runDB $ replace (last sids) s
           addMessageI "info" MsgRecordEdited
           case mfi of
             Just fi -> do
                 bs <- fileSourceByteString fi
                 _ <- runDB $ upsert
-                     (Thumbnail (last sids) bs (fileContentType fi))
-                     [ThumbnailPhoto =. bs, ThumbnailMime =. fileContentType fi]
+                     (Thumbnail (last sids) bs (fileContentType fi) ma)
+                     [ThumbnailPhoto =. bs, ThumbnailMime =. fileContentType fi, ThumbnailAttribution =. ma]
                 redirect (AdminR $ AdmServicesR (Services sids),[("scrollY",scrollY)])
             Nothing -> redirect ( AdminR $ AdmServicesR (Services sids)
                                 , [("sid",pack $ show $ fromSqlKey $ last sids),("scrollY",scrollY)]
@@ -372,20 +374,21 @@ getAdmServiceEditFormR :: Services -> Handler Html
 getAdmServiceEditFormR (Services sids) = do
     scrollY <- fromMaybe "0" <$> runInputGet (iopt textField "scrollY")
     service <- runDB $ selectOne $ do
-        x <- from $ table @Service
+        x :& t <- from $ table @Service `leftJoin` table @Thumbnail
+            `on` (\(x :& t) -> just (x ^. ServiceId) ==. t ?. ThumbnailService)
         where_ $ x ^. ServiceId ==. val (last sids)
-        return x
-    (widget,enctype) <- generateFormPost $ formService service Nothing
+        return (x,t)
+    (widget,enctype) <- generateFormPost $ formService (fst <$> service) Nothing (snd =<< service)
     defaultLayout $ do
         setTitleI MsgService
         $(widgetFile "admin/services/edit")
 
-    
+
 getAdmServiceCreateFormR :: Services -> Handler Html
 getAdmServiceCreateFormR (Services sids) = do
     scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
     open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
-    (widget,enctype) <- generateFormPost $ formService Nothing (LS.last sids)
+    (widget,enctype) <- generateFormPost $ formService Nothing (LS.last sids) Nothing
     defaultLayout $ do
         setTitleI MsgService
         $(widgetFile "admin/services/create")
@@ -395,9 +398,9 @@ postAdmServicesR :: Services -> Handler Html
 postAdmServicesR (Services sids) = do
     scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
     open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
-    ((fr,widget),enctype) <- runFormPost $ formService Nothing (LS.last sids)
+    ((fr,widget),enctype) <- runFormPost $ formService Nothing (LS.last sids) Nothing
     case fr of
-      FormSuccess (s,mfi) -> do
+      FormSuccess (s,mfi,a) -> do
           sid <- runDB $ insert s
           addMessageI "info" MsgRecordAdded
           case mfi of
@@ -406,6 +409,7 @@ postAdmServicesR (Services sids) = do
                 runDB $ insert_ Thumbnail { thumbnailService = sid
                                           , thumbnailPhoto = bs
                                           , thumbnailMime = fileContentType fi
+                                          , thumbnailAttribution = a
                                           }
             Nothing -> return ()
           redirect ( AdminR $ AdmServicesR (Services sids)
@@ -456,9 +460,9 @@ subservices :: [Entity Service] -> [ServiceId] -> Maybe ServiceId -> Widget
 subservices services sids msid = $(widgetFile "admin/services/subservices")
 
 
-formService :: Maybe (Entity Service) -> Maybe ServiceId -> Html
-            -> MForm Handler (FormResult (Service, Maybe FileInfo), Widget)
-formService service group extra = do
+formService :: Maybe (Entity Service) -> Maybe ServiceId -> Maybe (Entity Thumbnail)
+            -> Html -> MForm Handler (FormResult (Service, Maybe FileInfo, Maybe Html), Widget)
+formService service group thumbnail extra = do
     (nameR,nameV) <- mreq uniqueNameField FieldSettings
         { fsLabel = SomeMessage MsgTheName
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
@@ -493,8 +497,13 @@ formService service group extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("style","display:none")]
         } Nothing
+    (attributionR,attributionV) <- mopt htmlField  FieldSettings
+        { fsLabel = SomeMessage MsgAttribution
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (thumbnailAttribution . entityVal <$> thumbnail)
 
-    let r = (,)
+    let r = (,,)
             <$> ( Service
                   <$> nameR
                   <*> publishedR
@@ -503,7 +512,7 @@ formService service group extra = do
                   <*> descrR
                   <*> ((toSqlKey <$>) <$> groupR)
                 )
-            <*> thumbnailR
+            <*> thumbnailR <*> attributionR
     let w = $(widgetFile "admin/services/form")
     return (r,w)
   where
@@ -513,7 +522,7 @@ formService service group extra = do
       validateDuration x = case (parseTimeM True defaultTimeLocale "%H:%M" (unpack x) :: Maybe DiffTime) of
                              Nothing -> Left $ MsgInvalidDurationHourMinute x
                              _ -> Right x
-      
+
       mdcBoolField :: Handler (OptionList Bool) -> Field Handler Bool
       mdcBoolField = withRadioField
           (\_ _ -> [whamlet||])
@@ -528,7 +537,7 @@ formService service group extra = do
     <div.mdc-radio__focus-ring>
   <label for=#{theId}-#{value}>#{text}
 |])
-      
+
       uniqueNameField :: Field Handler Text
       uniqueNameField = checkM uniqueName textField
 

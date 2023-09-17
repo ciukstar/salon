@@ -1,3 +1,7 @@
+ChoosePhoto: Choisir photo
+ChooseImage: Choisir image
+Attribution: Attribution
+AddOffer: Ajouter offre
 Minutes: Minutes
 Timezone: Fuseau horaire
 AppointmentTimeIsInThePast: L'heure du rendez-vous est passée
@@ -95,7 +99,7 @@ Resources: Ressources
 RoleAlreadyInTheList: Rôle déjà dans la liste
 Ratings: Évaluations
 Rating: Notation
-AddRole: Ajouter un rôle
+AddRole: Ajouter rôle
 NoRolesYes: Il n'y a pas encore de rôles
 BookAppointment: Prenez rendez-vous
 EmployeeAlreadyInTheList: L'employé déjà dans la liste

@@ -1,3 +1,7 @@
+ChoosePhoto: Выбрать фото
+ChooseImage: Выбрать изображение
+Attribution: Атрибуция
+AddOffer: Добавить предложение
 Minutes: Минуты
 Timezone: Часовой пояс
 AppointmentTimeIsInThePast: Время приема в прошлом

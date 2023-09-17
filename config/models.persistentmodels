@@ -46,6 +46,7 @@ Thumbnail
   service ServiceId OnDeleteCascade
   photo ByteString
   mime Text
+  attribution Html Maybe
   UniqueThumbnail service
 
 Offer

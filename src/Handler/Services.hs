@@ -289,5 +289,5 @@ getServiceThumbnailR sid = do
        where_ $ x ^. ThumbnailService ==. val sid
        return x
     return $ case img of
-      Just (Entity _ (Thumbnail _ photo mime)) -> TypedContent (encodeUtf8 mime) $ toContent photo
+      Just (Entity _ (Thumbnail _ photo mime _)) -> TypedContent (encodeUtf8 mime) $ toContent photo
       Nothing -> TypedContent typeSvg $ toContent $(embedFile "static/img/photo_FILL0_wght400_GRAD0_opsz48.svg")

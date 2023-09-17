@@ -161,7 +161,7 @@ $if null sids
           <span.mdc-fab__ripple>
           <span.mdc-fab__focus-ring>
           <span.mdc-fab__icon.material-symbols-outlined>add
-          <span.mdc-fab__label>_{MsgAddPrice}
+          <span.mdc-fab__label>_{MsgAddOffer}
           <span.mdc-fab__touch>
             
   $if not (null sids)

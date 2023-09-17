@@ -1,3 +1,7 @@
+ChoosePhoto: Alege foto
+ChooseImage: Alege imagine
+Attribution: Atribuire
+AddOffer: Adaugă ofertă
 Minutes: Minute
 Timezone: Fusul orar
 AppointmentTimeIsInThePast: Ora programării este în trecut
@@ -95,7 +99,7 @@ Resources: Resurse
 RoleAlreadyInTheList: Rol deja în listă
 Ratings: Evaluări
 Rating: Rating
-AddRole: Adăugați un rol
+AddRole: Adaugă rol
 NoRolesYes: Nu există încă roluri
 BookAppointment: Rezervă o programare
 EmployeeAlreadyInTheList: Angajatul este deja în listă
