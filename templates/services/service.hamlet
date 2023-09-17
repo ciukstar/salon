@@ -9,21 +9,6 @@
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgService}
 
 <main.mdc-top-app-bar--fixed-adjust>
-  $maybe Entity _ (Service name _ _ _ descr _) <- service
-    <p.mdc-typography--headline6>#{name}
-    $forall Entity _ (Offer _ name price prefix suffix _) <- offer
-      <p>
-        <strong>#{name}:&nbsp;
-        $maybe prefix <- prefix
-          #{prefix}
-        $with price <- show price
-          <span.numeric-format data-value=#{price} data-minFracDigits=0 data-maxFracDigits=2>
-            #{price}
-        $maybe suffix <- suffix
-          #{suffix}
-    <button.mdc-button.mdc-button--raised type=button>
-      <span.mdc-button__ripple>
-      <span.mdc-button__focus-ring>
-      <span.mdc-button__label>_{MsgBookAppointment}
-    $maybe descr <- descr
-      <p>#{preEscapedToMarkup $ unTextarea descr}
+
+  <form method=post action=@{ServiceR (Services sids)} enctype=#{et} novalidate>
+    ^{fw}

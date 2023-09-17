@@ -4,7 +4,7 @@
     $with checked <- isChecked vals e
       <li.mdc-list-item tabindex=-1 role=option data-amount=#{show price}
         .mdc-list-item--with-leading-checkbox.mdc-list-item--with-three-lines
-        :checked:aria-checked=true :not checked:aria-checked=false>
+        :checked:aria-checked=true :not checked:aria-checked=false ##{pack $ show $ fromSqlKey oid}>
         <span.mdc-list-item__ripple>
         <span.mdc-list-item__start>
           <div.mdc-checkbox :checked:checked tabindex=-1 data-mdc-auto-init=MDCCheckbox>

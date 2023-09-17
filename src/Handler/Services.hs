@@ -8,6 +8,7 @@ module Handler.Services
   ( getServicesR
   , getServiceThumbnailR
   , getServiceR
+  , postServiceR
   , getServicesSearchR
   ) where
 
@@ -22,12 +23,15 @@ import Yesod.Core
     , getMessages, typeSvg, preEscapedToMarkup
     , TypedContent (TypedContent), ToContent (toContent)
     , whamlet, getRequest, YesodRequest (reqGetParams)
+    , setSession, redirect
     )
 import Yesod.Core.Handler (newIdent)
 import Yesod.Auth (Route (LoginR), maybeAuth)
 import Yesod.Form.Input (iopt, runInputGet)
 import Yesod.Form.Fields
-    ( textField, intField, searchField, unTextarea, Textarea (Textarea))
+    ( textField, intField, searchField, unTextarea
+    , Textarea (Textarea), FormMessage (MsgInvalidEntry)
+    )
 import Settings (widgetFile)
 
 import Foundation
@@ -35,7 +39,7 @@ import Foundation
     , Route
       ( AuthR, AccountPhotoR, PhotoPlaceholderR, ServicesR
       , ServiceR, ServiceThumbnailR, ServicesSearchR, StaticR
-      , ProfileR
+      , ProfileR, BookStaffR
       )
     , AppMessage
       ( MsgServices, MsgPhoto, MsgService, MsgThumbnail
@@ -53,11 +57,11 @@ import Database.Persist
 import Database.Persist.Sql (fromSqlKey, toSqlKey)
 import Database.Esqueleto.Experimental
     (selectOne, from, table, orderBy, asc, exists, not_
-    , (^.), (==.), (%), (++.), (||.)
+    , (^.), (==.), (%), (++.), (||.), (:&) ((:&))
     , where_, val, select, isNothing, just, justList
-    , valList, in_, upper_, like
+    , valList, in_, upper_, like, innerJoin, on
     )
-    
+
 import Model
     ( Service(Service), ServiceId
     , EntityField
@@ -72,6 +76,12 @@ import Model
 import Settings.StaticFiles (img_photo_FILL0_wght400_GRAD0_opsz48_svg)
 
 import Menu (menu)
+import Yesod.Form.Types (MForm, FormResult (FormSuccess), Field (Field, fieldParse, fieldView, fieldEnctype), Enctype (UrlEncoded), FieldView (fvInput))
+import Yesod.Form.Functions (generateFormPost, runFormPost, mreq, parseHelper)
+import Handler.Book (sessKeyBooking)
+import qualified Data.List.Safe as LS
+import Text.Read (readMaybe)
+
 
 getServicesSearchR :: Handler Html
 getServicesSearchR = do
@@ -82,7 +92,7 @@ getServicesSearchR = do
     categs <- (toSqlKey . read . unpack . snd <$>) . filter ((== "categ") . fst) . reqGetParams <$> getRequest
     stati <- (read . unpack . snd <$>) . filter ((== "status") . fst) . reqGetParams <$> getRequest
     services <- runDB $ select $ do
-        x <- from $ table @Service 
+        x <- from $ table @Service
         case mq of
           Just q -> where_ $ ( upper_ (x ^. ServiceName) `like` (%) ++. upper_ (val q) ++. (%) )
               ||. ( upper_ (x ^. ServiceOverview) `like` (%) ++. upper_ (just (val q)) ++. (%) )
@@ -109,25 +119,69 @@ getServicesSearchR = do
         $(widgetFile "services/search")
 
 
+postServiceR :: Services -> Handler Html
+postServiceR (Services sids) = do
+    open <- (Just <$>) . filter ((== "o") . fst) . reqGetParams <$> getRequest
+    scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
+    let sid = last sids
+    offers <- runDB $ select $ do
+        x :& s <- from $ table @Offer `innerJoin` table @Service
+            `on` (\(x :& s) -> x ^. OfferService ==. s ^. ServiceId)
+        where_ $ x ^. OfferService ==. val sid
+        return (s,x)
+
+    ((fr,fw),et) <- runFormPost $ formOffer offers
+    case fr of
+      FormSuccess (_,Entity oid _) -> do
+          setSession sessKeyBooking "BOOKING_START"
+          redirect (BookStaffR, [("oid",pack $ show $ fromSqlKey oid)])
+      _ -> defaultLayout $ do
+          setTitleI MsgService
+          $(widgetFile "services/service")
+
+
 getServiceR :: Services -> Handler Html
 getServiceR (Services sids) = do
     open <- (Just <$>) . filter ((== "o") . fst) . reqGetParams <$> getRequest
     scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
     let sid = last sids
-    service <- runDB $ selectOne $ do
-        x <- from $ table @Service
-        where_ $ x ^. ServiceId ==. val sid
-        return x
 
-    offer <- runDB $ select $ do
-        x <- from $ table @Offer
+    offers <- runDB $ select $ do
+        x :& s <- from $ table @Offer `innerJoin` table @Service
+            `on` (\(x :& s) -> x ^. OfferService ==. s ^. ServiceId)
         where_ $ x ^. OfferService ==. val sid
-        orderBy [asc (x ^. OfferId)]
-        return x
-    
+        return (s,x)
+
+    (fw,et) <- generateFormPost $ formOffer offers
+
     defaultLayout $ do
         setTitleI MsgService
         $(widgetFile "services/service")
+
+
+formOffer :: [(Entity Service,Entity Offer)] -> Html -> MForm Handler (FormResult (Entity Service,Entity Offer),Widget)
+formOffer offers extra = do
+    (r,v) <- mreq (optionsField offers) "" Nothing
+    return ( r
+           , [whamlet|
+#{extra}
+^{fvInput v}
+|]
+           )
+  where
+
+      optionsField :: [(Entity Service,Entity Offer)] -> Field Handler (Entity Service, Entity Offer)
+      optionsField options = Field
+          { fieldParse = parseHelper $ \s -> do
+                case (toSqlKey <$>) . readMaybe . unpack $ s of
+                  Just oid -> case LS.head (filter (\(_,Entity oid' _) -> oid == oid') options) of
+                                Nothing -> Left (MsgInvalidEntry s)
+                                Just x -> Right x
+                  Nothing -> Left (MsgInvalidEntry s)
+          , fieldView = \theId name _attrs _eval _isReq -> do
+                $(widgetFile "services/offers")
+          , fieldEnctype = UrlEncoded
+          }
 
 
 getServicesR :: Handler Html
@@ -237,4 +291,3 @@ getServiceThumbnailR sid = do
     return $ case img of
       Just (Entity _ (Thumbnail _ photo mime)) -> TypedContent (encodeUtf8 mime) $ toContent photo
       Nothing -> TypedContent typeSvg $ toContent $(embedFile "static/img/photo_FILL0_wght400_GRAD0_opsz48.svg")
-

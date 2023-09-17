@@ -2,7 +2,7 @@
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section-align-start>
       <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button
-        href=@?{(BookOffersR,oids <> scrollY)}>
+        href="@?{(BookOffersR,oids <> scrollY)}#{fragment scrollY oids}">
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back

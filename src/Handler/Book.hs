@@ -14,6 +14,7 @@ module Handler.Book
   , getBookCustomerR
   , postBookCustomerR
   , getBookEndR
+  , sessKeyBooking
   ) where
 
 import Control.Monad (unless, forM, when)
@@ -23,7 +24,7 @@ import Data.Maybe (maybeToList, isJust, fromMaybe)
 import Data.Fixed (Centi)
 import qualified Data.List.Safe as LS (head)
 import Data.Text (unpack, intercalate, pack, Text)
-import qualified Data.Text as T (null)
+import qualified Data.Text as T (null, empty)
 import Data.Time
     ( Day, TimeOfDay, UTCTime (utctDay), TimeZone (timeZoneMinutes)
     , LocalTime (LocalTime), utcToLocalTime, getCurrentTime
@@ -597,8 +598,7 @@ formOffers items offers extra = do
         [] -> Left MsgSelectAtLeastOneServicePlease
         _ -> Right xs
 
-      offersField :: [(Entity Service, Entity Offer)]
-                  -> Field Handler [(Entity Service, Entity Offer)]
+      offersField :: [(Entity Service, Entity Offer)] -> Field Handler [(Entity Service, Entity Offer)]
       offersField options = Field
           { fieldParse = \xs _ -> return $
             (Right . Just . filter (\(_, Entity oid _) -> oid `elem` (toSqlKey . read . unpack <$> xs))) options
@@ -688,3 +688,9 @@ sessKeyBooking = "BOOKING_APPOINTMENT"
 
 range :: Enum a => a -> a -> [a]
 range a b = [a..b]
+
+
+fragment :: [(Text,Text)] -> [(Text,Text)] -> Text
+fragment xs oids = case (xs,oids) of
+  ([],(_,x):_) -> "#" <> x
+  _ -> T.empty

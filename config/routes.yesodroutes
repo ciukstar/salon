@@ -15,7 +15,7 @@
 
 /search/services         ServicesSearchR   GET
 /thumbnail/#ServiceId    ServiceThumbnailR GET
-/info/services/+Services ServiceR	   GET
+/info/services/+Services ServiceR	   GET POST
 /services   	 	 ServicesR	   GET
 
 /profile               ProfileR      GET

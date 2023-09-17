@@ -1,0 +1,42 @@
+
+<div ##{theId}>
+  $forall (Entity _ (Service sname _ _ _ descr _),Entity oid (Offer sid oname price prefix suffix _)) <- options
+    $with ident <- pack $ show $ fromSqlKey oid
+      <div.mdc-card>
+        <div.mdc-card__primary-action tabindex=0>
+          <div.mdc-card__media.mdc-card__media--square style="background-image:url('@{ServiceThumbnailR sid}')">
+          <div.mdc-card__ripple>
+
+        <div style="padding:16px;display:flex;flex-wrap:nowrap">
+          <span style="flex-grow:1">
+            <div>
+              <strong>#{sname}
+            <div>
+              #{oname}:&nbsp;
+              $maybe prefix <- prefix
+                #{prefix}
+              $with price <- show price
+                <span.numeric-format data-value=#{price} data-minFracDigits=0 data-maxFracDigits=2>
+                  #{price}
+              $maybe suffix <- suffix
+                #{suffix}
+          <button.mdc-icon-button role=button type=button #buttonDetails#{ident}
+            onclick="document.getElementById('details#{ident}').open = !document.getElementById('details#{ident}').open">
+            <span.mdc-icon-button__ripple>
+            <span.mdc-icon-button__focus-ring>
+            <i.material-symbols-outlined>expand_more
+
+        <details #details#{ident}
+          ontoggle="document.getElementById('buttonDetails#{ident}').querySelector('i').textContent = this.open ? 'expand_less' : 'expand_more'">
+          <summary style="list-style:none;display:none">
+          $maybe descr <- descr
+            <div style="padding:16px">
+              #{preEscapedToMarkup $ unTextarea descr}
+
+        <div.mdc-card__actions>
+          <div.mdc-card__action-buttons>
+            <button.mdc-card__action.mdc-card__action-button.mdc-button.mdc-button--unelevated type=submit
+              name=#{name} value=#{pack $ show $ fromSqlKey oid}>
+              <span.mdc-button__ripple>
+              <span.mdc-button__focus-ring>
+              <span.mdc-button__label>_{MsgBookAppointment}
