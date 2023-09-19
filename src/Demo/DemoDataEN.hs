@@ -689,26 +689,26 @@ We will continue to offer the latest treatments, the most innovative techniques 
                            }
 
     insert_ $ Thumbnail { thumbnailService = s2
-                        , thumbnailPhoto = $(embedFile "static/img/facial-treatments.svg")
-                        , thumbnailMime = "image/svg+xml"
-                        , thumbnailAttribution = Nothing
+                        , thumbnailPhoto = $(embedFile "static/img/facial-treatments.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
     s21 <- insert $ Service { serviceName = "Basic Facial (60 min)"
                             , servicePublished = True
                             , serviceOverview = Just "Basic Facial (60 min)"
                             , serviceDescr = Just "Free Deep cleansing, exfoliation with steam treatment, followed by extractions, then eyebrow shaping; a de-stressing massage for the face, neck & shoulders. A custom mask, plus regular eye treatment, followed by moisturizer/sunscreen application. This relaxing but serious cleansing treatment will leave you with a clean, fresh, & glowing complexion."
-                            , serviceDuration = duration "01:25"
+                            , serviceDuration = duration "00:60"
                             , serviceGroup = Just s2
                             }
 
     insert_ $ Offer { offerService = s21
-                        , offerName = "Price"
-                        , offerPrice = 55
-                        , offerPrefix = Just "$"
-                        , offerSuffix = Nothing
-                        , offerDescr = Nothing
-                        }
+                    , offerName = "Price"
+                    , offerPrice = 55
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
 
     insert_ $ Offer { offerService = s21
                     , offerName = "Package"
@@ -717,6 +717,12 @@ We will continue to offer the latest treatments, the most innovative techniques 
                     , offerSuffix = Just "/5 sessions"
                     , offerDescr = Nothing
                     }
+
+    insert_ $ Thumbnail { thumbnailService = s21
+                        , thumbnailPhoto = $(embedFile "static/img/facial-treatments-basic-facial.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
 
     insert_ $ Role { roleStaff = e10
                    , roleService = s21
@@ -733,67 +739,85 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             }
 
     insert_ $ Offer { offerService = s22
-                        , offerName = "Price"
-                        , offerPrice = 75
-                        , offerPrefix = Just "$"
-                        , offerSuffix = Nothing
-                        , offerDescr = Nothing
-                        }
+                    , offerName = "Price"
+                    , offerPrice = 75
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
 
     insert_ $ Offer { offerService = s22
-                        , offerName = "Package"
-                        , offerPrice = 350
-                        , offerPrefix = Just "$"
-                        , offerSuffix = Just "/5 sessions"
-                        , offerDescr = Nothing
+                    , offerName = "Package"
+                    , offerPrice = 350
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Just "/5 sessions"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Thumbnail { thumbnailService = s22
+                        , thumbnailPhoto = $(embedFile "static/img/facial-treatments-deluxe-facial.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
     s23 <- insert $ Service { serviceName = "Pampering Facial (90 min)"
                             , servicePublished = True
                             , serviceOverview = Just "Pampering Facial (90 min)"
                             , serviceDescr = Just "A hydrating clinical treatment, creating a cooling effect on the skin to revitalize, moisturize, and soothe. Its thermo-cooling effect on the skin makes it a remarkable revitalizing treatment particularly for reducing redness. ALGOMASK+ offers instant radiance and long-lasting hydration."
-                            , serviceDuration = duration "00:30"
+                            , serviceDuration = duration "00:90"
                             , serviceGroup = Just s2
                             }
 
     insert_ $ Offer { offerService = s23
-                        , offerName = "Price"
-                        , offerPrice = 90
-                        , offerPrefix = Just "$"
-                        , offerSuffix = Nothing
-                        , offerDescr = Nothing
-                        }
+                    , offerName = "Price"
+                    , offerPrice = 90
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
 
     insert_ $ Offer { offerService = s23
-                        , offerName = "Package"
-                        , offerPrice = 400
-                        , offerPrefix = Just "$"
-                        , offerSuffix = Just "/5 sessions"
-                        , offerDescr = Nothing
+                    , offerName = "Package"
+                    , offerPrice = 400
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Just "/5 sessions"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Thumbnail { thumbnailService = s23
+                        , thumbnailPhoto = $(embedFile "static/img/facial-treatments-pampering-facial.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
     s24 <- insert $ Service { serviceName = "Acne Treatment (120 min)"
                             , servicePublished = True
                             , serviceOverview = Just "Acne Treatment (120 min)"
                             , serviceDescr = Just "It is a very innovative and effective way of treating acne conditions that have not responded to other treatments and has produced many remarkable results. Urea peroxide, alpha-hydroxyl acids, and a special anti-androgen element are incorporated in Rejuvi Normalizing Formula."
-                            , serviceDuration = duration "01:00"
+                            , serviceDuration = duration "02:00"
                             , serviceGroup = Just s2
                             }
 
     insert_ $ Offer { offerService = s24
-                        , offerName = "Price"
-                        , offerPrice = 95
-                        , offerPrefix = Just "$"
-                        , offerSuffix = Nothing
-                        , offerDescr = Nothing
-                        }
+                    , offerName = "Price"
+                    , offerPrice = 95
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
 
     insert_ $ Offer { offerService = s24
-                        , offerName = "Package"
-                        , offerPrice = 600
-                        , offerPrefix = Just "$"
-                        , offerSuffix = Just "/7 sessions"
-                        , offerDescr = Nothing
+                    , offerName = "Package"
+                    , offerPrice = 600
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Just "/7 sessions"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Thumbnail { thumbnailService = s24
+                        , thumbnailPhoto = $(embedFile "static/img/facial-treatments-acne-treatment.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
     s25 <- insert $ Service { serviceName = "24k Gold Whitening Treatment"
@@ -805,19 +829,25 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             }
 
     insert_ $ Offer { offerService = s25
-                        , offerName = "Price"
-                        , offerPrice = 100
-                        , offerPrefix = Just "$"
-                        , offerSuffix = Nothing
-                        , offerDescr = Nothing
-                        }
+                    , offerName = "Price"
+                    , offerPrice = 100
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
 
     insert_ $ Offer { offerService = s25
-                        , offerName = "Package"
-                        , offerPrice = 460
-                        , offerPrefix = Just "$"
-                        , offerSuffix = Just "/5 sessions"
-                        , offerDescr = Nothing
+                    , offerName = "Package"
+                    , offerPrice = 460
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Just "/5 sessions"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Thumbnail { thumbnailService = s25
+                        , thumbnailPhoto = $(embedFile "static/img/facial-treatments-24k-gold-whitening-treatment.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
     s3 <- insert $ Service { serviceName = "Advanced Facial Treatments"
@@ -829,9 +859,9 @@ We will continue to offer the latest treatments, the most innovative techniques 
                            }
 
     insert_ $ Thumbnail { thumbnailService = s3
-                        , thumbnailPhoto = $(embedFile "static/img/advanced-facial-treatments.svg")
-                        , thumbnailMime = "image/svg+xml"
-                        , thumbnailAttribution = Nothing
+                        , thumbnailPhoto = $(embedFile "static/img/advanced-facial-treatments.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
     s4 <- insert $ Service { serviceName = "Anti-Aging Treatments"
@@ -843,9 +873,9 @@ We will continue to offer the latest treatments, the most innovative techniques 
                            }
 
     insert_ $ Thumbnail { thumbnailService = s4
-                        , thumbnailPhoto = $(embedFile "static/img/anti-aging-treatments.svg")
-                        , thumbnailMime = "image/svg+xml"
-                        , thumbnailAttribution = Nothing
+                        , thumbnailPhoto = $(embedFile "static/img/anti-aging-treatments.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
     s5 <- insert $ Service { serviceName = "Eye Treatment Center"
@@ -857,9 +887,9 @@ We will continue to offer the latest treatments, the most innovative techniques 
                            }
 
     insert_ $ Thumbnail { thumbnailService = s5
-                        , thumbnailPhoto = $(embedFile "static/img/eye-treatment-center.svg")
-                        , thumbnailMime = "image/svg+xml"
-                        , thumbnailAttribution = Nothing
+                        , thumbnailPhoto = $(embedFile "static/img/eye-treatment-center.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
     s6 <- insert $ Service { serviceName = "Body Massage"
@@ -871,9 +901,9 @@ We will continue to offer the latest treatments, the most innovative techniques 
                            }
 
     insert_ $ Thumbnail { thumbnailService = s6
-                        , thumbnailPhoto = $(embedFile "static/img/body-massage.svg")
-                        , thumbnailMime = "image/svg+xml"
-                        , thumbnailAttribution = Nothing
+                        , thumbnailPhoto = $(embedFile "static/img/body-massage.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
     insert_ $ Role { roleStaff = e9
@@ -891,9 +921,9 @@ We will continue to offer the latest treatments, the most innovative techniques 
                            }
 
     insert_ $ Thumbnail { thumbnailService = s7
-                        , thumbnailPhoto = $(embedFile "static/img/makeup-services.svg")
-                        , thumbnailMime = "image/svg+xml"
-                        , thumbnailAttribution = Nothing
+                        , thumbnailPhoto = $(embedFile "static/img/makeup-services.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
     s8 <- insert $ Service { serviceName = "Waxing"
@@ -905,9 +935,9 @@ We will continue to offer the latest treatments, the most innovative techniques 
                            }
 
     insert_ $ Thumbnail { thumbnailService = s8
-                        , thumbnailPhoto = $(embedFile "static/img/waxing.svg")
-                        , thumbnailMime = "image/svg+xml"
-                        , thumbnailAttribution = Nothing
+                        , thumbnailPhoto = $(embedFile "static/img/waxing.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
     insert_ $ Role { roleStaff = e6
@@ -925,9 +955,9 @@ We will continue to offer the latest treatments, the most innovative techniques 
                            }
 
     insert_ $ Thumbnail { thumbnailService = s9
-                        , thumbnailPhoto = $(embedFile "static/img/nail-care.svg")
-                        , thumbnailMime = "image/svg+xml"
-                        , thumbnailAttribution = Nothing
+                        , thumbnailPhoto = $(embedFile "static/img/nail-care.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
     insert_ $ Role { roleStaff = e7
@@ -945,9 +975,9 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             }
 
     insert_ $ Thumbnail { thumbnailService = s10
-                        , thumbnailPhoto = $(embedFile "static/img/body-shaping-fitness.svg")
-                        , thumbnailMime = "image/svg+xml"
-                        , thumbnailAttribution = Nothing
+                        , thumbnailPhoto = $(embedFile "static/img/body-shaping-and-fitness.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
     return ()

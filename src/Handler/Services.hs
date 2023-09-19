@@ -42,11 +42,10 @@ import Foundation
       , ProfileR, BookStaffR
       )
     , AppMessage
-      ( MsgServices, MsgPhoto, MsgService, MsgThumbnail
-      , MsgNoServicesYet, MsgBookAppointment
-      , MsgSearch, MsgSelect, MsgCancel, MsgCategories
-      , MsgNoServicesFound, MsgStatus, MsgCategories
-      , MsgCategory, MsgUnpublished, MsgPublished
+      ( MsgServices, MsgPhoto, MsgThumbnail, MsgNoServicesYet
+      , MsgBookAppointment, MsgOffers, MsgSearch, MsgSelect, MsgCancel
+      , MsgCategories, MsgNoServicesFound, MsgStatus, MsgCategories
+      , MsgCategory, MsgUnpublished, MsgPublished      
       )
     )
 
@@ -76,7 +75,10 @@ import Model
 import Settings.StaticFiles (img_photo_FILL0_wght400_GRAD0_opsz48_svg)
 
 import Menu (menu)
-import Yesod.Form.Types (MForm, FormResult (FormSuccess), Field (Field, fieldParse, fieldView, fieldEnctype), Enctype (UrlEncoded), FieldView (fvInput))
+import Yesod.Form.Types
+    ( MForm, FormResult (FormSuccess), Enctype (UrlEncoded), FieldView (fvInput)
+    , Field (Field, fieldParse, fieldView, fieldEnctype)
+    )
 import Yesod.Form.Functions (generateFormPost, runFormPost, mreq, parseHelper)
 import Handler.Book (sessKeyBooking)
 import qualified Data.List.Safe as LS
@@ -138,7 +140,7 @@ postServiceR (Services sids) = do
           setSession sessKeyBooking "BOOKING_START"
           redirect (BookStaffR, [("oid",pack $ show $ fromSqlKey oid)])
       _ -> defaultLayout $ do
-          setTitleI MsgService
+          setTitleI MsgOffers
           $(widgetFile "services/service")
 
 
@@ -158,7 +160,7 @@ getServiceR (Services sids) = do
     (fw,et) <- generateFormPost $ formOffer offers
 
     defaultLayout $ do
-        setTitleI MsgService
+        setTitleI MsgOffers
         $(widgetFile "services/service")
 
 
@@ -211,17 +213,18 @@ buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
       $if (length subservices) > 0
         <details role=listitem #details#{gid} :elem gid open:open
           ontoggle="document.getElementById('iconExpand#{gid}').textContent = this.open ? 'expand_less' : 'expand_more'">
-          <summary.mdc-list-item.mdc-list-item--with-one-line
+          <summary.mdc-list-item.mdc-list-item--with-three-lines
             .mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon>
             <span.mdc-list-item__ripple>
             <span.mdc-list-item__start>
               <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail} loading=lazy>
             <span.mdc-list-item__content>
+              <div.mdc-list-item__primary-text>
               <div.mdc-list-item__primary-text>#{name}
             <span.mdc-list-item__end>
               <i.material-symbols-outlined #iconExpand#{gid}>expand_more
             $maybe attribution <- attribution
-              <div style="position:fixed;bottom:0;left:8px;font-size:0.5rem;line-height:1;white-space:nowrap">
+              <div style="position:fixed;bottom:4px;left:8px;font-size:0.5rem;line-height:1;white-space:nowrap">
                 ^{attribution}
           $maybe overview <- overview
             <a.mdc-list-item href=@?{(ServiceR (Services (sids ++ [sid])),oqs (sids ++ [sid]))}
@@ -237,14 +240,15 @@ buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
       $else
         <a.mdc-list-item href=@?{(ServiceR (Services (sids ++ [sid])),oqs sids)}
           :l == 0:.mdc-list-item--with-one-line
-          :l == 1:.mdc-list-item--with-two-lines
-          :l >= 2:.mdc-list-item--with-three-lines
+          :l >= 1:.mdc-list-item--with-three-lines
           :msid == Just sid:.mdc-list-item--activated
           .mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon>
           <span.mdc-list-item__ripple>
           <span.mdc-list-item__start>
             <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail} loading=lazy>
           <span.mdc-list-item__content>
+            $if l == 1
+              <div.mdc-list-item__primary-text>
             <div.mdc-list-item__primary-text>
               #{name}
             $forall Entity _ (Offer _ name price prefix suffix _) <- take 2 offer

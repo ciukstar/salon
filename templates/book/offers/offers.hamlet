@@ -41,13 +41,13 @@
       <div #footerBookCountLabel>
         <span #footerBookCount>#{length items}
         <span>_{MsgServices}
-      $with amount <- show $ amount items offers
+      $with amount <- show $ amount items
         <div #footerBookAmount>
-          $maybe (_,Entity _ (Offer _ _ _ prefix _ _)) <- LS.head offers
+          $maybe ((_,Entity _ (Offer _ _ _ prefix _ _)),_) <- LS.head offers
             $maybe prefix <- prefix
               #{prefix}
           <span data-amount=#{amount}>#{amount}
-          $maybe (_,Entity _ (Offer _ _ _ prefix suffix _)) <- LS.head offers
+          $maybe ((_,Entity _ (Offer _ _ _ prefix suffix _)),_) <- LS.head offers
             $maybe _ <- prefix
             $nothing
               $maybe suffix <- suffix

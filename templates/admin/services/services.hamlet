@@ -102,10 +102,12 @@ $if null sids
                 $maybe overview <- overview
                   #{overview}
             <tr.mdc-data-table__row>
-              <th.mdc-data-table__cell scope=row>_{MsgDescription}
-              <td.mdc-data-table__cell>
+              <th.mdc-data-table__cell colspan=2 scope=row>
                 $maybe descr <- descr
-                  #{preEscapedToMarkup $ unTextarea descr}
+                  <details>
+                    <summary>_{MsgDescription}
+                    <p style="font-style:normal;font-weight:400">
+                      #{preEscapedToMarkup $ unTextarea descr}
 
   $if not (null sids)
     <details #detailsOffer :open == Just "offer":open>

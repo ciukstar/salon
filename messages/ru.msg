@@ -16,7 +16,7 @@ BookingStateDiagram: Диаграмма перехода состояний дл
 InvalidFormData: Неверные данные формы
 MissingForm: Отсутствует форма
 SelectedTime: Выбранное время
-LoginToIdentifyCustomer: Пожалуйста, войдите, чтобы идентифицировать клиента
+LoginToIdentifyCustomer: Пожалуйста, войдите, чтобы назначить заказчик
 AlreadyHaveAnAccount: Уже есть учетная запись
 ContactUs: Свяжитесь с нами
 LoginToSeeYourProfile: Пожалуйста, войдите, чтобы увидеть свой профиль
@@ -51,7 +51,7 @@ NoStaffAvailable: Нет доступных сотрудников
 SymbolMinute: мин
 SymbolHour: ч
 InvalidDurationHourMinute duration: Недопустимая продолжительность: #{duration}. Ожидаемый шаблон ЧЧ:ММ
-Duration: Продолжительность
+Duration: Время
 Offers: Предложения
 Offer: Предложение
 ChooseServices: Выберите услуги
