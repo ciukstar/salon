@@ -64,16 +64,16 @@ $if null sids
           <span.mdc-button__label>_{MsgYesDelete}
         <form method=POST action=@{AdminR $ AdmServiceDeleteR (Services sids)} #formDelete>
   <div.mdc-dialot__scrim>
-      
   
 <main.mdc-top-app-bar--fixed-adjust>
 
-  $maybe Entity sid (Service name published overview duration descr _) <- service
+  $maybe (Entity sid (Service name published overview duration descr _),attribution) <- service
     <figure>
-      <img src=@{ServiceThumbnailR sid} height=56 width=56 
+      <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail}
         onerror="this.src = '@{StaticR img_photo_FILL0_wght400_GRAD0_opsz48_svg}'">
-      <figcaption>
-        _{MsgImage}
+      $maybe attribution <- attribution
+        <figcaption style="font-size:0.5rem;line-height:1">
+          ^{attribution}
         
     <div.mdc-data-table>
       <div.mdc-data-table__table-container>

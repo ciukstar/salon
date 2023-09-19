@@ -12,7 +12,7 @@ module Handler.Services
   , getServicesSearchR
   ) where
 
-import Control.Monad (forM)
+import Control.Monad (forM, join)
 import Data.Maybe (catMaybes, fromMaybe)
 import Data.FileEmbed (embedFile)
 import Data.Text (pack, unpack, Text)
@@ -57,9 +57,9 @@ import Database.Persist
 import Database.Persist.Sql (fromSqlKey, toSqlKey)
 import Database.Esqueleto.Experimental
     (selectOne, from, table, orderBy, asc, exists, not_
-    , (^.), (==.), (%), (++.), (||.), (:&) ((:&))
+    , (^.), (?.), (==.), (%), (++.), (||.), (:&) ((:&))
     , where_, val, select, isNothing, just, justList
-    , valList, in_, upper_, like, innerJoin, on
+    , valList, in_, upper_, like, innerJoin, on, leftJoin, Value (unValue)
     )
 
 import Model
@@ -67,7 +67,7 @@ import Model
     , EntityField
       ( ServiceId, ThumbnailService, ServiceGroup, OfferService
       , OfferId, ServicePublished, ServiceName, ServiceDescr
-      , ServiceOverview
+      , ServiceOverview, ThumbnailAttribution
       )
     , Thumbnail (Thumbnail), Offer (Offer), Services (Services)
     , ServiceStatus (ServiceStatusPulished, ServiceStatusUnpublished)
@@ -81,6 +81,7 @@ import Yesod.Form.Functions (generateFormPost, runFormPost, mreq, parseHelper)
 import Handler.Book (sessKeyBooking)
 import qualified Data.List.Safe as LS
 import Text.Read (readMaybe)
+import Data.Bifunctor (Bifunctor(second))
 
 
 getServicesSearchR :: Handler Html
@@ -124,15 +125,16 @@ postServiceR (Services sids) = do
     open <- (Just <$>) . filter ((== "o") . fst) . reqGetParams <$> getRequest
     scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
     let sid = last sids
-    offers <- runDB $ select $ do
-        x :& s <- from $ table @Offer `innerJoin` table @Service
+    offers <- ((\((a,b),c) -> (a,b,c)) . second (join . unValue) <$>) <$> runDB ( select $ do
+        x :& s :& t <- from $ table @Offer `innerJoin` table @Service
             `on` (\(x :& s) -> x ^. OfferService ==. s ^. ServiceId)
+            `leftJoin` table @Thumbnail `on` (\(_ :& s :& t) -> just (s ^. ServiceId) ==. t ?. ThumbnailService)
         where_ $ x ^. OfferService ==. val sid
-        return (s,x)
+        return ((s,x),t ?. ThumbnailAttribution) )
 
     ((fr,fw),et) <- runFormPost $ formOffer offers
     case fr of
-      FormSuccess (_,Entity oid _) -> do
+      FormSuccess (_,Entity oid _,_) -> do
           setSession sessKeyBooking "BOOKING_START"
           redirect (BookStaffR, [("oid",pack $ show $ fromSqlKey oid)])
       _ -> defaultLayout $ do
@@ -146,11 +148,12 @@ getServiceR (Services sids) = do
     scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
     let sid = last sids
 
-    offers <- runDB $ select $ do
-        x :& s <- from $ table @Offer `innerJoin` table @Service
+    offers <- ((\((a,b),c) -> (a,b,c)) . second (join . unValue) <$>) <$> runDB ( select $ do
+        x :& s :& t <- from $ table @Offer `innerJoin` table @Service
             `on` (\(x :& s) -> x ^. OfferService ==. s ^. ServiceId)
+            `leftJoin` table @Thumbnail `on` (\(_ :& s :& t) -> just (s ^. ServiceId) ==. t ?. ThumbnailService)
         where_ $ x ^. OfferService ==. val sid
-        return (s,x)
+        return ((s,x),t ?. ThumbnailAttribution) )
 
     (fw,et) <- generateFormPost $ formOffer offers
 
@@ -159,7 +162,8 @@ getServiceR (Services sids) = do
         $(widgetFile "services/service")
 
 
-formOffer :: [(Entity Service,Entity Offer)] -> Html -> MForm Handler (FormResult (Entity Service,Entity Offer),Widget)
+formOffer :: [(Entity Service,Entity Offer, Maybe Html)]
+          -> Html -> MForm Handler (FormResult (Entity Service,Entity Offer,Maybe Html),Widget)
 formOffer offers extra = do
     (r,v) <- mreq (optionsField offers) "" Nothing
     return ( r
@@ -170,11 +174,11 @@ formOffer offers extra = do
            )
   where
 
-      optionsField :: [(Entity Service,Entity Offer)] -> Field Handler (Entity Service, Entity Offer)
+      optionsField :: [(Entity Service,Entity Offer,Maybe Html)] -> Field Handler (Entity Service, Entity Offer,Maybe Html)
       optionsField options = Field
           { fieldParse = parseHelper $ \s -> do
                 case (toSqlKey <$>) . readMaybe . unpack $ s of
-                  Just oid -> case LS.head (filter (\(_,Entity oid' _) -> oid == oid') options) of
+                  Just oid -> case LS.head (filter (\(_,Entity oid' _,_) -> oid == oid') options) of
                                 Nothing -> Left (MsgInvalidEntry s)
                                 Just x -> Right x
                   Nothing -> Left (MsgInvalidEntry s)
@@ -202,15 +206,13 @@ getServicesR = do
 buildSnippet :: [Text] -> Maybe ServiceId -> Services -> Srvs -> Widget
 buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
 <ul.mdc-list data-mdc-auto-init=MDCList>
-  $forall ((Entity sid (Service name _ overview _ _ _), offer),srvs@(Srvs subservices)) <- services
+  $forall (((Entity sid (Service name _ overview _ _ _), attribution), offer),srvs@(Srvs subservices)) <- services
     $with (gid,l) <- (pack $ show $ fromSqlKey sid, length offer)
       $if (length subservices) > 0
         <details role=listitem #details#{gid} :elem gid open:open
           ontoggle="document.getElementById('iconExpand#{gid}').textContent = this.open ? 'expand_less' : 'expand_more'">
-          <summary.mdc-list-item
-            .mdc-list-item--with-one-line
-            .mdc-list-item--with-leading-image
-            .mdc-list-item--with-trailing-icon>
+          <summary.mdc-list-item.mdc-list-item--with-one-line
+            .mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon>
             <span.mdc-list-item__ripple>
             <span.mdc-list-item__start>
               <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail} loading=lazy>
@@ -218,6 +220,9 @@ buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
               <div.mdc-list-item__primary-text>#{name}
             <span.mdc-list-item__end>
               <i.material-symbols-outlined #iconExpand#{gid}>expand_more
+            $maybe attribution <- attribution
+              <div style="position:fixed;bottom:0;left:8px;font-size:0.5rem;line-height:1;white-space:nowrap">
+                ^{attribution}
           $maybe overview <- overview
             <a.mdc-list-item href=@?{(ServiceR (Services (sids ++ [sid])),oqs (sids ++ [sid]))}
               .mdc-list-item--with-one-line
@@ -254,32 +259,37 @@ buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
                   #{suffix}
           <span.mdc-list-item__end>
             <i.material-symbols-outlined>arrow_forward_ios
+        <div.mdc-list-divider role=separator style="position:relative">
+          $maybe attribution <- attribution
+            <div style="position:absolute;bottom:0;left:4px;font-size:0.5rem;line-height:1">
+              ^{attribution}
 |]
     where
       oqs :: [ServiceId] -> [(Text,Text)]
       oqs = (<$>) (("o",) . pack . show . fromSqlKey)
 
-newtype Srvs = Srvs [((Entity Service, [Entity Offer]), Srvs)]
+newtype Srvs = Srvs [(((Entity Service, Maybe Html), [Entity Offer]), Srvs)]
 
 
 fetchServices :: Maybe ServiceId -> Handler Srvs
 fetchServices gid = do
-    categories <- runDB $ select $ do
-        x <- from $ table @Service
+    categories <- (second (join . unValue) <$>) <$> runDB ( select $ do
+        x :& t <- from $ table @Service `leftJoin` table @Thumbnail
+            `on` (\(x :& t) -> just (x ^. ServiceId) ==. t ?. ThumbnailService)
         where_ $ x ^. ServicePublished ==. val True
         where_ $ case gid of
           Nothing -> isNothing $ x ^. ServiceGroup
           Just sid -> x ^. ServiceGroup ==. just (val sid)
         orderBy [asc (x ^. ServiceId)]
-        return x
+        return (x, t ?. ThumbnailAttribution) )
 
-    groups <- forM categories $ \e@(Entity sid _) -> (e,) <$> runDB ( select $ do
+    groups <- forM categories $ \e@(Entity sid _,_) -> (e,) <$> runDB ( select $ do
         x <- from $ table @Offer
         where_ $ x ^. OfferService ==. val sid
         orderBy [asc (x ^. OfferId)]
         return x )
 
-    Srvs <$> forM groups ( \g@(Entity sid _,_) -> (g,) <$> fetchServices (Just sid) )
+    Srvs <$> forM groups ( \g@((Entity sid _,_),_) -> (g,) <$> fetchServices (Just sid) )
 
 
 getServiceThumbnailR :: ServiceId -> Handler TypedContent

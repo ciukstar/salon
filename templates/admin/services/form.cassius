@@ -1,5 +1,11 @@
-figure
-  text-align: center
+
+.form-field .mdc-card
+  .mdc-card__actions .mdc-card__action-buttons
+    width: 100%
+    display: flex
+    flex-direction: column
+    align-items: stretch
+
 .mdc-radio .mdc-radio__native-control:enabled:checked+.mdc-radio__background
   .mdc-radio__outer-circle, .mdc-radio__inner-circle
     border-color: var(--theme-accent,#018786)

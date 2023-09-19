@@ -1,41 +1,58 @@
 
 #{extra}
 <div.form-field>
+  ^{fvInput thumbnailV}
   <div.mdc-card>
     <div.mdc-card__primary-action>
       <div.mdc-card__media style="text-align:center">
-        $maybe Entity sid _ <- service
-          <img #imgThumbnail src=@{ServiceThumbnailR sid} alt=_{MsgPhoto} width=56 height=56
-             onerror="this.src = '@{StaticR img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg}'">
-        $nothing
-          <img #imgThumbnail src=@{StaticR img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg} height=56 alt=_{MsgPhoto}>
+        <figure>
+          $maybe Entity sid _ <- service
+            <img #imgThumbnail src=@{ServiceThumbnailR sid} alt=_{MsgPhoto} height=56
+               onerror="this.src = '@{StaticR img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg}'">
+          $nothing
+            <img #imgThumbnail src=@{StaticR img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg} height=56 alt=_{MsgPhoto}>
+          $case (thumbnail,attributionR)
+            $of (Just (Entity _ (Thumbnail _ _ _ (Just attribution))),_)
+              <figcaption style="font-size:0.5rem;line-heigt:1">
+                ^{attribution}
+            $of (_,FormSuccess (Just attribution))
+              <figcaption style="font-size:0.5rem;line-heigt:1">
+                ^{attribution}
+            $of _
+            
       <div.mdc-card__ripple>
+    <div.mdc-card__supporting-text>
+      <details ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+        <summary.mdc-ripple-surface data-mdc-auto-init=MDCRipple
+          style="list-style:none;display:flex;align-items:center;padding:16px;color:rgba(0,0,0,0.6)">
+          <div style="flex-grow:1;display:inherit;align-items:inherit;gap:1rem">
+            <i.material-symbols-outlined>attribution
+            _{MsgAttribution}
+          <i.expand.material-symbols-outlined>expand_more
+        <div.form-field style="padding:16px">
+          <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--no-label.mdc-text-field--textarea
+            :isJust (fvErrors attributionV):.mdc-text-field--invalid data-mdc-auto-init=MDCTextField>
+            <span.mdc-text-field__ripple>
+            <span.mdc-text-field__resizer>
+              ^{fvInput attributionV}
+            <span.mdc-line-ripple>
+          $maybe err <- fvErrors attributionV
+            <div.mdc-text-field-helper-line>
+              <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+                #{err}
+                
     <div.mdc-card__actions>
       <div.mdc-card__action-buttons>
-        <button.mdc-card__action.mdc-card__action--button.mdc-button type=button>
+        <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--unelevated type=button
+          onclick="document.getElementById('#{fvId thumbnailV}').click()">
           <span.mdc-button__ripple>
           <span.mdc-button__label>_{MsgChoosePhoto}
-      <div.mdc-card__action-icons>
-        <button.mdc-card__action.mdc-card__action--icon.mdc-icon-button type=button>
-          <span.mdc-icon-button__ripple>
-          <span.mdc-icon-button__focus-ring>
-          <i.material-symbols-outlined>attribution
-  <label for=#{fvId thumbnailV}>
-    <figure>
-      $maybe Entity sid _ <- service
-        <img #imgThumbnail src=@{ServiceThumbnailR sid} alt=_{MsgPhoto} height=56
-           onerror="this.src = '@{StaticR img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg}'">
-      $nothing
-        <img #imgThumbnail src=@{StaticR img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg} height=56 alt=_{MsgPhoto}>
-      <figcaption>
-        _{MsgImage}
-
-  ^{fvInput thumbnailV}
-
 
 <div.form-field>
-  
-  _{MsgPublished} ^{fvInput publishedV}
+  <div style="padding-left:1rem;display:flex;align-items:center">
+    <small style="padding;opacity:0.6">
+      _{MsgPublished}<sup>* 
+    ^{fvInput publishedV}
   $maybe errs <- fvErrors publishedV
     <label.mdc-text-field.mdc-text-field--invalid>
     <div.mdc-text-field-helper-line>
@@ -59,18 +76,17 @@ $forall v <- [nameV,overviewV,durationV]
         <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
           #{errs}
 
-$forall v <- [descrV,attributionV]
-  <div.form-field>
-    <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--textarea data-mdc-auto-init=MDCTextField
-      :isJust (fvErrors v):.mdc-text-field--invalid>
-      <span.mdc-text-field__ripple>
-      <span.mdc-floating-label>#{fvLabel v}
-      <span.mdc-text-field__resizer>
-        ^{fvInput v}
-      <span.mdc-line-ripple>
-    $maybe err <- fvErrors v 
-      <div.mdc-text-field-helper-line>
-        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
-          #{err}
+<div.form-field>
+  <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--textarea data-mdc-auto-init=MDCTextField
+    :isJust (fvErrors descrV):.mdc-text-field--invalid>
+    <span.mdc-text-field__ripple>
+    <span.mdc-floating-label>#{fvLabel descrV}
+    <span.mdc-text-field__resizer>
+      ^{fvInput descrV}
+    <span.mdc-line-ripple>
+  $maybe err <- fvErrors descrV 
+    <div.mdc-text-field-helper-line>
+      <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+        #{err}
 
 ^{fvInput groupV}

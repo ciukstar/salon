@@ -5,6 +5,7 @@
 
 module Demo.DemoDataEN (populateEN) where
 
+import Text.Hamlet (shamlet)
 import Text.Shakespeare.Text (st)
 import qualified Data.ByteString.Base64 as B64 (decode)
 import Data.Text.Encoding (decodeUtf8)
@@ -336,9 +337,9 @@ We will continue to offer the latest treatments, the most innovative techniques 
                            }
 
     insert_ $ Thumbnail { thumbnailService = s1
-                        , thumbnailPhoto = $(embedFile "static/img/hair-care.svg")
-                        , thumbnailMime = "image/svg+xml"
-                        , thumbnailAttribution = Nothing
+                        , thumbnailPhoto = $(embedFile "static/img/hair-care.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
     s11 <- insert $ Service { serviceName = "Men hair cuts"
@@ -364,9 +365,9 @@ We will continue to offer the latest treatments, the most innovative techniques 
                         }
 
     insert_ $ Thumbnail { thumbnailService = s11
-                        , thumbnailPhoto = $(embedFile "static/img/man-haircut.svg")
-                        , thumbnailMime = "image/svg+xml"
-                        , thumbnailAttribution = Nothing
+                        , thumbnailPhoto = $(embedFile "static/img/men-haircuts.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
     s12 <- insert $ Service { serviceName = "Women hair cuts (above shoulders)"
@@ -386,9 +387,9 @@ We will continue to offer the latest treatments, the most innovative techniques 
                         }
 
     insert_ $ Thumbnail { thumbnailService = s12
-                        , thumbnailPhoto = $(embedFile "static/img/women-profile-hair-short.svg")
-                        , thumbnailMime = "image/svg+xml"
-                        , thumbnailAttribution = Nothing
+                        , thumbnailPhoto = $(embedFile "static/img/women-hair-cuts-above-shoulders.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
     insert_ $ Role { roleStaff = e2
@@ -406,17 +407,17 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             }
 
     insert_ $ Offer { offerService = s13
-                        , offerName = "Price"
-                        , offerPrice = 35
-                        , offerPrefix = Just "$"
-                        , offerSuffix = Nothing
-                        , offerDescr = Nothing
-                        }
+                    , offerName = "Price"
+                    , offerPrice = 35
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
 
     insert_ $ Thumbnail { thumbnailService = s13
-                        , thumbnailPhoto = $(embedFile "static/img/women-profile-hair-long.svg")
-                        , thumbnailMime = "image/svg+xml"
-                        , thumbnailAttribution = Nothing
+                        , thumbnailPhoto = $(embedFile "static/img/women-hair-cuts-below-shoulders.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
     insert_ $ Role { roleStaff = e11
@@ -448,9 +449,9 @@ We will continue to offer the latest treatments, the most innovative techniques 
                         }
 
     insert_ $ Thumbnail { thumbnailService = s14
-                        , thumbnailPhoto = $(embedFile "static/img/child-haircut.svg")
-                        , thumbnailMime = "image/svg+xml"
-                        , thumbnailAttribution = Nothing
+                        , thumbnailPhoto = $(embedFile "static/img/children-hair-cuts.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
     insert_ $ Role { roleStaff = e4
@@ -468,9 +469,9 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             }
 
     insert_ $ Thumbnail { thumbnailService = s15
-                        , thumbnailPhoto = $(embedFile "static/img/conditioning.svg")
-                        , thumbnailMime = "image/svg+xml"
-                        , thumbnailAttribution = Nothing
+                        , thumbnailPhoto = $(embedFile "static/img/chemical-services.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
     s151 <- insert $ Service { serviceName = "Conditioning"
@@ -482,9 +483,9 @@ We will continue to offer the latest treatments, the most innovative techniques 
                              }
 
     insert_ $ Thumbnail { thumbnailService = s151
-                        , thumbnailPhoto = $(embedFile "static/img/chemical-services.svg")
-                        , thumbnailMime = "image/svg+xml"
-                        , thumbnailAttribution = Nothing
+                        , thumbnailPhoto = $(embedFile "static/img/conditioning.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
     s1511 <- insert $ Service { serviceName = "After Perm Conditioner"
@@ -496,11 +497,17 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               }
 
     insert_ $ Offer { offerService = s1511
-                        , offerName = "Price"
-                        , offerPrice = 99
-                        , offerPrefix = Just "$"
-                        , offerSuffix = Just " & up"
-                        , offerDescr = Nothing
+                    , offerName = "Price"
+                    , offerPrice = 99
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Just " & up"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Thumbnail { thumbnailService = s1511
+                        , thumbnailPhoto = $(embedFile "static/img/after-perm-conditioner.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
     insert_ $ Role { roleStaff = e5
@@ -518,11 +525,17 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               }
 
     insert_ $ Offer { offerService = s1512
-                        , offerName = "Price"
-                        , offerPrice = 110
-                        , offerPrefix = Just "$"
-                        , offerSuffix = Just " & up"
-                        , offerDescr = Nothing
+                    , offerName = "Price"
+                    , offerPrice = 110
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Just " & up"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Thumbnail { thumbnailService = s1512
+                        , thumbnailPhoto = $(embedFile "static/img/before-perm-conditioner.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
     s152 <- insert $ Service { serviceName = "Highlights & Color"
@@ -534,9 +547,9 @@ We will continue to offer the latest treatments, the most innovative techniques 
                              }
 
     insert_ $ Thumbnail { thumbnailService = s152
-                        , thumbnailPhoto = $(embedFile "static/img/hair-highlights-color.svg")
-                        , thumbnailMime = "image/svg+xml"
-                        , thumbnailAttribution = Nothing
+                        , thumbnailPhoto = $(embedFile "static/img/highlights-and-color.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
     s1521 <- insert $ Service { serviceName = "Full"
@@ -548,11 +561,17 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               }
 
     insert_ $ Offer { offerService = s1521
-                        , offerName = "Price"
-                        , offerPrice = 130
-                        , offerPrefix = Just "$"
-                        , offerSuffix = Nothing
-                        , offerDescr = Nothing
+                    , offerName = "Price"
+                    , offerPrice = 130
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Thumbnail { thumbnailService = s1521
+                        , thumbnailPhoto = $(embedFile "static/img/highlights-and-color-full.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
     insert_ $ Role { roleStaff = e8
@@ -570,11 +589,17 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               }
 
     insert_ $ Offer { offerService = s1522
-                        , offerName = "Price"
-                        , offerPrice = 68
-                        , offerPrefix = Just "$"
-                        , offerSuffix = Just " & up"
-                        , offerDescr = Nothing
+                    , offerName = "Price"
+                    , offerPrice = 68
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Just " & up"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Thumbnail { thumbnailService = s1522
+                        , thumbnailPhoto = $(embedFile "static/img/highlights-and-color-partial.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
     s1523 <- insert $ Service { serviceName = "Permanent Color"
@@ -586,11 +611,17 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               }
 
     insert_ $ Offer { offerService = s1523
-                        , offerName = "Price"
-                        , offerPrice = 68
-                        , offerPrefix = Just "$"
-                        , offerSuffix = Just " & up"
-                        , offerDescr = Nothing
+                    , offerName = "Price"
+                    , offerPrice = 68
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Just " & up"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Thumbnail { thumbnailService = s1523
+                        , thumbnailPhoto = $(embedFile "static/img/highlights-and-color-permanent.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
     s153 <- insert $ Service { serviceName = "Perm"

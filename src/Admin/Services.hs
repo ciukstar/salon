@@ -72,7 +72,7 @@ import Foundation
     , AppMessage
       ( MsgServices, MsgPhoto, MsgTheName, MsgAttribution
       , MsgPrice, MsgDescription, MsgRecordEdited, MsgChoosePhoto
-      , MsgService, MsgSave, MsgCancel, MsgRecordAdded, MsgImage
+      , MsgService, MsgSave, MsgCancel, MsgRecordAdded, MsgThumbnail
       , MsgSubservices, MsgAddService, MsgAddSubservice, MsgNoServicesYet
       , MsgDeleteAreYouSure, MsgYesDelete, MsgPleaseConfirm, MsgRecordDeleted
       , MsgPrefix, MsgSuffix, MsgServisAlreadyInTheList, MsgAddOffer
@@ -108,16 +108,19 @@ import Model
     , ServiceStatus (ServiceStatusPulished, ServiceStatusUnpublished)
     )
 
-import Yesod.Persist (YesodPersist(runDB), (=.), PersistUniqueWrite (upsert))
+import qualified Yesod.Persist as P ((=.))
+import Yesod.Persist (YesodPersist(runDB), PersistUniqueWrite (upsert))
 import Database.Persist.Sql (fromSqlKey, toSqlKey, delete)
 import Database.Esqueleto.Experimental
     ( selectOne, from, table, where_, val, in_, valList, just, justList
-    , (^.), (?.), (==.), (%), (++.), (||.), (:&) ((:&))
+    , (^.), (?.), (==.), (%), (++.), (||.), (:&) ((:&)), (=.)
     , isNothing, select, orderBy, asc, upper_, like, not_, exists
-    , leftJoin, on
+    , leftJoin, on, update, set, Value (unValue)
     )
 
 import Menu (menu)
+import Data.Bifunctor (Bifunctor(second))
+import Control.Monad (join)
 
 
 getAdmServicesSearchR :: Handler Html
@@ -173,7 +176,7 @@ getAdmPriceEditR pid (Services sids) = do
         x <- from $ table @Offer
         where_ $ x ^. OfferId ==. val pid
         return x
-    (widget,enctype) <- generateFormPost $ formPrice (last sids) price
+    (widget,enctype) <- generateFormPost $ formOffer (last sids) price
     defaultLayout $ do
         setTitleI MsgPrice
         $(widgetFile "admin/services/edit-price")
@@ -187,7 +190,7 @@ postAdmPriceR pid (Services sids) = do
         x <- from $ table @Offer
         where_ $ x ^. OfferId ==. val pid
         return x
-    ((fr,widget),enctype) <- runFormPost $ formPrice (last sids) price
+    ((fr,widget),enctype) <- runFormPost $ formOffer (last sids) price
     case fr of
       FormSuccess r -> do
           runDB $ replace pid r
@@ -218,7 +221,7 @@ postAdmOfferR :: Services -> Handler Html
 postAdmOfferR (Services sids) = do
     scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
     open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
-    ((fr,widget),enctype) <- runFormPost $ formPrice (last sids) Nothing
+    ((fr,widget),enctype) <- runFormPost $ formOffer (last sids) Nothing
     case fr of
       FormSuccess r -> do
           pid <- runDB $ insert r
@@ -235,15 +238,15 @@ getAdmOfferCreateR :: Services -> Handler Html
 getAdmOfferCreateR (Services sids) = do
     scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
     open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
-    (widget,enctype) <- generateFormPost $ formPrice (last sids) Nothing
+    (widget,enctype) <- generateFormPost $ formOffer (last sids) Nothing
     defaultLayout $ do
         setTitleI MsgPrice
         $(widgetFile "admin/services/create-price")
 
 
-formPrice :: ServiceId -> Maybe (Entity Offer)
+formOffer :: ServiceId -> Maybe (Entity Offer)
           -> Html -> MForm Handler (FormResult Offer, Widget)
-formPrice sid offer extra = do
+formOffer sid offer extra = do
     (nameR,nameV) <- mreq uniqueNameField FieldSettings
         { fsLabel = SomeMessage MsgTheName
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
@@ -355,12 +358,15 @@ postAdmServiceR (Services sids) = do
       FormSuccess (s,mfi,ma) -> do
           _ <- runDB $ replace (last sids) s
           addMessageI "info" MsgRecordEdited
+          runDB $ update $ \x -> do
+              set x [ThumbnailAttribution =. val ma]
+              where_ $ x ^. ThumbnailService ==. val (last sids)
           case mfi of
             Just fi -> do
                 bs <- fileSourceByteString fi
                 _ <- runDB $ upsert
                      (Thumbnail (last sids) bs (fileContentType fi) ma)
-                     [ThumbnailPhoto =. bs, ThumbnailMime =. fileContentType fi, ThumbnailAttribution =. ma]
+                     [ThumbnailPhoto P.=. bs, ThumbnailMime P.=. fileContentType fi, ThumbnailAttribution P.=. ma]
                 redirect (AdminR $ AdmServicesR (Services sids),[("scrollY",scrollY)])
             Nothing -> redirect ( AdminR $ AdmServicesR (Services sids)
                                 , [("sid",pack $ show $ fromSqlKey $ last sids),("scrollY",scrollY)]
@@ -429,24 +435,26 @@ getAdmServicesR (Services sids) = do
     user <- maybeAuth
     service <- case sids of
       [] -> return Nothing
-      (last -> sid) -> runDB $ selectOne $ do
-          x <- from $ table @Service
+      (last -> sid) -> (second (join . unValue) <$>) <$> runDB ( selectOne $ do
+          x :& t <- from $ table @Service `leftJoin` table @Thumbnail
+              `on` (\(x :& t) -> just (x ^. ServiceId) ==. t ?. ThumbnailService)
           where_ $ x ^. ServiceId ==. val sid
-          return x
+          return (x,t ?. ThumbnailAttribution) )
     offer <- case service of
-      Just (Entity sid _) -> runDB $ select $ do
+      Just (Entity sid _,_) -> runDB $ select $ do
           x <- from $ table @Offer
           where_ $ x ^. OfferService ==. val sid
           orderBy [asc (x ^. OfferId)]
           return x
       Nothing -> return []
-    services <- runDB $ select $ do
-        x <- from $ table @Service
+    services <- (second (join . unValue) <$>) <$> runDB ( select $ do
+        x :& t <- from $ table @Service `leftJoin` table @Thumbnail
+            `on` (\(x :& t) -> just (x ^. ServiceId) ==. t ?. ThumbnailService)
         case sids of
           [] -> where_ $ isNothing $ x ^. ServiceGroup
           (last -> y) -> where_ $ x ^. ServiceGroup ==. just (val y)
         orderBy [asc (x ^. ServiceId)]
-        return x
+        return (x,t ?. ThumbnailAttribution) )
     setUltDestCurrent
     msgs <- getMessages
     app <- getYesod
@@ -456,7 +464,7 @@ getAdmServicesR (Services sids) = do
         $(widgetFile "admin/services/services")
 
 
-subservices :: [Entity Service] -> [ServiceId] -> Maybe ServiceId -> Widget
+subservices :: [(Entity Service,Maybe Html)] -> [ServiceId] -> Maybe ServiceId -> Widget
 subservices services sids msid = $(widgetFile "admin/services/subservices")
 
 

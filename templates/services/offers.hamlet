@@ -1,14 +1,17 @@
 
 <div ##{theId}>
-  $forall (Entity _ (Service sname _ _ _ descr _),Entity oid (Offer sid oname price prefix suffix _)) <- options
+  $forall (Entity _ (Service sname _ _ _ descr _),Entity oid (Offer sid oname price prefix suffix _),attribution) <- options
     $with ident <- pack $ show $ fromSqlKey oid
       <div.mdc-card>
         <div.mdc-card__primary-action tabindex=0>
           <div.mdc-card__media.mdc-card__media--square style="background-image:url('@{ServiceThumbnailR sid}')">
           <div.mdc-card__ripple>
+        $maybe attribution <- attribution
+          <div style="width:100%;text-align:end;font-size:0.8rem">
+            ^{attribution}
 
-        <div style="padding:16px;display:flex;flex-wrap:nowrap">
-          <span style="flex-grow:1">
+        <div.mdc-card-wrapper__text-section style="display:flex;flex-wrap:nowrap;align-items:center;padding:16px">
+          <div style="flex-grow:1">
             <div>
               <strong>#{sname}
             <div>
@@ -20,6 +23,7 @@
                   #{price}
               $maybe suffix <- suffix
                 #{suffix}
+
           <button.mdc-icon-button role=button type=button #buttonDetails#{ident}
             onclick="document.getElementById('details#{ident}').open = !document.getElementById('details#{ident}').open">
             <span.mdc-icon-button__ripple>
