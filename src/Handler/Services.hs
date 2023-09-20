@@ -10,14 +10,19 @@ module Handler.Services
   , getServiceR
   , postServiceR
   , getServicesSearchR
+  , getServiceInfoR
+  , getOfferR
   ) where
 
 import Control.Monad (forM, join)
+import Data.Bifunctor (Bifunctor(second))
+import qualified Data.List.Safe as LS (head)
 import Data.Maybe (catMaybes, fromMaybe)
 import Data.FileEmbed (embedFile)
 import Data.Text (pack, unpack, Text)
-import Text.Hamlet (Html)
 import Data.Text.Encoding (encodeUtf8)
+import Text.Hamlet (Html)
+import Text.Read (readMaybe)
 import Yesod.Core
     ( Yesod(defaultLayout), setTitleI, setUltDestCurrent
     , getMessages, typeSvg, preEscapedToMarkup
@@ -32,6 +37,11 @@ import Yesod.Form.Fields
     ( textField, intField, searchField, unTextarea
     , Textarea (Textarea), FormMessage (MsgInvalidEntry)
     )
+import Yesod.Form.Functions (generateFormPost, runFormPost, mreq, parseHelper)
+import Yesod.Form.Types
+    ( MForm, FormResult (FormSuccess), Enctype (UrlEncoded), FieldView (fvInput)
+    , Field (Field, fieldParse, fieldView, fieldEnctype)
+    )
 import Settings (widgetFile)
 
 import Foundation
@@ -39,13 +49,14 @@ import Foundation
     , Route
       ( AuthR, AccountPhotoR, PhotoPlaceholderR, ServicesR
       , ServiceR, ServiceThumbnailR, ServicesSearchR, StaticR
-      , ProfileR, BookStaffR
+      , ProfileR, BookStaffR, ServiceInfoR, OfferR
       )
     , AppMessage
       ( MsgServices, MsgPhoto, MsgThumbnail, MsgNoServicesYet
       , MsgBookAppointment, MsgOffers, MsgSearch, MsgSelect, MsgCancel
       , MsgCategories, MsgNoServicesFound, MsgStatus, MsgCategories
-      , MsgCategory, MsgUnpublished, MsgPublished      
+      , MsgCategory, MsgUnpublished, MsgPublished, MsgService
+      , MsgDescription
       )
     )
 
@@ -58,32 +69,67 @@ import Database.Esqueleto.Experimental
     (selectOne, from, table, orderBy, asc, exists, not_
     , (^.), (?.), (==.), (%), (++.), (||.), (:&) ((:&))
     , where_, val, select, isNothing, just, justList
-    , valList, in_, upper_, like, innerJoin, on, leftJoin, Value (unValue)
+    , valList, in_, upper_, like, innerJoin, on, leftJoin
+    , Value (unValue), subSelectList, withRecursive, unionAll_
     )
 
 import Model
     ( Service(Service), ServiceId
+    , Thumbnail (Thumbnail), Offer (Offer), OfferId
+    , Services (Services)
+    , ServiceStatus (ServiceStatusPulished, ServiceStatusUnpublished)
     , EntityField
       ( ServiceId, ThumbnailService, ServiceGroup, OfferService
       , OfferId, ServicePublished, ServiceName, ServiceDescr
       , ServiceOverview, ThumbnailAttribution
       )
-    , Thumbnail (Thumbnail), Offer (Offer), Services (Services)
-    , ServiceStatus (ServiceStatusPulished, ServiceStatusUnpublished)
     )
 
 import Settings.StaticFiles (img_photo_FILL0_wght400_GRAD0_opsz48_svg)
 
 import Menu (menu)
-import Yesod.Form.Types
-    ( MForm, FormResult (FormSuccess), Enctype (UrlEncoded), FieldView (fvInput)
-    , Field (Field, fieldParse, fieldView, fieldEnctype)
-    )
-import Yesod.Form.Functions (generateFormPost, runFormPost, mreq, parseHelper)
 import Handler.Book (sessKeyBooking)
-import qualified Data.List.Safe as LS
-import Text.Read (readMaybe)
-import Data.Bifunctor (Bifunctor(second))
+
+
+getServiceInfoR :: Services -> Handler Html
+getServiceInfoR (Services sids) = do
+    open <- (Just <$>) . filter ((== "o") . fst) . reqGetParams <$> getRequest
+    scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
+    let sid = last sids
+    service <- (second (join . unValue) <$>) <$> runDB ( selectOne $ do
+        x :& t <- from $ table @Service `leftJoin` table @Thumbnail
+            `on` (\(x :& t) -> just (x ^. ServiceId) ==. t ?. ThumbnailService)
+        where_ $ x ^. ServicePublished
+        where_ $ x ^. ServiceId ==. val sid
+        return (x,t ?. ThumbnailAttribution) )
+    offers <- case service of
+      Nothing -> return []
+      Just (Entity serid _,_) -> (second (join . unValue) <$>) <$> runDB ( select $ do
+        x :& s :& t <- from $ table @Offer
+            `innerJoin` table @Service `on` (\(x :& s) -> x ^. OfferService ==. s ^. ServiceId)
+            `leftJoin` table @Thumbnail  `on` (\(_ :& s :& t) -> just (s ^. ServiceId) ==. t ?. ThumbnailService)
+        where_ $ x ^. OfferService `in_` subSelectList
+              ( do
+                    cte <- withRecursive
+                        ( do
+                              p <- from $ table @Service
+                              where_ $ p ^. ServiceId ==. val serid
+                              where_ $ p ^. ServicePublished
+                              return p
+                        )
+                        unionAll_
+                        (\parent -> do
+                          (c :& _) <- from $ table @Service `innerJoin` parent
+                              `on` (\(c :& p) -> c ^. ServiceGroup ==. just (p ^. ServiceId))
+                          where_ $ c ^. ServicePublished
+                          return c
+                        )
+                    ( ^. ServiceId) <$> from cte
+              )
+        orderBy [asc (s ^. ServiceId), asc (x ^. OfferId)]
+        return ((x,s), t ?. ThumbnailAttribution) )
+    defaultLayout $ do
+        $(widgetFile "services/info")
 
 
 getServicesSearchR :: Handler Html
@@ -144,6 +190,26 @@ postServiceR (Services sids) = do
           $(widgetFile "services/service")
 
 
+getOfferR :: OfferId -> Services -> Handler Html
+getOfferR oid (Services sids) = do
+    open <- (Just <$>) . filter ((== "o") . fst) . reqGetParams <$> getRequest
+    scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
+    let sid = last sids
+    offers <- ((\((a,b),c) -> (a,b,c)) . second (join . unValue) <$>) <$> runDB ( select $ do
+        x :& s :& t <- from $ table @Offer `innerJoin` table @Service
+            `on` (\(x :& s) -> x ^. OfferService ==. s ^. ServiceId)
+            `leftJoin` table @Thumbnail `on` (\(_ :& s :& t) -> just (s ^. ServiceId) ==. t ?. ThumbnailService)
+        where_ $ x ^. OfferId ==. val oid
+        where_ $ s ^. ServicePublished
+        return ((s,x),t ?. ThumbnailAttribution) )
+
+    (fw,et) <- generateFormPost $ formOffer offers
+
+    defaultLayout $ do
+        setTitleI MsgOffers
+        $(widgetFile "services/offer")
+
+
 getServiceR :: Services -> Handler Html
 getServiceR (Services sids) = do
     open <- (Just <$>) . filter ((== "o") . fst) . reqGetParams <$> getRequest
@@ -155,6 +221,7 @@ getServiceR (Services sids) = do
             `on` (\(x :& s) -> x ^. OfferService ==. s ^. ServiceId)
             `leftJoin` table @Thumbnail `on` (\(_ :& s :& t) -> just (s ^. ServiceId) ==. t ?. ThumbnailService)
         where_ $ x ^. OfferService ==. val sid
+        where_ $ s ^. ServicePublished
         return ((s,x),t ?. ThumbnailAttribution) )
 
     (fw,et) <- generateFormPost $ formOffer offers
@@ -207,11 +274,11 @@ getServicesR = do
 
 buildSnippet :: [Text] -> Maybe ServiceId -> Services -> Srvs -> Widget
 buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
-<ul.mdc-list data-mdc-auto-init=MDCList>
-  $forall (((Entity sid (Service name _ overview _ _ _), attribution), offer),srvs@(Srvs subservices)) <- services
+<nav.mdc-list role=menu data-mdc-auto-init=MDCList>
+  $forall (((Entity sid (Service name _ overview _ _ _), attrib), offer),srvs@(Srvs subservices)) <- services
     $with (gid,l) <- (pack $ show $ fromSqlKey sid, length offer)
       $if (length subservices) > 0
-        <details role=listitem #details#{gid} :elem gid open:open
+        <details role=menuitem #details#{gid} :elem gid open:open
           ontoggle="document.getElementById('iconExpand#{gid}').textContent = this.open ? 'expand_less' : 'expand_more'">
           <summary.mdc-list-item.mdc-list-item--with-three-lines
             .mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon>
@@ -223,13 +290,12 @@ buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
               <div.mdc-list-item__primary-text>#{name}
             <span.mdc-list-item__end>
               <i.material-symbols-outlined #iconExpand#{gid}>expand_more
-            $maybe attribution <- attribution
+            $maybe attribution <- attrib
               <div style="position:fixed;bottom:4px;left:8px;font-size:0.5rem;line-height:1;white-space:nowrap">
                 ^{attribution}
           $maybe overview <- overview
-            <a.mdc-list-item href=@?{(ServiceR (Services (sids ++ [sid])),oqs (sids ++ [sid]))}
-              .mdc-list-item--with-one-line
-              .mdc-list-item--with-trailing-icon>
+            <a.mdc-list-item href=@?{(ServiceInfoR (Services (sids ++ [sid])),oqs (sids ++ [sid]))}
+              .mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
               <span.mdc-list-item__ripple>
               <span.mdc-list-item__content>
                 <div.mdc-list-item__secondary-text>
@@ -238,7 +304,7 @@ buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
                 <i.material-symbols-outlined #iconExpand#{gid}>info
           ^{buildSnippet open msid (Services (sids ++ [sid])) srvs}
       $else
-        <a.mdc-list-item href=@?{(ServiceR (Services (sids ++ [sid])),oqs sids)}
+        <a.mdc-list-item href=@?{(ServiceR (Services (sids ++ [sid])),oqs sids)} role=menuitem
           :l == 0:.mdc-list-item--with-one-line
           :l >= 1:.mdc-list-item--with-three-lines
           :msid == Just sid:.mdc-list-item--activated
@@ -252,7 +318,7 @@ buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
             <div.mdc-list-item__primary-text>
               #{name}
             $forall Entity _ (Offer _ name price prefix suffix _) <- take 2 offer
-              <div.mdc-list-item__secondary-text>
+              <div.mdc-list-item__secondary-text style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
                 #{name}:&nbsp;
                 $maybe prefix <- prefix
                   #{prefix}
@@ -264,7 +330,7 @@ buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
           <span.mdc-list-item__end>
             <i.material-symbols-outlined>arrow_forward_ios
         <div.mdc-list-divider role=separator style="position:relative">
-          $maybe attribution <- attribution
+          $maybe attribution <- attrib
             <div style="position:absolute;bottom:0;left:4px;font-size:0.5rem;line-height:1">
               ^{attribution}
 |]

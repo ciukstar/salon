@@ -80,6 +80,7 @@ import Foundation
       , MsgYes, MsgNo, MsgSearch, MsgNoServicesFound, MsgSelect, MsgCategory
       , MsgCategories, MsgStatus, MsgUnpublished, MsgOffers, MsgDuration
       , MsgInvalidDurationHourMinute, MsgSymbolHour, MsgSymbolMinute
+      , MsgOffer
       )
     )
 
@@ -179,7 +180,7 @@ getAdmPriceEditR pid (Services sids) = do
     (widget,enctype) <- generateFormPost $ formOffer (last sids) price
     defaultLayout $ do
         setTitleI MsgPrice
-        $(widgetFile "admin/services/edit-price")
+        $(widgetFile "admin/services/offer/edit")
 
 
 postAdmPriceR :: OfferId -> Services -> Handler Html
@@ -200,7 +201,7 @@ postAdmPriceR pid (Services sids) = do
                    )
       _ -> defaultLayout $ do
           setTitleI MsgPrice
-          $(widgetFile "admin/services/edit-price")
+          $(widgetFile "admin/services/offer/edit")
 
 
 getAdmPriceR :: OfferId -> Services -> Handler Html
@@ -214,7 +215,7 @@ getAdmPriceR pid sids = do
     msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgPrice
-        $(widgetFile "admin/services/price")
+        $(widgetFile "admin/services/offer/offer")
 
 
 postAdmOfferR :: Services -> Handler Html
@@ -231,7 +232,7 @@ postAdmOfferR (Services sids) = do
                    )
       _ -> defaultLayout $ do
           setTitleI MsgPrice
-          $(widgetFile "admin/services/create-price")
+          $(widgetFile "admin/services/offer/create")
 
 
 getAdmOfferCreateR :: Services -> Handler Html
@@ -241,7 +242,7 @@ getAdmOfferCreateR (Services sids) = do
     (widget,enctype) <- generateFormPost $ formOffer (last sids) Nothing
     defaultLayout $ do
         setTitleI MsgPrice
-        $(widgetFile "admin/services/create-price")
+        $(widgetFile "admin/services/offer/create")
 
 
 formOffer :: ServiceId -> Maybe (Entity Offer)

@@ -61,7 +61,8 @@ import Handler.AboutUs (getAboutUsR)
 import Handler.Services
     ( getServicesR, getServiceThumbnailR
     , getServiceR, postServiceR
-    , getServicesSearchR
+    , getServicesSearchR, getServiceInfoR
+    , getOfferR
     )
 import Handler.Account (getProfileR, getAccountR, postAccountR, getAccountPhotoR)
 import Handler.Home (getHomeR)

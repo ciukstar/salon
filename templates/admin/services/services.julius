@@ -11,7 +11,7 @@ window.mdc.autoInit();
 
 [document.getElementById('detailsOffer')].filter(x => !!x).forEach(function (x) {
   x.addEventListener('click',function (e) {
-    [document.getElementById('detailsSubservices')].filter(x => !!x).forEach(function (x) {
+    ['detailsDescription','detailsSubservices'].map(x => document.getElementById(x)).filter(x => !!x).forEach(function (x) {
       x.removeAttribute('open');
     });
   });
@@ -19,22 +19,17 @@ window.mdc.autoInit();
 
 [document.getElementById('detailsSubservices')].filter(x => !!x).forEach(function (x) {
   x.addEventListener('click',function (e) {
-    [document.getElementById('detailsOffer')].filter(x => !!x).forEach(function (x) {
+    ['detailsDescription','detailsOffer'].map(x => document.getElementById(x)).filter(x => !!x).forEach(function (x) {
       x.removeAttribute('open');
     });
   });
 });
 
-[ document.getElementById('detailsSubservices'),
-  document.getElementById('detailsOffer')
-].filter(x => !!x).forEach(function (x) {
-  const endIcon = x.querySelector('.mdc-list-item__end > .material-symbols-outlined');
-  x.addEventListener('toggle',function (e) {
-    if (x.open) {
-      endIcon.textContent = 'expand_less';
-    } else {
-      endIcon.textContent = 'expand_more';
-    }
+[document.getElementById('detailsDescription')].filter(x => !!x).forEach(function (x) {
+  x.addEventListener('click',function (e) {
+    ['detailsSubservices','detailsOffer'].map(x => document.getElementById(x)).filter(x => !!x).forEach(function (x) {
+      x.removeAttribute('open');
+    });
   });
 });
 

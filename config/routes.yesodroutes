@@ -13,9 +13,12 @@
 
 /aboutus AboutUsR GET
 
+/offers/#OfferId/+Services OfferR GET
+
 /search/services         ServicesSearchR   GET
 /thumbnail/#ServiceId    ServiceThumbnailR GET
-/info/services/+Services ServiceR	   GET POST
+/services/info/+Services ServiceInfoR	   GET
+/service/+Services 	 ServiceR	   GET POST
 /services   	 	 ServicesR	   GET
 
 /profile               ProfileR      GET
@@ -43,11 +46,11 @@
     /about                    AdmAboutR       GET POST
 
     /search/services	              AdmServicesSearchR    GET
-    /form/pricelist/+Services         AdmOfferCreateR       GET
-    /form/price/#OfferId/+Services    AdmPriceEditR   	    GET
-    /delete/prices/#OfferId/+Services AdmPriceDeleteR	    POST
-    /prices/#OfferId/+Services        AdmPriceR	            GET POST
-    /pricelist/+Services       	      AdmOfferR	            POST
+    /form/offer/+Services             AdmOfferCreateR       GET
+    /form/offers/#OfferId/+Services   AdmPriceEditR   	    GET
+    /delete/offers/#OfferId/+Services AdmPriceDeleteR	    POST
+    /offers/#OfferId/+Services        AdmPriceR	            GET POST
+    /offer/+Services       	      AdmOfferR	            POST
     /form/services/+Services   	      AdmServiceEditFormR   GET
     /form/service/+Services    	      AdmServiceCreateFormR GET
     /delete/services/+Services 	      AdmServiceDeleteR     POST

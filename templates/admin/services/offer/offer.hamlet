@@ -5,7 +5,7 @@
         href=@?{(AdminR $ AdmServicesR sids,catMaybes [scrollY,open,Just ("pid",pack $ show $ fromSqlKey pid)])}>
         <span.mdc-icon-button__ripple>
         <i.material-symbols-outlined>arrow_back
-      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgPrice}
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgOffer}
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
       <button.mdc-top-app-bar__action-item.mdc-icon-button type=button #buttonDeletePrice>
         <span.mdc-icon-button__ripple>

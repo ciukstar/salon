@@ -14,6 +14,10 @@ main
       white-space: normal
     table tbody tr td
       white-space: normal
+  #detailsDescription summary
+    .mdc-list .mdc-list-item
+      .mdc-list-item__content .mdc-list-item__primary-text
+        font-weight: 500
   div.label-with-badge
     display: flex
     flex-direction: row

@@ -101,16 +101,24 @@ $if null sids
               <td.mdc-data-table__cell>
                 $maybe overview <- overview
                   #{overview}
-            <tr.mdc-data-table__row>
-              <th.mdc-data-table__cell colspan=2 scope=row>
-                $maybe descr <- descr
-                  <details>
-                    <summary>_{MsgDescription}
-                    <p style="font-style:normal;font-weight:400">
-                      #{preEscapedToMarkup $ unTextarea descr}
+              
+    <details #detailsDescription
+      ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+      <summary style="list-style:none">
+        <ul.mdc-list data-mdc-auto-init=MDCList>
+          <li.mdc-list-item.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+            <span.mdc-list-item__ripple>
+            <span.mdc-list-item__content>
+              <div.mdc-list-item__primary-text>_{MsgDescription}
+            <span.mdc-list-item__end>
+              <i.expand.material-symbols-outlined>expand_more
+      $maybe descr <- descr
+        <div style="margin:1rem">
+          #{preEscapedToMarkup $ unTextarea descr}
 
   $if not (null sids)
-    <details #detailsOffer :open == Just "offer":open>
+    <details #detailsOffer :open == Just "offer":open
+      ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
       <summary style="list-style:none">
         <ul.mdc-list data-mdc-auto-init=MDCList>
           <li.mdc-list-item :open == Just "offer":.mdc-list-item--activated
@@ -123,7 +131,7 @@ $if null sids
                   <div.label>_{MsgOffers}
                   <div.badge>#{length offer}
             <span.mdc-list-item__end>
-              <i.material-symbols-outlined>
+              <i.expand.material-symbols-outlined>
                 $if open == Just "offer"
                   expand_less
                 $elseif open == Nothing
@@ -167,7 +175,8 @@ $if null sids
           <span.mdc-fab__touch>
             
   $if not (null sids)
-    <details #detailsSubservices :open == Just "subservices":open>
+    <details #detailsSubservices :open == Just "subservices":open
+      ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
       <summary style="list-style:none">
         <ul.mdc-list data-mdc-auto-init=MDCList>
           <li.mdc-list-item
@@ -181,7 +190,7 @@ $if null sids
                   <div.label>_{MsgSubservices}
                   <div.badge>#{length services}
             <span.mdc-list-item__end>
-              <i.material-symbols-outlined>
+              <i.expand.material-symbols-outlined>
                 $if open == Just "subservices"
                   expand_less
                 $elseif open == Nothing
