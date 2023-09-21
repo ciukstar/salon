@@ -4,5 +4,8 @@ header.mdc-top-app-bar
     transition: height 0.3s ease-out
 
 main
-  .mdc-list-item--activated .mdc-list-item__primary-text
-    color: var(--theme-accent)
+  margin-bottom: 1rem
+  .mdc-list
+    padding: 0
+    .mdc-list-item--activated .mdc-list-item__primary-text
+      color: var(--theme-accent)

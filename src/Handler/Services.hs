@@ -15,7 +15,7 @@ module Handler.Services
   ) where
 
 import Control.Monad (forM, join)
-import Data.Bifunctor (Bifunctor(second))
+import Data.Bifunctor (Bifunctor(second, bimap))
 import qualified Data.List.Safe as LS (head)
 import Data.Maybe (catMaybes, fromMaybe)
 import Data.FileEmbed (embedFile)
@@ -54,30 +54,27 @@ import Foundation
     , AppMessage
       ( MsgServices, MsgPhoto, MsgThumbnail, MsgNoServicesYet
       , MsgBookAppointment, MsgOffers, MsgSearch, MsgSelect, MsgCancel
-      , MsgCategories, MsgNoServicesFound, MsgStatus, MsgCategories
-      , MsgCategory, MsgUnpublished, MsgPublished, MsgService
-      , MsgDescription
+      , MsgCategories, MsgNoServicesFound, MsgCategories
+      , MsgCategory, MsgService, MsgDescription, MsgOffer
       )
     )
 
 import Yesod.Persist.Core (runDB)
-import Database.Persist
-    ( Entity (Entity)
-    )
+import Database.Persist(Entity (Entity))
 import Database.Persist.Sql (fromSqlKey, toSqlKey)
 import Database.Esqueleto.Experimental
-    (selectOne, from, table, orderBy, asc, exists, not_
+    ( SqlExpr, selectOne, from, table, orderBy, asc, exists
     , (^.), (?.), (==.), (%), (++.), (||.), (:&) ((:&))
     , where_, val, select, isNothing, just, justList
     , valList, in_, upper_, like, innerJoin, on, leftJoin
     , Value (unValue), subSelectList, withRecursive, unionAll_
+    , subSelectCount, subSelectMaybe
     )
 
 import Model
     ( Service(Service), ServiceId
     , Thumbnail (Thumbnail), Offer (Offer), OfferId
     , Services (Services)
-    , ServiceStatus (ServiceStatusPulished, ServiceStatusUnpublished)
     , EntityField
       ( ServiceId, ThumbnailService, ServiceGroup, OfferService
       , OfferId, ServicePublished, ServiceName, ServiceDescr
@@ -136,12 +133,18 @@ getServicesSearchR :: Handler Html
 getServicesSearchR = do
     formSearch <- newIdent
     dlgCategList <- newIdent
-    dlgStatusList <- newIdent
     mq <- runInputGet $ iopt (searchField True) "q"
     categs <- (toSqlKey . read . unpack . snd <$>) . filter ((== "categ") . fst) . reqGetParams <$> getRequest
-    stati <- (read . unpack . snd <$>) . filter ((== "status") . fst) . reqGetParams <$> getRequest
-    services <- runDB $ select $ do
+    services <- (bimap (second unValue) unValue <$>) <$> runDB ( select $ do
         x <- from $ table @Service
+        let n :: SqlExpr (Value Int)
+            n = subSelectCount $ from (table @Offer) >>= \o -> where_ $ o ^. OfferService ==. x ^. ServiceId
+        let a :: SqlExpr (Value (Maybe Html))
+            a = subSelectMaybe $ do
+                t <- from $ table @Thumbnail
+                where_ $ t ^. ThumbnailService ==. x ^. ServiceId
+                return $ t ^. ThumbnailAttribution
+        where_ $ x ^. ServicePublished
         case mq of
           Just q -> where_ $ ( upper_ (x ^. ServiceName) `like` (%) ++. upper_ (val q) ++. (%) )
               ||. ( upper_ (x ^. ServiceOverview) `like` (%) ++. upper_ (just (val q)) ++. (%) )
@@ -150,19 +153,16 @@ getServicesSearchR = do
         case categs of
           [] -> return ()
           xs -> where_ $ x ^. ServiceGroup `in_` justList (valList xs)
-        case stati of
-          [ServiceStatusPulished] -> where_ $ x ^. ServicePublished
-          [ServiceStatusUnpublished] -> where_ $ not_ $ x ^. ServicePublished
-          _ -> return ()
         orderBy [asc (x ^. ServiceName)]
-        return x
+
+        return ((x,n),a) )
+        
     groups <- runDB $ select $ do
         x <- from $ table @Service
         where_ $ exists $ do
             y <- from $ table @Service
             where_ $ y ^. ServiceGroup ==. just (x ^. ServiceId)
         return x
-    let statusList = [(ServiceStatusPulished,MsgPublished),(ServiceStatusUnpublished,MsgUnpublished)]
     defaultLayout $ do
         setTitleI MsgSearch
         $(widgetFile "services/search")
@@ -274,24 +274,24 @@ getServicesR = do
 
 buildSnippet :: [Text] -> Maybe ServiceId -> Services -> Srvs -> Widget
 buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
-<nav.mdc-list role=menu data-mdc-auto-init=MDCList>
-  $forall (((Entity sid (Service name _ overview _ _ _), attrib), offer),srvs@(Srvs subservices)) <- services
-    $with (gid,l) <- (pack $ show $ fromSqlKey sid, length offer)
+<nav.mdc-list data-mdc-auto-init=MDCList>
+  $forall (((Entity sid (Service sname _ overview _ _ _), attrib), offers),srvs@(Srvs subservices)) <- services
+    $with (gid,lof) <- (pack $ show $ fromSqlKey sid, length offers)
       $if (length subservices) > 0
-        <details role=menuitem #details#{gid} :elem gid open:open
+        <details #details#{gid} :elem gid open:open
           ontoggle="document.getElementById('iconExpand#{gid}').textContent = this.open ? 'expand_less' : 'expand_more'">
-          <summary.mdc-list-item.mdc-list-item--with-three-lines
+          <summary.mdc-list-item.mdc-list-item--with-one-line
             .mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon>
             <span.mdc-list-item__ripple>
             <span.mdc-list-item__start>
               <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail} loading=lazy>
             <span.mdc-list-item__content>
               <div.mdc-list-item__primary-text>
-              <div.mdc-list-item__primary-text>#{name}
+              <div.mdc-list-item__primary-text>#{sname}
             <span.mdc-list-item__end>
               <i.material-symbols-outlined #iconExpand#{gid}>expand_more
             $maybe attribution <- attrib
-              <div style="position:fixed;bottom:4px;left:8px;font-size:0.5rem;line-height:1;white-space:nowrap">
+              <div style="position:absolute;bottom:0;left:4px;font-size:0.5rem;line-height:1;white-space:nowrap">
                 ^{attribution}
           $maybe overview <- overview
             <a.mdc-list-item href=@?{(ServiceInfoR (Services (sids ++ [sid])),oqs (sids ++ [sid]))}
@@ -301,36 +301,36 @@ buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
                 <div.mdc-list-item__secondary-text>
                   <i>#{overview}
               <span.mdc-list-item__end>
-                <i.material-symbols-outlined #iconExpand#{gid}>info
+                <i.material-symbols-outlined #iconExpand#{gid}>arrow_forward_ios
           ^{buildSnippet open msid (Services (sids ++ [sid])) srvs}
       $else
-        <a.mdc-list-item href=@?{(ServiceR (Services (sids ++ [sid])),oqs sids)} role=menuitem
-          :l == 0:.mdc-list-item--with-one-line
-          :l >= 1:.mdc-list-item--with-three-lines
+        <div.mdc-list-divider role=separator>
+        <a.mdc-list-item.mdc-list-item--with-one-line
+          :lof /= 1:href=@?{(ServiceInfoR (Services (sids ++ [sid])),oqs sids)}
+          :lof == 1:href=@?{(ServiceR (Services (sids ++ [sid])),oqs sids)}
           :msid == Just sid:.mdc-list-item--activated
           .mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon>
           <span.mdc-list-item__ripple>
           <span.mdc-list-item__start>
             <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail} loading=lazy>
           <span.mdc-list-item__content>
-            $if l == 1
-              <div.mdc-list-item__primary-text>
             <div.mdc-list-item__primary-text>
-              #{name}
-            $forall Entity _ (Offer _ name price prefix suffix _) <- take 2 offer
-              <div.mdc-list-item__secondary-text style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
-                #{name}:&nbsp;
-                $maybe prefix <- prefix
-                  #{prefix}
-                $with price <- show price
-                  <span.numeric-format data-value=#{price} data-minFracDigits=0 data-maxFracDigits=2>
-                    #{price}
-                $maybe suffix <- suffix
-                  #{suffix}
+              #{sname}
+            $if lof == 1
+              $forall Entity _ (Offer _ oname price prefix suffix _) <- take 1 offers
+                <div.mdc-list-item__secondary-text style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                  #{oname}:&nbsp;
+                  $maybe prefix <- prefix
+                    #{prefix}
+                  $with price <- show price
+                    <span.numeric-format data-value=#{price} data-minFracDigits=0 data-maxFracDigits=2>
+                      #{price}
+                  $maybe suffix <- suffix
+                    #{suffix}
           <span.mdc-list-item__end>
             <i.material-symbols-outlined>arrow_forward_ios
-        <div.mdc-list-divider role=separator style="position:relative">
-          $maybe attribution <- attrib
+        $maybe attribution <- attrib
+          <div style="position:relative">
             <div style="position:absolute;bottom:0;left:4px;font-size:0.5rem;line-height:1">
               ^{attribution}
 |]

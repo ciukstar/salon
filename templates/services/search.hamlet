@@ -36,17 +36,6 @@
         <span.mdc-button__label style="color:var(--theme-accent)">_{MsgCategory}
         <span style="background-color:var(--mdc-theme-primary);margin-left:0.5rem;padding:2px 6px;border-radius:50%">
           #{length categs}
-    <button.mdc-button.mdc-button--outlined.mdc-button--icon-trailing type=button
-      onclick="document.getElementById('#{dlgStatusList}').MDCDialog.open()">
-      <span.mdc-button__ripple>
-      <span.mdc-button__focus-ring>
-      $if null stati
-        <span.mdc-button__label>_{MsgStatus}
-        <i.mdc-button-icon.material-symbols-outlined>arrow_drop_down
-      $else
-        <span.mdc-button__label style="color:var(--theme-accent)">_{MsgStatus}
-        <span style="background-color:var(--mdc-theme-primary);margin-left:0.5rem;padding:2px 6px;border-radius:50%">
-          #{length stati}
         
 
   $if null services
@@ -56,8 +45,11 @@
         _{MsgNoServicesFound}.
   $else
     <nav.mdc-list data-mdc-auto-init=MDCList>
-      $forall Entity sid (Service name _ _ _ _ _) <- services
-        <a.mdc-list-item href=@{ServiceR $ Services [sid]}
+      $forall ((Entity sid (Service sname _ _ _ _ _),noffers),attrib) <- services
+        <a.mdc-list-item 
+          :False:href=@{ServiceR $ Services [sid]}
+          :noffers /= 1:href=@{ServiceInfoR (Services [sid])}
+          :noffers == 1:href=@{ServiceR (Services [sid])}
           .mdc-list-item--with-one-line.mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon
           onclick="this.href = `${this.href}?scrollY=${window.scrollY}`">
           <span.mdc-list-item__ripple>
@@ -65,9 +57,14 @@
             <img src=@{ServiceThumbnailR sid} height=56 width=56 loading=lazy
               onerror="this.src = '@{StaticR img_photo_FILL0_wght400_GRAD0_opsz48_svg}'">
           <span.mdc-list-item__content>
-            <div.mdc-list-item__primary-text>#{name}
+            <div.mdc-list-item__primary-text>#{sname}
           <span.mdc-list-item__end>
             <i.material-symbols-outlined>arrow_forward_ios
+
+        $maybe attribution <- attrib
+          <div style="position:relative">
+            <div style="position:absolute;bottom:0;left:4px;font-size:0.5rem;line-height:1">
+              ^{attribution}
         <div.mdc-list-divider role=separator>
         
 <div.mdc-dialog.mdc-dialog--fullscreen ##{dlgCategList} data-mdc-auto-init=MDCDialog>
@@ -96,42 +93,6 @@
               
       <div.mdc-dialog__actions>
         <button.mdc-button type=button onclick="document.getElementById('#{dlgCategList}').MDCDialog.close()">
-          <span.mdc-button__ripple>
-          <span.mdc-button__focus-ring>
-          <span.mdc-button__label>_{MsgCancel}
-        <button.mdc-button.mdc-button--raised type=submit form=#{formSearch}>
-          <span.mdc-button__ripple>
-          <span.mdc-button__focus-ring>
-          <span.mdc-button__label>_{MsgSelect}
-      
-  <div.mdc-dialog__scrim>
-        
-<div.mdc-dialog.mdc-dialog--fullscreen ##{dlgStatusList} data-mdc-auto-init=MDCDialog>
-  <div.mdc-dialog__container>
-    <div.mdc-dialog__surface role=dialog aria-modal=true tabindex=-1>
-      <div.mdc-dialog__header>
-        <h4.mdc-dialog__title>_{MsgCategories}
-        <button.mdc-dialog__close.mdc-icon-button data-mdc-dialog-action=close>
-          <span.mdc-icon-button__ripple>
-          <i.material-symbols-outlined>close
-      <div.mdc-dialog__content>
-        $forall (status,label) <- statusList
-          $with name <- pack $ show status
-            <div.mdc-form-field.mdc-form-field--nowrap>
-              <div.mdc-checkbox data-mdc-auto-init=MDCCheckbox>
-                <input.mdc-checkbox__native-control type=checkbox form=#{formSearch} #checkbox#{name}
-                 name=status value=#{name} :elem status stati:checked>
-                <div.mdc-checkbox__background>
-                  <svg.mdc-checkbox__checkmark viewBox="0 0 24 24">
-                    <path.mdc-checkbox__checkmark-path fill=none d="M1.73,12.91 8.1,19.28 22.79,4.59">
-                  <div.mdc-checkbox__mixedmark>
-                <div.mdc-checkbox__ripple>
-                <div.mdc-checkbox__focus-ring>
-              <label.mdc-list-item__primary-text for=checkbox#{name}>
-                _{label}
-              
-      <div.mdc-dialog__actions>
-        <button.mdc-button type=button onclick="document.getElementById('#{dlgStatusList}').MDCDialog.close()">
           <span.mdc-button__ripple>
           <span.mdc-button__focus-ring>
           <span.mdc-button__label>_{MsgCancel}
