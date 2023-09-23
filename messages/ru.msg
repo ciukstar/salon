@@ -1,3 +1,4 @@
+NoOffersYet: Предложений пока нет
 ChoosePhoto: Выбрать фото
 ChooseImage: Выбрать изображение
 Attribution: Атрибуция

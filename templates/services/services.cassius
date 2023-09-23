@@ -7,5 +7,9 @@ main
   margin-bottom: 1rem
   .mdc-list
     padding: 0
-    .mdc-list-item--activated .mdc-list-item__primary-text
-      color: var(--theme-accent)
+    .mdc-list-item--activated
+      .mdc-list-item__primary-text
+        color: var(--theme-accent)
+      .mdc-list-item__secondary-text
+        color: var(--theme-accent)
+        opacity: 0.6

@@ -9,9 +9,11 @@ module Handler.Services
   , getServiceThumbnailR
   , getServiceR
   , postServiceR
-  , getServicesSearchR
-  , getServiceInfoR
+  , getServiceOffersR
   , getOfferR
+  , getServicesSearchR
+  , getServiceSearchR
+  , getServiceSearchOffersR
   ) where
 
 import Control.Monad (forM, join)
@@ -48,13 +50,14 @@ import Foundation
     ( Handler, Widget
     , Route
       ( AuthR, AccountPhotoR, PhotoPlaceholderR, ServicesR
-      , ServiceR, ServiceThumbnailR, ServicesSearchR, StaticR
-      , ProfileR, BookStaffR, ServiceInfoR, OfferR
+      , ServiceR, ServiceThumbnailR, StaticR
+      , ProfileR, BookStaffR, ServiceOffersR, OfferR
+      , ServicesSearchR, ServiceSearchR, ServiceSearchOffersR
       )
     , AppMessage
       ( MsgServices, MsgPhoto, MsgThumbnail, MsgNoServicesYet
       , MsgBookAppointment, MsgOffers, MsgSearch, MsgSelect, MsgCancel
-      , MsgCategories, MsgNoServicesFound, MsgCategories
+      , MsgCategories, MsgNoServicesFound, MsgCategories, MsgNoOffersYet
       , MsgCategory, MsgService, MsgDescription, MsgOffer
       )
     )
@@ -88,11 +91,13 @@ import Menu (menu)
 import Handler.Book (sessKeyBooking)
 
 
-getServiceInfoR :: Services -> Handler Html
-getServiceInfoR (Services sids) = do
-    open <- (Just <$>) . filter ((== "o") . fst) . reqGetParams <$> getRequest
-    scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
+getServiceOffersR :: Services -> Handler Html
+getServiceOffersR (Services sids) = do
+    let open = Just . ("o",) . pack . show . fromSqlKey <$> sids
+    ys <- (Just <$>) . filter ((== "y") . fst) . reqGetParams <$> getRequest
+    let scrollY = case ys of _:y:_ -> snd <$> y; _ -> Nothing
     let sid = last sids
+    moid <- (toSqlKey <$>) <$> runInputGet (iopt intField "oid") 
     service <- (second (join . unValue) <$>) <$> runDB ( selectOne $ do
         x :& t <- from $ table @Service `leftJoin` table @Thumbnail
             `on` (\(x :& t) -> just (x ^. ServiceId) ==. t ?. ThumbnailService)
@@ -105,6 +110,7 @@ getServiceInfoR (Services sids) = do
         x :& s :& t <- from $ table @Offer
             `innerJoin` table @Service `on` (\(x :& s) -> x ^. OfferService ==. s ^. ServiceId)
             `leftJoin` table @Thumbnail  `on` (\(_ :& s :& t) -> just (s ^. ServiceId) ==. t ?. ThumbnailService)
+        where_ $ s ^. ServicePublished
         where_ $ x ^. OfferService `in_` subSelectList
               ( do
                     cte <- withRecursive
@@ -126,7 +132,72 @@ getServiceInfoR (Services sids) = do
         orderBy [asc (s ^. ServiceId), asc (x ^. OfferId)]
         return ((x,s), t ?. ThumbnailAttribution) )
     defaultLayout $ do
-        $(widgetFile "services/info")
+        $(widgetFile "services/offers")
+
+
+getServiceSearchOffersR :: Services -> Handler Html
+getServiceSearchOffersR (Services sids) = do
+    let open = Just . ("o",) . pack . show . fromSqlKey <$> sids
+    ys <- (Just <$>) . filter ((== "y") . fst) . reqGetParams <$> getRequest
+    let scrollY = case ys of _:y:_ -> snd <$> y; _ -> Nothing
+    let sid = last sids
+    moid <- (toSqlKey <$>) <$> runInputGet (iopt intField "oid") 
+    service <- (second (join . unValue) <$>) <$> runDB ( selectOne $ do
+        x :& t <- from $ table @Service `leftJoin` table @Thumbnail
+            `on` (\(x :& t) -> just (x ^. ServiceId) ==. t ?. ThumbnailService)
+        where_ $ x ^. ServicePublished
+        where_ $ x ^. ServiceId ==. val sid
+        return (x,t ?. ThumbnailAttribution) )
+    offers <- case service of
+      Nothing -> return []
+      Just (Entity serid _,_) -> (second (join . unValue) <$>) <$> runDB ( select $ do
+        x :& s :& t <- from $ table @Offer
+            `innerJoin` table @Service `on` (\(x :& s) -> x ^. OfferService ==. s ^. ServiceId)
+            `leftJoin` table @Thumbnail  `on` (\(_ :& s :& t) -> just (s ^. ServiceId) ==. t ?. ThumbnailService)
+        where_ $ s ^. ServicePublished
+        where_ $ x ^. OfferService `in_` subSelectList
+              ( do
+                    cte <- withRecursive
+                        ( do
+                              p <- from $ table @Service
+                              where_ $ p ^. ServiceId ==. val serid
+                              where_ $ p ^. ServicePublished
+                              return p
+                        )
+                        unionAll_
+                        (\parent -> do
+                          (c :& _) <- from $ table @Service `innerJoin` parent
+                              `on` (\(c :& p) -> c ^. ServiceGroup ==. just (p ^. ServiceId))
+                          where_ $ c ^. ServicePublished
+                          return c
+                        )
+                    ( ^. ServiceId) <$> from cte
+              )
+        orderBy [asc (s ^. ServiceId), asc (x ^. OfferId)]
+        return ((x,s), t ?. ThumbnailAttribution) )
+    defaultLayout $ do
+        $(widgetFile "services/search/offers")
+
+
+getServiceSearchR :: Services -> Handler Html
+getServiceSearchR (Services sids) = do
+    let os = Just . ("o",) . pack . show . fromSqlKey <$> sids
+    ys <- (Just <$>) . filter ((== "y") . fst) . reqGetParams <$> getRequest
+    let sid = last sids
+
+    offers <- ((\((a,b),c) -> (a,b,c)) . second (join . unValue) <$>) <$> runDB ( select $ do
+        x :& s :& t <- from $ table @Offer `innerJoin` table @Service
+            `on` (\(x :& s) -> x ^. OfferService ==. s ^. ServiceId)
+            `leftJoin` table @Thumbnail `on` (\(_ :& s :& t) -> just (s ^. ServiceId) ==. t ?. ThumbnailService)
+        where_ $ x ^. OfferService ==. val sid
+        where_ $ s ^. ServicePublished
+        return ((s,x),t ?. ThumbnailAttribution) )
+
+    (fw,et) <- generateFormPost $ formOffer offers
+
+    defaultLayout $ do
+        setTitleI MsgOffers
+        $(widgetFile "services/search/service")
 
 
 getServicesSearchR :: Handler Html
@@ -165,36 +236,13 @@ getServicesSearchR = do
         return x
     defaultLayout $ do
         setTitleI MsgSearch
-        $(widgetFile "services/search")
-
-
-postServiceR :: Services -> Handler Html
-postServiceR (Services sids) = do
-    open <- (Just <$>) . filter ((== "o") . fst) . reqGetParams <$> getRequest
-    scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
-    let sid = last sids
-    offers <- ((\((a,b),c) -> (a,b,c)) . second (join . unValue) <$>) <$> runDB ( select $ do
-        x :& s :& t <- from $ table @Offer `innerJoin` table @Service
-            `on` (\(x :& s) -> x ^. OfferService ==. s ^. ServiceId)
-            `leftJoin` table @Thumbnail `on` (\(_ :& s :& t) -> just (s ^. ServiceId) ==. t ?. ThumbnailService)
-        where_ $ x ^. OfferService ==. val sid
-        return ((s,x),t ?. ThumbnailAttribution) )
-
-    ((fr,fw),et) <- runFormPost $ formOffer offers
-    case fr of
-      FormSuccess (_,Entity oid _,_) -> do
-          setSession sessKeyBooking "BOOKING_START"
-          redirect (BookStaffR, [("oid",pack $ show $ fromSqlKey oid)])
-      _ -> defaultLayout $ do
-          setTitleI MsgOffers
-          $(widgetFile "services/service")
+        $(widgetFile "services/search/search")
 
 
 getOfferR :: OfferId -> Services -> Handler Html
 getOfferR oid (Services sids) = do
-    open <- (Just <$>) . filter ((== "o") . fst) . reqGetParams <$> getRequest
-    scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
-    let sid = last sids
+    let os = Just . ("o",) . pack . show . fromSqlKey <$> sids
+    ys <- (Just <$>) . filter ((== "y") . fst) . reqGetParams <$> getRequest
     offers <- ((\((a,b),c) -> (a,b,c)) . second (join . unValue) <$>) <$> runDB ( select $ do
         x :& s :& t <- from $ table @Offer `innerJoin` table @Service
             `on` (\(x :& s) -> x ^. OfferService ==. s ^. ServiceId)
@@ -210,10 +258,33 @@ getOfferR oid (Services sids) = do
         $(widgetFile "services/offer")
 
 
+postServiceR :: Services -> Handler Html
+postServiceR (Services sids) = do
+    let os = Just . ("o",) . pack . show . fromSqlKey <$> sids
+    ys <- (Just <$>) . filter ((== "y") . fst) . reqGetParams <$> getRequest
+    let sid = last sids
+    offers <- ((\((a,b),c) -> (a,b,c)) . second (join . unValue) <$>) <$> runDB ( select $ do
+        x :& s :& t <- from $ table @Offer `innerJoin` table @Service
+            `on` (\(x :& s) -> x ^. OfferService ==. s ^. ServiceId)
+            `leftJoin` table @Thumbnail `on` (\(_ :& s :& t) -> just (s ^. ServiceId) ==. t ?. ThumbnailService)
+        where_ $ x ^. OfferService ==. val sid
+        where_ $ s ^. ServicePublished
+        return ((s,x),t ?. ThumbnailAttribution) )
+
+    ((fr,fw),et) <- runFormPost $ formOffer offers
+    case fr of
+      FormSuccess (_,Entity oid _,_) -> do
+          setSession sessKeyBooking "BOOKING_START"
+          redirect (BookStaffR, [("oid",pack $ show $ fromSqlKey oid)])
+      _ -> defaultLayout $ do
+          setTitleI MsgOffers
+          $(widgetFile "services/service")
+
+
 getServiceR :: Services -> Handler Html
 getServiceR (Services sids) = do
-    open <- (Just <$>) . filter ((== "o") . fst) . reqGetParams <$> getRequest
-    scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
+    let os = Just . ("o",) . pack . show . fromSqlKey <$> sids
+    ys <- (Just <$>) . filter ((== "y") . fst) . reqGetParams <$> getRequest
     let sid = last sids
 
     offers <- ((\((a,b),c) -> (a,b,c)) . second (join . unValue) <$>) <$> runDB ( select $ do
@@ -251,8 +322,7 @@ formOffer offers extra = do
                                 Nothing -> Left (MsgInvalidEntry s)
                                 Just x -> Right x
                   Nothing -> Left (MsgInvalidEntry s)
-          , fieldView = \theId name _attrs _eval _isReq -> do
-                $(widgetFile "services/offers")
+          , fieldView = \theId name _attrs _eval _isReq -> $(widgetFile "services/field")
           , fieldEnctype = UrlEncoded
           }
 
@@ -260,7 +330,7 @@ formOffer offers extra = do
 getServicesR :: Handler Html
 getServicesR = do
     open <- (snd <$>) . filter ((== "o") . fst) . reqGetParams <$> getRequest
-    scrollY <- runInputGet (iopt textField "scrollY")
+    scrollY <- runInputGet (iopt textField "y")
     msid <- (toSqlKey <$>) <$> runInputGet (iopt intField "sid")
     srvs <- fetchServices Nothing
     let Srvs offer = srvs
@@ -276,7 +346,7 @@ buildSnippet :: [Text] -> Maybe ServiceId -> Services -> Srvs -> Widget
 buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
 <nav.mdc-list data-mdc-auto-init=MDCList>
   $forall (((Entity sid (Service sname _ overview _ _ _), attrib), offers),srvs@(Srvs subservices)) <- services
-    $with (gid,lof) <- (pack $ show $ fromSqlKey sid, length offers)
+    $with (gid,noffers) <- (pack $ show $ fromSqlKey sid, length offers)
       $if (length subservices) > 0
         <details #details#{gid} :elem gid open:open
           ontoggle="document.getElementById('iconExpand#{gid}').textContent = this.open ? 'expand_less' : 'expand_more'">
@@ -294,8 +364,10 @@ buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
               <div style="position:absolute;bottom:0;left:4px;font-size:0.5rem;line-height:1;white-space:nowrap">
                 ^{attribution}
           $maybe overview <- overview
-            <a.mdc-list-item href=@?{(ServiceInfoR (Services (sids ++ [sid])),oqs (sids ++ [sid]))}
-              .mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+            <a.mdc-list-item href=@{ServiceOffersR (Services (sids ++ [sid]))}
+              .mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon
+              :msid == Just sid:.mdc-list-item--activated
+              onclick="this.href = [new window.URL(this.href)].map(x => {x.searchParams.append('y',window.scrollY); return x.href;})[0]">
               <span.mdc-list-item__ripple>
               <span.mdc-list-item__content>
                 <div.mdc-list-item__secondary-text>
@@ -306,17 +378,18 @@ buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
       $else
         <div.mdc-list-divider role=separator>
         <a.mdc-list-item.mdc-list-item--with-one-line
-          :lof /= 1:href=@?{(ServiceInfoR (Services (sids ++ [sid])),oqs sids)}
-          :lof == 1:href=@?{(ServiceR (Services (sids ++ [sid])),oqs sids)}
+          :noffers /= 1:href=@{ServiceOffersR (Services (sids ++ [sid]))}
+          :noffers == 1:href=@{ServiceR (Services (sids ++ [sid]))}
           :msid == Just sid:.mdc-list-item--activated
-          .mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon>
+          .mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon
+          onclick="this.href = [new window.URL(this.href)].map(x => {x.searchParams.append('y',window.scrollY); return x.href;})[0]">
           <span.mdc-list-item__ripple>
           <span.mdc-list-item__start>
             <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail} loading=lazy>
           <span.mdc-list-item__content>
             <div.mdc-list-item__primary-text>
               #{sname}
-            $if lof == 1
+            $if noffers == 1
               $forall Entity _ (Offer _ oname price prefix suffix _) <- take 1 offers
                 <div.mdc-list-item__secondary-text style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
                   #{oname}:&nbsp;
@@ -334,9 +407,6 @@ buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
             <div style="position:absolute;bottom:0;left:4px;font-size:0.5rem;line-height:1">
               ^{attribution}
 |]
-    where
-      oqs :: [ServiceId] -> [(Text,Text)]
-      oqs = (<$>) (("o",) . pack . show . fromSqlKey)
 
 newtype Srvs = Srvs [(((Entity Service, Maybe Html), [Entity Offer]), Srvs)]
 

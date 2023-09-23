@@ -15,11 +15,15 @@
 
 /offers/#OfferId/+Services OfferR GET
 
-/search/services         ServicesSearchR   GET
-/thumbnail/#ServiceId    ServiceThumbnailR GET
-/services/info/+Services ServiceInfoR	   GET
-/service/+Services 	 ServiceR	   GET POST
-/services   	 	 ServicesR	   GET
+/search/service-offers/+Services ServiceSearchOffersR GET
+/search/service/+Services 	 ServiceSearchR	      GET
+/search/services                 ServicesSearchR      GET
+
+
+/thumbnail/#ServiceId     ServiceThumbnailR GET
+/service-offers/+Services ServiceOffersR    GET
+/service/+Services 	  ServiceR	    GET POST
+/services   	 	  ServicesR	    GET
 
 /profile               ProfileR      GET
 /account/#UserId/photo AccountPhotoR GET

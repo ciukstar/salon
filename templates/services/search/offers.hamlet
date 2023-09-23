@@ -1,12 +1,13 @@
 <header.mdc-top-app-bar.mdc-top-app-bar--fixed mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button
-        href=@?{(ServicesR,catMaybes (open ++ [scrollY,Just ("sid",pack $ show $ fromSqlKey sid)]))}>
-        <span.mdc-icon-button__ripple>
-        <spam.mdc-icon-button__focus-ring>
-        <i.material-symbols-outlined>arrow_back
-      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgService}
+      $with stati <- catMaybes ((open ++ LS.head ys) ++ [Just ("sid",pack $ show $ fromSqlKey sid)])
+        <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button
+          href=@?{(ServicesSearchR,stati)}>
+          <span.mdc-icon-button__ripple>
+          <spam.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>arrow_back
+        <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgService}
 
 <main.mdc-top-app-bar--fixed-adjust>
 
@@ -44,13 +45,21 @@
             <span.mdc-list-item__content>
               <div.mdc-list-item__primary-text>
                 <span>_{MsgOffers}
-                <small style="padding:4px;border-radius:25%;background-color:var(--mdc-theme-primary)">
+                <small style="padding:2px 4px;border-radius:25%;background-color:var(--mdc-theme-primary)">
                   #{length offers}
             <span.mdc-list-item__end>
               <i.expand.material-symbols-outlined>expand_more
+          $if null offers
+            <figure style="text-align:center">
+              <span style="font-size:4rem;color:var(--mdc-theme-primary)">&varnothing;
+              <figcaption>
+                _{MsgNoOffersYet}.
           $forall ((Entity oid (Offer _ oname price prefix suffix _),Entity sid (Service sname _ _ _ _ _)),attrib) <- offers
-            <a.mdc-list-item href=@{OfferR oid (Services (sids ++ [sid]))} role=menuitem
-              .mdc-list-item--with-leading-image.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon>
+            <a.mdc-list-item role=menuitem 
+              href=@?{(OfferR oid (Services (sids ++ [sid])),catMaybes ys)}
+              .mdc-list-item--with-leading-image.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon
+              :moid == Just oid:.mdc-list-item--activated
+              onclick="this.href = [new window.URL(this.href)].map(x => {x.searchParams.append('y',window.scrollY); return x.href;})[0]">
               <span.mdc-list-item__ripple>
               <span.mdc-list-item__start>
                 <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail} loading=lazy>
@@ -70,7 +79,9 @@
 
               <span.mdc-list-item__end>
                 <i.material-symbols-outlined>arrow_forward_ios
-            <div.mdc-list-divider role=separator style="position:relative">
-              $maybe attribution <- attrib
+            $maybe attribution <- attrib
+              <div style="position:relative">
                 <div style="position:absolute;bottom:0;left:4px;font-size:0.5rem;line-height:1">
                   ^{attribution}
+            
+            <div.mdc-list-divider role=separator>

@@ -48,8 +48,8 @@
       $forall ((Entity sid (Service sname _ _ _ _ _),noffers),attrib) <- services
         <a.mdc-list-item 
           :False:href=@{ServiceR $ Services [sid]}
-          :noffers /= 1:href=@{ServiceInfoR (Services [sid])}
-          :noffers == 1:href=@{ServiceR (Services [sid])}
+          :noffers /= 1:href=@{ServiceSearchOffersR (Services [sid])}
+          :noffers == 1:href=@{ServiceSearchR (Services [sid])}
           .mdc-list-item--with-one-line.mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon
           onclick="this.href = `${this.href}?scrollY=${window.scrollY}`">
           <span.mdc-list-item__ripple>

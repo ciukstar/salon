@@ -1,0 +1,10 @@
+
+##{theId}
+  display: flex
+  flex-direction: column
+  gap: 1rem
+  .mdc-card__actions .mdc-card__action-buttons
+    width: 100%
+    display: flex
+    flex-direction: column
+    align-items: stretch

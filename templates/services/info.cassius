@@ -1,6 +1,0 @@
-
-main
-  padding: 1rem
-  details summary
-    .mdc-list-item__content .mdc-list-item__primary-text
-      font-weight: 500

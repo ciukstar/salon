@@ -1,3 +1,4 @@
+NoOffersYet: There are no offers yet
 ChoosePhoto: Choose photo
 ChooseImage: Choose image
 Attribution: Attribution

@@ -1,46 +1,86 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button
+        href=@?{(ServicesR,catMaybes ((open ++ LS.head ys) ++ [Just ("sid",pack $ show $ fromSqlKey sid)]))}>
+        <span.mdc-icon-button__ripple>
+        <spam.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgService}
 
-<div ##{theId}>
-  $forall (Entity _ (Service sname _ _ _ descr _),Entity oid (Offer sid oname price prefix suffix _),attrib) <- options
-    $with ident <- pack $ show $ fromSqlKey oid
-      <div.mdc-card>
-        <div.mdc-card__primary-action tabindex=0>
-          <div.mdc-card__media.mdc-card__media--square style="background-image:url('@{ServiceThumbnailR sid}')">
-          <div.mdc-card__ripple>
-        $maybe attribution <- attrib
-          <div style="width:100%;text-align:end;font-size:0.8rem;box-sizing:border-box;padding-right:4px">
-            ^{attribution}
+<main.mdc-top-app-bar--fixed-adjust>
 
-        <div.mdc-card-wrapper__text-section style="display:flex;flex-wrap:nowrap;align-items:center;padding:16px">
-          <div style="flex-grow:1">
-            <div>
-              <strong>#{sname}
-            <div>
-              #{oname}:&nbsp;
-              $maybe prefix <- prefix
-                #{prefix}
-              $with price <- show price
-                <span.numeric-format data-value=#{price} data-minFracDigits=0 data-maxFracDigits=2>
-                  #{price}
-              $maybe suffix <- suffix
-                #{suffix}
+  $maybe (Entity sid (Service sname _ overview _ descr _),attrib) <- service
+    <div.mdc-card>
+      <div.mdc-card-wrapper__text-section.mdc-typography--headline6>
+        <span style="padding:1rem">#{sname}
+      <div.mdc-card__primary-action tabindex=0>
+        <div.mdc-card__media.mdc-card__media--square 
+          style="background-image:url('@{ServiceThumbnailR sid}')">
+        <div.mdc-card__ripple>
+      $maybe attribution <- attrib
+        <div style="text-align:end;font-size:0.8rem;padding-right:4px">
+          ^{attribution}
+      $maybe overview <- overview
+        <div.mdc-card-wrapper__text-section style="padding:1rem">
+          <i style="color:rgba(0,0,0,0.6)">#{overview}
+      $maybe description <- descr
+        <div.mdc-card-wrapper__text-section>
+          <details.mdc-list
+            ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+            <summary.mdc-list-item.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+              <span.mdc-list-item__ripple>
+              <span.mdc-list-item__content>
+                <div.mdc-list-item__primary-text>_{MsgDescription}
+              <span.mdc-list-item__end>
+                <i.expand.material-symbols-outlined>expand_more
+            <div style="padding:0 1rem">#{preEscapedToMarkup $ unTextarea description}
+      
+      <div.mdc-card-wrapper__text-section>
+        <details.mdc-list role=menu open
+          ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+          <summary.mdc-list-item.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+            <span.mdc-list-item__ripple>
+            <span.mdc-list-item__content>
+              <div.mdc-list-item__primary-text>
+                <span>_{MsgOffers}
+                <small style="padding:2px 4px;border-radius:25%;background-color:var(--mdc-theme-primary)">
+                  #{length offers}
+            <span.mdc-list-item__end>
+              <i.expand.material-symbols-outlined>expand_more
+          $if null offers
+            <figure style="text-align:center">
+              <span style="font-size:4rem;color:var(--mdc-theme-primary)">&varnothing;
+              <figcaption>
+                _{MsgNoOffersYet}.
+          $forall ((Entity oid (Offer _ oname price prefix suffix _),Entity sid (Service sname _ _ _ _ _)),attrib) <- offers
+            <a.mdc-list-item role=menuitem 
+              href=@?{(OfferR oid (Services (sids ++ [sid])),catMaybes ys)}
+              .mdc-list-item--with-leading-image.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon
+              :moid == Just oid:.mdc-list-item--activated
+              onclick="this.href = [new window.URL(this.href)].map(x => {x.searchParams.append('y',window.scrollY); return x.href;})[0]">
+              <span.mdc-list-item__ripple>
+              <span.mdc-list-item__start>
+                <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail} loading=lazy>
+              <span.mdc-list-item__content>
+                <div.mdc-list-item__primary-text>
+                  #{sname}
+                <div.mdc-list-item__secondary-text>
+                  #{oname}:
+                <div.mdc-list-item__secondary-text style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                  $maybe prefix <- prefix
+                    #{prefix}
+                  $with price <- show price
+                    <span.numeric-format data-value=#{price} data-minFracDigits=0 data-maxFracDigits=2>
+                      #{price}
+                  $maybe suffix <- suffix
+                    #{suffix}
 
-          <button.mdc-icon-button role=button type=button #buttonDetails#{ident}
-            onclick="document.getElementById('details#{ident}').open = !document.getElementById('details#{ident}').open">
-            <span.mdc-icon-button__ripple>
-            <span.mdc-icon-button__focus-ring>
-            <i.material-symbols-outlined>expand_more
-
-        <details #details#{ident}
-          ontoggle="document.getElementById('buttonDetails#{ident}').querySelector('i').textContent = this.open ? 'expand_less' : 'expand_more'">
-          <summary style="list-style:none;display:none">
-          $maybe descr <- descr
-            <div style="padding:16px">
-              #{preEscapedToMarkup $ unTextarea descr}
-
-        <div.mdc-card__actions>
-          <div.mdc-card__action-buttons>
-            <button.mdc-card__action.mdc-card__action-button.mdc-button.mdc-button--unelevated type=submit
-              name=#{name} value=#{pack $ show $ fromSqlKey oid}>
-              <span.mdc-button__ripple>
-              <span.mdc-button__focus-ring>
-              <span.mdc-button__label>_{MsgBookAppointment}
+              <span.mdc-list-item__end>
+                <i.material-symbols-outlined>arrow_forward_ios
+            $maybe attribution <- attrib
+              <div style="position:relative">
+                <div style="position:absolute;bottom:0;left:4px;font-size:0.5rem;line-height:1">
+                  ^{attribution}
+            
+            <div.mdc-list-divider role=separator>

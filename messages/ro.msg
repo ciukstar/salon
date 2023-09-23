@@ -1,3 +1,4 @@
+NoOffersYet: Nu există încă oferte
 ChoosePhoto: Alege foto
 ChooseImage: Alege imagine
 Attribution: Atribuire
