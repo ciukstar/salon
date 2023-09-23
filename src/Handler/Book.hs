@@ -14,6 +14,8 @@ module Handler.Book
   , getBookCustomerR
   , postBookCustomerR
   , getBookEndR
+  , getBookSearchR
+  , postBookSearchR
   , sessKeyBooking
   ) where
 
@@ -38,7 +40,7 @@ import Yesod.Core
     ( Yesod(defaultLayout), YesodRequest (reqGetParams)
     , getYesod, languages, whamlet, setUltDestCurrent, getMessages
     , redirect, getRequest, addMessageI, deleteSession, lookupSession
-    , setSession, MonadIO (liftIO), getPostParams
+    , setSession, MonadIO (liftIO), getPostParams, newIdent
     )
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Auth (maybeAuth, Route (LoginR))
@@ -49,8 +51,10 @@ import Yesod.Form.Types
     , FieldView (fvInput, fvErrors, fvId, fvLabel)
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
     )
-import Yesod.Form.Fields (timeField, dayField, textField, intField)
-import Yesod.Form.Functions (mreq, check, mopt, runFormPost, generateFormPost, checkM)
+import Yesod.Form.Fields
+    ( timeField, dayField, textField, intField, searchField, Textarea (Textarea))
+import Yesod.Form.Functions
+    ( mreq, check, mopt, runFormPost, generateFormPost, checkM)
 import Yesod.Form.Input (runInputPost, iopt, runInputGet)
 import Settings (widgetFile)
 
@@ -59,10 +63,11 @@ import Database.Persist ( Entity(Entity), PersistStoreWrite (insert) )
 import Database.Persist.Sql ( fromSqlKey, toSqlKey, SqlBackend )
 
 import Database.Esqueleto.Experimental
-    ( select, from, table, where_, innerJoin, on
-    , (^.), (?.), (==.), (:&)((:&))
+    ( select, from, table, where_, innerJoin, on, upper_, like
+    , (^.), (?.), (||.), (==.), (:&)((:&)), (++.), (%)
     , orderBy, asc, desc, in_, valList, leftJoin, val
-    , selectOne, exists, not_, except_, subSelectList, just, Value (unValue)
+    , selectOne, exists, not_, except_, subSelectList, just
+    , Value (unValue)
     )
 
 import Foundation
@@ -71,6 +76,7 @@ import Foundation
       ( AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR, AccountR
       , HomeR, AppointmentR, ProfileR, ServiceThumbnailR
       , BookOffersR, BookStaffR, BookTimeR, BookCustomerR, BookEndR
+      , BookSearchR
       )
     , AdminR (AdmStaffPhotoR)
     , AppMessage
@@ -86,7 +92,7 @@ import Foundation
       , MsgYouSuccessfullyCreatedYourBooking, MsgShowDetails
       , MsgBookNewAppointment, MsgBookingSequenceRestarted, MsgThumbnail
       , MsgAppointmentDayIsInThePast, MsgAppointmentTimeIsInThePast
-      , MsgTimezone, MsgMinutes
+      , MsgTimezone, MsgMinutes, MsgSearch, MsgNoServicesFound
       )
     )
 
@@ -98,10 +104,49 @@ import Model
       ( StaffId, RoleId, ServiceId, OfferService, ServicePublished, BookId
       , ServiceName, RoleStaff, RoleRating, RoleService, OfferId, BookOffer
       , BookUser, BookRole, ThumbnailService, ThumbnailAttribution
+      , ServiceOverview, ServiceDescr
       )
     )
 
 import Menu (menu)
+
+
+postBookSearchR :: Handler Html
+postBookSearchR = do
+    formSearch <- newIdent
+    mq <- runInputGet $ iopt (searchField True) "q"
+    scrollY <- filter ((== "y") . fst) <$> getPostParams
+    oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
+    offers <- runDB $ queryOffers mq []
+    ioffers <- runDB $ queryItems mq (toSqlKey . read . unpack . snd <$> oids)
+    ((fr,fw),et) <- runFormPost $ formOffers ioffers offers
+    case fr of
+      FormSuccess items -> do
+          setSession sessKeyBooking "BOOKING_START"
+          redirect ( BookStaffR
+                   , scrollY <> ((\((_,Entity oid _),_) -> ("oid",pack $ show $ fromSqlKey oid)) <$> items)
+                   )
+      _ -> do
+          msgs <- getMessages
+          let items = ioffers
+          defaultLayout $ do
+              setTitleI MsgSearch
+              $(widgetFile "book/search/banner")
+
+
+getBookSearchR :: Handler Html
+getBookSearchR = do
+    formSearch <- newIdent
+    mq <- runInputGet $ iopt (searchField True) "q" 
+    oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
+    offers <- runDB $ queryOffers mq []
+    items <- runDB $ queryItems mq (toSqlKey . read . unpack . snd <$> oids)
+    (fw,et) <- generateFormPost $ formOffers items offers
+    msgs <- getMessages
+    setUltDestCurrent
+    defaultLayout $ do
+        setTitleI MsgSearch
+        $(widgetFile "book/search/search")
 
 
 getBookEndR :: Handler Html
@@ -139,7 +184,7 @@ postBookCustomerR = do
           times <- filter ((== "time") . fst) . reqGetParams <$> getRequest
           tzs <- filter ((== "tz") . fst) . reqGetParams <$> getRequest
           user <- maybeAuth
-          ioffers <- runDB $ queryOffers (toSqlKey . read . unpack . snd <$> oids)
+          ioffers <- runDB $ queryOffers Nothing (toSqlKey . read . unpack . snd <$> oids)
           irole <- runDB $ queryRole (toSqlKey . read . unpack . snd <$> LS.head rids)
           ((fr,fw),et) <- runFormPost $ formCustomer user Nothing Nothing Nothing ioffers ioffers irole (maybeToList irole)
           case fr of
@@ -164,7 +209,7 @@ getBookCustomerR = do
     dates <- filter ((== "date") . fst) . reqGetParams <$> getRequest
     times <- filter ((== "time") . fst) . reqGetParams <$> getRequest
     tzs <- filter ((== "tz") . fst) . reqGetParams <$> getRequest
-    items <- runDB $ queryItems (toSqlKey . read . unpack . snd <$> oids)
+    items <- runDB $ queryItems Nothing (toSqlKey . read . unpack . snd <$> oids)
     role <- runDB $ selectOne $ do
         x :& s <- from $ table @Role `innerJoin` table @Staff `on` (\(x :& s) -> x ^. RoleStaff ==. s ^. StaffId)
         where_ $ x ^. RoleId `in_` valList (toSqlKey . read . unpack . snd <$> rids)
@@ -193,7 +238,7 @@ postBookTimeR = do
           oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
           rids <- filter ((== "rid") . fst) . reqGetParams <$> getRequest
           user <- maybeAuth
-          ioffers <- runDB $ queryOffers (toSqlKey . read . unpack . snd <$> oids)
+          ioffers <- runDB $ queryOffers Nothing (toSqlKey . read . unpack . snd <$> oids)
           irole <- runDB $ queryRole (toSqlKey . read . unpack . snd <$> LS.head rids)
           ((fr,fw),et) <- runFormPost $ formTime Nothing Nothing Nothing ioffers ioffers irole (maybeToList irole)
           msgs <- getMessages
@@ -216,7 +261,7 @@ getBookTimeR = do
     date <- (read . unpack <$>) <$> runInputGet (iopt textField "date")
     time <- (read . unpack <$>) <$> runInputGet (iopt textField "time")
     tz <- (minutesToTimeZone <$>) <$> runInputGet (iopt intField "tz")
-    items <- runDB $ queryItems (toSqlKey . read . unpack . snd <$> oids)
+    items <- runDB $ queryItems Nothing (toSqlKey . read . unpack . snd <$> oids)
     role <- runDB $ selectOne $ do
         x :& s <- from $ table @Role `innerJoin` table @Staff `on` (\(x :& s) -> x ^. RoleStaff ==. s ^. StaffId)
         where_ $ x ^. RoleId `in_` valList (toSqlKey . read . unpack . snd <$> rids)
@@ -241,7 +286,7 @@ postBookStaffR = do
           user <- maybeAuth
           scrollY <- filter ((== "scrollY") . fst) . reqGetParams <$> getRequest
           oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
-          offers <- runDB $ queryOffers (toSqlKey . read . unpack . snd <$> oids)
+          offers <- runDB $ queryOffers Nothing (toSqlKey . read . unpack . snd <$> oids)
           roles <- runDB $ queryRoles (fst <$> offers)
           ((fr,fw),et) <- runFormPost $ formStaff [] offers Nothing roles
           msgs <- getMessages
@@ -264,7 +309,7 @@ getBookStaffR = do
     scrollY <- filter ((== "scrollY") . fst) . reqGetParams <$> getRequest
     oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
     rids <- filter ((== "rid") . fst) . reqGetParams <$> getRequest
-    items <- runDB $ queryOffers (toSqlKey . read . unpack . snd <$> oids)
+    items <- runDB $ queryOffers Nothing (toSqlKey . read . unpack . snd <$> oids)
     roles <- runDB $ queryRoles (fst <$> items)
     role <- runDB $ queryRole (toSqlKey . read . unpack . snd <$> rids)
     (fw,et) <- generateFormPost $ formStaff items items role roles
@@ -280,8 +325,8 @@ postBookOffersR = do
     scrollY <- filter ((== "scrollY") . fst) <$> getPostParams
     oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
     user <- maybeAuth
-    offers <- runDB $ queryOffers []
-    ioffers <- runDB $ queryItems (toSqlKey . read . unpack . snd <$> oids)
+    offers <- runDB $ queryOffers Nothing []
+    ioffers <- runDB $ queryItems Nothing (toSqlKey . read . unpack . snd <$> oids)
     ((fr,fw),et) <- runFormPost $ formOffers ioffers offers
     case fr of
       FormSuccess items -> do
@@ -302,8 +347,8 @@ getBookOffersR = do
     scrollY <- runInputGet (iopt textField "scrollY")
     oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
     user <- maybeAuth
-    offers <- runDB $ queryOffers []
-    items <- runDB $ queryItems (toSqlKey . read . unpack . snd <$> oids)
+    offers <- runDB $ queryOffers Nothing []
+    items <- runDB $ queryItems Nothing (toSqlKey . read . unpack . snd <$> oids)
     (fw,et) <- generateFormPost $ formOffers items offers
     msgs <- getMessages
     setUltDestCurrent
@@ -664,24 +709,34 @@ queryRoles services = select $ do
     return (e,x)
 
 
-queryItems :: [OfferId] -> ReaderT SqlBackend Handler [((Entity Service, Entity Offer),Maybe Html)]
-queryItems oids = (second (join . unValue) <$>) <$> ( select $ do
+queryItems :: Maybe Text -> [OfferId] -> ReaderT SqlBackend Handler [((Entity Service, Entity Offer),Maybe Html)]
+queryItems mq oids = (second (join . unValue) <$>) <$> ( select $ do
     x :& o :& t <- from $ table @Service `innerJoin` table @Offer
         `on` (\(x :& o) -> x ^. ServiceId ==. o ^. OfferService)
         `leftJoin` table @Thumbnail `on` (\(x :& _ :& t) -> just (x ^. ServiceId) ==. t ?. ThumbnailService)
     where_ $ x ^. ServicePublished
+    case mq of
+      Just q -> where_ $ ( upper_ (x ^. ServiceName) `like` (%) ++. upper_ (val q) ++. (%) )
+          ||. ( upper_ (x ^. ServiceOverview) `like` (%) ++. upper_ (just (val q)) ++. (%) )
+          ||. ( upper_ (x ^. ServiceDescr) `like` (%) ++. upper_ (just (val (Textarea q))) ++. (%) )
+      _ -> return ()
     when (null oids) $ where_ $ val False
     unless (null oids) $ where_ $ o ^. OfferId `in_` valList oids
     orderBy [asc (x ^. ServiceName), asc (o ^. OfferId)]
     return ((x,o),t ?. ThumbnailAttribution) )
 
 
-queryOffers :: [OfferId] -> ReaderT SqlBackend Handler [((Entity Service, Entity Offer),Maybe Html)]
-queryOffers oids = (second (join . unValue) <$>) <$> ( select $ do
+queryOffers :: Maybe Text -> [OfferId] -> ReaderT SqlBackend Handler [((Entity Service, Entity Offer),Maybe Html)]
+queryOffers mq oids = (second (join . unValue) <$>) <$> ( select $ do
     x :& o :& t <- from $ table @Service `innerJoin` table @Offer
         `on` (\(x :& o) -> x ^. ServiceId ==. o ^. OfferService)
         `leftJoin` table @Thumbnail `on` (\(x :& _ :& t) -> just (x ^. ServiceId) ==. t ?. ThumbnailService)
     where_ $ x ^. ServicePublished
+    case mq of
+      Just q -> where_ $ ( upper_ (x ^. ServiceName) `like` (%) ++. upper_ (val q) ++. (%) )
+          ||. ( upper_ (x ^. ServiceOverview) `like` (%) ++. upper_ (just (val q)) ++. (%) )
+          ||. ( upper_ (x ^. ServiceDescr) `like` (%) ++. upper_ (just (val (Textarea q))) ++. (%) )
+      _ -> return ()
     unless (null oids) $ where_ $ o ^. OfferId `in_` valList oids
     orderBy [asc (x ^. ServiceName), asc (o ^. OfferId)]
     return ((x,o),t ?. ThumbnailAttribution) )

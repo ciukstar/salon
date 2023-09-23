@@ -1,0 +1,71 @@
+<form method=get action=@{BookSearchR} ##{formSearch}>
+
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--no-label data-mdc-auto-init=MDCTextField
+      .mdc-text-field--with-leading-icon.mdc-text-field--with-trailing-icon #labelSearch>
+      <span.mdc-text-field__ripple>
+      <div.mdc-touch-target-wrapper style="align-self:center">
+        <a.mdc-icon-button.mdc-theme--text-primary-on-light href=@{BookOffersR} role=button tabindex=0>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>arrow_back
+          <div.mdc-icon-button__touch>
+      $maybe q <- mq
+        <input.mdc-text-field__input type=search name=q form=#{formSearch} value=#{q} placeholder=_{MsgSearch} autofocus>
+      $nothing
+        <input.mdc-text-field__input type=search name=q form=#{formSearch} placeholder=_{MsgSearch} autofocus>
+      <div.mdc-touch-target-wrapper style="align-self:center">
+        <button.mdc-icon-button.mdc-theme--text-primary-on-light type=submit form=#{formSearch} tabindex=0>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>search
+          <div.mdc-icon-button__touch>
+      <div.mdc-line-ripple data-mdc-auto-init=MDCLineRipple>
+      
+<main.mdc-top-app-bar--fixed-adjust>
+
+  $if null offers
+    <figure style="text-align:center">
+      <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
+      <figcaption>
+        _{MsgNoServicesFound}.
+  $else
+    <form method=post action=@?{(BookSearchR,oids)} enctype=#{et} #formOffers novalidate>
+      ^{fw}
+
+$if not (null offers)
+  <footer>
+    <div #footerContent>
+      <section #footerSectionStart>
+        <div #footerBookCountLabel>
+          <span #footerBookCount>#{length items}
+          <span>_{MsgServices}
+        $with amount <- show $ amount items
+          <div #footerBookAmount>
+            $maybe ((_,Entity _ (Offer _ _ _ prefix _ _)),_) <- LS.head offers
+              $maybe prefix <- prefix
+                #{prefix}
+            <span data-amount=#{amount}>#{amount}
+            $maybe ((_,Entity _ (Offer _ _ _ prefix suffix _)),_) <- LS.head offers
+              $maybe _ <- prefix
+              $nothing
+                $maybe suffix <- suffix
+                  #{suffix}
+      <section #footerSectionEnd>
+        <button.mdc-button.mdc-button--raised.mdc-button--icon-trailing
+          type=submit form=formOffers name=scrollY onclick="this.value = window.scrollY">
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgContinue}
+          <i.mdc-button__icon.material-symbols-outlined>arrow_forward_ios
+
+$forall (_,msg) <- msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
+    <div.mdc-snackbar__surface>
+      <div.mdc-snackbar__label>#{msg}
+      <div.mdc-snackbar__actions>
+        <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>close

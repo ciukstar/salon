@@ -55,7 +55,7 @@ import Handler.Book
     , getBookStaffR, postBookStaffR
     , getBookTimeR, postBookTimeR
     , getBookCustomerR, postBookCustomerR
-    , getBookEndR
+    , getBookEndR, getBookSearchR, postBookSearchR
     )
 import Handler.AboutUs (getAboutUsR)
 import Handler.Services

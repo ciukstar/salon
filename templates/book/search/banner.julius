@@ -1,0 +1,10 @@
+
+window.mdc.autoInit();
+
+Array.from(
+  document.querySelectorAll('div.mdc-banner')
+).forEach(function (x) { x.MDCBanner.open(); });
+
+Array.from(
+  document.querySelectorAll('aside.mdc-snackbar')
+).forEach(function (x) { x.MDCSnackbar.open(); });

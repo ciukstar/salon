@@ -13,7 +13,7 @@
           _{MsgChooseServicesToBook}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
-      <a.mdc-top-app-bar__action-item.mdc-icon-button href=# role=button>
+      <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{BookSearchR} role=button>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>search
