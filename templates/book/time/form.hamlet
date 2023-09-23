@@ -47,10 +47,20 @@
   <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
     <span.mdc-list-item__ripple>
     <span.mdc-list-item__start>
-      <i.material-symbols-outlined>info
+      <i.material-symbols-outlined>counter_2
     <span.mdc-list-item__content>
       <div.mdc-list-item__primary-text>
-        _{MsgSelectedStaff}
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span>_{MsgSelectedStaff}
+          <span style="padding:2px 4px;line-height:1;border-radius:25%;background-color:var(--mdc-theme-primary)">
+            <small>
+              $case (role,roleR)
+                $of (Just _,_)
+                  1
+                $of (_,FormSuccess (Just _))
+                  1
+                $of _
+                  &varnothing;
     <span.mdc-list-item__end>
       <i.expand.material-symbols-outlined>expand_more
   ^{fvInput roleV}
@@ -60,10 +70,18 @@
   <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
     <span.mdc-list-item__ripple>
     <span.mdc-list-item__start>
-      <i.material-symbols-outlined>info
+      <i.material-symbols-outlined>counter_1
     <span.mdc-list-item__content>
       <div.mdc-list-item__primary-text>
-        _{MsgSelectedServices}
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span>_{MsgSelectedServices}
+          <span style="padding:2px 4px;line-height:1;border-radius:25%;background-color:var(--mdc-theme-primary)">
+            <small>
+              $case offersR
+                $of FormSuccess xs
+                  #{length xs}
+                $of _
+                  #{length items}
     <span.mdc-list-item__end>
       <i.expand.material-symbols-outlined>expand_more
   ^{fvInput offersV}

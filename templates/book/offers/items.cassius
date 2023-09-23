@@ -3,5 +3,8 @@ ul.mdc-list##{theId}
     span.mdc-list-item__content
       div.mdc-list-item__primary-text
         color: var(--theme-accent)
+      div.mdc-list-item__secondary-text
+        color: var(--theme-accent)
+        opacity: 0.6
       
   

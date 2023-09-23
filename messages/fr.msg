@@ -178,3 +178,5 @@ MetaDescription: Application de salon de beauté
 
 Documentation: Documentation
 Doc001: L'application "Salon" offre la possibilité de publier et d'annoncer les services des propriétaires de salons de beauté sur le Web.
+
+Doc002 hrefServices: Les services à annoncer sont définis dans la section <a href=#{hrefServices}>« Services »</a> du groupe « Données ». Si nécessaire, les services peuvent être définis comme une hiérarchie de groupes et de sous-services.

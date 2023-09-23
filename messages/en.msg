@@ -177,4 +177,6 @@ MetaKeywords: beauty, salon, application
 MetaDescription: Beauty Salon Application
 
 Documentation: Docs
-Doc001: The "Salon" application provides the ability to publish and advertise the services of beauty salon owners on the web.
+Doc001: The application "Salon" provides the ability to publish and advertise the services of beauty salon owners on the web.
+
+Doc002 hrefServices@Text: The services to be advertised are defined in section <a href=#{hrefServices}>"Services"</a> of group "Data". Optionally, services can be defined as a hierarchy of groups and subservices.

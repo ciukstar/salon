@@ -178,3 +178,5 @@ MetaDescription: Aplicația salon de frumusețe
 
 Documentation: Documentație
 Doc001: Aplicația „Salon” oferă posibilitatea de a publica și de a face publicitate serviciilor proprietarilor de saloane de înfrumusețare pe web.
+
+Doc002 hrefServices: Serviciile care vor fi promovate sunt definite în secțiunea <a href=#{hrefServices}>„Servicii”</a> din grupul „Date”. Dacă este necesar, serviciile pot fi definite ca o ierarhie de grupuri și subservicii.

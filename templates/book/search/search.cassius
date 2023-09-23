@@ -9,6 +9,25 @@ header
       border-bottom-color: var(--theme-accent)
 main
   margin-bottom: 4rem
+  #toolbarActions
+    padding: 1rem
+    display: flex
+    flex-direction: row
+    flex-wrap: nowrap
+    overflow-x: auto
+    overflow-y: hidden
+    gap: 0.5rem
+    button
+      box-sizing: content-box
+      .badge
+        height: 1rem
+        width: 1rem
+        line-height: 1rem
+        font-size: 0.8rem
+        margin-left: 0.5rem
+        border-radius: 50%
+        padding: 2px
+        background-color: var(--mdc-theme-primary)
 
 footer
   position: fixed
@@ -30,3 +49,11 @@ footer
 
 aside.mdc-snackbar
   bottom: calc(4rem + 8px)
+
+div.mdc-dialog
+  div.mdc-dialog__content
+    display: flex
+    flex-direction: column
+  div.mdc-dialog__actions
+    margin: 0 1rem 1rem 0
+    gap: 0.5rem

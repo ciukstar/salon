@@ -22,6 +22,8 @@
 <main.mdc-top-app-bar--prominent-fixed-adjust>
   <div.mdc-typography--headline4>_{MsgAppName}
   <p>_{MsgDoc001}
+  <div.mdc-typography--headline4>_{MsgOverview}
+  <p>#{preEscapedToMarkup $ renderMessage app langs (MsgDoc002 (rndr $ AdminR $ AdmServicesR (Services []))) }
   
   <div.mdc-typography--headline4>
     _{MsgErdDiagram}

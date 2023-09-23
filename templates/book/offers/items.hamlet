@@ -1,19 +1,13 @@
  
 <ul.mdc-list ##{theId} role=listbox aria-multiselectable=true tabindex=-1 data-mdc-auto-init=MDCList>
-  $forall e@((Entity _ (Service sname _ _ duration _ _),Entity oid (Offer _ pname price prefix suffix _)),_) <- options
+  $forall e@((Entity sid (Service sname _ _ duration _ _),Entity oid (Offer _ pname price pref suff _)),attrib) <- options
     $with checked <- isChecked vals e
       <li.mdc-list-item tabindex=-1 role=option data-amount=#{show price}
-        .mdc-list-item--with-leading-checkbox.mdc-list-item--with-three-lines
+        .mdc-list-item--with-leading-image.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-checkbox
         :checked:aria-checked=true :not checked:aria-checked=false ##{pack $ show $ fromSqlKey oid}>
         <span.mdc-list-item__ripple>
         <span.mdc-list-item__start>
-          <div.mdc-checkbox :checked:checked tabindex=-1 data-mdc-auto-init=MDCCheckbox>
-            <input.mdc-checkbox__native-control type=checkbox name=#{name} value=#{fromSqlKey oid} *{attrs}
-              :checked:checked>
-            <div.mdc-checkbox__background>
-              <svg.mdc-checkbox__checkmark viewBox="0 0 24 24">
-                <path.mdc-checkbox__checkmark-path fill=none d="M1.73,12.91 8.1,19.28 22.79,4.59">
-              <div.mdc-checkbox__mixedmark>
+          <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail} loading=lazy>
         <span.mdc-list-item__content>
           <div.mdc-list-item__primary-text>
             #{sname}
@@ -26,10 +20,24 @@
 
           <div.mdc-list-item__secondary-text style="white-space:nowrap">
             #{pname}: 
-            $maybe prefix <- prefix
+            $maybe prefix <- pref
               #{prefix}
             $with amount <- show price
               <span data-amount=#{amount}>#{amount}
-            $maybe suffix <- suffix
+            $maybe suffix <- suff
               #{suffix}
+
+        <span.mdc-list-item__end>
+          <div.mdc-checkbox :checked:checked tabindex=-1 data-mdc-auto-init=MDCCheckbox>
+            <input.mdc-checkbox__native-control type=checkbox name=#{name} value=#{fromSqlKey oid} *{attrs}
+              :checked:checked>
+            <div.mdc-checkbox__background>
+              <svg.mdc-checkbox__checkmark viewBox="0 0 24 24">
+                <path.mdc-checkbox__checkmark-path fill=none d="M1.73,12.91 8.1,19.28 22.79,4.59">
+              <div.mdc-checkbox__mixedmark>
+      
+      $maybe attribution <- attrib
+        <div style="position:relative">
+          <div style="position:absolute;bottom:0;left:4px;font-size:0.5rem;line-height:1">
+            ^{attribution}
       <li.mdc-list-divider role=separator>

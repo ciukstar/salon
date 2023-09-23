@@ -36,9 +36,13 @@
         .mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
         <span.mdc-list-item__ripple>
         <span.mdc-list-item__start>
-          <i.material-symbols-outlined>info
+          <i.material-symbols-outlined>counter_4
         <span.mdc-list-item__content>
-          <div.mdc-list-item__primary-text>_{MsgCustomer}
+          <div.mdc-list-item__primary-text>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span>_{MsgCustomer}
+              <span style="padding:2px 4px;line-height:1;border-radius:25%;background-color:var(--mdc-theme-primary)">
+                <small>&check;
         <span.mdc-list-item__end>
           <i.expand.material-symbols-outlined>expand_less
       <div.mdc-list-item.mdc-list-item--with-leading-image.mdc-list-item--with-three-lines>

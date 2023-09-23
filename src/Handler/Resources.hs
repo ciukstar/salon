@@ -3,7 +3,11 @@
 module Handler.Resources (getDocsR) where
 
 import Text.Hamlet (Html)
-import Yesod.Core (Yesod(defaultLayout), setUltDestCurrent)
+import Text.Shakespeare.I18N (renderMessage)
+import Yesod.Core
+    ( Yesod(defaultLayout), setUltDestCurrent, getYesod, languages
+    , getUrlRender, preEscapedToMarkup
+    )
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Core.Handler (getMessages)
 import Settings (widgetFile)
@@ -13,13 +17,16 @@ import Foundation
     ( Handler
     , Route
       ( StaticR, AuthR, PhotoPlaceholderR, AccountPhotoR
-      , ProfileR
+      , ProfileR, AdminR
       )
+    , AdminR (AdmServicesR)
     , AppMessage
-      ( MsgDocumentation, MsgErdDiagram, MsgPhoto
-      , MsgAppName, MsgDoc001, MsgBookingStateDiagram
+      ( MsgDocumentation, MsgErdDiagram, MsgBookingStateDiagram, MsgPhoto
+      , MsgAppName, MsgOverview, MsgDoc001, MsgDoc002
       )
     )
+
+import Model (Services (Services))
     
 import Settings.StaticFiles (img_Salon_ERD_svg, img_Booking_State_Diagram_svg)
 
@@ -28,6 +35,9 @@ import Menu (menu)
 
 getDocsR :: Handler Html
 getDocsR = do
+    app <- getYesod
+    langs <- languages
+    rndr <- getUrlRender
     user <- maybeAuth
     setUltDestCurrent
     msgs <- getMessages

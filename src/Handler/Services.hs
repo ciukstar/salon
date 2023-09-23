@@ -257,8 +257,10 @@ getServicesSearchR = do
         
     groups <- runDB $ select $ do
         x <- from $ table @Service
+        where_ $ x ^. ServicePublished
         where_ $ exists $ do
             y <- from $ table @Service
+            where_ $ y ^. ServicePublished
             where_ $ y ^. ServiceGroup ==. just (x ^. ServiceId)
         return x
     defaultLayout $ do
