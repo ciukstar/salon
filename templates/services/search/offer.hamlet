@@ -1,12 +1,13 @@
 <header.mdc-top-app-bar.mdc-top-app-bar--fixed mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      $with stati <- catMaybes (((qs ++ cs) ++ ys) ++ [Just ("sid",pack $ show $ fromSqlKey sid)])
-        <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=@?{(ServicesSearchR,stati)} role=button>
+      $with stati <- catMaybes (((qs ++ cs) ++ ys) ++ [Just ("oid",pack $ show $ fromSqlKey oid)])
+        <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button
+          href=@?{(ServiceSearchOffersR (Services (init sids)),stati)}>
           <span.mdc-icon-button__ripple>
           <spam.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>arrow_back
-        <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgOffer}
+        <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgOffers}
 
 <main.mdc-top-app-bar--fixed-adjust>
 

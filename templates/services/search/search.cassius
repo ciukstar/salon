@@ -28,6 +28,14 @@ main
         border-radius: 50%
         padding: 2px
         background-color: var(--mdc-theme-primary)
+  .mdc-list
+    .mdc-list-item--activated
+      .mdc-list-item__primary-text
+        color: var(--theme-accent)
+      .mdc-list-item__secondary-text
+        color: var(--theme-accent)
+        opacity: 0.6
+
 div.mdc-dialog
   div.mdc-dialog__content
     display: flex

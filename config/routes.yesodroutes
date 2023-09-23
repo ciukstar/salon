@@ -13,7 +13,8 @@
 
 /aboutus AboutUsR GET
 
-/offers/#OfferId/+Services OfferR GET
+/search/offers/#OfferId/+Services OfferSearchR GET
+/offers/#OfferId/+Services        OfferR       GET
 
 /search/service-offers/+Services ServiceSearchOffersR GET
 /search/service/+Services 	 ServiceSearchR	      GET

@@ -47,11 +47,11 @@
     <nav.mdc-list data-mdc-auto-init=MDCList>
       $forall ((Entity sid (Service sname _ _ _ _ _),noffers),attrib) <- services
         <a.mdc-list-item 
-          :False:href=@{ServiceR $ Services [sid]}
-          :noffers /= 1:href=@{ServiceSearchOffersR (Services [sid])}
-          :noffers == 1:href=@{ServiceSearchR (Services [sid])}
+          :noffers /= 1:href=@?{(ServiceSearchOffersR (Services [sid]),qs ++ cs)}
+          :noffers == 1:href=@?{(ServiceSearchR (Services [sid]),qs ++ cs)}
+          :msid == Just sid:.mdc-list-item--activated
           .mdc-list-item--with-one-line.mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon
-          onclick="this.href = `${this.href}?scrollY=${window.scrollY}`">
+          onclick="this.href = [new window.URL(this.href)].map(x => {x.searchParams.append('y',window.scrollY); return x.href;})[0]">
           <span.mdc-list-item__ripple>
           <span.mdc-list-item__start>
             <img src=@{ServiceThumbnailR sid} height=56 width=56 loading=lazy

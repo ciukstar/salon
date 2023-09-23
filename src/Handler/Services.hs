@@ -14,6 +14,7 @@ module Handler.Services
   , getServicesSearchR
   , getServiceSearchR
   , getServiceSearchOffersR
+  , getOfferSearchR
   ) where
 
 import Control.Monad (forM, join)
@@ -50,9 +51,9 @@ import Foundation
     ( Handler, Widget
     , Route
       ( AuthR, AccountPhotoR, PhotoPlaceholderR, ServicesR
-      , ServiceR, ServiceThumbnailR, StaticR
-      , ProfileR, BookStaffR, ServiceOffersR, OfferR
-      , ServicesSearchR, ServiceSearchR, ServiceSearchOffersR
+      , ServiceR, ServiceThumbnailR, StaticR, ProfileR, BookStaffR
+      , ServiceOffersR, OfferR, ServicesSearchR, ServiceSearchR
+      , ServiceSearchOffersR, OfferSearchR
       )
     , AppMessage
       ( MsgServices, MsgPhoto, MsgThumbnail, MsgNoServicesYet
@@ -135,9 +136,30 @@ getServiceOffersR (Services sids) = do
         $(widgetFile "services/offers")
 
 
+getOfferSearchR :: OfferId -> Services -> Handler Html
+getOfferSearchR oid (Services sids) = do
+    qs <- (Just <$>) . filter ((== "q") . fst) . reqGetParams <$> getRequest
+    cs <- (Just <$>) . filter ((== "categ") . fst) . reqGetParams <$> getRequest
+    ys <- (Just <$>) . filter ((== "y") . fst) . reqGetParams <$> getRequest
+    offers <- ((\((a,b),c) -> (a,b,c)) . second (join . unValue) <$>) <$> runDB ( select $ do
+        x :& s :& t <- from $ table @Offer `innerJoin` table @Service
+            `on` (\(x :& s) -> x ^. OfferService ==. s ^. ServiceId)
+            `leftJoin` table @Thumbnail `on` (\(_ :& s :& t) -> just (s ^. ServiceId) ==. t ?. ThumbnailService)
+        where_ $ x ^. OfferId ==. val oid
+        where_ $ s ^. ServicePublished
+        return ((s,x),t ?. ThumbnailAttribution) )
+
+    (fw,et) <- generateFormPost $ formOffer offers
+
+    defaultLayout $ do
+        setTitleI MsgOffers
+        $(widgetFile "services/search/offer")
+
+
 getServiceSearchOffersR :: Services -> Handler Html
 getServiceSearchOffersR (Services sids) = do
-    let open = Just . ("o",) . pack . show . fromSqlKey <$> sids
+    qs <- (Just <$>) . filter ((== "q") . fst) . reqGetParams <$> getRequest
+    cs <- (Just <$>) . filter ((== "categ") . fst) . reqGetParams <$> getRequest
     ys <- (Just <$>) . filter ((== "y") . fst) . reqGetParams <$> getRequest
     let scrollY = case ys of _:y:_ -> snd <$> y; _ -> Nothing
     let sid = last sids
@@ -181,7 +203,8 @@ getServiceSearchOffersR (Services sids) = do
 
 getServiceSearchR :: Services -> Handler Html
 getServiceSearchR (Services sids) = do
-    let os = Just . ("o",) . pack . show . fromSqlKey <$> sids
+    qs <- (Just <$>) . filter ((== "q") . fst) . reqGetParams <$> getRequest
+    cs <- (Just <$>) . filter ((== "categ") . fst) . reqGetParams <$> getRequest
     ys <- (Just <$>) . filter ((== "y") . fst) . reqGetParams <$> getRequest
     let sid = last sids
 
@@ -204,8 +227,12 @@ getServicesSearchR :: Handler Html
 getServicesSearchR = do
     formSearch <- newIdent
     dlgCategList <- newIdent
+    qs <- filter ((== "q") . fst) . reqGetParams <$> getRequest
+    cs <- filter ((== "categ") . fst) . reqGetParams <$> getRequest
     mq <- runInputGet $ iopt (searchField True) "q"
     categs <- (toSqlKey . read . unpack . snd <$>) . filter ((== "categ") . fst) . reqGetParams <$> getRequest
+    scrollY <- runInputGet $ iopt textField "y"
+    msid <- (toSqlKey <$>) <$> runInputGet (iopt intField "sid")
     services <- (bimap (second unValue) unValue <$>) <$> runDB ( select $ do
         x <- from $ table @Service
         let n :: SqlExpr (Value Int)

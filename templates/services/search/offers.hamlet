@@ -1,7 +1,7 @@
 <header.mdc-top-app-bar.mdc-top-app-bar--fixed mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      $with stati <- catMaybes ((open ++ LS.head ys) ++ [Just ("sid",pack $ show $ fromSqlKey sid)])
+      $with stati <- catMaybes (((qs ++ cs) ++ LS.head ys) ++ [Just ("sid",pack $ show $ fromSqlKey sid)])
         <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button
           href=@?{(ServicesSearchR,stati)}>
           <span.mdc-icon-button__ripple>
@@ -56,7 +56,7 @@
                 _{MsgNoOffersYet}.
           $forall ((Entity oid (Offer _ oname price prefix suffix _),Entity sid (Service sname _ _ _ _ _)),attrib) <- offers
             <a.mdc-list-item role=menuitem 
-              href=@?{(OfferR oid (Services (sids ++ [sid])),catMaybes ys)}
+              href=@?{(OfferSearchR oid (Services (sids ++ [sid])),catMaybes ((qs ++ cs) ++ ys))}
               .mdc-list-item--with-leading-image.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon
               :moid == Just oid:.mdc-list-item--activated
               onclick="this.href = [new window.URL(this.href)].map(x => {x.searchParams.append('y',window.scrollY); return x.href;})[0]">

@@ -201,9 +201,8 @@ instance Yesod App where
     isAuthorized ServicesSearchR _ = return Authorized
     isAuthorized (ServiceSearchR _) _ = return Authorized
     isAuthorized (ServiceSearchOffersR _) _ = return Authorized
-        
-    
-    
+    isAuthorized (OfferSearchR _ _) _ = return Authorized
+
     isAuthorized AboutUsR _ = return Authorized
     isAuthorized (ResourcesR DocsR) _ = return Authorized
 

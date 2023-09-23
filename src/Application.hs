@@ -63,7 +63,7 @@ import Handler.Services
     , getServiceR, postServiceR
     , getServiceOffersR, getOfferR
     , getServicesSearchR, getServiceSearchR
-    , getServiceSearchOffersR
+    , getServiceSearchOffersR, getOfferSearchR
     )
 import Handler.Account (getProfileR, getAccountR, postAccountR, getAccountPhotoR)
 import Handler.Home (getHomeR)
