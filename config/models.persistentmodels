@@ -4,6 +4,14 @@ Contents
   content Textarea
   UniqueContents section
 
+Hist
+  book BookId
+  logtime LocalTime
+  day Day
+  time TimeOfDay
+  tz TimeZone
+  status BookStatus  
+
 Book
   user UserId OnDeleteCascade
   offer OfferId OnDeleteCascade
@@ -11,6 +19,7 @@ Book
   day Day
   time TimeOfDay
   tz TimeZone
+  status BookStatus
 
 Schedule
   role RoleId OnDeleteCascade

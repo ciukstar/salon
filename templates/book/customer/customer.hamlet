@@ -60,7 +60,7 @@
             $maybe fname <- fname
               #{fname}
 
-      <small style="margin:1rem">
+      <div.hint style="margin:1rem;text-align:end;font-size:small;color:var(--mdc-theme-text-hint-on-background)">
         <span>_{MsgNotYourAccount}?
         <a href=@{AuthR LoginR}>_{MsgLogin}
   $nothing
@@ -70,14 +70,15 @@
         <span.mdc-button__focus-ring>
         <span.mdc-button__label>_{MsgSignUp}
       <div style="display:inherit;flex-direction:inherit">
-        <div style="text-align:center;margin-bottom:0.3rem;color:var(--mdc-theme-text-secondary-on-light);opacity:0.8">
-          <small>_{MsgAlreadyHaveAnAccount}?
+        <div style="text-align:center;margin-bottom:0.3rem">
+          <small.hint style="color:var(--mdc-theme-text-hint-on-background)">_{MsgAlreadyHaveAnAccount}?
         <a.mdc-button.mdc-button--outlined href=@{AuthR LoginR} role=button>
           <span.mdc-button__ripple>
           <span.mdc-button__focus-ring>
           <span.mdc-button__label>_{MsgSignIn}
 
-  <form method=post action=@?{(BookCustomerR,(((oids <> rids) <> dates) <> times))} enctype=#{et} #formCustomer novalidate>
+  <form method=post enctype=#{et} #formCustomer novalidate
+    action=@?{(BookCustomerR,((((oids <> rids) <> dates) <> times) <> tzs))}>
     ^{fw}
 
 <footer #footerActions>

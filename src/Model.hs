@@ -55,6 +55,13 @@ import Database.Persist.Sql (fromSqlKey, toSqlKey, PersistFieldSql, sqlType)
 data ServiceStatus = ServiceStatusPulished | ServiceStatusUnpublished
   deriving (Show, Read, Eq)
 
+data BookStatus = BookStatusRequest
+                | BookStatusConfirmed
+                | BookStatusPaid
+                | BookStatusCancelled
+    deriving (Show, Read, Eq)
+derivePersistField "BookStatus"
+
 data EmplStatus = EmplStatusEmployed | EmplStatusDismissed
     deriving (Show, Read, Eq)
 derivePersistField "EmplStatus"

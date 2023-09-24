@@ -13,8 +13,11 @@ main
       text-align: center
     div.form-field
       display: flex
-      flex-direction: column      
-    p.actions
+      flex-direction: column
+      .mdc-text-field
+        input.mdc-text-field__input
+          caret-color: var(--mdc-theme-text-primary-on-background)
+    div.actions
       display: flex
       flex-direction: row
       justify-content: flex-end

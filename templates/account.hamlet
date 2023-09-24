@@ -9,7 +9,7 @@
 <main.mdc-top-app-bar--fixed-adjust>
   <form method=POST action=@{AccountR} enctype=#{enctype} novalidate>
     ^{widget}
-    <p.actions>
+    <div.actions>
       <a.mdc-button href=#{ult}>
         <span.mdc-button__ripple>
         <span.mdc-button__label>_{MsgCancel}

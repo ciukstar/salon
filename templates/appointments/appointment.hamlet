@@ -5,11 +5,41 @@
         <span.mdc-icon-button__ripple>
         <spam.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
-      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgAppointment}
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
+        _{MsgAppointment}
           
-<main.mdc-top-app-bar--prominent-fixed-adjust>
-  $maybe Entity _ (Book _ _ _ date time _) <- book
-    #{show date} #{show time}
+<main.mdc-top-app-bar--fixed-adjust>
+  $maybe (Entity _ (Book _ _ _ date time _ _),Entity _ (Offer _ oname price pref suff _),Entity sid (Service sname _ _ _ _ _),thumbnail,role,staff) <- book
+    <p #appointmentFullLongTime>
+      #{show date} #{show time}
+    <p>
+      <figure>
+        <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail} loading=lazy>
+        $maybe Entity _ (Thumbnail _ _ _ attrib) <- thumbnail
+          $maybe attribution <- attrib
+            ^{attribution}
+        <figcaption>
+          #{sname}
+    <p>
+      #{oname}: 
+      $maybe prefix <- pref
+        #{prefix}
+      #{show price}
+      $maybe _ <- pref
+      $nothing
+        $maybe suffix <- suff
+          #{suffix}
+          
+    $maybe Entity eid (Staff ename _ _ _ _ _) <- staff
+      <p> 
+        <figure>
+          <img src=@{AdminR $ AdmStaffPhotoR eid} width=56 height=56 alt=_{MsgPhoto} loading=lazy>
+          <figcation>
+            #{ename}
+            $maybe Entity _ (Role _ _ rname _) <- role 
+              (#{rname})
+        
+      
     <p>
       <button.mdc-button.mdc-button--raised type=button>
         <span.mdc-button__ripple>

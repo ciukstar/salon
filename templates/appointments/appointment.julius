@@ -1,0 +1,13 @@
+
+[document.getElementById('appointmentFullLongTime')].filter(x => !!x).forEach(function (x) {
+  x.textContent = new Date(x.textContent).toLocaleDateString(
+    navigator.language,
+    { weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: "numeric",
+      minute: "numeric"
+    }
+  );
+});

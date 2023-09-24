@@ -9,8 +9,10 @@ import Text.Hamlet (shamlet)
 import Text.Shakespeare.Text (st)
 import qualified Data.ByteString.Base64 as B64 (decode)
 import Data.Text.Encoding (decodeUtf8)
-import Data.Time.Clock (DiffTime)
+import Data.Time.Calendar (addGregorianYearsClip, addGregorianMonthsClip)
+import Data.Time.Clock (getCurrentTime, UTCTime (utctDay,utctDayTime), addUTCTime, DiffTime)
 import Data.Time.Format (parseTimeM, defaultTimeLocale)
+import Data.Time.LocalTime (timeToTimeOfDay, utc)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import ClassyPrelude.Yesod (ReaderT)
 import Yesod.Form.Fields (Textarea (Textarea))
@@ -35,6 +37,8 @@ import Model
     , StaffPhoto (StaffPhoto, staffPhotoPhoto, staffPhotoMime, staffPhotoStaff)
     , Role (Role, roleStaff, roleService, roleName, roleRating)
     , Contents (Contents, contentsSection, contentsContent)
+    , BookStatus (BookStatusRequest)
+    , Book (Book, bookUser, bookOffer, bookRole, bookDay, bookTime, bookTz, bookStatus)
     )
 import Data.FileEmbed (embedFile)
 import Demo.DemoPhotos
@@ -44,6 +48,8 @@ import Demo.DemoPhotos
 
 populateEN :: MonadIO m => ReaderT SqlBackend m ()
 populateEN = do
+
+    (now,today,time) <- liftIO $ getCurrentTime >>= \x -> return (x,utctDay x,timeToTimeOfDay (utctDayTime x))
 
     insert_ $ Contents { contentsSection = "CONTACTS"
                        , contentsContent = Textarea [st|
@@ -162,7 +168,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
 
     e3 <- insert $ Staff { staffName = "John Johnson"
                          , staffStatus = EmplStatusEmployed
-                         , staffPhone = Just "0491 570 006"
+                        , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
                          , staffEmail = Just "jjohnson@mail.en"
                          , staffUser = Just u3
@@ -312,12 +318,12 @@ We will continue to offer the latest treatments, the most innovative techniques 
                                       }
 
     e11 <- insert $ Staff { staffName = "Isabel Hughes"
-                         , staffStatus = EmplStatusDismissed
-                         , staffPhone = Just "0491 570 006"
-                         , staffMobile = Just "0491 570 156"
-                         , staffEmail = Just "ihughes@mail.en"
-                         , staffUser = Nothing
-                         }
+                          , staffStatus = EmplStatusDismissed
+                          , staffPhone = Just "0491 570 006"
+                          , staffMobile = Just "0491 570 156"
+                          , staffEmail = Just "ihughes@mail.en"
+                          , staffUser = Nothing
+                          }
 
     case B64.decode woman05 of
       Left _ -> return ()
@@ -350,11 +356,11 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             , serviceGroup = Just s1
                             }
 
-    insert_ $ Role { roleStaff = e1
-                   , roleService = s11
-                   , roleName = "Makeup artist"
-                   , roleRating = Just 5
-                   }
+    r111 <- insert $ Role { roleStaff = e1
+                          , roleService = s11
+                          , roleName = "Makeup artist"
+                          , roleRating = Just 5
+                          }
 
     insert_ $ Offer { offerService = s11
                         , offerName = "Price"
@@ -378,13 +384,22 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             , serviceGroup = Just s1
                             }
 
-    insert_ $ Offer { offerService = s12
-                        , offerName = "Price"
-                        , offerPrice = 28
-                        , offerPrefix = Just "$"
-                        , offerSuffix = Nothing
-                        , offerDescr = Nothing
-                        }
+    o121 <- insert $ Offer { offerService = s12
+                           , offerName = "Price"
+                           , offerPrice = 28
+                           , offerPrefix = Just "$"
+                           , offerSuffix = Nothing
+                           , offerDescr = Nothing
+                           }
+
+    insert_ $ Book { bookOffer = o121
+                   , bookRole = Just r111 
+                   , bookUser = u2
+                   , bookDay = addGregorianMonthsClip 1 today
+                   , bookTime = time
+                   , bookTz = utc
+                   , bookStatus = BookStatusRequest
+                   }
 
     insert_ $ Thumbnail { thumbnailService = s12
                         , thumbnailPhoto = $(embedFile "static/img/women-hair-cuts-above-shoulders.avif")

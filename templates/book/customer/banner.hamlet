@@ -77,8 +77,8 @@
         <span.mdc-button__focus-ring>
         <span.mdc-button__label>_{MsgSignUp}
       <div style="display:inherit;flex-direction:inherit">
-        <div style="text-align:center">
-          <small>_{MsgAlreadyHaveAnAccount}?
+        <div style="text-align:center;margin-bottom:0.3rem">
+          <small style="color:var(--mdc-theme-text-hint-on-background)">_{MsgAlreadyHaveAnAccount}?
         <a.mdc-button.mdc-button--outlined href=@{AuthR LoginR} role=button>
           <span.mdc-button__ripple>
           <span.mdc-button__focus-ring>

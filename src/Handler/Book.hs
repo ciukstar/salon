@@ -106,7 +106,7 @@ import Model
       , ServiceName, RoleStaff, RoleRating, RoleService, OfferId, BookOffer
       , BookUser, BookRole, ThumbnailService, ThumbnailAttribution
       , ServiceOverview, ServiceDescr, ServiceGroup
-      )
+      ), BookStatus (BookStatusRequest)
     )
 
 import Menu (menu)
@@ -205,7 +205,7 @@ postBookCustomerR = do
           case fr of
             FormSuccess (items,role,day,time,tz,Entity uid _) -> do
                 bids <- forM items $ \((_,Entity oid _),_) -> runDB $
-                    insert $ Book uid oid ((\(_,Entity rid _) -> rid) <$> role) day time tz
+                    insert $ Book uid oid ((\(_,Entity rid _) -> rid) <$> role) day time tz BookStatusRequest
                 addMessageI "info" MsgRecordAdded
                 deleteSession sessKeyBooking
                 redirect (BookEndR, ("bid",) . pack . show . fromSqlKey <$> bids)

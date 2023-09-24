@@ -10,9 +10,14 @@ main
       display: flex
       flex-direction: column
       gap: 1rem
+      .mdc-text-field
+        input.mdc-text-field__input
+          caret-color: var(--mdc-theme-text-primary-on-background)
     #createAccount
       margin-top: 2rem
       display: flex
       flex-direction: column
       align-items: center
       gap: 0.5rem
+      small.hint
+        color: var(--mdc-theme-text-hint-on-light)

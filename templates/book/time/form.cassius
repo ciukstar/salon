@@ -7,6 +7,9 @@
   div.form-field
     display: flex
     flex-direction: column
+    .mdc-text-field
+      input.mdc-text-field__input
+        caret-color: var(--mdc-theme-text-primary-on-background)
 
 #detailsTimezone
   div.form-field
@@ -15,4 +18,7 @@
     flex-direction: column
     span.mdc-text-field__affix.mdc-text-field__affix--suffix
       text-transform: lowercase
+    .mdc-text-field
+      input.mdc-text-field__input
+        caret-color: var(--mdc-theme-text-primary-on-background)
   
