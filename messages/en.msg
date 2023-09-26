@@ -1,3 +1,12 @@
+Meeting: Meeting
+MeetingTime: Meeting time
+MeetingLocation: Meeting location
+Nullify: Nullify
+Reschedule: Reschedule
+Calendar: Calendar
+BookingCalendar: Booking calendar
+Requests: Requests
+BookingRequests: Booking requests
 NoOffersYet: There are no offers yet
 ChoosePhoto: Choose photo
 ChooseImage: Choose image

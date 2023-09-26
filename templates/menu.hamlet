@@ -12,6 +12,7 @@
     <div.mdc-deprecated-list-group>
       <hr.mdc-deprecated-list-divider role=separator>
       <nav.mdc-deprecated-list>
+      
         <a.mdc-deprecated-list-item href=@{HomeR}
           :Just HomeR /= curr:tabindex=-1
           :Just HomeR == curr:tabindex=0
@@ -19,6 +20,7 @@
           <span.mdc-deprecated-list-item__ripple>
           <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>home
           <span.mdc-deprecated-list-item__text>_{MsgWelcome}
+          
         <a.mdc-deprecated-list-item href=@{ServicesR}
           :Just ServicesR /= curr:tabindex=-1
           :Just ServicesR == curr:tabindex=0
@@ -26,6 +28,7 @@
           <span.mdc-deprecated-list-item__ripple>
           <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>volunteer_activism
           <span.mdc-deprecated-list-item__text>_{MsgServices}
+
         <a.mdc-deprecated-list-item href=@{BookOffersR}
           :Just BookOffersR /= curr:tabindex=-1
           :Just BookOffersR == curr:tabindex=0
@@ -33,6 +36,7 @@
           <span.mdc-deprecated-list-item__ripple>
           <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>book_online
           <span.mdc-deprecated-list-item__text>_{MsgBookAppointment}
+          
         <a.mdc-deprecated-list-item href=@{AppointmentsR}
           :Just AppointmentsR /= curr:tabindex=-1
           :Just AppointmentsR == curr:tabindex=0
@@ -40,6 +44,23 @@
           <span.mdc-deprecated-list-item__ripple>
           <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>pending_actions
           <span.mdc-deprecated-list-item__text>_{MsgMyAppointments}
+          
+        <a.mdc-deprecated-list-item href=#
+          :False:tabindex=-1
+          :False:tabindex=0
+          :False:.mdc-deprecated-list-item--activated>
+          <span.mdc-deprecated-list-item__ripple>
+          <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>event_available
+          <span.mdc-deprecated-list-item__text>_{MsgRequests}
+          
+        <a.mdc-deprecated-list-item href=#
+          :False:tabindex=-1
+          :False:tabindex=0
+          :False:.mdc-deprecated-list-item--activated>
+          <span.mdc-deprecated-list-item__ripple>
+          <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>calendar_month
+          <span.mdc-deprecated-list-item__text>_{MsgCalendar}
+          
         <a.mdc-deprecated-list-item href=@{AboutUsR}
           :Just AboutUsR /= curr:tabindex=-1
           :Just AboutUsR == curr:tabindex=0
@@ -47,6 +68,7 @@
           <span.mdc-deprecated-list-item__ripple>
           <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>info
           <span.mdc-deprecated-list-item__text>_{MsgAboutUs}
+          
         <a.mdc-deprecated-list-item href=@{ContactR}
           :Just ContactR /= curr:tabindex=-1
           :Just ContactR == curr:tabindex=0

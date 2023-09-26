@@ -7,46 +7,121 @@
         <i.material-symbols-outlined>arrow_back
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
         _{MsgAppointment}
-          
+
 <main.mdc-top-app-bar--fixed-adjust>
-  $maybe (Entity _ (Book _ _ _ date time _ _),Entity _ (Offer _ oname price pref suff _),Entity sid (Service sname _ _ _ _ _),thumbnail,role,staff) <- book
-    <p #appointmentFullLongTime>
-      #{show date} #{show time}
-    <p>
-      <figure>
-        <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail} loading=lazy>
-        $maybe Entity _ (Thumbnail _ _ _ attrib) <- thumbnail
-          $maybe attribution <- attrib
-            ^{attribution}
-        <figcaption>
-          #{sname}
-    <p>
-      #{oname}: 
-      $maybe prefix <- pref
-        #{prefix}
-      #{show price}
-      $maybe _ <- pref
-      $nothing
-        $maybe suffix <- suff
-          #{suffix}
-          
-    $maybe Entity eid (Staff ename _ _ _ _ _) <- staff
-      <p> 
-        <figure>
-          <img src=@{AdminR $ AdmStaffPhotoR eid} width=56 height=56 alt=_{MsgPhoto} loading=lazy>
-          <figcation>
-            #{ename}
-            $maybe Entity _ (Role _ _ rname _) <- role 
-              (#{rname})
-        
-      
-    <p>
-      <button.mdc-button.mdc-button--raised type=button>
-        <span.mdc-button__ripple>
-        <span.mdc-button__focus-ring>
-        <span.mdc-button__label>_{MsgRescheduleAppointment}
-    <p>
-      <button.mdc-button.mdc-button--raised type=button>
-        <span.mdc-button__ripple>
-        <span.mdc-button__focus-ring>
-        <span.mdc-button__label>_{MsgCancelAppointment}
+  $maybe (Entity _ (Book _ _ _ date time _ _),Entity _ (Offer _ oname price pref suff _),Entity sid (Service sname _ _ dur _ _),thumbnail,role,staff) <- book
+
+    <div.mdc-card>
+      <div.mdc-card__primary-action>
+        <div.mdc-card__media.mdc-card__media--16-9 style="background-image:url('@{ServiceThumbnailR sid}')">
+          $maybe Entity _ (Thumbnail _ _ _ attrib) <- thumbnail
+            $maybe attribution <- attrib
+              <div.mdc-card__media-content style="text-align:end;font-size:0.5rem;position:relative;bottom:0;margin-right:4px">
+                ^{attribution}
+        <div.mdc-card__ripple>
+
+      <details.mdc-list.mdc-card-wrapper__text-section open
+        ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+        <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+          <span.mdc-list-item__ripple>
+          <span.mdc-list-item__start>
+           <i.material-symbols-outlined>volunteer_activism
+          <span.mdc-list-item__content>
+            <div.mdc-list-item__primary-text style="color:var(--mdc-theme-text-hint-on-light)">
+              _{MsgService}
+          <span.mdc-list-item__end>
+           <i.expand.material-symbols-outlined>expand_less
+        <section.mdc-card-wrapper__text-section>
+          <div>#{sname}
+          <div>
+            <small>
+              #{oname}:&nbsp;
+              $maybe prefix <- pref
+                #{prefix}
+              #{show price}
+              $maybe _ <- pref
+              $nothing
+                $maybe suffix <- suff
+                  #{suffix}
+          $maybe duration <- dur
+            $with translate <- renderMessage app langs
+              $with pat <- intercalate "" ["%H",translate MsgSymbolHour," %M",translate MsgSymbolMinute]
+                $with duration <- formatTime defaultTimeLocale (unpack pat) duration
+                  <small>
+                    _{MsgDuration}:&nbsp;#{duration}            
+
+      <details.mdc-list.mdc-card-wrapper__text-section open
+        ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+        <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+          <span.mdc-list-item__ripple>
+          <span.mdc-list-item__start>
+           <i.material-symbols-outlined>schedule
+          <span.mdc-list-item__content>
+            <div.mdc-list-item__primary-text style="color:var(--mdc-theme-text-hint-on-light)">
+              _{MsgMeetingTime}
+          <span.mdc-list-item__end>
+           <i.expand.material-symbols-outlined>expand_less
+        <section.mdc-card-wrapper__text-section #appointmentFullLongTime>
+          #{show date} #{show time}
+
+      <details.mdc-list.mdc-card-wrapper__text-section
+        ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+        <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+          <span.mdc-list-item__ripple>
+          <span.mdc-list-item__start>
+           <i.material-symbols-outlined>emoji_people
+          <span.mdc-list-item__content>
+            <div.mdc-list-item__primary-text style="color:var(--mdc-theme-text-hint-on-light)">
+              _{MsgMeeting}
+          <span.mdc-list-item__end>
+           <i.expand.material-symbols-outlined>expand_more
+        $maybe Entity eid (Staff ename _ _ _ _ _) <- staff
+          <div style="display:flex;flex-direction:row;align-items:flex-start;justify-content:space-around">
+            $maybe Entity uid (User uname _ _ fname _) <- user
+              <figure style="margin:0;padding:0;text-align:center">
+                <img src=@{AccountPhotoR uid} width=56 height=56 style="clip-path:circle(50%)" alt=_{MsgPhoto}
+                  onerror="this.src = '@{PhotoPlaceholderR}'">
+                <figcaption>
+                  <small>
+                    $maybe fname <- fname
+                      #{fname}
+                    $nothing
+                      #{uname}
+
+              <i.material-symbols-outlined style="align-self:center;color:var(--mdc-theme-text-icon-on-background)">
+                handshake
+
+            <figure style="margin:0;padding:0;text-align:center">
+              <img src=@{AdminR $ AdmStaffPhotoR eid} width=56 height=56 alt=_{MsgPhoto} loading=lazy
+                style="clip-path:circle(50%)">
+              <figcaption>
+                <small>#{ename}
+                $maybe Entity _ (Role _ _ rname _) <- role
+                  <div>
+                    <small>(#{rname})
+
+      $maybe Entity _ (Contents _ content) <- location
+        <details.mdc-list.mdc-card-wrapper__text-section
+          ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+          <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+            <span.mdc-list-item__ripple>
+            <span.mdc-list-item__start>
+             <i.material-symbols-outlined>location_on
+            <span.mdc-list-item__content>
+              <div.mdc-list-item__primary-text style="color:var(--mdc-theme-text-hint-on-light)">
+                _{MsgMeetingLocation}
+            <span.mdc-list-item__end>
+             <i.expand.material-symbols-outlined>expand_more
+          #{preEscapedToMarkup $ unTextarea content}
+
+      <div.mdc-card__actions>
+        <div.mdc-card__action-buttons>
+          <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--unelevated type=button>
+            <span.mdc-button__ripple>
+            <span.mdc-button__focus-ring>
+            <span.mdc-button__label>_{MsgReschedule}
+
+          <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--outlined type=button>
+            <span.mdc-button__ripple>
+            <span.mdc-button__focus-ring>
+            <span.mdc-button__label>_{MsgCancel}

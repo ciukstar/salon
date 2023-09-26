@@ -18,7 +18,7 @@ import Foundation
       ( MsgSourceCode, MsgDocumentation, MsgBrand, MsgContactUs
       , MsgAboutUs, MsgMyAppointments, MsgServices, MsgBookAppointment
       , MsgWelcome, MsgSalon, MsgUsers, MsgContact, MsgStaff, MsgData
-      , MsgResources
+      , MsgResources, MsgRequests, MsgCalendar
       )
     )
 

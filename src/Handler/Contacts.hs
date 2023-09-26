@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeApplications #-}
 
-module Handler.Contacts (getContactR) where
+module Handler.Contacts (getContactR, section) where
 
 import Text.Hamlet (Html)
 import Yesod.Auth (maybeAuth, Route (LoginR))

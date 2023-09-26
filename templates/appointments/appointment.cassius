@@ -2,3 +2,5 @@
 main
   margin-right: 1rem
   margin-left: 1rem
+  section.mdc-card-wrapper__text-section
+    margin: 0 1rem

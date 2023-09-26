@@ -1,3 +1,12 @@
+Meeting: Întâlnire
+MeetingTime: Ora întâlnirii
+MeetingLocation: Locul de întâlnire
+Nullify: Anulează
+Reschedule: Reprogramează
+Calendar: Calendar
+BookingCalendar: Calendar de rezervari
+Requests: Solicitări
+BookingRequests: Cereri de rezervare
 NoOffersYet: Nu există încă oferte
 ChoosePhoto: Alege foto
 ChooseImage: Alege imagine

@@ -1,3 +1,12 @@
+Meeting: Встреча
+MeetingTime: Время встречи
+MeetingLocation: Место встречи 
+Nullify: Аннулировать
+Reschedule: Перенести
+Calendar: Календарь
+BookingCalendar: Календарь бронирования
+Requests: Запросы
+BookingRequests: Запросы на бронирование
 NoOffersYet: Предложений пока нет
 ChoosePhoto: Выбрать фото
 ChooseImage: Выбрать изображение

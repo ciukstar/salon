@@ -1,3 +1,12 @@
+Meeting: Réunion
+MeetingTime: Heure de rendez-vous
+MeetingLocation: Lieu de la rencontre
+Nullify: Annuler
+Reschedule: Reprogrammer
+Calendar: Calendrier
+BookingCalendar: Calendrier des réservations
+Requests: Demandes
+BookingRequests: Demandes de réservation
 NoOffersYet: Il n'y a pas encore d'offres.
 ChoosePhoto: Choisir photo
 ChooseImage: Choisir image
