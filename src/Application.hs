@@ -48,7 +48,12 @@ import System.Environment.Blank (getEnv)
 
 -- Import all relevant handler modules here.
 -- Don't forget to add new modules to your cabal file!
-import Handler.Appointments (getAppointmentsR, getAppointmentR)
+import Handler.Appointments
+    ( getAppointmentsR, getAppointmentR, postAppointmentR
+    , postAppointmentCancelR, getAppointmentHistR
+    , getAppointmentRescheduleR
+    )
+    
 import Handler.Contacts (getContactR)
 import Handler.Book
     ( getBookOffersR, postBookOffersR

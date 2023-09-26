@@ -1,3 +1,15 @@
+NoHistoryYet: Il n'y a pas encore d'historique
+History: L'histoire
+EntityNotFound: Entité introuvable
+LoginToPerformAction: Veuillez vous connecter pour effectuer l'action
+CancelAppointmentReally: Voulez-vous vraiment annuler ce rendez-vous ?
+Acquaintance: Faire connaissance
+SayHelloTo: Dire bonjour à
+Paid: Payé
+Cancelled: Annulé
+Approved: Approuvé
+AwaitingApproval: En attente d'approbation
+AppoinmentStatus: Statut
 Meeting: Réunion
 MeetingTime: Heure de rendez-vous
 MeetingLocation: Lieu de la rencontre
@@ -33,7 +45,7 @@ LoginToSeeYourProfile: Veuillez vous connecter pour voir votre profil
 End: La fin
 UserProfile: Profil de l'utilisateur
 RescheduleAppointment: Reprogrammer le rendez-vous
-CancelAppointment: Annuler le rendez-vous
+CancelAppointment: Annuler
 Appointment: Rendez-vous
 NoAppointmentsYet: Vous n'avez pas encore de rendez-vous
 LoginToSeeYourAppointments: Veuillez vous connecter pour voir vos rendez-vous

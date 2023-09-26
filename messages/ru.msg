@@ -1,3 +1,15 @@
+NoHistoryYet: Истории пока нет
+History: История
+EntityNotFound: Сущность не найдена
+LoginToPerformAction: Пожалуйста, войдите, чтобы выполнить действие
+CancelAppointmentReally: Вы действительно хотите отменить эту встречу?
+Acquaintance: Знакомство
+SayHelloTo: Поздороваться с
+Paid: Оплачено
+Cancelled: Отменена
+Approved: Утверждено
+AwaitingApproval: В ожидании подтверждения
+AppoinmentStatus: Состояние
 Meeting: Встреча
 MeetingTime: Время встречи
 MeetingLocation: Место встречи 
@@ -33,7 +45,7 @@ LoginToSeeYourProfile: Пожалуйста, войдите, чтобы увид
 End: Конец
 UserProfile: Профиль пользователя
 RescheduleAppointment: Перенести встречу
-CancelAppointment: Отменить запись
+CancelAppointment: Аннулировать
 Appointment: Запись
 NoAppointmentsYet: У вас еще нет записей
 LoginToSeeYourAppointments: Пожалуйста, войдите, чтобы увидеть ваши записи

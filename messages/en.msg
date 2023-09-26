@@ -1,3 +1,15 @@
+NoHistoryYet: There is no history yet
+History: History
+EntityNotFound: Entity not found
+LoginToPerformAction: Please login to perform the action
+CancelAppointmentReally: Do you really want to cancel this appointment?
+Acquaintance: Acquaintance
+SayHelloTo: Say hello to
+Paid: Paid
+Cancelled: Cancelled
+Approved: Approved
+AwaitingApproval: Awaiting approval
+AppoinmentStatus: Status
 Meeting: Meeting
 MeetingTime: Meeting time
 MeetingLocation: Meeting location
@@ -33,7 +45,7 @@ LoginToSeeYourProfile: Please login to see your profile
 End: End
 UserProfile: User profile
 RescheduleAppointment: Reschedule appointment
-CancelAppointment: Cancel appointment
+CancelAppointment: Cancel
 Appointment: Appointment
 NoAppointmentsYet: You have no appointments yet
 LoginToSeeYourAppointments: Please login to see your appointments

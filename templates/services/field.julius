@@ -1,6 +1,4 @@
 
-window.scroll(0,#{fromMaybe "0" scrollY})
-
 Array.from(
   document.querySelectorAll('span.currency')
 ).forEach(function (x) {

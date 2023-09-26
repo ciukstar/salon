@@ -22,6 +22,7 @@ import Data.Time
     , picosecondsToDiffTime, localTimeToUTC, utc, utcToLocalTime
     , TimeZone (timeZoneMinutes), minutesToTimeZone
     )
+import Data.Time.Clock (UTCTime)
 import Prelude (Int, fromIntegral)
 import Data.Either (Either (Left, Right))
 import Data.Bool (Bool)
@@ -56,9 +57,9 @@ data ServiceStatus = ServiceStatusPulished | ServiceStatusUnpublished
   deriving (Show, Read, Eq)
 
 data BookStatus = BookStatusRequest
-                | BookStatusConfirmed
-                | BookStatusPaid
+                | BookStatusApproved
                 | BookStatusCancelled
+                | BookStatusPaid
     deriving (Show, Read, Eq)
 derivePersistField "BookStatus"
 

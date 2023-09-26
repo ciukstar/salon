@@ -71,8 +71,7 @@
                   $maybe prefix <- prefix
                     #{prefix}
                   $with price <- show price
-                    <span.numeric-format data-value=#{price} data-minFracDigits=0 data-maxFracDigits=2>
-                      #{price}
+                    <span.currency>#{price}
                   $maybe suffix <- suffix
                     #{suffix}
 

@@ -1,0 +1,39 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button href=@{AppointmentR bid}>
+        <span.mdc-icon-button__ripple>
+        <spam.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
+        _{MsgHistory}
+
+<main.mdc-top-app-bar--fixed-adjust>
+  $if null hist
+    <figure style="text-align:center">
+      <span style="font-size:4rem;color:var(--mdc-theme-primary)">&varnothing;
+      <figcaption>
+        _{MsgNoHistoryYet}.
+  $else
+    $forall Entity _ (Hist _ logtime day time tz status) <- hist
+      <details.mdc-list data-mdc-auto-init=MDCList
+        ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+        <summary.mdc-list-item.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+          <span.mdc-list-item__ripple>
+          <span.mdc-list-item__content>
+            <div.mdc-list-item__primary-text>
+              #{show logtime}
+          <span.mdc-list-item__end>
+            <i.expand.material-symbols-outlined>expand_more
+        <dl>
+          <dt>_{MsgDay}
+          <dd>#{show day}
+
+          <dt>_{MsgTime}
+          <dd>#{show time}
+
+          <dt>_{MsgTimezone}
+          <dd>#{show tz}
+
+          <dt>_{MsgStatus}
+          <dd>#{show status}

@@ -6,7 +6,7 @@ Contents
 
 Hist
   book BookId
-  logtime LocalTime
+  logtime UTCTime
   day Day
   time TimeOfDay
   tz TimeZone

@@ -11,3 +11,18 @@
     }
   );
 });
+
+[document.getElementById('offerPrice')].filter(x => !!x).forEach(function (x) {
+  x.textContent = Number(x.textContent).toLocaleString(
+    navigator.language,
+    { minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    }
+  );
+});
+
+window.mdc.autoInit();
+
+Array.from(
+  document.querySelectorAll('div.mdc-banner')
+).forEach(function (x) { x.MDCBanner.open(); });

@@ -1,3 +1,15 @@
+NoHistoryYet: Nu există încă istorie
+History: Istoria
+EntityNotFound: Entitatea nu a fost găsită 
+LoginToPerformAction: Vă rugăm să vă autentificați pentru a efectua acțiunea
+CancelAppointmentReally: Sigur doriți să anulați această întâlnire?
+Acquaintance: Fă cunoștință
+SayHelloTo: Salută-l pe
+Paid: Plătit
+Cancelled: Anulată
+Approved: Aprobată
+AwaitingApproval: Așteaptă aprobarea
+AppoinmentStatus: Starea
 Meeting: Întâlnire
 MeetingTime: Ora întâlnirii
 MeetingLocation: Locul de întâlnire
@@ -33,7 +45,7 @@ LoginToSeeYourProfile: Vă rugăm să vă autentificați pentru a vă vedea prof
 End: Sfârșit
 UserProfile: Profilul utilizatorului
 RescheduleAppointment: Reprogramează întâlnirea
-CancelAppointment: Anulează programarea
+CancelAppointment: Anulează
 Appointment: Programare
 NoAppointmentsYet: Nu aveți încă programări
 LoginToSeeYourAppointments: Vă rugăm să vă autentificați pentru a vă vedea programările

@@ -1,8 +1,10 @@
 
-[document.getElementById('appointmentFullLongTime')].filter(x => !!x).forEach(function (x) {
+Array.from(
+  document.querySelectorAll('div.appointment-time')
+).forEach(function (x) {
   x.textContent = new Date(x.textContent).toLocaleDateString(
     navigator.language,
-    { weekday: 'long',
+    { weekday: 'short',
       year: 'numeric',
       month: 'long',
       day: 'numeric',

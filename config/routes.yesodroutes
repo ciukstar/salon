@@ -1,8 +1,11 @@
 
 /contact ContactR GET
 
-/appointments/#BookId AppointmentR  GET
-/appointments 	      AppointmentsR GET
+/appointments/#BookId/reschedule AppointmentRescheduleR GET
+/appointments/#BookId/cancel     AppointmentCancelR     POST
+/appointments/#BookId/hist       AppointmentHistR    	GET
+/appointments/#BookId 	         AppointmentR 	     	GET POST
+/appointments 	      	         AppointmentsR 	     	GET
 
 /book/search   BookSearchR   GET POST
 /book/end      BookEndR      GET

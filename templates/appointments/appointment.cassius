@@ -1,6 +1,7 @@
 
 main
-  margin-right: 1rem
-  margin-left: 1rem
-  section.mdc-card-wrapper__text-section
-    margin: 0 1rem
+  margin: 0 1rem 1rem 1rem
+  details.mdc-list
+    padding: 0
+    section.mdc-card-wrapper__text-section
+      margin: 0 1rem
