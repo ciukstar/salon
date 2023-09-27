@@ -15,12 +15,11 @@
       <div.mdc-card-wrapper__text-section.mdc-typography--headline6>
         <span style="padding:1rem">#{sname}
       <div.mdc-card__primary-action tabindex=0>
-        <div.mdc-card__media.mdc-card__media--square 
-          style="background-image:url('@{ServiceThumbnailR sid}')">
+        <div.mdc-card__media.mdc-card__media--16-9 style="background-image:url('@{ServiceThumbnailR sid}')">
+          $maybe attribution <- attrib
+            <div.mdc-card__media-content style="text-align:end;font-size:0.5rem;position:relative;bottom:0;margin-right:4px">
+              ^{attribution}
         <div.mdc-card__ripple>
-      $maybe attribution <- attrib
-        <div style="text-align:end;font-size:0.8rem;padding-right:4px">
-          ^{attribution}
       $maybe overview <- overview
         <div.mdc-card-wrapper__text-section style="padding:1rem">
           <i style="color:rgba(0,0,0,0.6)">#{overview}

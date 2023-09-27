@@ -14,6 +14,8 @@
 /book/staff    BookStaffR    GET POST
 /book          BookOffersR   GET POST
 
+/request RequestsR GET
+
 /aboutus AboutUsR GET
 
 /search/offers/#OfferId/+Services OfferSearchR GET

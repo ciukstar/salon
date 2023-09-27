@@ -148,15 +148,17 @@
 
       <div.mdc-card__actions>
         <div.mdc-card__action-buttons>
+  
+          $if status == BookStatusRequest
+            <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--outlined type=button
+              onclick="document.getElementById('dlgCancelAppointment').MDCDialog.open()">
+              <span.mdc-button__ripple>
+              <span.mdc-button__focus-ring>
+              <span.mdc-button__label>_{MsgCancelAppointment}
 
-          <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--outlined type=button
-            onclick="document.getElementById('dlgCancelAppointment').MDCDialog.open()">
-            <span.mdc-button__ripple>
-            <span.mdc-button__focus-ring>
-            <span.mdc-button__label>_{MsgCancelAppointment}
-
-          <a.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--unelevated role=button
-            href=@{AppointmentRescheduleR bid}>
+          <form method=get action=@{AppointmentRescheduleR bid} #formGetAppointmentReschedule>
+          <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--unelevated 
+            type=submit name=tz form=formGetAppointmentReschedule onclick="this.value = -(new Date().getTimezoneOffset())">
             <span.mdc-button__ripple>
             <span.mdc-button__focus-ring>
             <span.mdc-button__label>_{MsgReschedule}

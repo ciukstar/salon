@@ -10,6 +10,16 @@
 
 <main.mdc-top-app-bar--fixed-adjust>
 
-  <form method=post action=# enctype=#{et} novalidate>
+  <form method=post action=@{AppointmentR bid} enctype=#{et} novalidate>
     ^{fw}
-    <button type=submit>_{MsgSave}
+    <div.form-actions>
+      <a.mdc-button.mdc-button href=@{AppointmentR bid} role=button>
+        <span.mdc-button__ripple>
+        <span.mdc-button__focus-ring>
+        <span.mdc-button__label>
+          _{MsgCancel}
+      <button.mdc-button.mdc-button--raised type=submit>
+        <span.mdc-button__ripple>
+        <span.mdc-button__focus-ring>
+        <span.mdc-button__label>
+          _{MsgSave}

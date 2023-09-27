@@ -1,3 +1,5 @@
+NoRequestsYet: Запросов пока нет
+AppointmentStateDiagram: Схема перехода состояний для записи на прием
 NoHistoryYet: Истории пока нет
 History: История
 EntityNotFound: Сущность не найдена

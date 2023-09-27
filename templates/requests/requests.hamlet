@@ -1,0 +1,63 @@
+^{menu}
+<header.mdc-top-app-bar.mdc-top-app-bar--prominent.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <button.mdc-top-app-bar__navigation-icon.mdc-icon-button #btnMainMenu>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>menu
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
+        _{MsgRequests}
+
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
+      $maybe Entity uid _ <- user
+        <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{ProfileR} role=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" alt=_{MsgPhoto}
+            onerror="this.src = '@{PhotoPlaceholderR}'">
+      $nothing
+        <a.mdc-top-app-bar__action-item.mdc-icon-button role=button href=@{AuthR LoginR}>
+          <span.mdc-icon-button__ripple>
+          <i.material-symbols-outlined>login
+          
+
+<main.mdc-top-app-bar--prominent-fixed-adjust>
+  $if null requests
+    <figure style="text-align:center">
+      <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
+      <figcaption>
+        _{MsgNoRequestsYet}.
+  $else
+    <nav.mdc-list data-mdc-auto-init=MDCList>
+      $forall (Entity _ (Book _ _ _ date time _ status),Entity _ (Service sname _ _ dur _ _)) <- requests
+        <a.mdc-list-item href=#
+          .mdc-list-item--with-leading-icon.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon>
+          <span.mdc-list-item__ripple>
+          <span.mdc-list-item__start>
+            $with (color,icon,msg) <- resolve status
+              <i.material-symbols-outlined style="color:#{color}" title=_{msg}>#{icon}                
+          <span.mdc-list-item__content>
+            <div.appointment-time.mdc-list-item__primary-text>
+              #{show date} #{show time}
+            <div.mdc-list-item__secondary-text>
+              #{sname}
+            <div.mdc-list-item__secondary-text>
+              $maybe duration <- dur
+                $with translate <- renderMessage app langs
+                  $with pat <- intercalate "" ["%H",translate MsgSymbolHour," %M",translate MsgSymbolMinute]
+                    $with duration <- formatTime defaultTimeLocale (unpack pat) duration
+                      #{duration}
+          <span.mdc-list-item__end>
+            <i.material-symbols-outlined>arrow_forward_ios
+        <div.mdc-list-divider role=separator>
+
+$forall (_,msg) <- msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
+    <div.mdc-snackbar__surface>
+      <div.mdc-snackbar__label>#{msg}
+      <div.mdc-snackbar__actions>
+        <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>close

@@ -8,8 +8,7 @@ import Foundation
     , ResourcesR (DocsR)
     , Route
       ( ResourcesR, AdminR, ContactR, AboutUsR, AppointmentsR
-      , BookOffersR
-      , ServicesR, HomeR, StaticR
+      , BookOffersR, RequestsR, ServicesR, HomeR, StaticR
       )
     , AdminR
       ( BrandR, UsersR, AdmContactsR, AdmAboutR, AdmStaffR, AdmServicesR

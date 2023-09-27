@@ -4,11 +4,11 @@
     $with ident <- pack $ show $ fromSqlKey oid
       <div.mdc-card>
         <div.mdc-card__primary-action tabindex=0>
-          <div.mdc-card__media.mdc-card__media--square style="background-image:url('@{ServiceThumbnailR sid}')">
+          <div.mdc-card__media.mdc-card__media--16-9 style="background-image:url('@{ServiceThumbnailR sid}')">
+            $maybe attribution <- attrib
+              <div.mdc-card__media-content style="text-align:end;font-size:0.5rem;position:relative;bottom:0;margin-right:4px">
+                ^{attribution}
           <div.mdc-card__ripple>
-        $maybe attribution <- attrib
-          <div style="width:100%;text-align:end;font-size:0.8rem;box-sizing:border-box;padding-right:4px">
-            ^{attribution}
 
         <div.mdc-card-wrapper__text-section style="display:flex;flex-wrap:nowrap;align-items:center;padding:16px">
           <div style="flex-grow:1">

@@ -1,3 +1,5 @@
+NoRequestsYet: Nu există încă solicitări
+AppointmentStateDiagram: Diagrama tranziție de stare a programării
 NoHistoryYet: Nu există încă istorie
 History: Istoria
 EntityNotFound: Entitatea nu a fost găsită 

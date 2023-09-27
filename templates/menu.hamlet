@@ -45,10 +45,10 @@
           <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>pending_actions
           <span.mdc-deprecated-list-item__text>_{MsgMyAppointments}
           
-        <a.mdc-deprecated-list-item href=#
-          :False:tabindex=-1
-          :False:tabindex=0
-          :False:.mdc-deprecated-list-item--activated>
+        <a.mdc-deprecated-list-item href=@{RequestsR}
+          :Just RequestsR /= curr:tabindex=-1
+          :Just RequestsR == curr:tabindex=0
+          :Just RequestsR == curr:.mdc-deprecated-list-item--activated>
           <span.mdc-deprecated-list-item__ripple>
           <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>free_cancellation
           <span.mdc-deprecated-list-item__text>_{MsgRequests}

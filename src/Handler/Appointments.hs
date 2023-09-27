@@ -12,11 +12,17 @@ module Handler.Appointments
   , getAppointmentRescheduleR
   ) where
 
-import Data.Text (unpack, intercalate, Text)
+import Data.Maybe (isJust)
+import Data.Text (unpack, intercalate, Text, pack)
 import Data.Time.Format (defaultTimeLocale, formatTime)
-import Data.Time.Clock (getCurrentTime)
+import Data.Time.Clock (getCurrentTime, UTCTime (utctDay))
+import Data.Time.Calendar (Day)
+import Data.Time
+    ( TimeOfDay, TimeZone (timeZoneMinutes), LocalTime (LocalTime)
+    , utcToLocalTime, minutesToTimeZone
+    )
 import Text.Hamlet (Html)
-import Text.Shakespeare.I18N (renderMessage)
+import Text.Shakespeare.I18N (renderMessage, SomeMessage (SomeMessage))
 
 import Yesod.Auth (maybeAuth, Route (LoginR, LogoutR))
 import Yesod.Core
@@ -26,9 +32,14 @@ import Yesod.Core
     )
 import Yesod.Core.Handler (setUltDestCurrent)
 import Yesod.Core.Widget (setTitleI)
-import Yesod.Form.Types (MForm, FormResult (FormSuccess, FormFailure, FormMissing))
-import Yesod.Form.Functions (generateFormPost, runFormPost)
-import Yesod.Form.Fields (unTextarea)
+import Yesod.Form.Input (runInputGet, iopt)
+import Yesod.Form.Types
+    ( MForm, FormResult (FormSuccess, FormFailure, FormMissing)
+    , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
+    , FieldView (fvErrors, fvLabel, fvInput, fvId)
+    )
+import Yesod.Form.Functions (generateFormPost, runFormPost, mreq, checkM)
+import Yesod.Form.Fields (unTextarea, intField, timeField, dayField)
 import Yesod.Persist
     ( Entity (Entity), YesodPersist(runDB), PersistStoreWrite (insert_) )
 import Settings (widgetFile)
@@ -58,7 +69,8 @@ import Foundation
       , MsgPleaseConfirm, MsgAcquaintance, MsgCancelAppointmentReally
       , MsgNo, MsgYes, MsgLoginToPerformAction, MsgEntityNotFound
       , MsgNoHistoryYet, MsgStatus, MsgTimezone, MsgTime, MsgDay
-      , MsgInvalidFormData, MsgMissingForm, MsgSave
+      , MsgInvalidFormData, MsgMissingForm, MsgSave, MsgCancel
+      , MsgAppointmentTimeIsInThePast, MsgAppointmentDayIsInThePast, MsgMinutes
       )
     )
 
@@ -69,26 +81,111 @@ import Model
     , EntityField
       ( BookOffer, OfferId, BookUser, BookId, OfferService, ServiceId
       , BookDay, BookTime, BookRole, RoleId, RoleStaff, StaffId, ThumbnailService
-      , ContentsSection, BookStatus, HistBook, HistLogtime
+      , ContentsSection, BookStatus, HistBook, HistLogtime, BookTz
       )
     )
 
 import Menu (menu)
 import Handler.Contacts (section)
-import Data.Time.Calendar (Day)
-import Data.Time (TimeOfDay, TimeZone)
 
 
 getAppointmentRescheduleR :: BookId -> Handler Html
 getAppointmentRescheduleR bid = do
-    (fw,et) <- generateFormPost formReschedule
+    tz <- (minutesToTimeZone <$>) <$> runInputGet ( iopt intField "tz" )
+    (fw,et) <- generateFormPost $ formReschedule tz
     defaultLayout $ do
         setTitleI MsgReschedule
         $(widgetFile "appointments/reschedule")
 
 
-formReschedule :: Html -> MForm Handler (FormResult (Day, TimeOfDay, TimeZone), Widget)
-formReschedule extra = return (FormMissing,[whamlet|#{extra}|])
+formReschedule :: Maybe TimeZone -> Html -> MForm Handler (FormResult (Day, TimeOfDay, TimeZone), Widget)
+formReschedule tz extra = do
+
+    (dayR,dayV) <- mreq futureDayField FieldSettings
+        { fsLabel = SomeMessage MsgDay
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } Nothing
+
+    (tzR,tzV) <- mreq intField FieldSettings
+        { fsLabel = SomeMessage MsgTimezone
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (timeZoneMinutes <$> tz)
+
+    (timeR,timeV) <- mreq (futureTimeField dayR (minutesToTimeZone <$> tzR)) FieldSettings
+        { fsLabel = SomeMessage MsgTime
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } Nothing
+
+    let r = (,,) <$> dayR <*> timeR <*> (minutesToTimeZone <$> tzR)
+        
+    let w = [whamlet|
+#{extra}
+$forall (v,icon) <- [(dayV,"event"),(timeV,"schedule")]
+  <div.form-field>
+    <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--with-trailing-icon data-mdc-auto-init=MDCTextField
+      :isJust (fvErrors v):.mdc-text-field--invalid>
+      <span.mdc-text-field__ripple>
+      <span.mdc-floating-label>#{fvLabel v}
+      ^{fvInput v}
+      <button.mdc-icon-button.mdc-text-field__icon.mdc-text-field__icon--trailing.material-symbols-outlined
+        tabindex=0 role=button onclick="document.getElementById('#{fvId v}').showPicker()"
+        style="position:absolute;right:2px;background-color:inherit">
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        #{pack icon}
+      <div.mdc-line-ripple>
+    $maybe errs <- fvErrors v
+      <div.mdc-text-field-helper-line>
+        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+          #{errs}
+$forall (v,icon) <- [(tzV,"language")]
+  <div.form-field>
+    <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--with-trailing-icon data-mdc-auto-init=MDCTextField
+      :isJust (fvErrors v):.mdc-text-field--invalid>
+      <span.mdc-text-field__ripple>
+      <span.mdc-floating-label>#{fvLabel v}
+      ^{fvInput v}
+      <button.mdc-icon-button.mdc-text-field__icon.mdc-text-field__icon--trailing.material-symbols-outlined
+        tabindex=0 role=button onclick="document.getElementById('#{fvId v}').showPicker()"
+        style="position:absolute;right:2px;background-color:inherit">
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        #{pack icon}
+      <div.mdc-line-ripple>
+    <div.mdc-text-field-helper-line>
+      $maybe errs <- fvErrors v
+        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+          #{errs}
+      $nothing
+        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--persistent>
+          _{MsgMinutes}
+|]
+    return (r,w)
+  where
+     
+      futureTimeField dayR tzR = checkM (futureTime dayR tzR) timeField
+
+      futureTime :: FormResult Day -> FormResult TimeZone -> TimeOfDay -> Handler (Either AppMessage TimeOfDay)
+      futureTime dayR tzR t = do
+          now <- liftIO getCurrentTime
+          return $ case (dayR,tzR) of
+            (FormSuccess d, FormSuccess z) -> if LocalTime d t < utcToLocalTime z now
+                then Left MsgAppointmentTimeIsInThePast
+                else Right t
+            _ -> Right t
+
+
+      futureDayField = checkM futureDay dayField
+
+      futureDay :: Day -> Handler (Either AppMessage Day)
+      futureDay d = do
+          today <- liftIO $ utctDay <$> getCurrentTime
+          return $ if d < today
+              then Left MsgAppointmentDayIsInThePast
+              else Right d
 
 
 getAppointmentHistR :: BookId -> Handler Html
@@ -149,10 +246,39 @@ postAppointmentCancelR bid = do
 
 postAppointmentR :: BookId -> Handler Html
 postAppointmentR bid = do
-    ((fr,fw),et) <- runFormPost formReschedule
-    case fr of
-      FormSuccess (day,time,tz) -> undefined
-      _ -> defaultLayout $ do
+    user <- maybeAuth
+    ((fr,fw),et) <- runFormPost $ formReschedule Nothing
+    case (fr,user) of
+      (FormSuccess (day,time,tz), Just (Entity uid _)) -> do
+          book <- runDB $ selectOne $ do
+              x <- from $ table @Book
+              where_ $ x ^. BookId ==. val bid
+              where_ $ x ^. BookUser ==. val uid
+              return x
+          case book of
+            Just (Entity bid' (Book _ _ _ day' time' tz' status')) -> do
+                now <- liftIO getCurrentTime
+                runDB $ insert_ $ Hist bid' now day' time' tz' status'
+                runDB $ update $ \x -> do
+                    set x [ BookDay =. val day
+                          , BookTime =. val time
+                          , BookTz =. val tz
+                          , BookStatus =. val BookStatusRequest
+                          ]
+                    where_ $ x ^. BookId ==. val bid
+                    where_ $ x ^. BookUser ==. val uid
+                redirect $ AppointmentR bid
+
+            Nothing -> do
+                addMessageI "warn" MsgEntityNotFound
+                redirect $ AppointmentR bid
+      (FormMissing, _) -> do
+          addMessageI "warn" MsgMissingForm
+          redirect $ AppointmentR bid
+      (_, Nothing) -> do
+          addMessageI "warn" MsgLoginToPerformAction
+          redirect $ AppointmentR bid
+      (FormFailure _, _) -> defaultLayout $ do
           setTitleI MsgReschedule
           $(widgetFile "appointments/reschedule")
 

@@ -1,3 +1,5 @@
+NoRequestsYet: There are no requests yet
+AppointmentStateDiagram: State transition diagram for appointment
 NoHistoryYet: There is no history yet
 History: History
 EntityNotFound: Entity not found

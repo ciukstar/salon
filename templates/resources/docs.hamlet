@@ -31,7 +31,13 @@
   
   <div.mdc-typography--headline4>
     _{MsgBookingStateDiagram}
-  <img #imgBookingStateDiagram src=@{StaticR img_Booking_State_Diagram_svg} alt=_{MsgBookingStateDiagram} loading=lazy>
+  <img #imgBookingStateDiagram src=@{StaticR img_Booking_State_Diagram_svg} 
+    alt=_{MsgBookingStateDiagram} loading=lazy>
+  
+  <div.mdc-typography--headline4>
+    _{MsgAppointmentStateDiagram}
+  <img #imgBookingStateDiagram src=@{StaticR img_Appointment_State_Transition_svg} 
+    alt=_{MsgAppointmentStateDiagram} loading=lazy>
 
 
 $forall (_,msg) <- msgs

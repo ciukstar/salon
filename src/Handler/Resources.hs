@@ -21,14 +21,18 @@ import Foundation
       )
     , AdminR (AdmServicesR)
     , AppMessage
-      ( MsgDocumentation, MsgErdDiagram, MsgBookingStateDiagram, MsgPhoto
+      ( MsgDocumentation, MsgPhoto
+      , MsgErdDiagram, MsgBookingStateDiagram, MsgAppointmentStateDiagram
       , MsgAppName, MsgOverview, MsgDoc001, MsgDoc002
       )
     )
 
 import Model (Services (Services))
     
-import Settings.StaticFiles (img_Salon_ERD_svg, img_Booking_State_Diagram_svg)
+import Settings.StaticFiles
+    ( img_Salon_ERD_svg, img_Booking_State_Diagram_svg
+    , img_Appointment_State_Transition_svg
+    )
 
 import Menu (menu)
 
