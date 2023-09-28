@@ -1,3 +1,9 @@
+Assignee: Assignee
+ShowAll: Show all
+Approve: Approve
+Request: Request
+LoginToSeeTheRequests: Please login to see the requests
+NoPendingRequestsYet: No requests for approval yet
 NoRequestsYet: There are no requests yet
 AppointmentStateDiagram: State transition diagram for appointment
 NoHistoryYet: There is no history yet

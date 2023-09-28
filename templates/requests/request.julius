@@ -1,0 +1,28 @@
+
+[document.getElementById('appointmentFullLongTime')].filter(x => !!x).forEach(function (x) {
+  x.textContent = new Date(x.textContent).toLocaleDateString(
+    navigator.language,
+    { weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: "numeric",
+      minute: "numeric"
+    }
+  );
+});
+
+[document.getElementById('offerPrice')].filter(x => !!x).forEach(function (x) {
+  x.textContent = Number(x.textContent).toLocaleString(
+    navigator.language,
+    { minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    }
+  );
+});
+
+window.mdc.autoInit();
+
+Array.from(
+  document.querySelectorAll('div.mdc-banner')
+).forEach(function (x) { x.MDCBanner.open(); });

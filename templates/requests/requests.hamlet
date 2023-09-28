@@ -23,15 +23,35 @@
           
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
+
+  <div role=toolbar>
+    <button.mdc-button.mdc-button--outlined.mdc-button--icon-trailing type=button
+      onclick="document.getElementById('#{dlgStatusList}').MDCDialog.open()">
+      <span.mdc-button__ripple>
+      <span.mdc-button__focus-ring>
+      <span.mdc-button__label>_{MsgStatus}
+      <i.mdc-button__icon.material-symbols-outlined>arrow_drop_down
+      
+    <button.mdc-button.mdc-button--outlined.mdc-button--icon-trailing type=button
+      onclick="document.getElementById('#{dlgAssignee}').MDCDialog.open()">
+      <span.mdc-button__ripple>
+      <span.mdc-button__focus-ring>
+      <span.mdc-button__label>_{MsgAssignee}
+      <i.mdc-button__icon.material-symbols-outlined>arrow_drop_down
+  
   $if null requests
     <figure style="text-align:center">
       <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
       <figcaption>
-        _{MsgNoRequestsYet}.
+        <p>_{MsgNoPendingRequestsYet}.
+        <a.mdc-button.mdc-button--outlined role=button href=@{RequestsR}>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgShowAll}
   $else
     <nav.mdc-list data-mdc-auto-init=MDCList>
-      $forall (Entity _ (Book _ _ _ date time _ status),Entity _ (Service sname _ _ dur _ _)) <- requests
-        <a.mdc-list-item href=#
+      $forall (Entity bid (Book _ _ _ date time _ status),Entity _ (Service sname _ _ dur _ _)) <- requests
+        <a.mdc-list-item href=@?{(RequestR bid,stati)}
           .mdc-list-item--with-leading-icon.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon>
           <span.mdc-list-item__ripple>
           <span.mdc-list-item__start>
@@ -61,3 +81,77 @@ $forall (_,msg) <- msgs
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>close
+
+
+<div.mdc-dialog.mdc-dialog--fullscreen ##{dlgStatusList} data-mdc-auto-init=MDCDialog>
+  <div.mdc-dialog__container>
+    <div.mdc-dialog__surface role=dialog aria-modal=true tabindex=-1>
+      <div.mdc-dialog__header>
+        <h4.mdc-dialog__title>_{MsgStatus}
+        <button.mdc-dialog__close.mdc-icon-button data-mdc-dialog-action=close>
+          <span.mdc-icon-button__ripple>
+          <i.material-symbols-outlined>close
+      <div.mdc-dialog__content>
+        $forall (status,label) <- statusList
+          $with ident <- pack $ show status
+            <div.mdc-form-field.mdc-form-field--nowrap>
+              <div.mdc-checkbox data-mdc-auto-init=MDCCheckbox>
+                <input.mdc-checkbox__native-control type=checkbox #checkbox#{ident}
+                 name=status value=#{ident} :elem status states:checked>
+                <div.mdc-checkbox__background>
+                  <svg.mdc-checkbox__checkmark viewBox="0 0 24 24">
+                    <path.mdc-checkbox__checkmark-path fill=none d="M1.73,12.91 8.1,19.28 22.79,4.59">
+                  <div.mdc-checkbox__mixedmark>
+                <div.mdc-checkbox__ripple>
+                <div.mdc-checkbox__focus-ring>
+              <label.mdc-list-item__primary-text for=checkbox#{ident}>
+                _{label}
+              
+      <div.mdc-dialog__actions>
+        <button.mdc-button type=button data-mdc-dialog-action=close>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgCancel}
+        <button.mdc-button.mdc-button--raised type=button>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgSelect}
+      
+  <div.mdc-dialog__scrim>
+
+
+<div.mdc-dialog.mdc-dialog--fullscreen ##{dlgAssignee} data-mdc-auto-init=MDCDialog>
+  <div.mdc-dialog__container>
+    <div.mdc-dialog__surface role=dialog aria-modal=true tabindex=-1>
+      <div.mdc-dialog__header>
+        <h4.mdc-dialog__title>_{MsgAssignee}
+        <button.mdc-dialog__close.mdc-icon-button data-mdc-dialog-action=close>
+          <span.mdc-icon-button__ripple>
+          <i.material-symbols-outlined>close
+      <div.mdc-dialog__content>
+        $forall (assignee,label) <- [("me","Me"),("none","None")]
+          $with ident <- pack assignee
+            <div.mdc-form-field.mdc-form-field--nowrap>
+              <div.mdc-checkbox data-mdc-auto-init=MDCCheckbox>
+                <input.mdc-checkbox__native-control type=checkbox #checkbox#{ident}
+                 name=assignee value=#{ident} :False:checked>
+                <div.mdc-checkbox__background>
+                  <svg.mdc-checkbox__checkmark viewBox="0 0 24 24">
+                    <path.mdc-checkbox__checkmark-path fill=none d="M1.73,12.91 8.1,19.28 22.79,4.59">
+                  <div.mdc-checkbox__mixedmark>
+                <div.mdc-checkbox__ripple>
+                <div.mdc-checkbox__focus-ring>
+              <label.mdc-list-item__primary-text for=checkbox#{ident}>
+                #{pack label}
+              
+      <div.mdc-dialog__actions>
+        <button.mdc-button type=button data-mdc-dialog-action=close>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgCancel}
+        <button.mdc-button.mdc-button--raised type=button>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgSelect}
+      
+  <div.mdc-dialog__scrim>

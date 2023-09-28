@@ -1,3 +1,9 @@
+Assignee: Desemnatul
+ShowAll: Arată tot
+Approve: Aprobă
+Request: Solicitare
+LoginToSeeTheRequests: Vă rugăm să vă conectați pentru a vedea solicitările
+NoPendingRequestsYet: Nu există încă cereri de aprobare
 NoRequestsYet: Nu există încă solicitări
 AppointmentStateDiagram: Diagrama tranziție de stare a programării
 NoHistoryYet: Nu există încă istorie

@@ -1,0 +1,15 @@
+
+main
+  div[role=toolbar]
+    padding: 1rem
+    display: flex
+    flex-direction: row
+    gap: 0.5rem
+
+div.mdc-dialog
+  div.mdc-dialog__content
+    display: flex
+    flex-direction: column
+  div.mdc-dialog__actions
+    margin: 0 1rem 1rem 0
+    gap: 0.5rem

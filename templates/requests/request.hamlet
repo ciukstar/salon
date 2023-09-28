@@ -1,12 +1,12 @@
 <header.mdc-top-app-bar.mdc-top-app-bar--fixed mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button href=@{AppointmentsR}>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button href=@?{(RequestsR,stati)}>
         <span.mdc-icon-button__ripple>
         <spam.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
-        _{MsgAppointment}
+        _{MsgRequest}
 
 <main.mdc-top-app-bar--fixed-adjust>
 
@@ -23,7 +23,7 @@
             <span.mdc-icon-button__ripple>
             <i.material-symbols-outlined>close
 
-  $maybe (Entity _ (Book _ _ _ date time _ status),Entity _ (Offer _ oname price pref suff _),Entity sid (Service sname _ _ dur _ _),thumbnail,role,staff) <- book
+  $maybe (Entity _ (Book _ _ _ date time _ status),Entity _ (Offer _ oname price pref suff _),Entity sid (Service sname _ _ dur _ _),thumbnail,role,staff,customer) <- request
 
     <div.mdc-card>
       <div.mdc-card__primary-action>
@@ -94,7 +94,7 @@
         <section.mdc-card-wrapper__text-section #appointmentFullLongTime>
           #{show date} #{show time}
 
-      $maybe Entity eid (Staff ename _ _ _ _ _) <- staff
+      $with Entity eid (Staff ename _ _ _ _ _) <- staff
         <details.mdc-list.mdc-card-wrapper__text-section
           ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
           <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
@@ -107,7 +107,20 @@
             <span.mdc-list-item__end>
              <i.expand.material-symbols-outlined>expand_more
           <div style="display:flex;flex-direction:row;align-items:flex-start;justify-content:space-around">
-            $maybe Entity uid (User uname _ _ fname _) <- user
+
+            <figure style="margin:0;padding:0;text-align:center">
+              <img src=@{AdminR $ AdmStaffPhotoR eid} width=56 height=56 alt=_{MsgPhoto} loading=lazy
+                style="clip-path:circle(50%)">
+              <figcaption style="line-height:1">
+                <small>#{ename}
+                $with Entity _ (Role _ _ rname _) <- role
+                  <div>
+                    <small>(#{rname})
+
+            <i.material-symbols-outlined style="align-self:center;color:var(--mdc-theme-text-icon-on-background)">
+              handshake
+                    
+            $with Entity uid (User uname _ _ fname _) <- customer
               <figure style="margin:0;padding:0;text-align:center">
                 <img src=@{AccountPhotoR uid} width=56 height=56 style="clip-path:circle(50%)" alt=_{MsgPhoto}
                   onerror="this.src = '@{PhotoPlaceholderR}'">
@@ -119,18 +132,6 @@
                       #{uname}
                   <div>
                     <small>(_{MsgCustomer})
-
-              <i.material-symbols-outlined style="align-self:center;color:var(--mdc-theme-text-icon-on-background)">
-                handshake
-
-            <figure style="margin:0;padding:0;text-align:center">
-              <img src=@{AdminR $ AdmStaffPhotoR eid} width=56 height=56 alt=_{MsgPhoto} loading=lazy
-                style="clip-path:circle(50%)">
-              <figcaption style="line-height:1">
-                <small>#{ename}
-                $maybe Entity _ (Role _ _ rname _) <- role
-                  <div>
-                    <small>(#{rname})
 
       $maybe Entity _ (Contents _ content) <- location
         <details.mdc-list.mdc-card-wrapper__text-section
@@ -148,43 +149,19 @@
 
       <div.mdc-card__actions>
         <div.mdc-card__action-buttons>
-  
-          $if status == BookStatusRequest
-            <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--outlined type=button
-              onclick="document.getElementById('dlgCancelAppointment').MDCDialog.open()">
-              <span.mdc-button__ripple>
-              <span.mdc-button__focus-ring>
-              <span.mdc-button__label>_{MsgCancelAppointment}
-
-            <form method=post action=@{AppointmentCancelR bid} #formAppoitmentCancel enctype=#{et}>
-              ^{fw}
-
-            <div.mdc-dialog #dlgCancelAppointment data-mdc-auto-init=MDCDialog>
-              <div.mdc-dialog__container>
-                <div.mdc-dialog__surface tabindex=-1 role=alertdialog aria-modal=true>
-                  <h4.mdc-dialog__title>_{MsgPleaseConfirm}
-                  <div.mdc-dialog__content>
-                    _{MsgCancelAppointmentReally}
-
-                  <div.mdc-dialog__actions>
-                    <button.mdc-dialog__button.mdc-button type=button data-mdc-dialog-action=close>
-                      <span.mdc-button__ripple>
-                      <span.mdc-button__focus-ring>
-                      <span.mdc-button__label>_{MsgNo}
-
-                    <button.mdc-dialog__button.mdc-button.mdc-button--raised type=submit form=formAppoitmentCancel>
-                      <span.mdc-button__ripple>
-                      <span.mdc-button__focus-ring>
-                      <span.mdc-button__label>_{MsgYes}
-
-              <div.mdc-dialog__scrim>
 
           <form method=get action=@{AppointmentRescheduleR bid} #formGetAppointmentReschedule>
-          <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--unelevated 
+          <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--outlined 
             type=submit name=tz form=formGetAppointmentReschedule onclick="this.value = -(new Date().getTimezoneOffset())">
             <span.mdc-button__ripple>
             <span.mdc-button__focus-ring>
             <span.mdc-button__label>_{MsgReschedule}
+
+          <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--unelevated type=button
+            onclick="document.getElementById('dlgConfirmApprove').MDCDialog.open()">
+            <span.mdc-button__ripple>
+            <span.mdc-button__focus-ring>
+            <span.mdc-button__label>_{MsgApprove}
             
         <div.mdc-card__action-icons>
           <a.mdc-card__action.mdc-card__action-icon.mdc-icon-button role=button title=_{MsgHistory}
@@ -192,3 +169,28 @@
             <span.mdc-icon-button__ripple>
             <span.mdc-icon-button__focus-ring>
             <i.material-symbols-outlined>history
+          
+
+    <form method=post action=@{AppointmentCancelR bid} #formAppoitmentApprove enctype=#{et}>
+      ^{fw}
+
+    <div.mdc-dialog #dlgConfirmApprove data-mdc-auto-init=MDCDialog>
+      <div.mdc-dialog__container>
+        <div.mdc-dialog__surface tabindex=-1 role=alertdialog aria-modal=true>
+          <h4.mdc-dialog__title>_{MsgPleaseConfirm}
+          <div.mdc-dialog__content>
+            _{MsgCancelAppointmentReally}
+
+          <div.mdc-dialog__actions>
+            <button.mdc-dialog__button.mdc-button type=button data-mdc-dialog-action=close>
+              <span.mdc-button__ripple>
+              <span.mdc-button__focus-ring>
+              <span.mdc-button__label>_{MsgNo}
+
+            <button.mdc-dialog__button.mdc-button.mdc-button--raised type=submit form=formAppoitmentCancel>
+              <span.mdc-button__ripple>
+              <span.mdc-button__focus-ring>
+              <span.mdc-button__label>_{MsgYes}
+
+      <div.mdc-dialog__scrim>
+

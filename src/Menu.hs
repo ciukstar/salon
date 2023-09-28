@@ -1,7 +1,9 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Menu (menu) where
 
+import Data.Text (pack)
 import Yesod.Core.Handler (getCurrentRoute)
 import Foundation
     ( Widget
@@ -21,7 +23,7 @@ import Foundation
       )
     )
 
-import Model (Services (Services))
+import Model (BookStatus (BookStatusRequest), Services (Services))
 
 import Settings (widgetFile)
 import Settings.StaticFiles (img_salon_svg)
