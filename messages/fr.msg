@@ -1,3 +1,4 @@
+DemoUserAccounts: Comptes utilisateurs démo
 WithoutAssignee: Sans exécuteur
 AssignedToMe: Assigné à moi
 Assignee: Désigné
@@ -5,6 +6,7 @@ ShowAll: Afficher tout
 Approve: Approuver
 Request: Demande
 LoginToSeeTheRequests: Veuillez vous connecter pour voir les demandes
+NoRequestsFound: Aucune demande trouvée
 NoPendingRequestsYet: Il n'y a pas encore de demandes d'approbation
 NoRequestsYet: Il n'y a pas encore de demandes
 AppointmentStateDiagram: Diagramme de transition d'état de rendez-vous

@@ -9,8 +9,8 @@ import Text.Hamlet (shamlet)
 import Text.Shakespeare.Text (st)
 import qualified Data.ByteString.Base64 as B64 (decode)
 import Data.Text.Encoding (decodeUtf8)
-import Data.Time.Calendar (addGregorianYearsClip, addGregorianMonthsClip)
-import Data.Time.Clock (getCurrentTime, UTCTime (utctDay,utctDayTime), addUTCTime, DiffTime)
+import Data.Time.Calendar (addDays)
+import Data.Time.Clock (getCurrentTime, UTCTime (utctDay,utctDayTime), DiffTime)
 import Data.Time.Format (parseTimeM, defaultTimeLocale)
 import Data.Time.LocalTime (timeToTimeOfDay, utc)
 import Control.Monad.IO.Class (MonadIO (liftIO))
@@ -49,27 +49,33 @@ import Demo.DemoPhotos
 populateEN :: MonadIO m => ReaderT SqlBackend m ()
 populateEN = do
 
-    (now,today,time) <- liftIO $ getCurrentTime >>= \x -> return (x,utctDay x,timeToTimeOfDay (utctDayTime x))
+    (today,time) <- liftIO $ getCurrentTime >>= \x -> return (utctDay x,timeToTimeOfDay (utctDayTime x))
 
     insert_ $ Contents { contentsSection = "CONTACTS"
                        , contentsContent = Textarea [st|
-<h3 style="color:gray">Call Us</h3>
-<dl>
-  <dt><i>Telephone</i></dt>
-  <dd>937-810-6140</dd>
-  <dt><i>Mobile</i></dt>
-  <dd>567-274-7469</dd>
-</dl>
-<h3 style="color:gray">Email Us</h3>
-<dl>
-  <dt><i>Email</i></dt>
-  <dd>salon@mail.org</dd>
-</dl>
-<h3 style="color:gray">Come see us</h3>
-<dl>
-  <dt><i>Address</i><dt>
-  <dd>5331 Rexford Court, Montgomery AL 36116</dd>
-</dl>
+<section style="margin:0 1rem">
+  <h3 style="color:gray">Call Us</h3>
+  <dl>
+    <dt><i>Telephone</i></dt>
+    <dd>937-810-6140</dd>
+    <dt><i>Mobile</i></dt>
+    <dd>567-274-7469</dd>
+  </dl>
+</section>
+<section style="margin:0 1rem">
+  <h3 style="color:gray">Email Us</h3>
+  <dl>
+    <dt><i>Email</i></dt>
+    <dd>salon@mail.org</dd>
+  </dl>
+</section>
+<section style="margin:0 1rem">
+  <h3 style="color:gray">Come see us</h3>
+  <dl>
+    <dt><i>Address</i><dt>
+    <dd>5331 Rexford Court, Montgomery AL 36116</dd>
+  </dl>
+</section>
 <p>
   <iframe width="100%" height="400px" loding="lazy" title="Salon" style="border:none" src='https://api.mapbox.com/styles/v1/mapbox/streets-v12.html?title=false&zoomwheel=false&access_token=pk.eyJ1IjoiY2l1a3N0YXIiLCJhIjoiY2o1enNibDNsMGNrNDJ3dDhxeTJuc3luMiJ9.Jgc5GdYUMbYwGq-zRWtzfw'></iframe>
 </p>
@@ -356,7 +362,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             , serviceGroup = Just s1
                             }
 
-    r111 <- insert $ Role { roleStaff = e1
+    insert_ $ Role { roleStaff = e1
                           , roleService = s11
                           , roleName = "Makeup artist"
                           , roleRating = Just 5
@@ -391,15 +397,6 @@ We will continue to offer the latest treatments, the most innovative techniques 
                            , offerSuffix = Nothing
                            , offerDescr = Nothing
                            }
-
-    insert_ $ Book { bookOffer = o121
-                   , bookRole = Just r111 
-                   , bookUser = u2
-                   , bookDay = addGregorianMonthsClip 1 today
-                   , bookTime = time
-                   , bookTz = utc
-                   , bookStatus = BookStatusRequest
-                   }
 
     insert_ $ Thumbnail { thumbnailService = s12
                         , thumbnailPhoto = $(embedFile "static/img/women-hair-cuts-above-shoulders.avif")
@@ -525,11 +522,11 @@ We will continue to offer the latest treatments, the most innovative techniques 
                         , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
-    insert_ $ Role { roleStaff = e5
-                   , roleService = s1511
-                   , roleName = "Hairdresser"
-                   , roleRating = Just 2
-                   }
+    r51511 <- insert $ Role { roleStaff = e5
+                            , roleService = s1511
+                            , roleName = "Hairdresser"
+                            , roleRating = Just 2
+                            }
 
     s1512 <- insert $ Service { serviceName = "Before Perm Conditioner"
                               , servicePublished = True
@@ -994,6 +991,24 @@ We will continue to offer the latest treatments, the most innovative techniques 
                         , thumbnailMime = "image/avif"
                         , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
+
+    insert_ $ Book { bookOffer = o121
+                   , bookRole = Just r51511 
+                   , bookUser = u2
+                   , bookDay = addDays 1 today
+                   , bookTime = time
+                   , bookTz = utc
+                   , bookStatus = BookStatusRequest
+                   }
+
+    insert_ $ Book { bookOffer = o121
+                   , bookRole = Just r51511 
+                   , bookUser = u2
+                   , bookDay = addDays 2 today
+                   , bookTime = time
+                   , bookTz = utc
+                   , bookStatus = BookStatusRequest
+                   }
 
     return ()
   where

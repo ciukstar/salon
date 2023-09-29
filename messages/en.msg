@@ -1,3 +1,4 @@
+DemoUserAccounts: Demo user accounts
 WithoutAssignee: Without assignee
 AssignedToMe: Assigned to me
 Assignee: Assignee
@@ -5,6 +6,7 @@ ShowAll: Show all
 Approve: Approve
 Request: Request
 LoginToSeeTheRequests: Please login to see the requests
+NoRequestsFound: No requests found
 NoPendingRequestsYet: No requests for approval yet
 NoRequestsYet: There are no requests yet
 AppointmentStateDiagram: State transition diagram for appointment

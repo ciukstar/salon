@@ -6,6 +6,14 @@ main
     flex-direction: row
     gap: 0.5rem
 
+  nav.mdc-list
+    .mdc-list-item
+      .mdc-list-item__content
+        .mdc-list-item__secondary-text
+          white-space: nowrap
+          overflow: hidden
+          text-overflow: ellipsis
+
 div.mdc-dialog
   div.mdc-dialog__content
     display: flex

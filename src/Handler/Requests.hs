@@ -22,7 +22,7 @@ import Yesod.Core
     )
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Auth ( Route(LoginR, LogoutR), maybeAuth )
-import Yesod.Form.Fields (Textarea(unTextarea), searchField)
+import Yesod.Form.Fields (Textarea(unTextarea, Textarea), searchField)
 import Yesod.Form.Types (MForm, FormResult (FormSuccess))
 import Yesod.Form.Functions (generateFormPost)
 import Settings (widgetFile)
@@ -43,7 +43,7 @@ import Foundation
       , MsgReschedule, MsgMeetingLocation, MsgCustomer, MsgSelect, MsgCancel
       , MsgService, MsgMeetingTime, MsgAcquaintance, MsgAppoinmentStatus
       , MsgDuration, MsgApprove, MsgNoPendingRequestsYet, MsgShowAll
-      , MsgAssignedToMe, MsgWithoutAssignee, MsgSearch
+      , MsgAssignedToMe, MsgWithoutAssignee, MsgSearch, MsgNoRequestsFound
       )
     )
 
@@ -51,8 +51,8 @@ import Database.Persist (Entity (Entity))
 import Yesod.Persist.Core (YesodPersist(runDB))
 import Database.Esqueleto.Experimental
     ( select, from, table, innerJoin, leftJoin, on, where_, val
-    , (:&)((:&)), (==.), (^.), (?.)
-    , orderBy, desc, just, selectOne, valList, in_
+    , (:&)((:&)), (==.), (^.), (?.), (%), (++.), (||.)
+    , orderBy, desc, just, selectOne, valList, in_, upper_, like
     )
     
 import Model
@@ -65,7 +65,9 @@ import Model
     , EntityField
       ( BookOffer, OfferId, OfferService, ServiceId, BookDay, BookTime
       , BookRole, RoleId, RoleStaff, StaffId, StaffUser, ContentsSection, BookId
-      , ThumbnailService, BookUser, UserId, BookStatus
+      , ThumbnailService, BookUser, UserId, BookStatus, ServiceName, ServiceDescr
+      , ServiceOverview, RoleName, OfferName, OfferPrefix, OfferSuffix, OfferDescr
+      , StaffName, StaffPhone, StaffMobile, StaffEmail, UserName, UserFullName, UserEmail
       )
     )
 
@@ -76,11 +78,58 @@ import Yesod.Form.Input (runInputGet, iopt)
 
 getRequestsSearchR :: Handler Html
 getRequestsSearchR = do
-    formSearch <- newIdent
     q <- runInputGet $ iopt (searchField True) "q"
-    defaultLayout $ do
-        setTitleI MsgSearch
-        $(widgetFile "requests/search/search")
+    stati <- filter ((== "status") . fst) . reqGetParams <$> getRequest
+    user <- maybeAuth
+    setUltDestCurrent
+    msgs <- getMessages
+    case user of
+      Nothing -> defaultLayout $ do
+          setTitleI MsgLogin
+          $(widgetFile "requests/login")
+      Just (Entity uid _) -> do
+          formSearch <- newIdent
+          dlgStatusList <- newIdent
+          let statusList = [ (BookStatusRequest, MsgRequest)
+                           , (BookStatusApproved, MsgApproved)
+                           , (BookStatusCancelled, MsgCancelled)
+                           , (BookStatusPaid, MsgPaid)
+                           ]
+          let states = mapMaybe (readMaybe . unpack . snd) stati
+          dlgAssignee <- newIdent
+          requests <- runDB $ select $ do
+              x :& o :& s :& r :& e :& c <- from $ table @Book
+                  `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
+                  `innerJoin` table @Service `on` (\(_ :& o :& s) -> o ^. OfferService ==. s ^. ServiceId)
+                  `innerJoin` table @Role `on` (\(x :& _ :& _ :& r) -> x ^. BookRole ==. just (r ^. RoleId))
+                  `innerJoin` table @Staff `on` (\(_ :& _ :& _ :& r :& e) -> r ^. RoleStaff ==. e ^. StaffId)
+                  `innerJoin` table @User `on` (\(_ :& _ :& _ :& _ :& e :& c) -> e ^. StaffUser ==. just (c ^. UserId))
+              where_ $ e ^. StaffUser ==. just (val uid)
+              case q of
+                Just query -> where_ $ (upper_ (s ^. ServiceName) `like` ((%) ++. upper_ (val query) ++. (%)))
+                  ||. (upper_ (s ^. ServiceOverview) `like` ((%) ++. upper_ (just (val query)) ++. (%)))
+                  ||. (upper_ (s ^. ServiceDescr) `like` ((%) ++. upper_ (just (val (Textarea query))) ++. (%)))
+                  ||. (upper_ (r ^. RoleName) `like` ((%) ++. upper_ (val query) ++. (%)))
+                  ||. (upper_ (o ^. OfferName) `like` ((%) ++. upper_ (val query) ++. (%)))
+                  ||. (upper_ (o ^. OfferPrefix) `like` ((%) ++. upper_ (just (val query)) ++. (%)))
+                  ||. (upper_ (o ^. OfferSuffix) `like` ((%) ++. upper_ (just (val query)) ++. (%)))
+                  ||. (upper_ (o ^. OfferDescr) `like` ((%) ++. upper_ (just (val (Textarea query))) ++. (%)))
+                  ||. (upper_ (e ^. StaffName) `like` ((%) ++. upper_ (val query) ++. (%)))
+                  ||. (upper_ (e ^. StaffPhone) `like` ((%) ++. upper_ (just (val query)) ++. (%)))
+                  ||. (upper_ (e ^. StaffMobile) `like` ((%) ++. upper_ (just (val query)) ++. (%)))
+                  ||. (upper_ (e ^. StaffEmail) `like` ((%) ++. upper_ (just (val query)) ++. (%)))
+                  ||. (upper_ (c ^. UserName) `like` ((%) ++. upper_ (val query) ++. (%)))
+                  ||. (upper_ (c ^. UserFullName) `like` ((%) ++. upper_ (just (val query)) ++. (%)))
+                  ||. (upper_ (c ^. UserEmail) `like` ((%) ++. upper_ (just (val query)) ++. (%)))
+                Nothing -> return ()
+              case states of
+                [] -> return ()
+                xs -> where_ $ x ^. BookStatus `in_` valList xs
+              orderBy [desc (x ^. BookDay), desc (x ^. BookTime)]
+              return (x,s)
+          defaultLayout $ do
+              setTitleI MsgSearch
+              $(widgetFile "requests/search/search")
 
 
 getRequestR :: BookId -> Handler Html
@@ -128,8 +177,6 @@ getRequestsR = do
           setTitleI MsgLogin
           $(widgetFile "requests/login")
       Just (Entity uid _) -> do
-          app <- getYesod
-          langs <- languages
           dlgStatusList <- newIdent
           let statusList = [ (BookStatusRequest, MsgRequest)
                            , (BookStatusApproved, MsgApproved)

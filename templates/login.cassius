@@ -13,6 +13,7 @@ main
       .mdc-text-field
         input.mdc-text-field__input
           caret-color: var(--mdc-theme-text-primary-on-background)
+
     #createAccount
       margin-top: 2rem
       display: flex
@@ -21,3 +22,21 @@ main
       gap: 0.5rem
       small.hint
         color: var(--mdc-theme-text-hint-on-light)
+
+div.mdc-dialog
+  div.mdc-dialog__content
+    form
+      display: flex
+      flex-direction: column
+      .mdc-form-field
+        .mdc-radio .mdc-radio__native-control:enabled:checked+.mdc-radio__background
+          .mdc-radio__outer-circle, .mdc-radio__inner-circle
+            border-color: var(--theme-accent,#018786)
+        label
+          width: 100%
+          display: flex
+          flex-direction: row
+          justify-content: space-between
+          align-items: center
+  div.mdc-dialog__actions
+    gap: 1rem

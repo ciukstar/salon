@@ -3,6 +3,12 @@ window.mdc.autoInit();
 
 Array.from(
   document.querySelectorAll('div.mdc-banner')
-).forEach(function (x) {
-  x.MDCBanner.open();
-})
+).forEach(function (x) { x.MDCBanner.open(); });
+
+document.getElementById('btnFillCreds').addEventListener('click',function (e) {
+  document.getElementById('loginForm').querySelectorAll('.mdc-text-field').forEach(function (x) {
+    x.querySelector('input').value = document.forms.formUserOptions.uname.value;
+    x.classList.add('mdc-text-field--label-floating');
+    x.querySelector('.mdc-floating-label').classList.add('mdc-floating-label--float-above');
+  });
+});

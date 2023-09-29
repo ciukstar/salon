@@ -1,3 +1,4 @@
+DemoUserAccounts: Conturi de utilizator Demo
 WithoutAssignee: Fără executor
 AssignedToMe: Atribuite mie
 Assignee: Desemnatul
@@ -5,6 +6,7 @@ ShowAll: Arată tot
 Approve: Aprobă
 Request: Solicitare
 LoginToSeeTheRequests: Vă rugăm să vă conectați pentru a vedea solicitările
+NoRequestsFound: Nu s-au găsit solicitări
 NoPendingRequestsYet: Nu există încă cereri de aprobare
 NoRequestsYet: Nu există încă solicitări
 AppointmentStateDiagram: Diagrama tranziție de stare a programării

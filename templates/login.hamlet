@@ -23,16 +23,22 @@
   <div #loginFormWrapper>
     <h4.mdc-typography--headline6>_{MsgSignInToYourAccount}
     <form method=POST action=@{route} #loginForm>
-      <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--label-floating data-mdc-auto-init=MDCTextField>
+      <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
+        .mdc-text-field--label-floating.mdc-text-field--with-trailing-icon>
         <span.mdc-text-field__ripple>
         <span.mdc-floating-label>_{MsgUsername}
-        <input.mdc-text-field__input type=text name=username autocomplete=username>
+        <input.mdc-text-field__input type=text name=username autocomplete=username required #inputUsername>
+        <button.mdc-icon-button.mdc-text-field__icon.mdc-text-field__icon--trailing tabindex=0 type=button
+          title=_{MsgDemoUserAccounts} onclick="document.getElementById('dlgSampleCreds').MDCDialog.open()">
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>demography
         <span.mdc-line-ripple>
 
       <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--label-floating data-mdc-auto-init=MDCTextField>
         <span.mdc-text-field__ripple>
         <span.mdc-floating-label>_{MsgPassword}
-        <input.mdc-text-field__input type=password name=password autocomplete=current-password>
+        <input.mdc-text-field__input type=password name=password autocomplete=current-password required #inputPassword>
         <span.mdc-line-ripple>
 
       <button.mdc-button.mdc-button--raised type=submit>
@@ -46,3 +52,37 @@
         <span.mdc-button__ripple>
         <span.mdc-button__focus-ring>
         <span.mdc-button__label>_{MsgCreateAccount}
+
+<div.mdc-dialog #dlgSampleCreds data-mdc-auto-init=MDCDialog>
+  <div.mdc-dialog__container>
+    <div.mdc-dialog__surface role=dialog aria-modal=true tabindex=-1>
+      <div.mdc-dialog__header>
+        <h4.mdc-dialog__title>_{MsgDemoUserAccounts}
+      <div.mdc-dialog__content>
+        <form name=formUserOptions>
+          $forall (Value uid,Value uname) <- users
+            $with ident <- T.pack $ show $ fromSqlKey uid
+              <div.mdc-form-field>
+                <div.mdc-radio tabindex=-1 data-mdc-auto-init=MDCRadio>
+                  <input.mdc-radio__native-control type=radio name=uname value=#{uname} #radio#{ident}>
+                  <div.mdc-radio__background>
+                    <div.mdc-radio__outer-circle>
+                    <div.mdc-radio__inner-circle>
+                  <div.mdc-radio__ripple>
+                  <div.mdc-radio__focus-ring>
+                <label for=radio#{ident}>
+                  <span>#{uname}
+                  <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" width=24 height=24 alt=_{MsgPhoto}
+                    onerror="this.src = '@{PhotoPlaceholderR}'">
+              
+      <div.mdc-dialog__actions>
+        <button.mdc-button type=button data-mdc-dialog-action=close>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgCancel}
+        <button.mdc-button.mdc-button--raised type=button data-mdc-dialog-action=close #btnFillCreds>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgSelect}
+      
+  <div.mdc-dialog__scrim>

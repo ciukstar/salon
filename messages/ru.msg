@@ -1,3 +1,4 @@
+DemoUserAccounts: Демо-аккаунты
 WithoutAssignee: Без исполнителя
 AssignedToMe: Назначенные мне
 Assignee: Исполнитель
@@ -5,6 +6,7 @@ ShowAll: Показать всё
 Approve: Утвердить
 Request: Запрос
 LoginToSeeTheRequests: Пожалуйста, войдите, чтобы увидеть запросы
+NoRequestsFound: Запросы не найдены
 NoPendingRequestsYet: Запросов на одобрение пока нет
 NoRequestsYet: Запросов пока нет
 AppointmentStateDiagram: Схема перехода состояний для записи на прием

@@ -14,7 +14,7 @@ module Foundation where
 
 import Import.NoFoundation
 import Data.Kind            (Type)
-import Database.Persist.Sql (ConnectionPool, runSqlPool)
+import qualified Data.Text as T (pack)
 import Text.Hamlet          (hamletFile)
 import Text.Jasmine         (minifym)
 import Control.Monad.Logger (LogSource)
@@ -33,7 +33,12 @@ import Yesod.Form.I18n.English (englishFormMessage)
 import Yesod.Form.I18n.French (frenchFormMessage)
 import Yesod.Form.I18n.Russian (russianFormMessage)
 import qualified Data.List.Safe as LS
-import Database.Esqueleto.Experimental (selectOne, from, table)
+import Database.Persist.Sql (ConnectionPool, runSqlPool, fromSqlKey)
+import qualified Database.Esqueleto.Experimental as E ((==.), exists)
+import Database.Esqueleto.Experimental
+    ( select, selectOne, from, table, Value (Value), where_
+    , (^.), just
+    )
 
 -- | The foundation datatype for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
@@ -311,6 +316,12 @@ formLogin :: Route App -> Widget
 formLogin route = do
     ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$>  lookupSession ultDestKey
     msgs <- getMessages
+    users <- liftHandler $ runDB $ select $ do
+        x <- from $ table @User
+        where_ $ E.exists $ do
+            e <- from $ table @Staff
+            where_ $ e ^. StaffUser E.==. just (x ^. UserId)
+        return (x ^. UserId, x ^. UserName)
     $(widgetFile "login")
 
 
