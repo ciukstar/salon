@@ -14,8 +14,9 @@
 /book/staff    BookStaffR    GET POST
 /book          BookOffersR   GET POST
 
-/requests/#BookId RequestR  GET
-/requests 	  RequestsR GET
+/search/requests  RequestsSearchR GET
+/requests/#BookId RequestR  	  GET
+/requests 	  RequestsR 	  GET
 
 /aboutus AboutUsR GET
 

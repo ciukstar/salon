@@ -1,3 +1,5 @@
+WithoutAssignee: Sans exécuteur
+AssignedToMe: Assigné à moi
 Assignee: Désigné
 ShowAll: Afficher tout
 Approve: Approuver

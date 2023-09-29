@@ -10,6 +10,10 @@
         _{MsgRequests}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
+      <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{RequestsSearchR} role=button>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>search
       $maybe Entity uid _ <- user
         <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{ProfileR} role=button>
           <span.mdc-icon-button__ripple>
@@ -129,7 +133,7 @@ $forall (_,msg) <- msgs
           <span.mdc-icon-button__ripple>
           <i.material-symbols-outlined>close
       <div.mdc-dialog__content>
-        $forall (assignee,label) <- [("me","Me"),("none","None")]
+        $forall (assignee,label) <- [("me",MsgAssignedToMe),("none",MsgWithoutAssignee)]
           $with ident <- pack assignee
             <div.mdc-form-field.mdc-form-field--nowrap>
               <div.mdc-checkbox data-mdc-auto-init=MDCCheckbox>
@@ -142,7 +146,7 @@ $forall (_,msg) <- msgs
                 <div.mdc-checkbox__ripple>
                 <div.mdc-checkbox__focus-ring>
               <label.mdc-list-item__primary-text for=checkbox#{ident}>
-                #{pack label}
+                _{label}
               
       <div.mdc-dialog__actions>
         <button.mdc-button type=button data-mdc-dialog-action=close>

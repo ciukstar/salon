@@ -1,3 +1,5 @@
+WithoutAssignee: Fără executor
+AssignedToMe: Atribuite mie
 Assignee: Desemnatul
 ShowAll: Arată tot
 Approve: Aprobă

@@ -1,3 +1,5 @@
+WithoutAssignee: Без исполнителя
+AssignedToMe: Назначенные мне
 Assignee: Исполнитель
 ShowAll: Показать всё
 Approve: Утвердить

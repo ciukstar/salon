@@ -1,3 +1,5 @@
+WithoutAssignee: Without assignee
+AssignedToMe: Assigned to me
 Assignee: Assignee
 ShowAll: Show all
 Approve: Approve

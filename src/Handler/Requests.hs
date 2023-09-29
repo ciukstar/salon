@@ -3,7 +3,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 
-module Handler.Requests (getRequestsR, getRequestR) where
+module Handler.Requests
+  ( getRequestsR
+  , getRequestR
+  , getRequestsSearchR
+  ) where
 
 import Data.Maybe (mapMaybe)
 import Data.Text (intercalate, unpack, Text, pack)
@@ -18,7 +22,7 @@ import Yesod.Core
     )
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Auth ( Route(LoginR, LogoutR), maybeAuth )
-import Yesod.Form.Fields (Textarea(unTextarea))
+import Yesod.Form.Fields (Textarea(unTextarea), searchField)
 import Yesod.Form.Types (MForm, FormResult (FormSuccess))
 import Yesod.Form.Functions (generateFormPost)
 import Settings (widgetFile)
@@ -28,7 +32,7 @@ import Foundation
     , Route
       ( AuthR, PhotoPlaceholderR, AccountPhotoR, ProfileR, RequestsR, RequestR
       , AppointmentCancelR, AppointmentHistR, AppointmentRescheduleR, AdminR
-      , ServiceThumbnailR
+      , ServiceThumbnailR, RequestsSearchR, RequestsSearchR
       )
     , AdminR (AdmStaffPhotoR)
     , AppMessage
@@ -39,6 +43,7 @@ import Foundation
       , MsgReschedule, MsgMeetingLocation, MsgCustomer, MsgSelect, MsgCancel
       , MsgService, MsgMeetingTime, MsgAcquaintance, MsgAppoinmentStatus
       , MsgDuration, MsgApprove, MsgNoPendingRequestsYet, MsgShowAll
+      , MsgAssignedToMe, MsgWithoutAssignee, MsgSearch
       )
     )
 
@@ -66,6 +71,16 @@ import Model
 
 import Menu (menu)
 import Handler.Contacts (section)
+import Yesod.Form.Input (runInputGet, iopt)
+
+
+getRequestsSearchR :: Handler Html
+getRequestsSearchR = do
+    formSearch <- newIdent
+    q <- runInputGet $ iopt (searchField True) "q"
+    defaultLayout $ do
+        setTitleI MsgSearch
+        $(widgetFile "requests/search/search")
 
 
 getRequestR :: BookId -> Handler Html
