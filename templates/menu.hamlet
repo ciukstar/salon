@@ -45,7 +45,8 @@
           <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>pending_actions
           <span.mdc-deprecated-list-item__text>_{MsgMyAppointments}
           
-        <a.mdc-deprecated-list-item href=@?{(RequestsR,[("status",pack $ show BookStatusRequest)])}
+        <a.mdc-deprecated-list-item 
+          href=@?{(RequestsR,[("status",pack $ show BookStatusRequest),("assignee",pack $ show AssigneesMe)])}
           :Just RequestsR /= curr:tabindex=-1
           :Just RequestsR == curr:tabindex=0
           :Just RequestsR == curr:.mdc-deprecated-list-item--activated>

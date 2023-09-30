@@ -13,6 +13,8 @@ main
       .mdc-text-field
         input.mdc-text-field__input
           caret-color: var(--mdc-theme-text-primary-on-background)
+      #btnLogin
+        margin: 1rem 0
 
     #createAccount
       margin-top: 2rem

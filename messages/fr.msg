@@ -1,3 +1,4 @@
+FromCoworkers: Des collègues
 DemoUserAccounts: Comptes utilisateurs démo
 WithoutAssignee: Sans exécuteur
 AssignedToMe: Assigné à moi

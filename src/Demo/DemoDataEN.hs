@@ -363,18 +363,18 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             }
 
     insert_ $ Role { roleStaff = e1
-                          , roleService = s11
-                          , roleName = "Makeup artist"
-                          , roleRating = Just 5
-                          }
+                   , roleService = s11
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
 
-    insert_ $ Offer { offerService = s11
-                        , offerName = "Price"
-                        , offerPrice = 26
-                        , offerPrefix = Just "$"
-                        , offerSuffix = Nothing
-                        , offerDescr = Nothing
-                        }
+    o111 <- insert $ Offer { offerService = s11
+                           , offerName = "Price"
+                           , offerPrice = 26
+                           , offerPrefix = Just "$"
+                           , offerSuffix = Nothing
+                           , offerDescr = Nothing
+                           }
 
     insert_ $ Thumbnail { thumbnailService = s11
                         , thumbnailPhoto = $(embedFile "static/img/men-haircuts.avif")
@@ -452,13 +452,13 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             , serviceGroup = Just s1
                             }
 
-    insert_ $ Offer { offerService = s14
-                        , offerName = "Price"
-                        , offerPrice = 16
-                        , offerPrefix = Just "$"
-                        , offerSuffix = Just "-$20 (depending on the length of their hair)"
-                        , offerDescr = Nothing
-                        }
+    o141 <- insert $ Offer { offerService = s14
+                           , offerName = "Price"
+                           , offerPrice = 16
+                           , offerPrefix = Just "$"
+                           , offerSuffix = Just "-$20 (depending on the length of their hair)"
+                           , offerDescr = Nothing
+                           }
 
     insert_ $ Thumbnail { thumbnailService = s14
                         , thumbnailPhoto = $(embedFile "static/img/children-hair-cuts.avif")
@@ -1001,10 +1001,19 @@ We will continue to offer the latest treatments, the most innovative techniques 
                    , bookStatus = BookStatusRequest
                    }
 
-    insert_ $ Book { bookOffer = o121
+    insert_ $ Book { bookOffer = o111
                    , bookRole = Just r51511 
                    , bookUser = u2
                    , bookDay = addDays 2 today
+                   , bookTime = time
+                   , bookTz = utc
+                   , bookStatus = BookStatusRequest
+                   }
+
+    insert_ $ Book { bookOffer = o141
+                   , bookRole = Nothing 
+                   , bookUser = u2
+                   , bookDay = addDays 3 today
                    , bookTime = time
                    , bookTz = utc
                    , bookStatus = BookStatusRequest

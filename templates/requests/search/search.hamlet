@@ -6,7 +6,8 @@
       .mdc-text-field--with-leading-icon.mdc-text-field--with-trailing-icon #labelSearch>
       <span.mdc-text-field__ripple>
       <div.mdc-touch-target-wrapper style="align-self:center">
-        <a.mdc-icon-button.mdc-theme--text-primary-on-light href=@{RequestsR} role=button tabindex=0>
+        <a.mdc-icon-button.mdc-theme--text-primary-on-light role=button tabindex=0
+           href=@?{(RequestsR,stati ++ owners)}>
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>arrow_back
@@ -27,18 +28,26 @@
 
   <div role=toolbar>
     <button.mdc-button.mdc-button--outlined.mdc-button--icon-trailing type=button
+      :not (null states):style="color:var(--theme-accent)"
       onclick="document.getElementById('#{dlgStatusList}').MDCDialog.open()">
       <span.mdc-button__ripple>
       <span.mdc-button__focus-ring>
       <span.mdc-button__label>_{MsgStatus}
-      <i.mdc-button__icon.material-symbols-outlined>arrow_drop_down
+      $if null states
+        <i.mdc-button__icon.material-symbols-outlined>arrow_drop_down
+      $else
+        <i.mdc-button__icon.material-symbols-outlined>counter_#{show (length states)}
       
     <button.mdc-button.mdc-button--outlined.mdc-button--icon-trailing type=button
+      :not (null assignees):style="color:var(--theme-accent)"
       onclick="document.getElementById('#{dlgAssignee}').MDCDialog.open()">
       <span.mdc-button__ripple>
       <span.mdc-button__focus-ring>
       <span.mdc-button__label>_{MsgAssignee}
-      <i.mdc-button__icon.material-symbols-outlined>arrow_drop_down
+      $if null assignees
+        <i.mdc-button__icon.material-symbols-outlined>arrow_drop_down
+      $else
+        <i.mdc-button__icon.material-symbols-outlined>counter_#{show (length assignees)}
   
   $if null requests
     <figure style="text-align:center">
@@ -53,7 +62,7 @@
     <nav.mdc-list data-mdc-auto-init=MDCList>
       $forall (Entity bid (Book _ _ _ date time _ status),Entity _ (Service sname _ _ _ _ _)) <- requests
         $with (color,icon,msg) <- resolve status
-          <a.mdc-list-item href=@?{(RequestR bid,stati)}
+          <a.mdc-list-item href=@?{(RequestR bid,stati ++ owners)}
             .mdc-list-item--with-leading-icon.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon>
             <span.mdc-list-item__ripple>
             <span.mdc-list-item__start>
@@ -94,7 +103,7 @@ $forall (_,msg) <- msgs
             <div.mdc-form-field.mdc-form-field--nowrap>
               <div.mdc-checkbox data-mdc-auto-init=MDCCheckbox>
                 <input.mdc-checkbox__native-control type=checkbox #checkbox#{ident}
-                 name=status value=#{ident} :elem status states:checked>
+                 name=status value=#{ident} form=#{formSearch} :elem status states:checked>
                 <div.mdc-checkbox__background>
                   <svg.mdc-checkbox__checkmark viewBox="0 0 24 24">
                     <path.mdc-checkbox__checkmark-path fill=none d="M1.73,12.91 8.1,19.28 22.79,4.59">
@@ -109,7 +118,7 @@ $forall (_,msg) <- msgs
           <span.mdc-button__ripple>
           <span.mdc-button__focus-ring>
           <span.mdc-button__label>_{MsgCancel}
-        <button.mdc-button.mdc-button--raised type=button>
+        <button.mdc-button.mdc-button--raised type=submit form=#{formSearch}>
           <span.mdc-button__ripple>
           <span.mdc-button__focus-ring>
           <span.mdc-button__label>_{MsgSelect}
@@ -126,12 +135,12 @@ $forall (_,msg) <- msgs
           <span.mdc-icon-button__ripple>
           <i.material-symbols-outlined>close
       <div.mdc-dialog__content>
-        $forall (assignee,label) <- [("me",MsgAssignedToMe),("none",MsgWithoutAssignee)]
-          $with ident <- pack assignee
+        $forall (assignee,label) <- assigneeList
+          $with ident <- pack (show assignee)
             <div.mdc-form-field.mdc-form-field--nowrap>
               <div.mdc-checkbox data-mdc-auto-init=MDCCheckbox>
                 <input.mdc-checkbox__native-control type=checkbox #checkbox#{ident}
-                 name=assignee value=#{ident} :False:checked>
+                 name=assignee value=#{ident} form=#{formSearch} :elem assignee assignees:checked>
                 <div.mdc-checkbox__background>
                   <svg.mdc-checkbox__checkmark viewBox="0 0 24 24">
                     <path.mdc-checkbox__checkmark-path fill=none d="M1.73,12.91 8.1,19.28 22.79,4.59">
@@ -146,7 +155,7 @@ $forall (_,msg) <- msgs
           <span.mdc-button__ripple>
           <span.mdc-button__focus-ring>
           <span.mdc-button__label>_{MsgCancel}
-        <button.mdc-button.mdc-button--raised type=button>
+        <button.mdc-button.mdc-button--raised type=sumit form=#{formSearch}>
           <span.mdc-button__ripple>
           <span.mdc-button__focus-ring>
           <span.mdc-button__label>_{MsgSelect}

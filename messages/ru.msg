@@ -1,10 +1,11 @@
+FromCoworkers: От коллег
 DemoUserAccounts: Демо-аккаунты
 WithoutAssignee: Без исполнителя
 AssignedToMe: Назначенные мне
 Assignee: Исполнитель
 ShowAll: Показать всё
 Approve: Утвердить
-Request: Запрос
+Request: Запрос на приём
 LoginToSeeTheRequests: Пожалуйста, войдите, чтобы увидеть запросы
 NoRequestsFound: Запросы не найдены
 NoPendingRequestsYet: Запросов на одобрение пока нет
@@ -29,7 +30,7 @@ Nullify: Аннулировать
 Reschedule: Перенести
 Calendar: Календарь
 BookingCalendar: Календарь бронирования
-Requests: Запросы
+Requests: Запросы на приём
 BookingRequests: Запросы на бронирование
 NoOffersYet: Предложений пока нет
 ChoosePhoto: Выбрать фото
@@ -61,7 +62,7 @@ CancelAppointment: Аннулировать
 Appointment: Запись
 NoAppointmentsYet: У вас еще нет записей
 LoginToSeeYourAppointments: Пожалуйста, войдите, чтобы увидеть ваши записи
-MyAppointments: Мои записи
+MyAppointments: Мои записи на приём
 Time: Время
 Day: День
 NotYourAccount: Не ваша учетная запись
@@ -135,7 +136,7 @@ Ratings: Рейтинги
 Rating: Рейтинг
 AddRole: Добавить роль
 NoRolesYes: Ролей пока нет
-BookAppointment: Записаться на прием
+BookAppointment: Записаться на приём
 EmployeeAlreadyInTheList: Сотрудник уже в списке
 Mobile: Мобильный
 Phone: Телефон

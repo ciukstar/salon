@@ -1,10 +1,11 @@
+FromCoworkers: De la colegi
 DemoUserAccounts: Conturi de utilizator Demo
 WithoutAssignee: Fără executor
 AssignedToMe: Atribuite mie
 Assignee: Desemnatul
 ShowAll: Arată tot
 Approve: Aprobă
-Request: Solicitare
+Request: Solicitare de programare
 LoginToSeeTheRequests: Vă rugăm să vă conectați pentru a vedea solicitările
 NoRequestsFound: Nu s-au găsit solicitări
 NoPendingRequestsYet: Nu există încă cereri de aprobare
@@ -29,7 +30,7 @@ Nullify: Anulează
 Reschedule: Reprogramează
 Calendar: Calendar
 BookingCalendar: Calendar de rezervari
-Requests: Solicitări
+Requests: Solicitări de programare
 BookingRequests: Cereri de rezervare
 NoOffersYet: Nu există încă oferte
 ChoosePhoto: Alege foto

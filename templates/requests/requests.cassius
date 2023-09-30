@@ -13,6 +13,8 @@ main
           white-space: nowrap
           overflow: hidden
           text-overflow: ellipsis
+    .mdc-list-item--activated .mdc-list-item__primary-text
+      color: var(--theme-accent)
 
 div.mdc-dialog
   div.mdc-dialog__content

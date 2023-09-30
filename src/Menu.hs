@@ -23,7 +23,7 @@ import Foundation
       )
     )
 
-import Model (BookStatus (BookStatusRequest), Services (Services))
+import Model (BookStatus (BookStatusRequest), Services (Services), Assignees (AssigneesMe))
 
 import Settings (widgetFile)
 import Settings.StaticFiles (img_salon_svg)

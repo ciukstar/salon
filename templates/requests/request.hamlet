@@ -1,12 +1,13 @@
 <header.mdc-top-app-bar.mdc-top-app-bar--fixed mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button href=@?{(RequestsR,stati)}>
-        <span.mdc-icon-button__ripple>
-        <spam.mdc-icon-button__focus-ring>
-        <i.material-symbols-outlined>arrow_back
-      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
-        _{MsgRequest}
+      $with stati <- stati ++ [("bid",pack $ show $ fromSqlKey bid)]
+        <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button href=@?{(RequestsR,stati)}>
+          <span.mdc-icon-button__ripple>
+          <spam.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>arrow_back
+        <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
+          _{MsgRequest}
 
 <main.mdc-top-app-bar--fixed-adjust>
 
@@ -94,7 +95,7 @@
         <section.mdc-card-wrapper__text-section #appointmentFullLongTime>
           #{show date} #{show time}
 
-      $with Entity eid (Staff ename _ _ _ _ _) <- staff
+      $maybe Entity eid (Staff ename _ _ _ _ _) <- staff
         <details.mdc-list.mdc-card-wrapper__text-section
           ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
           <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
@@ -113,7 +114,7 @@
                 style="clip-path:circle(50%)">
               <figcaption style="line-height:1">
                 <small>#{ename}
-                $with Entity _ (Role _ _ rname _) <- role
+                $maybe Entity _ (Role _ _ rname _) <- role
                   <div>
                     <small>(#{rname})
 

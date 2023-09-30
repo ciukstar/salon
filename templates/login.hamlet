@@ -35,13 +35,19 @@
           <i.material-symbols-outlined>demography
         <span.mdc-line-ripple>
 
-      <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--label-floating data-mdc-auto-init=MDCTextField>
+      <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
+        .mdc-text-field--label-floating.mdc-text-field--with-trailing-icon>
         <span.mdc-text-field__ripple>
         <span.mdc-floating-label>_{MsgPassword}
         <input.mdc-text-field__input type=password name=password autocomplete=current-password required #inputPassword>
+        <button.mdc-icon-button.mdc-text-field__icon.mdc-text-field__icon--trailing tabindex=0 type=button
+          title=_{MsgDemoUserAccounts} onclick="document.getElementById('dlgSampleCreds').MDCDialog.open()">
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>demography
         <span.mdc-line-ripple>
 
-      <button.mdc-button.mdc-button--raised type=submit>
+      <button.mdc-button.mdc-button--raised type=submit #btnLogin>
         <span.mdc-button__ripple>
         <span.mdc-button__focus-ring>
         <span.mdc-button__label>_{MsgLogin}
