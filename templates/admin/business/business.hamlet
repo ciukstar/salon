@@ -1,0 +1,112 @@
+^{menu}
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <button.mdc-top-app-bar__navigation-icon.mdc-icon-button #btnMainMenu>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>menu
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgBusiness}
+
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
+      $maybe Entity bid _ <- business
+        <button.mdc-top-app-bar__action-item.mdc-icon-button type=button
+          onclick="document.getElementById('dlgBusinessDelete').MDCDialog.open()">
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>delete
+        <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{AdminR $ BusinessEditR bid} role=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>edit
+
+        <form method=post action=@{AdminR BusinessDeleteR} #formBusinessDelete>
+        <div.mdc-dialog #dlgBusinessDelete data-mdc-auto-init=MDCDialog>
+          <div.mdc-dialog__container>
+            <div.mdc-dialog__surface role=alertdialog tabindex=-1>
+              <h4.mdc-dialog__title>_{MsgPleaseConfirm}
+              <div.mdc-dialog__content>_{MsgDeleteAreYouSure}
+              <div.mdc-dialog__actions style="display:flex;gap:0.5rem">
+                <button.mdc-dialog-button.mdc-button type=button data-mdc-dialog-action=cancel>
+                  <span.mdc-button__ripple>
+                  <span.mdc-button__label>_{MsgCancel}
+                <button.mdc-dialog-button.mdc-button.mdc-button--raised type=submit form=formBusinessDelete>
+                  <span.mdc-button__ripple>
+                  <span.mdc-button__label>_{MsgYesDelete}
+          <div.mdc-dialog__scrim>
+          
+      $maybe Entity uid _ <- user
+        <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{ProfileR} role=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" alt=_{MsgPhoto}
+            onerror="this.src = '@{PhotoPlaceholderR}'">
+      $nothing
+        <a.mdc-top-app-bar__action-item.mdc-icon-button role=button href=@{AuthR LoginR}>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>login
+          
+<main.mdc-top-app-bar--fixed-adjust>
+
+  $forall (_,msg) <- filter (((==) "warn" . fst)) msgs
+    <div.mdc-banner role=banner data-mdc-auto-init=MDCBanner>
+      <div.mdc-banner__content role=alertdialog aria-live=assertive>
+        <div.mdc-banner__graphic-text-wrapper>
+          <div.mdc-banner__graphic role=img style="background-color:var(--mdc-theme-error)">
+            <i.mdc-banner__icon.material-symbols-outlined>warning
+          <div.mdc-banner__text>
+            #{msg}
+        <div.mdc-banner__actions>
+          <button.mdc-banner__primary-action.mdc-icon-button type=button>
+            <span.mdc-icon-button__ripple>
+            <i.material-symbols-outlined>close
+
+  $maybe Entity _ (Business name address phone mobile email) <- business
+    <div.mdc-data-table>
+      <div.mdc-data-table__container>
+        <table.mdc-data-table__table>
+          <tbody.mdc-data-table__content>
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgTheName}
+              <td.mdc-data-table__cell>#{name}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgAddress}
+              <td.mdc-data-table__cell>#{address}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgPhone}
+              <td.mdc-data-table__cell>
+                $maybe phone <- phone
+                  #{phone}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgMobile}
+              <td.mdc-data-table__cell>
+                $maybe mobile <- mobile
+                  #{mobile}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgEmail}
+              <td.mdc-data-table__cell>
+                $maybe email <- email
+                  #{email}
+  $nothing
+    <figure style="text-align:center">
+      <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
+      <figcaption>
+        _{MsgNoBusinessYet}.
+    <div.mdc-touch-target-wrapper #fabBrandCreate style="position:fixed;right:1rem;bottom:1rem">
+      <a.mdc-fab.mdc-fab--touch href=@{AdminR BusinessCreateR}>
+        <span.mdc-fab__ripple>
+        <span.mdc-fab__focus-ring>
+        <span.mdc-fab__icon.material-symbols-outlined>add
+        <span.mdc-fab__touch>
+
+$forall (_,msg) <- filter (((==) "info") . fst) msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar :isNothing business:style="bottom:5rem">
+    <div.mdc-snackbar__surface>
+      <div.mdc-snackbar__label>#{msg}
+      <div.mdc-snackbar__actions>
+        <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>close
+

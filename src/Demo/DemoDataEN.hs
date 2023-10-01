@@ -39,6 +39,7 @@ import Model
     , Contents (Contents, contentsSection, contentsContent)
     , BookStatus (BookStatusRequest)
     , Book (Book, bookUser, bookOffer, bookRole, bookDay, bookTime, bookTz, bookStatus)
+    , Business (Business, businessName, businessAddress, businessPhone, businessMobile, businessEmail)
     )
 import Data.FileEmbed (embedFile)
 import Demo.DemoPhotos
@@ -50,6 +51,13 @@ populateEN :: MonadIO m => ReaderT SqlBackend m ()
 populateEN = do
 
     (today,time) <- liftIO $ getCurrentTime >>= \x -> return (utctDay x,timeToTimeOfDay (utctDayTime x))
+
+    insert_ $ Business { businessName = "Salon"
+                       , businessAddress = "5331 Rexford Court, Montgomery AL 36116"
+                       , businessPhone = Just "937-810-6140"
+                       , businessMobile = Just "567-274-7469"
+                       , businessEmail = Just "salon@mail.org"
+                       }
 
     insert_ $ Contents { contentsSection = "CONTACTS"
                        , contentsContent = Textarea [st|

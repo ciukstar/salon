@@ -1,3 +1,9 @@
+BusinessAlreadyExists: Afacerea există deja
+NoBusinessYet: Nu există încă nicio afacere
+Business: Afacere
+Address: Adresă
+Location: Locația
+ApproveAppointmentConfirm: Vă rugăm să confirmați că ați aprobat această solicitare de programare
 FromCoworkers: De la colegi
 DemoUserAccounts: Conturi de utilizator Demo
 WithoutAssignee: Fără executor
@@ -64,6 +70,7 @@ NoAppointmentsYet: Nu aveți încă programări
 LoginToSeeYourAppointments: Vă rugăm să vă autentificați pentru a vă vedea programările
 MyAppointments: Programările mele
 Time: Ora
+Date: Data
 Day: Ziua
 NotYourAccount: Nu e contul dvs.
 Continue: Continuați

@@ -14,12 +14,13 @@ import Foundation
       )
     , AdminR
       ( BrandR, UsersR, AdmContactsR, AdmAboutR, AdmStaffR, AdmServicesR
+      , BusinessR
       )
     , AppMessage
       ( MsgSourceCode, MsgDocumentation, MsgBrand, MsgContactUs
       , MsgAboutUs, MsgMyAppointments, MsgServices, MsgBookAppointment
       , MsgWelcome, MsgSalon, MsgUsers, MsgContact, MsgStaff, MsgData
-      , MsgResources, MsgRequests, MsgCalendar
+      , MsgResources, MsgRequests, MsgCalendar, MsgBusiness
       )
     )
 

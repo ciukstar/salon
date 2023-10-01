@@ -1,3 +1,9 @@
+BusinessAlreadyExists: Организация уже существует
+NoBusinessYet: Организации пока нет
+Business: Организация
+Address: Адрес
+Location: Место
+ApproveAppointmentConfirm: Пожалуйста, подтвердите, что вы одобряете этот запрос на встречу
 FromCoworkers: От коллег
 DemoUserAccounts: Демо-аккаунты
 WithoutAssignee: Без исполнителя
@@ -64,6 +70,7 @@ NoAppointmentsYet: У вас еще нет записей
 LoginToSeeYourAppointments: Пожалуйста, войдите, чтобы увидеть ваши записи
 MyAppointments: Мои записи на приём
 Time: Время
+Date: Дата
 Day: День
 NotYourAccount: Не ваша учетная запись
 Continue: Продолжить

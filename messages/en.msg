@@ -1,3 +1,9 @@
+BusinessAlreadyExists: Business already exists
+NoBusinessYet: There is no business yet
+Business: Business
+Address: Address
+Location: Location
+ApproveAppointmentConfirm: Please confirm that you approve this appointment request
 FromCoworkers: From coworkers
 DemoUserAccounts: Demo user accounts
 WithoutAssignee: Without assignee
@@ -64,6 +70,7 @@ NoAppointmentsYet: You have no appointments yet
 LoginToSeeYourAppointments: Please login to see your appointments
 MyAppointments: My appointments
 Time: Time
+Date: Date
 Day: Day
 NotYourAccount: Not your account
 Continue: Continue

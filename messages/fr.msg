@@ -1,3 +1,9 @@
+BusinessAlreadyExists: L'entreprise existe déjà
+NoBusinessYet: Il n'y a pas encore d'entreprise
+Business: Entreprise
+Address: Adresse
+Location: Lieu
+ApproveAppointmentConfirm: Veuillez confirmer que vous approuvez cette demande de rendez-vous
 FromCoworkers: Des collègues
 DemoUserAccounts: Comptes utilisateurs démo
 WithoutAssignee: Sans exécuteur
@@ -64,6 +70,7 @@ NoAppointmentsYet: Vous n'avez pas encore de rendez-vous
 LoginToSeeYourAppointments: Veuillez vous connecter pour voir vos rendez-vous
 MyAppointments: Mes rendez-vous
 Time: Heure
+Date: Date
 Day: Jour
 NotYourAccount: Pas votre compte 
 Continue: Continuez

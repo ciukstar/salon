@@ -101,3 +101,11 @@ Brand
   ico ByteString Maybe
   icoMime Text Maybe
   more Textarea Maybe
+
+Business
+  name Text
+  address Textarea
+  phone Text Maybe
+  mobile Text Maybe
+  email Text Maybe
+  UniqueBusiness name

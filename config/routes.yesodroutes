@@ -14,9 +14,10 @@
 /book/staff    BookStaffR    GET POST
 /book          BookOffersR   GET POST
 
-/search/requests  RequestsSearchR GET
-/requests/#BookId RequestR  	  GET
-/requests 	  RequestsR 	  GET
+/search/requests          RequestsSearchR GET
+/requests/#BookId/approve RequestApproveR POST
+/requests/#BookId 	  RequestR  	  GET
+/requests 	  	  RequestsR 	  GET
 
 /aboutus AboutUsR GET
 
@@ -40,6 +41,12 @@
 / HomeR GET
 
 /admin AdminR:
+    
+    /business/delete 	       BusinessDeleteR POST
+    /business/#BusinessId/edit BusinessEditR   GET POST
+    /business/create 	       BusinessCreateR GET
+    /business 		       BusinessR       GET POST
+    
     /brand/#BrandId/ico    BrandIcoR    GET
     /brand/#BrandId/mark   BrandMarkR   GET
     /brand/delete 	   BrandDeleteR POST

@@ -1,5 +1,7 @@
 
-[document.getElementById('appointmentFullLongTime')].filter(x => !!x).forEach(function (x) {
+Array.from(
+  document.querySelectorAll('.appointment-datetime')
+).filter(x => !!x).forEach(function (x) {
   x.textContent = new Date(x.textContent).toLocaleDateString(
     navigator.language,
     { weekday: 'long',
@@ -7,6 +9,30 @@
       month: 'long',
       day: 'numeric',
       hour: "numeric",
+      minute: "numeric"
+    }
+  );
+});
+
+Array.from(
+  document.querySelectorAll('.appointment-date')
+).filter(x => !!x).forEach(function (x) {
+  x.textContent = new Date(x.textContent).toLocaleDateString(
+    navigator.language,
+    { weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    }
+  );
+});
+
+Array.from(
+  document.querySelectorAll('.appointment-time')
+).filter(x => !!x).forEach(function (x) {
+  x.textContent = new Date(x.textContent).toLocaleTimeString(
+    navigator.language,
+    { hour: "numeric",
       minute: "numeric"
     }
   );

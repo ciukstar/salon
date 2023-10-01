@@ -7,6 +7,7 @@ module Handler.Requests
   ( getRequestsR
   , getRequestR
   , getRequestsSearchR
+  , postRequestApproveR
   ) where
 
 import Data.Maybe (mapMaybe)
@@ -18,13 +19,13 @@ import Text.Shakespeare.I18N (renderMessage)
 import Yesod.Core
     ( Yesod(defaultLayout), setUltDestCurrent, getMessages
     , getYesod, languages, preEscapedToMarkup, whamlet, getRequest
-    , YesodRequest (reqGetParams), newIdent
+    , YesodRequest (reqGetParams), newIdent, MonadIO (liftIO), redirect, addMessageI
     )
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Auth ( Route(LoginR, LogoutR), maybeAuth )
 import Yesod.Form.Fields (Textarea(unTextarea, Textarea), searchField, intField)
-import Yesod.Form.Types (MForm, FormResult (FormSuccess))
-import Yesod.Form.Functions (generateFormPost)
+import Yesod.Form.Types (MForm, FormResult (FormSuccess, FormFailure, FormMissing))
+import Yesod.Form.Functions (generateFormPost, runFormPost)
 import Yesod.Form.Input (runInputGet, iopt)
 import Settings (widgetFile)
 
@@ -32,30 +33,31 @@ import Foundation
     ( Handler, Widget
     , Route
       ( AuthR, PhotoPlaceholderR, AccountPhotoR, ProfileR, RequestsR, RequestR
-      , AppointmentCancelR, AppointmentHistR, AppointmentRescheduleR, AdminR
-      , ServiceThumbnailR, RequestsSearchR, RequestsSearchR
+      , AppointmentHistR, AppointmentRescheduleR, AdminR, ServiceThumbnailR
+      , RequestsSearchR, RequestsSearchR, RequestApproveR
       )
     , AdminR (AdmStaffPhotoR)
     , AppMessage
       ( MsgRequests, MsgPhoto, MsgLogin, MsgLogout, MsgSymbolHour
       , MsgSymbolMinute, MsgAwaitingApproval, MsgApproved, MsgCancelled
       , MsgPaid, MsgLoginToSeeTheRequests, MsgRequest, MsgStatus, MsgAssignee
-      , MsgYes, MsgNo, MsgCancelAppointmentReally, MsgPleaseConfirm, MsgHistory
-      , MsgReschedule, MsgMeetingLocation, MsgCustomer, MsgSelect, MsgCancel
-      , MsgService, MsgMeetingTime, MsgAcquaintance, MsgAppoinmentStatus
-      , MsgDuration, MsgApprove, MsgNoPendingRequestsYet, MsgShowAll
-      , MsgAssignedToMe, MsgWithoutAssignee, MsgSearch, MsgNoRequestsFound
-      , MsgFromCoworkers
+      , MsgPleaseConfirm, MsgHistory, MsgReschedule, MsgMeetingLocation
+      , MsgCustomer, MsgSelect, MsgCancel, MsgService, MsgMeetingTime
+      , MsgAcquaintance, MsgAppoinmentStatus, MsgDuration, MsgApprove
+      , MsgNoPendingRequestsYet, MsgShowAll, MsgAssignedToMe, MsgWithoutAssignee
+      , MsgSearch, MsgNoRequestsFound, MsgFromCoworkers, MsgApproveAppointmentConfirm
+      , MsgDate, MsgTime, MsgLocation, MsgEntityNotFound, MsgInvalidFormData, MsgMissingForm, MsgLoginToPerformAction
       )
     )
 
-import Database.Persist (Entity (Entity))
+import Database.Persist (Entity (Entity), PersistStoreWrite (insert_))
 import Database.Persist.Sql (fromSqlKey, toSqlKey)
 import Yesod.Persist.Core (YesodPersist(runDB))
 import Database.Esqueleto.Experimental
     ( select, from, table, innerJoin, leftJoin, on, where_, val
-    , (:&)((:&)), (==.), (^.), (?.), (%), (++.), (||.), (&&.)
-    , orderBy, desc, just, selectOne, valList, in_, upper_, like, isNothing_, not_
+    , (:&)((:&)), (==.), (^.), (?.), (%), (++.), (||.), (&&.), (=.)
+    , orderBy, desc, just, selectOne, valList, in_, upper_, like, isNothing_
+    , not_, update, set
     )
     
 import Model
@@ -73,11 +75,52 @@ import Model
       , ServiceOverview, RoleName, OfferName, OfferPrefix, OfferSuffix, OfferDescr
       , StaffName, StaffPhone, StaffMobile, StaffEmail, UserName, UserFullName
       , UserEmail
-      )
+      ), Business (Business), Hist (Hist)
     )
 
 import Menu (menu)
 import Handler.Contacts (section)
+import Data.Time.Clock (getCurrentTime)
+
+
+postRequestApproveR :: BookId -> Handler Html
+postRequestApproveR bid = do
+    ((fr,_),_) <- runFormPost formApprove
+    user <- maybeAuth
+    case (fr, user) of
+      (FormSuccess _, Just (Entity uid _)) -> do
+          book <- runDB $ selectOne $ do
+              x <- from $ table @Book
+              where_ $ x ^. BookId ==. val bid
+              where_ $ x ^. BookUser ==. val uid
+              return x
+          case book of
+            Just (Entity bid' (Book _ _ _ day time tz status)) -> do
+                now <- liftIO getCurrentTime
+                runDB $ insert_ $ Hist bid' now day time tz status
+                runDB $ update $ \x -> do
+                    set x [BookStatus =. val BookStatusCancelled]
+                    where_ $ x ^. BookId ==. val bid
+                    where_ $ x ^. BookUser ==. val uid
+                redirect $ RequestR bid
+
+            Nothing -> do
+                addMessageI "warn" MsgEntityNotFound
+                redirect $ RequestR bid
+      (FormFailure _, _) -> do
+          addMessageI "warn" MsgInvalidFormData
+          redirect $ RequestR bid
+      (FormMissing, _) -> do
+          addMessageI "warn" MsgMissingForm
+          redirect $ RequestR bid
+      (_, Nothing) -> do
+          addMessageI "warn" MsgLoginToPerformAction
+          redirect $ RequestR bid
+    
+
+
+formApprove :: Html -> MForm Handler (FormResult (), Widget)
+formApprove extra = return (FormSuccess (),[whamlet|#{extra}|])
 
 
 getRequestsSearchR :: Handler Html
@@ -159,6 +202,7 @@ getRequestR bid = do
         x <- from $ table @Contents
         where_ $ x ^. ContentsSection ==. val section
         return x
+    business <- runDB $ selectOne $ from $ table @Business
     request <- runDB $ selectOne $ do
         x :& o :& s :& t :& r :& e :& c <- from $ table @Book
             `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)

@@ -244,6 +244,7 @@ postAppointmentCancelR bid = do
           addMessageI "warn" MsgLoginToPerformAction
           redirect $ AppointmentR bid
 
+
 postAppointmentR :: BookId -> Handler Html
 postAppointmentR bid = do
     user <- maybeAuth
