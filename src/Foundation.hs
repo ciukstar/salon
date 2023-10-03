@@ -207,7 +207,10 @@ instance Yesod App where
     isAuthorized (RequestR _) _ = return Authorized
     isAuthorized RequestsSearchR _ = return Authorized
     isAuthorized (RequestApproveR _) _ = return Authorized
-        
+    isAuthorized (RequestFinishR _) _ = return Authorized
+    isAuthorized (RequestRescheduleR _) _ = return Authorized
+    isAuthorized (RequestHistR _) _ = return Authorized
+    
     
     isAuthorized AccountR _ = return Authorized
     isAuthorized (AccountPhotoR _) _ = return Authorized

@@ -1,0 +1,8 @@
+
+main
+  details.mdc-list
+    padding: 0
+    dl
+      padding: 0 1rem
+      dt
+        font-weight: 500

@@ -50,8 +50,10 @@ import System.Environment.Blank (getEnv)
 -- Don't forget to add new modules to your cabal file!
 
 import Handler.Requests
-    ( getRequestsR, getRequestR
+    ( getRequestsR, getRequestR, postRequestR
     , getRequestsSearchR, postRequestApproveR
+    , postRequestFinishR, getRequestRescheduleR
+    , getRequestHistR
     )
 
 import Handler.Appointments

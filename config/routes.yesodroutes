@@ -1,6 +1,14 @@
 
 /contact ContactR GET
 
+/search/requests             RequestsSearchR    GET
+/requests/#BookId/reschedule RequestRescheduleR GET
+/requests/#BookId/finish     RequestFinishR  	POST
+/requests/#BookId/approve    RequestApproveR 	POST
+/requests/#BookId/hist       RequestHistR    	GET
+/requests/#BookId 	     RequestR  	  	GET POST
+/requests 	  	     RequestsR 	  	GET
+
 /appointments/#BookId/reschedule AppointmentRescheduleR GET
 /appointments/#BookId/cancel     AppointmentCancelR     POST
 /appointments/#BookId/hist       AppointmentHistR    	GET
@@ -13,11 +21,6 @@
 /book/time     BookTimeR     GET POST
 /book/staff    BookStaffR    GET POST
 /book          BookOffersR   GET POST
-
-/search/requests          RequestsSearchR GET
-/requests/#BookId/approve RequestApproveR POST
-/requests/#BookId 	  RequestR  	  GET
-/requests 	  	  RequestsR 	  GET
 
 /aboutus AboutUsR GET
 

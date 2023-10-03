@@ -70,12 +70,12 @@ import Foundation
       , MsgNo, MsgYes, MsgLoginToPerformAction, MsgEntityNotFound
       , MsgNoHistoryYet, MsgStatus, MsgTimezone, MsgTime, MsgDay
       , MsgInvalidFormData, MsgMissingForm, MsgSave, MsgCancel
-      , MsgAppointmentTimeIsInThePast, MsgAppointmentDayIsInThePast, MsgMinutes
+      , MsgAppointmentTimeIsInThePast, MsgAppointmentDayIsInThePast, MsgMinutes, MsgAdjusted
       )
     )
 
 import Model
-    ( BookStatus (BookStatusRequest, BookStatusApproved, BookStatusCancelled, BookStatusPaid)
+    ( BookStatus (BookStatusRequest, BookStatusApproved, BookStatusCancelled, BookStatusPaid, BookStatusAdjustment)
     , BookId, Book(Book), Offer (Offer), Service (Service), Role (Role), Hist (Hist)
     , Staff (Staff), Thumbnail (Thumbnail), User (User), Contents (Contents)
     , EntityField
@@ -343,6 +343,7 @@ getAppointmentsR = do
 
 resolve :: BookStatus -> (Text, Text, AppMessage)
 resolve BookStatusRequest = ("orange", "hourglass_top", MsgAwaitingApproval)
+resolve BookStatusAdjustment = ("blue", "reply_all", MsgAdjusted)
 resolve BookStatusApproved = ("green", "verified", MsgApproved)
 resolve BookStatusCancelled = ("red", "block", MsgCancelled)
 resolve BookStatusPaid = ("green", "paid", MsgPaid)

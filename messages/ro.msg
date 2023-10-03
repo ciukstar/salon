@@ -1,3 +1,6 @@
+Adjusted: Ajustat
+FinishAppointmentConfirm: Vă rugăm să confirmați că cererea clientului a fost îndeplinită și achitată
+RequestFinish: Finalizați
 BusinessAlreadyExists: Afacerea există deja
 NoBusinessYet: Nu există încă nicio afacere
 Business: Afacere

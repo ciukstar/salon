@@ -1,3 +1,6 @@
+Adjusted: Скорректировано
+FinishAppointmentConfirm: Пожалуйста, подтвердите, что запрос клиента выполнен и оплачен
+RequestFinish: Завершить
 BusinessAlreadyExists: Организация уже существует
 NoBusinessYet: Организации пока нет
 Business: Организация

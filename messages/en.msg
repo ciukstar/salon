@@ -1,3 +1,6 @@
+Adjusted: Adjusted
+FinishAppointmentConfirm: Please confirm that the customer's request has been fulfilled and paid
+RequestFinish: Finish
 BusinessAlreadyExists: Business already exists
 NoBusinessYet: There is no business yet
 Business: Business

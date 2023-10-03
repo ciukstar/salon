@@ -1,3 +1,6 @@
+Adjusted: Ajusté
+FinishAppointmentConfirm: Veuillez confirmer que la demande du client a été satisfaite et payée
+RequestFinish: Finir
 BusinessAlreadyExists: L'entreprise existe déjà
 NoBusinessYet: Il n'y a pas encore d'entreprise
 Business: Entreprise
