@@ -106,7 +106,7 @@ postAppointmentApproveR bid = do
               where_ $ x ^. BookUser ==. val uid
               return x
           case book of
-            Just (Entity bid' (Book _ _ _ day time tz status)) -> do
+            Just (Entity bid' (Book _ _ _ _ day time tz status)) -> do
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid' now day time tz status
                 runDB $ update $ \x -> do
@@ -266,7 +266,7 @@ postAppointmentCancelR bid = do
               where_ $ x ^. BookUser ==. val uid
               return x
           case book of
-            Just (Entity bid' (Book _ _ _ day time tz status)) -> do
+            Just (Entity bid' (Book _ _ _ _ day time tz status)) -> do
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid' now day time tz status
                 runDB $ update $ \x -> do
@@ -301,7 +301,7 @@ postAppointmentR bid = do
               where_ $ x ^. BookUser ==. val uid
               return x
           case book of
-            Just (Entity bid' (Book _ _ _ day' time' tz' status')) -> do
+            Just (Entity bid' (Book _ _ _ _ day' time' tz' status')) -> do
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid' now day' time' tz' status'
                 runDB $ update $ \x -> do

@@ -15,6 +15,7 @@ Hist
 Book
   user UserId OnDeleteCascade
   offer OfferId OnDeleteCascade
+  staff StaffId Maybe OnDeleteCascade
   role RoleId Maybe OnDeleteCascade
   day Day
   time TimeOfDay

@@ -24,7 +24,7 @@
             <span.mdc-icon-button__ripple>
             <i.material-symbols-outlined>close
 
-  $maybe (Entity _ (Book _ _ rid date time _ status),(offer,service,thumbnail,role,staff,customer)) <- request
+  $maybe (Entity _ (Book _ _ _ rid date time _ status),(offer,service,thumbnail,role,staff,customer)) <- request
     $with Entity sid (Service sname _ _ dur _ _) <- service
       $with Entity _ (Offer _ oname price pref suff _) <- offer
         <div.mdc-card>
@@ -161,6 +161,7 @@
               $if (elem status [BookStatusRequest,BookStatusApproved])
 
                 <form method=get action=@{RequestRescheduleR bid} ##{formGetRequestReschedule}>
+                
                 $maybe _ <- rid
                   <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--outlined
                     type=submit name=tz form=#{formGetRequestReschedule}
@@ -265,7 +266,7 @@
                         <h4.mdc-dialog__title>_{MsgPleaseConfirm}
                         <div.mdc-dialog__content>
                           <p>
-                            _{MsgFinishAppointmentConfirm}
+                            _{MsgFinishAppointmentConfirm}.
 
                         <div.mdc-dialog__actions>
                           <button.mdc-dialog__button.mdc-button type=button data-mdc-dialog-action=close>

@@ -38,7 +38,7 @@ import Model
     , Role (Role, roleStaff, roleService, roleName, roleRating)
     , Contents (Contents, contentsSection, contentsContent)
     , BookStatus (BookStatusRequest)
-    , Book (Book, bookUser, bookOffer, bookRole, bookDay, bookTime, bookTz, bookStatus)
+    , Book (Book, bookUser, bookOffer, bookRole, bookDay, bookTime, bookTz, bookStatus, bookStaff)
     , Business (Business, businessName, businessAddress, businessPhone, businessMobile, businessEmail)
     )
 import Data.FileEmbed (embedFile)
@@ -1001,6 +1001,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                         }
 
     insert_ $ Book { bookOffer = o121
+                   , bookStaff = Just e5
                    , bookRole = Just r51511 
                    , bookUser = u2
                    , bookDay = addDays 1 today
@@ -1010,6 +1011,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                    }
 
     insert_ $ Book { bookOffer = o111
+                   , bookStaff = Just e5
                    , bookRole = Just r51511 
                    , bookUser = u2
                    , bookDay = addDays 2 today
@@ -1019,6 +1021,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                    }
 
     insert_ $ Book { bookOffer = o141
+                   , bookStaff = Nothing
                    , bookRole = Nothing 
                    , bookUser = u2
                    , bookDay = addDays 3 today

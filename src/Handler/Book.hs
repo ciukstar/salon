@@ -205,7 +205,10 @@ postBookCustomerR = do
           case fr of
             FormSuccess (items,role,day,time,tz,Entity uid _) -> do
                 bids <- forM items $ \((_,Entity oid _),_) -> runDB $
-                    insert $ Book uid oid ((\(_,Entity rid _) -> rid) <$> role) day time tz BookStatusRequest
+                    insert $ Book uid oid
+                    ((\(_,Entity _ (Role eid _ _ _)) -> eid) <$> role)
+                    ((\(_,Entity rid _) -> rid) <$> role)
+                    day time tz BookStatusRequest
                 addMessageI "info" MsgRecordAdded
                 deleteSession sessKeyBooking
                 redirect (BookEndR, ("bid",) . pack . show . fromSqlKey <$> bids)

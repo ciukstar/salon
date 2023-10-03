@@ -46,20 +46,22 @@
     <span.mdc-list-item__end>
       <i.expand.material-symbols-outlined>expand_more
 
-  $forall (Entity bid (Book _ _ _ date time _ _),Entity _ (Offer _ oname price _ _ _),Entity _ (Service sname _ _ _ _ _),role,empl) <- books
-    <a.mdc-list-item.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon href=@{AppointmentR bid}>
-      <span.mdc-list-item__ripple>
-      <span.mdc-list-item__content>
-        <div.mdc-list-item__primary-text>
-          #{sname} (#{oname}: #{show price})
-        <div.mdc-list-item__secondary-text>
-          #{show date} #{show time}
-        <div.mdc-list-item__secondary-text>
-          $maybe Entity _ (Role _ _ rname _) <- role
-            $maybe Entity _ (Staff ename _ _ _ _ _) <- empl
-              #{ename} (#{rname})
-      <span.mdc-list-item__end>
-        <i.material-symbols-outlined>arrow_forward_ios
+  $forall (Entity bid (Book _ _ _ _ date time _ _),offer,service,role,empl) <- books
+    $with Entity _ (Offer _ oname price _ _ _) <- offer
+      $with Entity _ (Service sname _ _ _ _ _) <- service
+        <a.mdc-list-item.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon href=@{AppointmentR bid}>
+          <span.mdc-list-item__ripple>
+          <span.mdc-list-item__content>
+            <div.mdc-list-item__primary-text>
+              #{sname} (#{oname}: #{show price})
+            <div.mdc-list-item__secondary-text>
+              #{show date} #{show time}
+            <div.mdc-list-item__secondary-text>
+              $maybe Entity _ (Role _ _ rname _) <- role
+                $maybe Entity _ (Staff ename _ _ _ _ _) <- empl
+                  #{ename} (#{rname})
+          <span.mdc-list-item__end>
+            <i.material-symbols-outlined>arrow_forward_ios
 
 $forall (_,msg) <- msgs
   <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
