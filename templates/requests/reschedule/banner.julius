@@ -1,0 +1,6 @@
+
+window.mdc.autoInit();
+
+Array.from(
+  document.querySelectorAll('div.mdc-banner')
+).forEach(function (x) { x.MDCBanner.open(); });

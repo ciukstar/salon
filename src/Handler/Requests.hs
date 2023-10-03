@@ -14,7 +14,7 @@ module Handler.Requests
   , getRequestHistR
   ) where
 
-import Data.Maybe (mapMaybe, isJust)
+import Data.Maybe (mapMaybe, isJust, isNothing)
 import Data.Text (intercalate, unpack, Text, pack)
 import Data.Time.Calendar (Day)
 import Data.Time.Clock (getCurrentTime, UTCTime (utctDay))
@@ -30,7 +30,7 @@ import Yesod.Core
     ( Yesod(defaultLayout), setUltDestCurrent, getMessages
     , getYesod, languages, preEscapedToMarkup, whamlet, getRequest
     , YesodRequest (reqGetParams), newIdent, MonadIO (liftIO), redirect
-    , addMessageI
+    , addMessageI, getUrlRender
     )
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Auth ( Route(LoginR, LogoutR), maybeAuth )
@@ -66,9 +66,10 @@ import Foundation
       , MsgSearch, MsgNoRequestsFound, MsgFromCoworkers, MsgApproveAppointmentConfirm
       , MsgDate, MsgTime, MsgLocation, MsgEntityNotFound, MsgInvalidFormData
       , MsgMissingForm, MsgLoginToPerformAction, MsgBook, MsgRequestFinish
-      , MsgFinishAppointmentConfirm, MsgDay, MsgTimezone, MsgMinutes
+      , MsgFinishAppointmentConfirm, MsgDay, MsgTimezone, MsgMinutes, MsgContinue
       , MsgAppointmentTimeIsInThePast, MsgAppointmentDayIsInThePast, MsgSave
-      , MsgNoHistoryYet, MsgAdjusted
+      , MsgNoHistoryYet, MsgAdjusted, MsgLoginBanner, MsgNoAssigneeRequestApprove
+      , MsgNoAssigneeRequestReschedule
       )
     )
 
@@ -87,7 +88,7 @@ import Model
     , Offer (Offer), Thumbnail (Thumbnail), User (User), Contents (Contents)
     , BookStatus
       ( BookStatusRequest, BookStatusApproved, BookStatusCancelled
-      , BookStatusPaid, BookStatusAdjustment
+      , BookStatusPaid, BookStatusAdjusted
       )
     , Assignees (AssigneesMe, AssigneesNone, AssigneesOthers)
     , Business (Business), Hist (Hist)
@@ -132,7 +133,7 @@ getRequestRescheduleR bid = do
     (fw,et) <- generateFormPost $ formReschedule tz
     defaultLayout $ do
         setTitleI MsgReschedule
-        $(widgetFile "requests/reschedule")
+        $(widgetFile "requests/reschedule/reschedule")
 
 
 formReschedule :: Maybe TimeZone -> Html -> MForm Handler (FormResult (Day, TimeOfDay, TimeZone), Widget)
@@ -157,7 +158,7 @@ formReschedule tz extra = do
         } Nothing
 
     let r = (,,) <$> dayR <*> timeR <*> (minutesToTimeZone <$> tzR)
-        
+
     let w = [whamlet|
 #{extra}
 $forall (v,icon) <- [(dayV,"event"),(timeV,"schedule")]
@@ -202,7 +203,7 @@ $forall (v,icon) <- [(tzV,"language")]
 |]
     return (r,w)
   where
-     
+
       futureTimeField dayR tzR = checkM (futureTime dayR tzR) timeField
 
       futureTime :: FormResult Day -> FormResult TimeZone -> TimeOfDay -> Handler (Either AppMessage TimeOfDay)
@@ -379,7 +380,7 @@ postRequestR bid = do
                     set x [ BookDay =. val day
                           , BookTime =. val time
                           , BookTz =. val tz
-                          , BookStatus =. val BookStatusAdjustment
+                          , BookStatus =. val BookStatusAdjusted
                           ]
                     where_ $ x ^. BookId ==. val bid
                 redirect $ RequestR bid
@@ -388,14 +389,19 @@ postRequestR bid = do
                 addMessageI "warn" MsgEntityNotFound
                 redirect $ RequestR bid
       (FormSuccess _, Nothing) -> do
-          addMessageI "warn" MsgLoginToPerformAction
-          redirect $ RequestR bid
+          app <- getYesod
+          langs <- languages
+          rndr <- getUrlRender
+          setUltDestCurrent
+          defaultLayout $ do
+              setTitleI MsgReschedule
+              $(widgetFile "requests/reschedule/banner")
       (FormMissing, _) -> do
           addMessageI "warn" MsgMissingForm
           redirect $ RequestR bid
       (FormFailure _, _) -> defaultLayout $ do
           setTitleI MsgReschedule
-          $(widgetFile "requests/reschedule")
+          $(widgetFile "requests/reschedule/reschedule")
 
 
 getRequestR :: BookId -> Handler Html
@@ -420,8 +426,9 @@ getRequestR bid = do
         return (x,(o,s,t,r,e,c))
     msgs <- getMessages
     formGetRequestReschedule <- newIdent
+    dlgRescheduleConfirm <- newIdent
     dlgConfirmApprove <- newIdent
-    formAppoitmentApprove <- newIdent
+    formRequestApprove <- newIdent
     dlgConfirmFinish <- newIdent
     formAppoitmentFinish <- newIdent
     (fw,et) <- generateFormPost $ formApprove (fst <$> request)
@@ -507,7 +514,7 @@ assigneeList = [ (AssigneesMe,MsgAssignedToMe)
 
 resolve :: BookStatus -> (Text, Text, AppMessage)
 resolve BookStatusRequest = ("orange", "hourglass_top", MsgAwaitingApproval)
-resolve BookStatusAdjustment = ("blue", "reply_all", MsgAdjusted)
+resolve BookStatusAdjusted = ("blue", "reply_all", MsgAdjusted)
 resolve BookStatusApproved = ("green", "verified", MsgApproved)
 resolve BookStatusCancelled = ("red", "block", MsgCancelled)
 resolve BookStatusPaid = ("green", "paid", MsgPaid)

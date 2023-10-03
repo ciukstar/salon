@@ -59,7 +59,7 @@ import Handler.Requests
 import Handler.Appointments
     ( getAppointmentsR, getAppointmentR, postAppointmentR
     , postAppointmentCancelR, getAppointmentHistR
-    , getAppointmentRescheduleR
+    , getAppointmentRescheduleR, postAppointmentApproveR
     )
     
 import Handler.Contacts (getContactR)

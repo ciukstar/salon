@@ -1,3 +1,5 @@
+NoAssigneeRequestReschedule: Si vous reprogrammez cette demande, la tâche vous sera attribuée
+NoAssigneeRequestApprove: Si vous confirmer cette demande, la tâche vous sera transférée
 Adjusted: Ajusté
 FinishAppointmentConfirm: Veuillez confirmer que la demande du client a été satisfaite et payée
 RequestFinish: Finir
@@ -23,6 +25,7 @@ AppointmentStateDiagram: Diagramme de transition d'état de rendez-vous
 NoHistoryYet: Il n'y a pas encore d'historique
 History: L'histoire
 EntityNotFound: Entité introuvable
+LoginBanner loginHref: Veuillez vous <a href=#{loginHref}>connecter</a> pour effectuer l'action
 LoginToPerformAction: Veuillez vous connecter pour effectuer l'action
 CancelAppointmentReally: Voulez-vous vraiment annuler ce rendez-vous ?
 Acquaintance: Faire connaissance

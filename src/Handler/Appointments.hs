@@ -10,6 +10,7 @@ module Handler.Appointments
   , postAppointmentCancelR
   , getAppointmentHistR
   , getAppointmentRescheduleR
+  , postAppointmentApproveR
   ) where
 
 import Data.Maybe (isJust)
@@ -28,7 +29,7 @@ import Yesod.Auth (maybeAuth, Route (LoginR, LogoutR))
 import Yesod.Core
     ( Yesod(defaultLayout), getMessages, getYesod, languages
     , preEscapedToMarkup, redirect, addMessageI, MonadIO (liftIO)
-    , whamlet
+    , whamlet, newIdent
     )
 import Yesod.Core.Handler (setUltDestCurrent)
 import Yesod.Core.Widget (setTitleI)
@@ -56,12 +57,13 @@ import Foundation
       ( ProfileR, AppointmentsR, AppointmentR, BookOffersR, AuthR
       , PhotoPlaceholderR, AccountPhotoR, ServiceThumbnailR, AdminR
       , AppointmentCancelR, AppointmentHistR, AppointmentRescheduleR
+      , AppointmentApproveR
       )
     , AdminR (AdmStaffPhotoR)
     , AppMessage
       ( MsgMyAppointments, MsgLogin, MsgLogout, MsgPhoto
       , MsgLoginToSeeYourAppointments, MsgNoAppointmentsYet
-      , MsgBookAppointment, MsgAppointment, MsgDuration
+      , MsgBookAppointment, MsgAppointment, MsgDuration, MsgAdjusted
       , MsgSymbolHour, MsgSymbolMinute, MsgAppoinmentStatus
       , MsgService, MsgReschedule, MsgMeetingTime, MsgHistory
       , MsgMeetingLocation, MsgAwaitingApproval, MsgApproved
@@ -69,13 +71,16 @@ import Foundation
       , MsgPleaseConfirm, MsgAcquaintance, MsgCancelAppointmentReally
       , MsgNo, MsgYes, MsgLoginToPerformAction, MsgEntityNotFound
       , MsgNoHistoryYet, MsgStatus, MsgTimezone, MsgTime, MsgDay
-      , MsgInvalidFormData, MsgMissingForm, MsgSave, MsgCancel
-      , MsgAppointmentTimeIsInThePast, MsgAppointmentDayIsInThePast, MsgMinutes, MsgAdjusted
+      , MsgInvalidFormData, MsgMissingForm, MsgSave, MsgCancel, MsgApprove
+      , MsgAppointmentTimeIsInThePast, MsgAppointmentDayIsInThePast, MsgMinutes
       )
     )
 
 import Model
-    ( BookStatus (BookStatusRequest, BookStatusApproved, BookStatusCancelled, BookStatusPaid, BookStatusAdjustment)
+    ( BookStatus
+      ( BookStatusRequest, BookStatusApproved, BookStatusCancelled, BookStatusPaid
+      , BookStatusAdjusted
+      )
     , BookId, Book(Book), Offer (Offer), Service (Service), Role (Role), Hist (Hist)
     , Staff (Staff), Thumbnail (Thumbnail), User (User), Contents (Contents)
     , EntityField
@@ -87,6 +92,45 @@ import Model
 
 import Menu (menu)
 import Handler.Contacts (section)
+
+
+postAppointmentApproveR :: BookId -> Handler Html
+postAppointmentApproveR bid = do
+    ((fr,_),_) <- runFormPost formApprove
+    user <- maybeAuth
+    case (fr, user) of
+      (FormSuccess _, Just (Entity uid _)) -> do
+          book <- runDB $ selectOne $ do
+              x <- from $ table @Book
+              where_ $ x ^. BookId ==. val bid
+              where_ $ x ^. BookUser ==. val uid
+              return x
+          case book of
+            Just (Entity bid' (Book _ _ _ day time tz status)) -> do
+                now <- liftIO getCurrentTime
+                runDB $ insert_ $ Hist bid' now day time tz status
+                runDB $ update $ \x -> do
+                    set x [BookStatus =. val BookStatusApproved]
+                    where_ $ x ^. BookId ==. val bid
+                    where_ $ x ^. BookUser ==. val uid
+                redirect $ AppointmentR bid
+
+            Nothing -> do
+                addMessageI "warn" MsgEntityNotFound
+                redirect $ AppointmentR bid
+      (FormFailure _, _) -> do
+          addMessageI "warn" MsgInvalidFormData
+          redirect $ AppointmentR bid
+      (FormMissing, _) -> do
+          addMessageI "warn" MsgMissingForm
+          redirect $ AppointmentR bid
+      (_, Nothing) -> do
+          addMessageI "warn" MsgLoginToPerformAction
+          redirect $ AppointmentR bid
+
+
+formApprove :: Html -> MForm Handler (FormResult (), Widget)
+formApprove extra = return (FormSuccess (),[whamlet|#{extra}|])
 
 
 getAppointmentRescheduleR :: BookId -> Handler Html
@@ -120,7 +164,7 @@ formReschedule tz extra = do
         } Nothing
 
     let r = (,,) <$> dayR <*> timeR <*> (minutesToTimeZone <$> tzR)
-        
+
     let w = [whamlet|
 #{extra}
 $forall (v,icon) <- [(dayV,"event"),(timeV,"schedule")]
@@ -165,7 +209,7 @@ $forall (v,icon) <- [(tzV,"language")]
 |]
     return (r,w)
   where
-     
+
       futureTimeField dayR tzR = checkM (futureTime dayR tzR) timeField
 
       futureTime :: FormResult Day -> FormResult TimeZone -> TimeOfDay -> Handler (Either AppMessage TimeOfDay)
@@ -306,8 +350,13 @@ getAppointmentR bid = do
           Nothing -> where_ $ val False
         orderBy [desc (x ^. BookDay), desc (x ^. BookTime)]
         return (x,o,s,t,r,e)
+    dlgCancelAppointment <- newIdent
+    formAppoitmentCancel <- newIdent
+    formGetAppointmentReschedule <- newIdent
+    formGetAppointmentApprove <- newIdent
     msgs <- getMessages
-    (fw,et) <- generateFormPost formCancel
+    (fwCancel,etCancel) <- generateFormPost formCancel
+    (fwApprove,etApprove) <- generateFormPost formApprove
     defaultLayout $ do
         setTitleI MsgAppointment
         $(widgetFile "appointments/appointment")
@@ -343,7 +392,7 @@ getAppointmentsR = do
 
 resolve :: BookStatus -> (Text, Text, AppMessage)
 resolve BookStatusRequest = ("orange", "hourglass_top", MsgAwaitingApproval)
-resolve BookStatusAdjustment = ("blue", "reply_all", MsgAdjusted)
+resolve BookStatusAdjusted = ("blue", "reply_all", MsgAdjusted)
 resolve BookStatusApproved = ("green", "verified", MsgApproved)
 resolve BookStatusCancelled = ("red", "block", MsgCancelled)
 resolve BookStatusPaid = ("green", "paid", MsgPaid)

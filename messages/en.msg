@@ -1,3 +1,5 @@
+NoAssigneeRequestReschedule: If you reschedule this request, the task will be assigned to you
+NoAssigneeRequestApprove: If you approve this request, the task will be assigned to you
 Adjusted: Adjusted
 FinishAppointmentConfirm: Please confirm that the customer's request has been fulfilled and paid
 RequestFinish: Finish
@@ -23,6 +25,7 @@ AppointmentStateDiagram: State transition diagram for appointment
 NoHistoryYet: There is no history yet
 History: History
 EntityNotFound: Entity not found
+LoginBanner loginHref@Text: Please <a href=#{loginHref}>login</a> to perform the action
 LoginToPerformAction: Please login to perform the action
 CancelAppointmentReally: Do you really want to cancel this appointment?
 Acquaintance: Acquaintance

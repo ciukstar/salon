@@ -60,7 +60,7 @@ data Assignees = AssigneesMe | AssigneesNone | AssigneesOthers
     deriving (Show, Read, Eq)
 
 data BookStatus = BookStatusRequest
-                | BookStatusAdjustment
+                | BookStatusAdjusted
                 | BookStatusApproved
                 | BookStatusCancelled
                 | BookStatusPaid

@@ -24,7 +24,7 @@
             <span.mdc-icon-button__ripple>
             <i.material-symbols-outlined>close
 
-  $maybe (Entity _ (Book _ _ _ date time _ status),(offer,service,thumbnail,role,staff,customer)) <- request
+  $maybe (Entity _ (Book _ _ rid date time _ status),(offer,service,thumbnail,role,staff,customer)) <- request
     $with Entity sid (Service sname _ _ dur _ _) <- service
       $with Entity _ (Offer _ oname price pref suff _) <- offer
         <div.mdc-card>
@@ -32,7 +32,7 @@
             <div.mdc-card__media.mdc-card__media--16-9 style="background-image:url('@{ServiceThumbnailR sid}')">
               $maybe Entity _ (Thumbnail _ _ _ attrib) <- thumbnail
                 $maybe attribution <- attrib
-                  <div.mdc-card__media-content 
+                  <div.mdc-card__media-content
                     style="text-align:end;font-size:0.5rem;position:relative;bottom:0;margin-right:4px">
                     ^{attribution}
             <div.mdc-card__ripple>
@@ -159,16 +159,48 @@
             <div.mdc-card__action-buttons>
 
               $if (elem status [BookStatusRequest,BookStatusApproved])
-                <form method=get action=@{RequestRescheduleR bid} ##{formGetRequestReschedule}>
-                <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--outlined 
-                  type=submit name=tz form=#{formGetRequestReschedule}
-                  onclick="this.value = -(new Date().getTimezoneOffset())">
-                  <span.mdc-button__ripple>
-                  <span.mdc-button__focus-ring>
-                  <span.mdc-button__label>_{MsgReschedule}
 
-              
-              $case status 
+                <form method=get action=@{RequestRescheduleR bid} ##{formGetRequestReschedule}>
+                $maybe _ <- rid
+                  <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--outlined
+                    type=submit name=tz form=#{formGetRequestReschedule}
+                    onclick="this.value = -(new Date().getTimezoneOffset())">
+                    <span.mdc-button__ripple>
+                    <span.mdc-button__focus-ring>
+                    <span.mdc-button__label>_{MsgReschedule}
+                $nothing
+                  <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--outlined type=button
+                    onclick="document.getElementById('#{dlgRescheduleConfirm}').MDCDialog.open()">
+                    <span.mdc-button__ripple>
+                    <span.mdc-button__focus-ring>
+                    <span.mdc-button__label>_{MsgReschedule}
+
+                  <div.mdc-dialog ##{dlgRescheduleConfirm} data-mdc-auto-init=MDCDialog>
+                    <div.mdc-dialog__container>
+                      <div.mdc-dialog__surface tabindex=-1 role=alertdialog aria-modal=true>
+                        <h4.mdc-dialog__title>_{MsgPleaseConfirm}
+                        <div.mdc-dialog__content>
+                          $if isNothing rid
+                            <i>
+                              _{MsgNoAssigneeRequestReschedule}.
+
+                        <div.mdc-dialog__actions>
+                          <button.mdc-dialog__button.mdc-button type=button data-mdc-dialog-action=close>
+                            <span.mdc-button__ripple>
+                            <span.mdc-button__focus-ring>
+                            <span.mdc-button__label>_{MsgCancel}
+
+                          <button.mdc-dialog__button.mdc-button.mdc-button--raised 
+                            type=submit name=tz form=#{formGetRequestReschedule}
+                            onclick="this.value = -(new Date().getTimezoneOffset())">
+                            <span.mdc-button__ripple>
+                            <span.mdc-button__focus-ring>
+                            <span.mdc-button__label>_{MsgContinue}
+
+                    <div.mdc-dialog__scrim>
+
+
+              $case status
                 $of BookStatusRequest
                   <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--unelevated type=button
                     onclick="document.getElementById('#{dlgConfirmApprove}').MDCDialog.open()">
@@ -176,7 +208,7 @@
                     <span.mdc-button__focus-ring>
                     <span.mdc-button__label>_{MsgApprove}
 
-                  <form method=post action=@{RequestApproveR bid} ##{formAppoitmentApprove} enctype=#{et}>
+                  <form method=post action=@{RequestApproveR bid} ##{formRequestApprove} enctype=#{et}>
                     ^{fw}
 
                   <div.mdc-dialog ##{dlgConfirmApprove} data-mdc-auto-init=MDCDialog>
@@ -200,6 +232,9 @@
                             <dd>
                               $maybe Entity _ (Business _ address _ _ _) <- business
                                 #{address}
+                          $if isNothing rid
+                            <i>
+                              _{MsgNoAssigneeRequestApprove}.
 
                         <div.mdc-dialog__actions>
                           <button.mdc-dialog__button.mdc-button type=button data-mdc-dialog-action=close>
@@ -207,13 +242,13 @@
                             <span.mdc-button__focus-ring>
                             <span.mdc-button__label>_{MsgCancel}
 
-                          <button.mdc-dialog__button.mdc-button.mdc-button--raised type=submit form=#{formAppoitmentApprove}>
+                          <button.mdc-dialog__button.mdc-button.mdc-button--raised type=submit form=#{formRequestApprove}>
                             <span.mdc-button__ripple>
                             <span.mdc-button__focus-ring>
                             <span.mdc-button__label>_{MsgApprove}
 
                     <div.mdc-dialog__scrim>
-                    
+
                 $of BookStatusApproved
                   <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--unelevated type=button
                     onclick="document.getElementById('#{dlgConfirmFinish}').MDCDialog.open()">

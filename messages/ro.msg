@@ -1,3 +1,5 @@
+NoAssigneeRequestReschedule: Dacă reprogramați cererea, sarcina vă va fi atribuită
+NoAssigneeRequestApprove: Dacă confirmați această solicitare, sarcina vă va fi transferată
 Adjusted: Ajustat
 FinishAppointmentConfirm: Vă rugăm să confirmați că cererea clientului a fost îndeplinită și achitată
 RequestFinish: Finalizați
@@ -22,7 +24,8 @@ NoRequestsYet: Nu există încă solicitări
 AppointmentStateDiagram: Diagrama tranziție de stare a programării
 NoHistoryYet: Nu există încă istorie
 History: Istoria
-EntityNotFound: Entitatea nu a fost găsită 
+EntityNotFound: Entitatea nu a fost găsită
+LoginBanner loginHref: Vă rugăm să vă <a href=#{loginHref}>autentificați</a> pentru a efectua acțiunea
 LoginToPerformAction: Vă rugăm să vă autentificați pentru a efectua acțiunea
 CancelAppointmentReally: Sigur doriți să anulați această întâlnire?
 Acquaintance: Fă cunoștință
