@@ -1,3 +1,4 @@
+Current: Current
 NoAssigneeRequestReschedule: If you reschedule this request, the task will be assigned to you
 NoAssigneeRequestApprove: If you approve this request, the task will be assigned to you
 Adjusted: Adjusted

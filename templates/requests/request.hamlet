@@ -24,7 +24,7 @@
             <span.mdc-icon-button__ripple>
             <i.material-symbols-outlined>close
 
-  $maybe (Entity _ (Book _ _ _ rid date time _ status),(offer,service,thumbnail,role,staff,customer)) <- request
+  $maybe (Entity _ (Book _ _ rid date time _ status),(offer,service,thumbnail,role,staff,customer)) <- request
     $with Entity sid (Service sname _ _ dur _ _) <- service
       $with Entity _ (Offer _ oname price pref suff _) <- offer
         <div.mdc-card>

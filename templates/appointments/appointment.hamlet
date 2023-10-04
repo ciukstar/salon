@@ -23,7 +23,7 @@
             <span.mdc-icon-button__ripple>
             <i.material-symbols-outlined>close
 
-  $maybe (Entity _ (Book _ _ _ _ date time _ status),offer,service,thumbnail,role,staff) <- book
+  $maybe (Entity _ (Book _ _ _ date time _ status),offer,service,thumbnail,role,staff) <- book
     $with Entity _ (Offer _ oname price pref suff _) <- offer
       $with Entity sid (Service sname _ _ dur _ _) <- service
         <div.mdc-card>

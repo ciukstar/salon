@@ -69,7 +69,7 @@ import Foundation
       , MsgFinishAppointmentConfirm, MsgDay, MsgTimezone, MsgMinutes, MsgContinue
       , MsgAppointmentTimeIsInThePast, MsgAppointmentDayIsInThePast, MsgSave
       , MsgNoHistoryYet, MsgAdjusted, MsgLoginBanner, MsgNoAssigneeRequestApprove
-      , MsgNoAssigneeRequestReschedule
+      , MsgNoAssigneeRequestReschedule, MsgCurrent
       )
     )
 
@@ -98,7 +98,7 @@ import Model
       , ThumbnailService, BookUser, UserId, BookStatus, ServiceName, ServiceDescr
       , ServiceOverview, RoleName, OfferName, OfferPrefix, OfferSuffix, OfferDescr
       , StaffName, StaffPhone, StaffMobile, StaffEmail, UserName, UserFullName
-      , UserEmail, BookTz, HistBook, HistLogtime, BookStaff
+      , UserEmail, BookTz, HistBook, HistLogtime, RoleService
       )
     )
 
@@ -119,6 +119,14 @@ getRequestHistR bid = do
                   where_ $ b ^. BookId ==. x ^. HistBook
               orderBy [desc (x ^. HistLogtime)]
               return x
+              
+          book <- case hist of
+            [] -> return Nothing
+            _ -> runDB $ selectOne $ do
+                x <- from $ table @Book
+                where_ $ x ^. BookId ==. val bid
+                return x
+          now <- liftIO getCurrentTime
           defaultLayout $ do
               setTitleI MsgHistory
               $(widgetFile "requests/hist")
@@ -237,7 +245,7 @@ postRequestFinishR bid = do
               where_ $ x ^. BookId ==. val _bid
               return x
           case book of
-            Just (Entity bid' (Book _ _ _ _ day time tz status)) -> do
+            Just (Entity bid' (Book _ _ _ day time tz status)) -> do
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid' now day time tz status
                 runDB $ update $ \x -> do
@@ -266,20 +274,27 @@ postRequestApproveR bid = do
     case (fr, user) of
       (FormSuccess _bid, Just (Entity uid _)) -> do
           book <- runDB $ selectOne $ do
-              x <- from $ table @Book
+              x :& o <- from $ table @Book `innerJoin` table @Offer
+                  `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
               where_ $ x ^. BookId ==. val _bid
-              return x
-          empl <- runDB $ selectOne $ do
-              x :& u <- from $ table @Staff `innerJoin` table @User
-                  `on` (\(e :& u) -> e ^. StaffUser ==. just (u ^. UserId))
+              return (x,o)
+          role <- runDB $ selectOne $ do
+              r :& _ :& u :& s <- from $ table @Role
+                  `innerJoin` table @Staff `on` (\(r :& e) -> r ^. RoleStaff ==. e ^. StaffId)
+                  `innerJoin` table @User `on` (\(_ :& e :& u) -> e ^. StaffUser ==. just (u ^. UserId))
+                  `innerJoin` table @Service `on` (\(r :& _ :& _ :& s) -> r ^. RoleService ==. s ^. ServiceId)
               where_ $ u ^. UserId ==. val uid
-              return x
-          case (book,empl) of
-            (Just (Entity bid' (Book _ _ _ _ day time tz status)),Just (Entity eid _)) -> do
+              where_ $ case book of
+                Just (_,Entity _ (Offer sid _ _ _ _ _)) -> s ^. ServiceId ==. val sid
+                Nothing -> val False
+              return r
+              
+          case (book,role) of
+            (Just (Entity bid' (Book _ _ _ day time tz status),_),Just (Entity rid _)) -> do
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid' now day time tz status
                 runDB $ update $ \x -> do
-                    set x [BookStaff =. just (val eid), BookStatus =. val BookStatusApproved]
+                    set x [BookRole =. just (val rid), BookStatus =. val BookStatusApproved]
                     where_ $ x ^. BookId ==. val bid
                 redirect $ RequestR bid
 
@@ -374,20 +389,28 @@ postRequestR bid = do
     case (fr,user) of
       (FormSuccess (day,time,tz), Just (Entity uid _)) -> do
           book <- runDB $ selectOne $ do
-              x <- from $ table @Book
+              x :& o <- from $ table @Book `innerJoin` table @Offer
+                  `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
               where_ $ x ^. BookId ==. val bid
-              return x
-          empl <- runDB $ selectOne $ do
-              x :& u <- from $ table @Staff `innerJoin` table @User
-                  `on` (\(e :& u) -> e ^. StaffUser ==. just (u ^. UserId))
+              return (x,o)
+          
+          role <- runDB $ selectOne $ do
+              r :& _ :& u :& s <- from $ table @Role
+                  `innerJoin` table @Staff `on` (\(r :& e) -> r ^. RoleStaff ==. e ^. StaffId)
+                  `innerJoin` table @User `on` (\(_ :& e :& u) -> e ^. StaffUser ==. just (u ^. UserId))
+                  `innerJoin` table @Service `on` (\(r :& _ :& _ :& s) -> r ^. RoleService ==. s ^. ServiceId)
               where_ $ u ^. UserId ==. val uid
-              return x
-          case (book,empl) of
-            (Just (Entity bid' (Book _ _ _ _ day' time' tz' status')),Just (Entity eid _)) -> do
+              where_ $ case book of
+                Just (_,Entity _ (Offer sid _ _ _ _ _)) -> s ^. ServiceId ==. val sid
+                Nothing -> val False
+              return r
+              
+          case (book,role) of
+            (Just (Entity bid' (Book _ _ _ day' time' tz' status'),_),Just (Entity rid _)) -> do
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid' now day' time' tz' status'
                 runDB $ update $ \x -> do
-                    set x [ BookStaff =. just (val eid)
+                    set x [ BookRole =. just (val rid)
                           , BookDay =. val day
                           , BookTime =. val time
                           , BookTz =. val tz

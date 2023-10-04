@@ -1,3 +1,4 @@
+Current: Текущий
 NoAssigneeRequestReschedule: Если вы перенесете заявку, задача будет закреплена за вами
 NoAssigneeRequestApprove: Если вы подтвердите этот запрос, задача будет передана вам
 Adjusted: Скорректировано

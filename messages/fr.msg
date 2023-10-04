@@ -1,3 +1,4 @@
+Current: Actuel
 NoAssigneeRequestReschedule: Si vous reprogrammez cette demande, la tâche vous sera attribuée
 NoAssigneeRequestApprove: Si vous confirmer cette demande, la tâche vous sera transférée
 Adjusted: Ajusté

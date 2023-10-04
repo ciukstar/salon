@@ -1,3 +1,4 @@
+Current: Curent
 NoAssigneeRequestReschedule: Dacă reprogramați cererea, sarcina vă va fi atribuită
 NoAssigneeRequestApprove: Dacă confirmați această solicitare, sarcina vă va fi transferată
 Adjusted: Ajustat

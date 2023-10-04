@@ -93,9 +93,11 @@ $if null sids
               <th.mdc-data-table__cell scope=row>_{MsgDuration}
               <td.mdc-data-table__cell>
                 $maybe duration <- duration
-                  $with pat <- intercalate "" ["%H",renderMessage app langs MsgSymbolHour," %M",renderMessage app langs MsgSymbolMinute]
-                    $with duration <- formatTime defaultTimeLocale (unpack pat) duration
-                      #{duration}
+                  $with h <- renderMessage app langs MsgSymbolHour
+                    $with m <- renderMessage app langs MsgSymbolMinute
+                      $with pat <- intercalate "" ["%H",h," %M",m]
+                        $with duration <- formatTime defaultTimeLocale (unpack pat) duration
+                          #{duration}
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgOverview}
               <td.mdc-data-table__cell>

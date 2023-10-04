@@ -38,7 +38,7 @@ import Model
     , Role (Role, roleStaff, roleService, roleName, roleRating)
     , Contents (Contents, contentsSection, contentsContent)
     , BookStatus (BookStatusRequest)
-    , Book (Book, bookUser, bookOffer, bookRole, bookDay, bookTime, bookTz, bookStatus, bookStaff)
+    , Book (Book, bookUser, bookOffer, bookRole, bookDay, bookTime, bookTz, bookStatus)
     , Business (Business, businessName, businessAddress, businessPhone, businessMobile, businessEmail)
     )
 import Data.FileEmbed (embedFile)
@@ -412,11 +412,11 @@ We will continue to offer the latest treatments, the most innovative techniques 
                         , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
-    insert_ $ Role { roleStaff = e2
-                   , roleService = s12
-                   , roleName = "Barbers"
-                   , roleRating = Just 3
-                   }
+    r212 <- insert $ Role { roleStaff = e2
+                          , roleService = s12
+                          , roleName = "Barbers"
+                          , roleRating = Just 3
+                          }
 
     s13 <- insert $ Service { serviceName = "Women hair cuts (below shoulders)"
                             , servicePublished = True
@@ -426,13 +426,13 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             , serviceGroup = Just s1
                             }
 
-    insert_ $ Offer { offerService = s13
-                    , offerName = "Price"
-                    , offerPrice = 35
-                    , offerPrefix = Just "$"
-                    , offerSuffix = Nothing
-                    , offerDescr = Nothing
-                    }
+    o131 <- insert $ Offer { offerService = s13
+                           , offerName = "Price"
+                           , offerPrice = 35
+                           , offerPrefix = Just "$"
+                           , offerSuffix = Nothing
+                           , offerDescr = Nothing
+                           }
 
     insert_ $ Thumbnail { thumbnailService = s13
                         , thumbnailPhoto = $(embedFile "static/img/women-hair-cuts-below-shoulders.avif")
@@ -1000,20 +1000,44 @@ We will continue to offer the latest treatments, the most innovative techniques 
                         , thumbnailAttribution = Just [shamlet|Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
-    insert_ $ Book { bookOffer = o121
-                   , bookStaff = Just e5
-                   , bookRole = Just r51511 
-                   , bookUser = u2
+
+    pass6 <- liftIO $ makePassword "pattyofurniture" 17
+    c1 <- insert $ User { userName = "pattyofurniture"
+                        , userPassword = decodeUtf8 pass6
+                        , userAdmin = False
+                        , userFullName = Just "Patty O’Furniture"
+                        , userEmail = Just "pattyofurniture@mail.org"
+                        }
+    insert_ $ UserPhoto { userPhotoUser = c1
+                        , userPhotoPhoto = $(embedFile "static/img/customer-women-1.avif")
+                        , userPhotoMime = "image/avif"
+                        }
+
+    insert_ $ Book { bookOffer = o131
+                   , bookRole = Just r212 
+                   , bookUser = c1
                    , bookDay = addDays 1 today
                    , bookTime = time
                    , bookTz = utc
                    , bookStatus = BookStatusRequest
                    }
 
+
+    pass7 <- liftIO $ makePassword "raysin" 17
+    c2 <- insert $ User { userName = "raysin"
+                        , userPassword = decodeUtf8 pass7
+                        , userAdmin = False
+                        , userFullName = Just "Ray Sin"
+                        , userEmail = Just "raysin@mail.org"
+                        }
+    insert_ $ UserPhoto { userPhotoUser = c2
+                        , userPhotoPhoto = $(embedFile "static/img/customer-men-1.avif")
+                        , userPhotoMime = "image/avif"
+                        }
+
     insert_ $ Book { bookOffer = o111
-                   , bookStaff = Just e5
                    , bookRole = Just r51511 
-                   , bookUser = u2
+                   , bookUser = c2
                    , bookDay = addDays 2 today
                    , bookTime = time
                    , bookTz = utc
@@ -1021,9 +1045,8 @@ We will continue to offer the latest treatments, the most innovative techniques 
                    }
 
     insert_ $ Book { bookOffer = o141
-                   , bookStaff = Nothing
                    , bookRole = Nothing 
-                   , bookUser = u2
+                   , bookUser = c1
                    , bookDay = addDays 3 today
                    , bookTime = time
                    , bookTz = utc
