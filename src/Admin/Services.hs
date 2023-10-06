@@ -20,18 +20,26 @@ module Admin.Services
   , getAdmPriceEditR
   , postAdmPriceDeleteR
   , getAdmServicesSearchR
+  , getAdmExpertCreateR
+  , postAdmExpertsR
+  , getAdmExpertR
+  , postAdmExpertR
+  , getAdmExpertEditR
+  , postAdmExpertDeleteR
   ) where
 
+import Control.Monad (join)
 import Control.Applicative ((<|>))
-import Data.Text (Text, pack, unpack, intercalate)
+import Data.Bifunctor (Bifunctor(second))
 import Data.Maybe (isJust, fromMaybe, catMaybes)
-import Data.Text.Encoding (encodeUtf8)
 import Data.FileEmbed (embedFile)
 import qualified Data.List.Safe as LS (last)
-import Text.Hamlet (Html)
-import Text.Shakespeare.I18N (renderMessage)
+import Data.Text (Text, pack, unpack, intercalate)
+import Data.Text.Encoding (encodeUtf8)
 import Data.Time.Clock (DiffTime)
 import Data.Time.Format (formatTime, defaultTimeLocale, parseTimeM)
+import Text.Hamlet (Html)
+import Text.Shakespeare.I18N (renderMessage)
 
 import Yesod.Auth (Route (LoginR), maybeAuth)
 import Yesod.Core
@@ -40,7 +48,7 @@ import Yesod.Core
     , addMessageI, fileSourceByteString, redirect, getMessages
     , TypedContent (TypedContent), ToContent (toContent), typeSvg
     , whamlet, preEscapedToMarkup, newIdent, getRequest
-    , YesodRequest (reqGetParams), getYesod, languages
+    , YesodRequest (reqGetParams), getYesod, languages, MonadTrans (lift)
     )
 
 import Yesod.Form
@@ -50,7 +58,8 @@ import Yesod.Form
     , hiddenField, runInputGet, iopt, intField, checkM
     , mreq, textField, doubleField, mopt, textareaField, fileField
     , generateFormPost, runFormPost, unTextarea, withRadioField
-    , OptionList, optionsPairs, searchField, Textarea (Textarea), check, htmlField
+    , OptionList, optionsPairs, searchField, Textarea (Textarea), check
+    , htmlField, checkBool
     )
 import Settings (widgetFile)
 import Settings.StaticFiles
@@ -68,6 +77,8 @@ import Foundation
       ( AdmServiceCreateFormR, AdmServiceEditFormR, AdmServicesR, AdmServiceR
       , AdmServiceDeleteR, AdmServiceImageR, AdmOfferCreateR, AdmOfferR
       , AdmPriceR, AdmPriceEditR, AdmPriceDeleteR, AdmServicesSearchR
+      , AdmStaffPhotoR, AdmExpertCreateR, AdmExpertsR, AdmExpertR, AdmExpertEditR
+      , AdmExpertDeleteR
       )
     , AppMessage
       ( MsgServices, MsgPhoto, MsgTheName, MsgAttribution
@@ -80,7 +91,9 @@ import Foundation
       , MsgYes, MsgNo, MsgSearch, MsgNoServicesFound, MsgSelect, MsgCategory
       , MsgCategories, MsgStatus, MsgUnpublished, MsgOffers, MsgDuration
       , MsgInvalidDurationHourMinute, MsgSymbolHour, MsgSymbolMinute
-      , MsgOffer
+      , MsgOffer, MsgExperts, MsgNoExpertsYet, MsgAddExpert, MsgExpert
+      , MsgValueNotInRange, MsgExpertAlreadyInTheList, MsgRating, MsgEmployee
+      , MsgRole
       )
     )
 
@@ -94,19 +107,22 @@ import Model
       ( Service, serviceName, serviceDescr, serviceGroup, serviceOverview
       , servicePublished, serviceDuration
       )
-    , Thumbnail (Thumbnail, thumbnailService, thumbnailPhoto, thumbnailMime, thumbnailAttribution)
+    , Thumbnail
+      ( Thumbnail, thumbnailService, thumbnailPhoto, thumbnailMime
+      , thumbnailAttribution
+      )
     , Services (Services)
     , EntityField
       ( ServiceId, ThumbnailPhoto, ThumbnailMime, ServiceGroup, ThumbnailService
       , ServiceName, OfferService, OfferId, OfferName, ServiceOverview
-      , ServiceDescr, ServicePublished, ThumbnailAttribution
+      , ServiceDescr, ServicePublished, ThumbnailAttribution, RoleStaff, StaffId
+      , RoleService, RoleName, RoleId
       )
-    , Offer
-      ( Offer, offerName, offerPrice, offerPrefix, offerSuffix
-      , offerDescr
-      )
+    , Offer (Offer, offerName, offerPrice, offerPrefix, offerSuffix, offerDescr)
     , OfferId
     , ServiceStatus (ServiceStatusPulished, ServiceStatusUnpublished)
+    , Role (Role, roleStaff, roleName, roleRating), StaffId, Staff (Staff)
+    , RoleId
     )
 
 import qualified Yesod.Persist as P ((=.))
@@ -116,12 +132,181 @@ import Database.Esqueleto.Experimental
     ( selectOne, from, table, where_, val, in_, valList, just, justList
     , (^.), (?.), (==.), (%), (++.), (||.), (:&) ((:&)), (=.)
     , isNothing, select, orderBy, asc, upper_, like, not_, exists
-    , leftJoin, on, update, set, Value (unValue)
+    , leftJoin, on, update, set, Value (unValue), innerJoin
     )
 
 import Menu (menu)
-import Data.Bifunctor (Bifunctor(second))
-import Control.Monad (join)
+
+
+postAdmExpertDeleteR :: RoleId -> Services -> Handler Html
+postAdmExpertDeleteR rid (Services sids) = do
+    runDB $ delete rid
+    addMessageI "info" MsgRecordDeleted
+    stati <- reqGetParams <$> getRequest
+    redirect (AdminR $ AdmServicesR (Services sids),stati)
+
+
+getAdmExpertEditR :: RoleId -> Services -> Handler Html
+getAdmExpertEditR rid (Services sids) = do
+    stati <- reqGetParams <$> getRequest
+    let sid = last sids
+    role <- runDB $ selectOne $ do
+        x <- from $ table @Role
+        where_ $ x ^. RoleId ==. val rid
+        return x
+    (fw,et) <- generateFormPost $ formExpert sid role
+    defaultLayout $ do
+        setTitleI MsgExpert
+        $(widgetFile "admin/services/expert/edit")
+
+
+postAdmExpertR :: RoleId -> Services -> Handler Html
+postAdmExpertR rid (Services sids) = do
+    stati <- reqGetParams <$> getRequest
+    let sid = last sids
+    role <- runDB $ selectOne $ do
+        x <- from $ table @Role
+        where_ $ x ^. RoleId ==. val rid
+        return x
+    ((fr,fw),et) <- runFormPost $ formExpert sid role
+    case fr of
+      FormSuccess r -> do
+          runDB $ replace rid r
+          addMessageI "info" MsgRecordEdited
+          redirect (AdminR $ AdmExpertR rid (Services sids),stati)
+      _ -> defaultLayout $ do
+          setTitleI MsgExpert
+          $(widgetFile "admin/services/expert/edit")
+
+
+getAdmExpertR :: RoleId -> Services -> Handler Html
+getAdmExpertR rid (Services sids) = do
+    stati <- reqGetParams <$> getRequest
+    role <- runDB $ selectOne $ do
+        r :& e :& s <- from $ table @Role
+            `innerJoin` table @Staff `on` (\(r :& e) -> r ^. RoleStaff ==. e ^. StaffId)
+            `innerJoin` table @Service `on` (\(r :& _ :& s) -> r ^. RoleService ==. s ^. ServiceId)
+        where_ $ r ^. RoleId ==. val rid
+        return (r,e,s)
+    dlgRoleDelete <- newIdent
+    defaultLayout $ do
+        setTitleI MsgExpert
+        $(widgetFile "admin/services/expert/expert")
+
+
+postAdmExpertsR :: Services -> Handler Html
+postAdmExpertsR (Services sids) = do
+    stati <- reqGetParams <$> getRequest
+    let sid = last sids
+    ((fr,fw),et) <- runFormPost $ formExpert sid Nothing
+    case fr of
+      FormSuccess r -> do
+          rid <- runDB $ insert r
+          addMessageI "info" MsgRecordAdded
+          redirect (AdminR $ AdmServicesR (Services sids),("rid",pack $ show $ fromSqlKey rid):stati)
+      _ -> defaultLayout $ do
+          setTitleI MsgExpert
+          $(widgetFile "admin/services/expert/create")
+
+
+getAdmExpertCreateR :: Services -> Handler Html
+getAdmExpertCreateR (Services sids) = do
+    stati <- reqGetParams <$> getRequest
+    let sid = last sids
+    (fw,et) <- generateFormPost $ formExpert sid Nothing
+    defaultLayout $ do
+        setTitleI MsgExpert
+        $(widgetFile "admin/services/expert/create")
+
+
+formExpert :: ServiceId -> Maybe (Entity Role) -> Html -> MForm Handler (FormResult Role,Widget)
+formExpert sid role extra = do
+    staff <- lift $ runDB $ select $ from $ table @Staff
+    (emplR,emplV) <- mreq hiddenField FieldSettings
+        { fsLabel = SomeMessage MsgEmployee
+        , fsTooltip = Nothing , fsId = Nothing, fsName = Nothing
+        , fsAttrs = []
+        } (roleStaff . entityVal <$> role)
+    (nameR,nameV) <- mreq (uniqueNameField emplR) FieldSettings
+        { fsLabel = SomeMessage MsgRole
+        , fsTooltip = Nothing , fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (roleName . entityVal <$> role)
+    (ratingR,ratingV) <- mopt ratingField FieldSettings
+        { fsLabel = SomeMessage MsgRating
+        , fsTooltip = Nothing , fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input"),("min","0"),("max","5")]
+        } (roleRating . entityVal <$> role)
+    let r = Role <$> emplR <*> FormSuccess sid <*> nameR <*> ratingR
+    let w = [whamlet|
+#{extra}
+<div.form-field>
+  <div.mdc-select.mdc-select--filled.mdc-select--required data-mdc-auto-init=MDCSelect
+    :isJust (fvErrors emplV):.mdc-select--invalid>
+    ^{fvInput emplV}
+    <div.mdc-select__anchor role=button aria-aspopup=listbox aria-expanded=false aria-required=true>
+      <span.mdc-select__ripple>
+      <span.mdc-floating-label>#{fvLabel emplV}
+      <span.mdc-select__selected-text-container>
+        <span.mdc-select__selected-text>
+      <span.mdc-select__dropdown-icon>
+        <svg.mdc-select__dropdown-icon-graphic viewBox="7 10 10 5" focusable=false>
+          <polygon.mdc-select__dropdown-icon-inactive stroke=none fill-rule=evenodd points="7 10 12 15 17 10">
+          <polygon.mdc-select__dropdown-icon-active stroke=none fill-rule=evenodd points="7 15 12 10 17 15">
+      <span.mdc-line-ripple>
+
+    <div.mdc-select__menu.mdc-menu.mdc-menu-surface.mdc-menu-surface--fullwidth>
+      <ul.mdc-deprecated-list role=listbox>
+        $forall Entity eid (Staff ename _ _ _ _ _) <- staff
+          <li.mdc-deprecated-list-item role=option data-value=#{fromSqlKey eid} aria-selected=false>
+            <span.mdc-deprecated-list-item__ripple>
+            <span.mdc-deprecated-list-item__text>
+              #{ename}
+
+  $maybe errs <- fvErrors emplV
+    <div.mdc-select-helper-text.mdc-select-helper-text--validation-msg>
+      #{errs}
+
+$forall v <- [nameV,ratingV]
+  <div.form-field>
+    <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
+      :isJust (fvErrors v):.mdc-text-field--invalid
+      :isJust (fvErrors v):.mdc-text-field--with-trailing-icon>
+      <span.mdc-text-field__ripple>
+      <span.mdc-floating-label>#{fvLabel v}
+      ^{fvInput v}
+      $maybe _ <- fvErrors v
+        <i.mdc-text-field__icon.mdc-text-field__icon--trailing.material-symbols-outlined>error
+      <span.mdc-line-ripple>
+    $maybe errs <- fvErrors v
+      <div.mdc-text-field-helper-line>
+        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+          #{errs}
+|]
+    return (r,w)
+  where
+
+      ratingField = checkBool (\x -> x >= 1 && x <= 5) (MsgValueNotInRange 1 5) intField
+
+      uniqueNameField :: FormResult StaffId -> Field Handler Text
+      uniqueNameField emplR = checkM (uniqueName emplR) textField
+
+      uniqueName :: FormResult StaffId -> Text -> Handler (Either AppMessage Text)
+      uniqueName emplR name = do
+          mx <- runDB $ selectOne $ do
+              x <- from $ table @Role
+              where_ $ x ^. RoleService ==. val sid
+              case emplR of
+                FormSuccess eid -> where_ $ x ^. RoleStaff ==. val eid
+                _ -> return ()
+              where_ $ x ^. RoleName ==. val name
+              return x
+          return $ case mx of
+            Nothing -> Right name
+            Just (Entity rid _) -> case role of
+              Nothing -> Left MsgExpertAlreadyInTheList
+              Just (Entity rid' _) | rid == rid' -> Right name
+                                   | otherwise -> Left MsgExpertAlreadyInTheList
 
 
 getAdmServicesSearchR :: Handler Html
@@ -241,7 +426,7 @@ getAdmOfferCreateR (Services sids) = do
     open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
     (widget,enctype) <- generateFormPost $ formOffer (last sids) Nothing
     defaultLayout $ do
-        setTitleI MsgPrice
+        setTitleI MsgOffer
         $(widgetFile "admin/services/offer/create")
 
 
@@ -429,6 +614,7 @@ postAdmServicesR (Services sids) = do
 
 getAdmServicesR :: Services -> Handler Html
 getAdmServicesR (Services sids) = do
+    stati <- reqGetParams <$> getRequest
     open <- runInputGet (iopt textField "open")
     scrollY <- fromMaybe "0" <$> runInputGet (iopt textField "scrollY")
     mpid <- (toSqlKey <$>) <$> runInputGet (iopt intField "pid")
@@ -448,6 +634,15 @@ getAdmServicesR (Services sids) = do
           orderBy [asc (x ^. OfferId)]
           return x
       Nothing -> return []
+      
+    experts <- case service of
+      Just (Entity sid _,_) -> runDB $ select $ do
+        r :& e <- from $ table @Role
+            `innerJoin` table @Staff `on` (\(r :& e) -> r ^. RoleStaff ==. e ^. StaffId)
+        where_ $ r ^. RoleService ==. val sid
+        return (r,e)
+      Nothing -> return []
+      
     services <- (second (join . unValue) <$>) <$> runDB ( select $ do
         x :& t <- from $ table @Service `leftJoin` table @Thumbnail
             `on` (\(x :& t) -> just (x ^. ServiceId) ==. t ?. ThumbnailService)
@@ -460,6 +655,12 @@ getAdmServicesR (Services sids) = do
     msgs <- getMessages
     app <- getYesod
     langs <- languages
+    detailsDescription <- newIdent
+    detailsOffer <- newIdent
+    detailsExperts <- newIdent
+    detailsSubservices <- newIdent
+    fabAddOffer <- newIdent
+    fabAddExpert <- newIdent
     defaultLayout $ do
         setTitleI MsgServices
         $(widgetFile "admin/services/services")
@@ -562,3 +763,7 @@ formService service group thumbnail extra = do
               Nothing -> Left MsgServisAlreadyInTheList
               Just (Entity sid' _) | sid == sid' -> Right name
                                    | otherwise -> Left MsgServisAlreadyInTheList
+
+
+range :: Enum a => a -> a -> [a]
+range a b = [a..b]

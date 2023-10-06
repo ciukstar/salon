@@ -142,6 +142,12 @@ import Admin.Services
     , getAdmPriceEditR
     , postAdmPriceDeleteR
     , getAdmServicesSearchR
+    , getAdmExpertCreateR
+    , postAdmExpertsR
+    , getAdmExpertR
+    , postAdmExpertR
+    , getAdmExpertEditR
+    , postAdmExpertDeleteR
     )
 import Handler.Common
     ( getFaviconR, getRobotsR, getPhotoPlaceholderR

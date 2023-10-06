@@ -1,3 +1,7 @@
+AddExpert: Добавить эксперта
+NoExpertsYet: Экспертов пока нет
+Expert: Эксперт
+Experts: Эксперты
 Current: Текущий
 NoAssigneeRequestReschedule: Если вы перенесете заявку, задача будет закреплена за вами
 NoAssigneeRequestApprove: Если вы подтвердите этот запрос, задача будет передана вам
@@ -145,6 +149,7 @@ NoContentYet: Контента пока нет
 SourceCode: Исходный код
 ErdDiagram: ER-диаграмма
 Resources: Ресурсы
+ExpertAlreadyInTheList: Эксперт уже в списке
 RoleAlreadyInTheList: Роль уже в списке
 Ratings: Рейтинги
 Rating: Рейтинг

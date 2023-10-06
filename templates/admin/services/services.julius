@@ -9,29 +9,20 @@ window.mdc.autoInit();
   });
 });
 
-[document.getElementById('detailsOffer')].filter(x => !!x).forEach(function (x) {
-  x.addEventListener('click',function (e) {
-    ['detailsDescription','detailsSubservices'].map(x => document.getElementById(x)).filter(x => !!x).forEach(function (x) {
-      x.removeAttribute('open');
-    });
-  });
-});
-
-[document.getElementById('detailsSubservices')].filter(x => !!x).forEach(function (x) {
-  x.addEventListener('click',function (e) {
-    ['detailsDescription','detailsOffer'].map(x => document.getElementById(x)).filter(x => !!x).forEach(function (x) {
-      x.removeAttribute('open');
-    });
-  });
-});
-
-[document.getElementById('detailsDescription')].filter(x => !!x).forEach(function (x) {
-  x.addEventListener('click',function (e) {
-    ['detailsSubservices','detailsOffer'].map(x => document.getElementById(x)).filter(x => !!x).forEach(function (x) {
-      x.removeAttribute('open');
-    });
-  });
-});
+[ [ #{detailsDescription},
+    #{detailsOffer},
+    #{detailsExperts},
+    #{detailsSubservices}
+  ]
+].forEach(function (xs) {
+   xs.filter(x => !!x).forEach(function (x) {
+     document.getElementById(x).addEventListener('click',function (e) {
+       xs.filter(y => y !== x).map(x => document.getElementById(x)).filter(x => !!x).forEach(function (x) {
+	 x.removeAttribute('open');
+       });
+     });
+   });
+ });
 
 Array.from(
   document.querySelectorAll('aside.mdc-snackbar')

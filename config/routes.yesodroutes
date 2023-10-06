@@ -68,6 +68,12 @@
     /delete/about/#ContentsId AdmAboutDeleteR POST
     /about                    AdmAboutR       GET POST
 
+
+    /delete/experts/#RoleId/+Services AdmExpertDeleteR      POST
+    /form/experts/#RoleId/+Services   AdmExpertEditR        GET
+    /form/expert/create/+Services     AdmExpertCreateR      GET
+    /expert/#RoleId/+Services         AdmExpertR            GET POST
+    /experts/+Services                AdmExpertsR           POST
     /search/services	              AdmServicesSearchR    GET
     /form/offer/+Services             AdmOfferCreateR       GET
     /form/offers/#OfferId/+Services   AdmPriceEditR   	    GET

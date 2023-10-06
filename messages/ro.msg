@@ -1,3 +1,7 @@
+AddExpert: Adaugă un expert
+NoExpertsYet: Nu există încă experți
+Expert: Expert
+Experts: Experți
 Current: Curent
 NoAssigneeRequestReschedule: Dacă reprogramați cererea, sarcina vă va fi atribuită
 NoAssigneeRequestApprove: Dacă confirmați această solicitare, sarcina vă va fi transferată
@@ -145,7 +149,8 @@ NoContentYet: Nu există încă conținut
 SourceCode: Codul sursă
 ErdDiagram: Diagrama ERD
 Resources: Resurse
-RoleAlreadyInTheList: Rol deja în listă
+ExpertAlreadyInTheList: Expertul deja în listă
+RoleAlreadyInTheList: Rolul deja în listă
 Ratings: Evaluări
 Rating: Rating
 AddRole: Adaugă rol

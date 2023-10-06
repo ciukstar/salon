@@ -104,46 +104,41 @@ $if null sids
                 $maybe overview <- overview
                   #{overview}
               
-    <details #detailsDescription
+    <details.mdc-list ##{detailsDescription} data-mdc-auto-init=MDCList
       ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
-      <summary style="list-style:none">
-        <ul.mdc-list data-mdc-auto-init=MDCList>
-          <li.mdc-list-item.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
-            <span.mdc-list-item__ripple>
-            <span.mdc-list-item__content>
-              <div.mdc-list-item__primary-text>_{MsgDescription}
-            <span.mdc-list-item__end>
-              <i.expand.material-symbols-outlined>expand_more
+      <summary.mdc-list-item.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+        <span.mdc-list-item__ripple>
+        <span.mdc-list-item__content>
+          <div.mdc-list-item__primary-text>_{MsgDescription}
+        <span.mdc-list-item__end>
+          <i.expand.material-symbols-outlined>expand_more
       $maybe descr <- descr
         <div style="margin:1rem">
           #{preEscapedToMarkup $ unTextarea descr}
 
   $if not (null sids)
-    <details #detailsOffer :open == Just "offer":open
+    <details.mdc-list ##{detailsOffer} data-mdc-auto-init=MDCList :open == Just "offer":open
       ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
-      <summary style="list-style:none">
-        <ul.mdc-list data-mdc-auto-init=MDCList>
-          <li.mdc-list-item :open == Just "offer":.mdc-list-item--activated
-            .mdc-list-item--with-one-line
-            .mdc-list-item--with-trailing-icon>
-            <span.mdc-list-item__ripple>
-            <span.mdc-list-item__content>
-              <div.mdc-list-item__primary-text>
-                <div.label-with-badge>
-                  <div.label>_{MsgOffers}
-                  <div.badge>#{length offer}
-            <span.mdc-list-item__end>
-              <i.expand.material-symbols-outlined>
-                $if open == Just "offer"
-                  expand_less
-                $elseif open == Nothing
-                  expand_more
-                $else
-                  expand_more
+      <summary.mdc-list-item :open == Just "offer":.mdc-list-item--activated
+        .mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+        <span.mdc-list-item__ripple>
+        <span.mdc-list-item__content>
+          <div.mdc-list-item__primary-text>
+            <div.label-with-badge>
+              <div.label>_{MsgOffers}
+              <div.badge>#{length offer}
+        <span.mdc-list-item__end>
+          <i.expand.material-symbols-outlined>
+            $if open == Just "offer"
+              expand_less
+            $elseif open == Nothing
+              expand_more
+            $else
+              expand_more
 
       $if null offer
         <figure>
-          <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
+          <span style="font-size:4rem;color:var(--mdc-theme-primary)">&varnothing;
           <figcaption>
             _{MsgNoPriceSetYet}.
       $else
@@ -167,7 +162,7 @@ $if null sids
                 <i.material-symbols-outlined>arrow_forward_ios
             <div.mdc-list-divider role=separator>
 
-      <div.mdc-touch-target-wrapper #fabAddPrice>
+      <div.mdc-touch-target-wrapper ##{fabAddOffer}>
         <a.mdc-fab.mdc-fab--extended.mdc-fab--touch href=@{AdminR $ AdmOfferCreateR (Services sids)}
           onclick="this.href = `${this.href}?scrollY=${window.scrollY}&open=offer`">
           <span.mdc-fab__ripple>
@@ -175,30 +170,85 @@ $if null sids
           <span.mdc-fab__icon.material-symbols-outlined>add
           <span.mdc-fab__label>_{MsgAddOffer}
           <span.mdc-fab__touch>
+
+  $if not (null sids)
+    <details.mdc-list ##{detailsExperts} data-mdc-auto-init=MDCList :open == Just "experts":open
+      ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+      <summary.mdc-list-item :open == Just "experts":.mdc-list-item--activated
+        .mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+        <span.mdc-list-item__ripple>
+        <span.mdc-list-item__content>
+          <div.mdc-list-item__primary-text>
+            <div.label-with-badge>
+              <div.label>_{MsgExperts}
+              <div.badge>#{length experts}
+        <span.mdc-list-item__end>
+          <i.expand.material-symbols-outlined>
+            $if open == Just "experts"
+              expand_less
+            $elseif open == Nothing
+              expand_more
+            $else
+              expand_more
+
+      $if null experts
+        <figure style="text-align:center">
+          <span style="font-size:4rem;color:var(--mdc-theme-primary)">&varnothing;
+          <figcaption>
+            _{MsgNoExpertsYet}.
+      $else
+        <nav.mdc-list data-mdc-auto-init=MDCList>
+          $forall (Entity rid (Role _ _ rname rating),Entity eid (Staff ename _ _ _ _ _)) <- experts
+            <a.mdc-list-item.mdc-list-item--with-leading-image href=@?{(AdminR $ AdmExpertR rid (Services sids),stati)}
+              .mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon>
+              <span.mdc-list-item__ripple>
+              <span.mdc-list-item__start>
+                <img src=@{AdminR $ AdmStaffPhotoR eid} width=56 height=56 alt=_{MsgPhoto} loading=lazy>
+              <span.mdc-list-item__content>
+                <div.mdc-list-item__primary-text>
+                  #{ename}
+                <div.mdc-list-item__secondary-text>
+                  #{rname}
+                <div.mdc-list-item__secondary-text>
+                  $maybe rating <- rating
+                    $forall _ <- range 1 rating
+                      <span style="color:#FFBF00">&starf;
+                    $forall _ <- range 1 (5 - rating)
+                      &starf;
+              <span.mdc-list-item__end>
+                <i.material-symbols-outlined>arrow_forward_ios
+            <div.mdc-list-divider role=separator>
+
+      <div.mdc-touch-target-wrapper ##{fabAddExpert}>
+        <a.mdc-fab.mdc-fab--extended.mdc-fab--touch 
+          href=@?{(AdminR $ AdmExpertCreateR (Services sids),[("open","experts")])}
+          onclick="this.href = [new window.URL(this.href)].map(x => {x.searchParams.append('scrollY',window.scrollY); return x.href;})[0]">
+          <span.mdc-fab__ripple>
+          <span.mdc-fab__focus-ring>
+          <span.mdc-fab__icon.material-symbols-outlined>add
+          <span.mdc-fab__label>_{MsgAddExpert}
+          <span.mdc-fab__touch>
+      
             
   $if not (null sids)
-    <details #detailsSubservices :open == Just "subservices":open
+    <details.mdc-list ##{detailsSubservices} data-mdc-auto-init=MDCList :open == Just "subservices":open
       ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
-      <summary style="list-style:none">
-        <ul.mdc-list data-mdc-auto-init=MDCList>
-          <li.mdc-list-item
-            :open == Just "subservices":.mdc-list-item--activated
-            .mdc-list-item--with-one-line
-            .mdc-list-item--with-trailing-icon>
-            <span.mdc-list-item__ripple>
-            <span.mdc-list-item__content>
-              <div.mdc-list-item__primary-text>
-                <div.label-with-badge>
-                  <div.label>_{MsgSubservices}
-                  <div.badge>#{length services}
-            <span.mdc-list-item__end>
-              <i.expand.material-symbols-outlined>
-                $if open == Just "subservices"
-                  expand_less
-                $elseif open == Nothing
-                  expand_more
-                $else
-                  expand_more
+      <summary.mdc-list-item :open == Just "subservices":.mdc-list-item--activated
+        .mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+        <span.mdc-list-item__ripple>
+        <span.mdc-list-item__content>
+          <div.mdc-list-item__primary-text>
+            <div.label-with-badge>
+              <div.label>_{MsgSubservices}
+              <div.badge>#{length services}
+        <span.mdc-list-item__end>
+          <i.expand.material-symbols-outlined>
+            $if open == Just "subservices"
+              expand_less
+            $elseif open == Nothing
+              expand_more
+            $else
+              expand_more
             
       ^{subservices services sids msid}
   $else

@@ -1,0 +1,57 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=@?{(AdminR $ AdmServicesR (Services sids),stati)}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgExpert}
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end.mdc-theme--text-primary-on-light role=toolbar>
+      <button.mdc-icon-button type=button 
+        onclick="document.getElementById('#{dlgRoleDelete}').MDCDialog.open()">
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>delete
+      <a.mdc-icon-button href=@?{(AdminR $ AdmExpertEditR rid (Services sids),stati)} role=button>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>edit
+  
+<main.mdc-top-app-bar--fixed-adjust>
+  $maybe (Entity _ (Role _ _ name rating),Entity _ (Staff ename _ _ _ _ _),Entity _ (Service sname _ _ _ _ _)) <- role
+    <div.mdc-data-table>
+      <div.mdc-data-table__container>
+        <table.mdc-data-table__table>
+          <tbody.mdc-data-table__content>
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgTheName}
+              <td.mdc-data-table__cell>#{name}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgEmployee}
+              <td.mdc-data-table__cell>#{ename}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgService}
+              <td.mdc-data-table__cell>#{sname}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgRating}
+              <td.mdc-data-table__cell>
+                $maybe rating <- rating
+                  #{show rating}
+
+
+<div.mdc-dialog ##{dlgRoleDelete} data-mdc-auto-init=MDCDialog>
+  <div.mdc-dialog__container>
+    <div.mdc-dialog__surface role=alertdialog tabindex=-1>
+      <h4.mdc-dialog__title>_{MsgPleaseConfirm}
+      <div.mdc-dialog__content>_{MsgDeleteAreYouSure}
+      <div.mdc-dialog__actions>
+        <button.mdc-button type=button data-mdc-dialog-action=close>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgCancel}
+        <form method=post action=@?{(AdminR $ AdmExpertDeleteR rid (Services sids),[("open","experts")])}>
+          <button.mdc-button.mdc-button--raised type=submit>
+            <span.mdc-button__ripple>
+            <span.mdc-button__focus-ring>
+            <span.mdc-button__label>_{MsgYesDelete}
+  <div.mdc-dialog__scrim>

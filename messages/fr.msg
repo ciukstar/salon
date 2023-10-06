@@ -1,3 +1,7 @@
+AddExpert: Ajouter un expert
+NoExpertsYet: Il n'y a pas encore d'experts
+Expert: Expert
+Experts: Experts
 Current: Actuel
 NoAssigneeRequestReschedule: Si vous reprogrammez cette demande, la tâche vous sera attribuée
 NoAssigneeRequestApprove: Si vous confirmer cette demande, la tâche vous sera transférée
@@ -145,6 +149,7 @@ NoContentYet: Il n'y a pas encore de contenu
 SourceCode: Code source
 ErdDiagram: Diagramme ERD
 Resources: Ressources
+ExpertAlreadyInTheList: Expert déjà dans la liste
 RoleAlreadyInTheList: Rôle déjà dans la liste
 Ratings: Évaluations
 Rating: Notation

@@ -14,14 +14,15 @@ main
       white-space: normal
     table tbody tr td
       white-space: normal
-  #detailsDescription summary
-    .mdc-list .mdc-list-item
-      .mdc-list-item__content .mdc-list-item__primary-text
-        font-weight: 500
+  details.mdc-list
+    padding: 0
+  ##{detailsDescription} summary
+    .mdc-list-item__content .mdc-list-item__primary-text
+      font-weight: 500
   div.label-with-badge
     display: flex
     flex-direction: row
-    justify-content: flex-start
+    justify-content: space-between
     align-items: center
     gap: 0.5rem
     div.label
@@ -35,7 +36,7 @@ main
       border-radius: 50%
       background-color: var(--mdc-theme-primary)
       text-align: center
-  #fabAddPrice
+  ##{fabAddOffer}, ##{fabAddExpert}
     position: fixed
     bottom: 1rem
     right: 1rem
