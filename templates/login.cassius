@@ -40,5 +40,8 @@ div.mdc-dialog
           flex-direction: row
           justify-content: space-between
           align-items: center
+    form hr
+      width: 100%
+      opacity: 0.6
   div.mdc-dialog__actions
     gap: 1rem

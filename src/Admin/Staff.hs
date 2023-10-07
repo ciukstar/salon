@@ -40,7 +40,7 @@ import Yesod.Core
     , typeSvg, addMessageI, redirect, FileInfo (fileContentType)
     , SomeMessage (SomeMessage), fileSourceByteString
     , MonadTrans (lift), whamlet, getRequest
-    , YesodRequest (reqGetParams)
+    , YesodRequest (reqGetParams), newIdent
     )
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Auth (maybeAuth, Route (LoginR))
@@ -308,7 +308,7 @@ $forall v <- [fnameV,emailV]
     return (r,w)
   where
       resolveSelected adminR = case adminR of FormSuccess x -> x ; _ -> False
-      
+
       uniqueNameField = checkM uniqueName textField
 
       uniqueName :: Text -> Handler (Either AppMessage Text)
@@ -678,6 +678,7 @@ getAdmStaffR = do
           return x ) )
     msgs <- getMessages
     setUltDestCurrent
+    fabAddStaff <- newIdent
     defaultLayout $ do
         setTitleI MsgStaff
         $(widgetFile "admin/staff/staff")

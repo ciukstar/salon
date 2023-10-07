@@ -1,7 +1,21 @@
 
 main
-  margin: 0 1rem 1rem 1rem
-  details.mdc-list
-    padding: 0
-    section.mdc-card-wrapper__text-section
-      margin: 0 1rem
+  padding: 1rem 0
+  .mdc-card
+    .mdc-card__media-content h4
+      position: absolute
+      bottom: 0
+      left: 0
+      padding: 0.2rem 1rem
+      color: var(--mdc-theme-text-primary-on-light)
+      background-color: var(--mdc-theme-primary)
+    details.mdc-list
+      padding: 0
+      section.mdc-card-wrapper__text-section
+        margin: 0 1rem
+
+@media screen and (max-width: 768px)
+  main div.mdc-card
+    box-shadow: none
+    border-radius: 0
+    background: none

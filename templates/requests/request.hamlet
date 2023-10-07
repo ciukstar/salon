@@ -30,11 +30,12 @@
         <div.mdc-card>
           <div.mdc-card__primary-action>
             <div.mdc-card__media.mdc-card__media--16-9 style="background-image:url('@{ServiceThumbnailR sid}')">
-              $maybe Entity _ (Thumbnail _ _ _ attrib) <- thumbnail
-                $maybe attribution <- attrib
-                  <div.mdc-card__media-content
-                    style="text-align:end;font-size:0.5rem;position:relative;bottom:0;margin-right:4px">
-                    ^{attribution}
+              <div.mdc-card__media-content>
+                $maybe Entity _ (Thumbnail _ _ _ attrib) <- thumbnail
+                  $maybe attribution <- attrib
+                    <div style="text-align:end;font-size:0.5rem;position:absolute;bottom:0;right:0;padding-right:4px">
+                      ^{attribution}
+                <h4>#{sname}
             <div.mdc-card__ripple>
 
           <details.mdc-list.mdc-card-wrapper__text-section
@@ -100,21 +101,21 @@
             <section.appointment-datetime.mdc-card-wrapper__text-section>
               #{show date} #{show time}
 
-          $maybe Entity eid (Staff ename _ _ _ _ _) <- staff
-            <details.mdc-list.mdc-card-wrapper__text-section
-              ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
-              <summary.mdc-list-item.mdc-list-item--with-leading-icon
-                .mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
-                <span.mdc-list-item__ripple>
-                <span.mdc-list-item__start>
-                 <i.material-symbols-outlined>emoji_people
-                <span.mdc-list-item__content>
-                  <div.mdc-list-item__primary-text style="color:var(--mdc-theme-text-hint-on-light)">
-                    _{MsgAcquaintance}
-                <span.mdc-list-item__end>
-                 <i.expand.material-symbols-outlined>expand_more
-              <div style="display:flex;flex-direction:row;align-items:flex-start;justify-content:space-around">
+          <details.mdc-list.mdc-card-wrapper__text-section
+            ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+            <summary.mdc-list-item.mdc-list-item--with-leading-icon
+              .mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+              <span.mdc-list-item__ripple>
+              <span.mdc-list-item__start>
+               <i.material-symbols-outlined>emoji_people
+              <span.mdc-list-item__content>
+                <div.mdc-list-item__primary-text style="color:var(--mdc-theme-text-hint-on-light)">
+                  _{MsgAcquaintance}
+              <span.mdc-list-item__end>
+               <i.expand.material-symbols-outlined>expand_more
+            <div style="display:flex;flex-direction:row;align-items:flex-start;justify-content:space-around">
 
+              $maybe Entity eid (Staff ename _ _ _ _ _) <- staff
                 <figure style="margin:0;padding:0;text-align:center">
                   <img src=@{AdminR $ AdmStaffPhotoR eid} width=56 height=56 alt=_{MsgPhoto} loading=lazy
                     style="clip-path:circle(50%)">
@@ -123,22 +124,25 @@
                     $maybe Entity _ (Role _ _ rname _) <- role
                       <div>
                         <small>(#{rname})
+              $nothing
+                <figure style="margin:0;padding:0">
+                  <i.material-symbols-outlined style="font-size:3rem">indeterminate_question_box
 
-                <i.material-symbols-outlined style="align-self:center;color:var(--mdc-theme-text-icon-on-background)">
-                  handshake
+              <i.material-symbols-outlined style="align-self:center;color:var(--mdc-theme-text-icon-on-background)">
+                handshake
 
-                $with Entity uid (User uname _ _ fname _) <- customer
-                  <figure style="margin:0;padding:0;text-align:center">
-                    <img src=@{AccountPhotoR uid} width=56 height=56 style="clip-path:circle(50%)" alt=_{MsgPhoto}
-                      onerror="this.src = '@{PhotoPlaceholderR}'">
-                    <figcaption style="line-height:1">
-                      <small>
-                        $maybe fname <- fname
-                          #{fname}
-                        $nothing
-                          #{uname}
-                      <div>
-                        <small>(_{MsgCustomer})
+              $with Entity uid (User uname _ _ fname _) <- customer
+                <figure style="margin:0;padding:0;text-align:center">
+                  <img src=@{AccountPhotoR uid} width=56 height=56 style="clip-path:circle(50%)" alt=_{MsgPhoto}
+                    onerror="this.src = '@{PhotoPlaceholderR}'">
+                  <figcaption style="line-height:1">
+                    <small>
+                      $maybe fname <- fname
+                        #{fname}
+                      $nothing
+                        #{uname}
+                    <div>
+                      <small>(_{MsgCustomer})
 
           $maybe Entity _ (Contents _ content) <- location
             <details.mdc-list.mdc-card-wrapper__text-section

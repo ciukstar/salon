@@ -37,7 +37,8 @@ import Database.Persist.Sql (ConnectionPool, runSqlPool, fromSqlKey)
 import qualified Database.Esqueleto.Experimental as E ((==.), exists)
 import Database.Esqueleto.Experimental
     ( select, selectOne, from, table, Value (Value), where_
-    , (^.), just
+    , (^.), (:&) ((:&))
+    , just, orderBy, asc, unionAll_, not_, val
     )
 
 -- | The foundation datatype for your application. This can be a good place to
@@ -112,9 +113,9 @@ instance Yesod App where
             addStylesheet $ StaticR material_components_web_min_css
             addScript     $ StaticR material_components_web_min_js
             $(widgetFile "default-layout")
-            
+
         brand <- runDB $ selectOne $ from $ table @Brand
-        
+
         withUrlRenderer $(hamletFile "templates/default-layout-wrapper.hamlet")
 
     -- The page to be redirected to when authentication is required.
@@ -134,7 +135,7 @@ instance Yesod App where
     isAuthorized (StaticR _) _ = return Authorized
     isAuthorized (AdminR UsersR) _ = return Authorized
     isAuthorized (AdminR UserCreateFormR) _ = return Authorized
-    
+
     isAuthorized (AdminR AdmServicesSearchR) _ = return Authorized
     isAuthorized (AdminR (AdmServicesR _)) _ = return Authorized
     isAuthorized (AdminR (AdmServiceR _)) _ = return Authorized
@@ -148,9 +149,9 @@ instance Yesod App where
     isAuthorized (AdminR (AdmExpertR _ _)) _ = return Authorized
     isAuthorized (AdminR (AdmExpertEditR _ _)) _ = return Authorized
     isAuthorized (AdminR (AdmExpertDeleteR _ _)) _ = return Authorized
-    
-    
-    
+
+
+
     isAuthorized (AdminR (AdmOfferR _)) _ = return Authorized
     isAuthorized (AdminR (AdmPriceR _ _)) _ = return Authorized
     isAuthorized (AdminR (AdmPriceEditR _ _)) _ = return Authorized
@@ -182,20 +183,20 @@ instance Yesod App where
     isAuthorized (AdminR (AdmEmplUserR _)) _ = return Authorized
     isAuthorized (AdminR (AdmEmplUnregR _ _)) _ = return Authorized
     isAuthorized (AdminR AdmStaffSearchR) _ = return Authorized
-    
+
     isAuthorized (AdminR BrandR) _ = return Authorized
     isAuthorized (AdminR BrandDeleteR) _ = return Authorized
     isAuthorized (AdminR (BrandEditR _)) _ = return Authorized
     isAuthorized (AdminR (BrandMarkR _)) _ = return Authorized
     isAuthorized (AdminR (BrandIcoR _)) _ = return Authorized
     isAuthorized (AdminR BrandCreateR) _ = return Authorized
-    
+
     isAuthorized (AdminR BusinessR) _ = return Authorized
     isAuthorized (AdminR BusinessCreateR) _ = return Authorized
     isAuthorized (AdminR (BusinessEditR _)) _ = return Authorized
-    isAuthorized (AdminR BusinessDeleteR) _ = return Authorized    
-    
-    
+    isAuthorized (AdminR BusinessDeleteR) _ = return Authorized
+
+
     isAuthorized ContactR _ = return Authorized
 
     isAuthorized BookEndR _ = return Authorized
@@ -204,15 +205,15 @@ instance Yesod App where
     isAuthorized BookStaffR _ = return Authorized
     isAuthorized BookOffersR _ = return Authorized
     isAuthorized BookSearchR _ = return Authorized
-        
+
     isAuthorized AppointmentsR _ = return Authorized
     isAuthorized (AppointmentR _) _ = return Authorized
     isAuthorized (AppointmentCancelR _) _ = return Authorized
     isAuthorized (AppointmentHistR _) _ = return Authorized
     isAuthorized (AppointmentRescheduleR _) _ = return Authorized
     isAuthorized (AppointmentApproveR _) _ = return Authorized
-    
-    
+
+
     isAuthorized RequestsR _ = return Authorized
     isAuthorized (RequestR _) _ = return Authorized
     isAuthorized RequestsSearchR _ = return Authorized
@@ -220,12 +221,12 @@ instance Yesod App where
     isAuthorized (RequestFinishR _) _ = return Authorized
     isAuthorized (RequestRescheduleR _) _ = return Authorized
     isAuthorized (RequestHistR _) _ = return Authorized
-    
-    
+
+
     isAuthorized AccountR _ = return Authorized
     isAuthorized (AccountPhotoR _) _ = return Authorized
     isAuthorized ProfileR _ = return Authorized
-    
+
     isAuthorized ServicesR _ = return Authorized
     isAuthorized (ServiceR _) _ = return Authorized
     isAuthorized (ServiceOffersR _) _ = return Authorized
@@ -294,11 +295,11 @@ instance YesodAuth App where
     -- Where to send a user after successful login
     loginDest :: App -> Route App
     loginDest _ = HomeR
-    
+
     -- Where to send a user after logout
     logoutDest :: App -> Route App
     logoutDest _ = HomeR
-    
+
     -- Override the above two destinations when a Referer: header is present
     redirectToReferer :: App -> Bool
     redirectToReferer _ = True
@@ -336,11 +337,24 @@ formLogin route = do
     ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$>  lookupSession ultDestKey
     msgs <- getMessages
     users <- liftHandler $ runDB $ select $ do
-        x <- from $ table @User
-        where_ $ E.exists $ do
-            e <- from $ table @Staff
-            where_ $ e ^. StaffUser E.==. just (x ^. UserId)
-        return (x ^. UserId, x ^. UserName)
+        x :& y <- from $
+            do x <- from $ table @User
+               where_ $ not_ $ E.exists $ do
+                   e <- from $ table @Staff
+                   where_ $ e ^. StaffUser E.==. just (x ^. UserId)
+               where_ $ E.exists $ do
+                   b <- from $ table @Book
+                   where_ $ b ^. BookUser E.==. x ^. UserId
+               return $ x :& val False
+            `unionAll_`
+            do x <- from $ table @User
+               where_ $ E.exists $ do
+                   e <- from $ table @Staff
+                   where_ $ e ^. StaffUser E.==. just (x ^. UserId)
+               return $ x :& val True
+        
+        orderBy [asc y, asc (x ^. UserName)]
+        return (x ^. UserId, x ^. UserName, y)
     $(widgetFile "login")
 
 

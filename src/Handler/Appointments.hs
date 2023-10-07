@@ -106,13 +106,13 @@ postAppointmentApproveR bid = do
               where_ $ x ^. BookUser ==. val uid
               return x
           case book of
-            Just (Entity bid' (Book _ _ _ day time tz status)) -> do
-                now <- liftIO getCurrentTime
-                runDB $ insert_ $ Hist bid' now day time tz status
+            Just (Entity _ (Book _ _ _ day time tz _)) -> do
                 runDB $ update $ \x -> do
                     set x [BookStatus =. val BookStatusApproved]
                     where_ $ x ^. BookId ==. val bid
                     where_ $ x ^. BookUser ==. val uid
+                now <- liftIO getCurrentTime
+                runDB $ insert_ $ Hist bid now day time tz BookStatusApproved
                 redirect $ AppointmentR bid
 
             Nothing -> do
@@ -246,14 +246,6 @@ getAppointmentHistR bid = do
                   where_ $ b ^. BookUser ==. val uid
               orderBy [desc (x ^. HistLogtime)]
               return x
-              
-          book <- case hist of
-            [] -> return Nothing
-            _ -> runDB $ selectOne $ do
-                x <- from $ table @Book
-                where_ $ x ^. BookId ==. val bid
-                return x
-          now <- liftIO getCurrentTime
           defaultLayout $ do
               setTitleI MsgHistory
               $(widgetFile "appointments/hist")
@@ -274,13 +266,13 @@ postAppointmentCancelR bid = do
               where_ $ x ^. BookUser ==. val uid
               return x
           case book of
-            Just (Entity bid' (Book _ _ _ day time tz status)) -> do
-                now <- liftIO getCurrentTime
-                runDB $ insert_ $ Hist bid' now day time tz status
+            Just (Entity _ (Book _ _ _ day time tz _)) -> do
                 runDB $ update $ \x -> do
                     set x [BookStatus =. val BookStatusCancelled]
                     where_ $ x ^. BookId ==. val bid
                     where_ $ x ^. BookUser ==. val uid
+                now <- liftIO getCurrentTime
+                runDB $ insert_ $ Hist bid now day time tz BookStatusCancelled
                 redirect $ AppointmentR bid
 
             Nothing -> do
@@ -309,9 +301,7 @@ postAppointmentR bid = do
               where_ $ x ^. BookUser ==. val uid
               return x
           case book of
-            Just (Entity bid' (Book _ _ _ day' time' tz' status')) -> do
-                now <- liftIO getCurrentTime
-                runDB $ insert_ $ Hist bid' now day' time' tz' status'
+            Just _ -> do
                 runDB $ update $ \x -> do
                     set x [ BookDay =. val day
                           , BookTime =. val time
@@ -320,6 +310,8 @@ postAppointmentR bid = do
                           ]
                     where_ $ x ^. BookId ==. val bid
                     where_ $ x ^. BookUser ==. val uid
+                now <- liftIO getCurrentTime
+                runDB $ insert_ $ Hist bid now day time tz BookStatusRequest
                 redirect $ AppointmentR bid
 
             Nothing -> do
@@ -384,8 +376,6 @@ getAppointmentsR = do
           setTitleI MsgMyAppointments
           $(widgetFile "appointments/login")
       Just (Entity uid _) -> do
-          app <- getYesod
-          langs <- languages
           books <- runDB $ select $ do
               x :& _ :& s <- from $ table @Book
                   `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)

@@ -39,7 +39,7 @@ import Model
     , Contents (Contents, contentsSection, contentsContent)
     , BookStatus (BookStatusRequest)
     , Book (Book, bookUser, bookOffer, bookRole, bookDay, bookTime, bookTz, bookStatus)
-    , Business (Business, businessName, businessAddress, businessPhone, businessMobile, businessEmail)
+    , Business (Business, businessName, businessAddress, businessPhone, businessMobile, businessEmail), Hist (histBook, histLogtime, histDay, histTime, histTz, histStatus, Hist)
     )
 import Data.FileEmbed (embedFile)
 import Demo.DemoPhotos
@@ -50,7 +50,7 @@ import Demo.DemoPhotos
 populateEN :: MonadIO m => ReaderT SqlBackend m ()
 populateEN = do
 
-    (today,time) <- liftIO $ getCurrentTime >>= \x -> return (utctDay x,timeToTimeOfDay (utctDayTime x))
+    (now,today,time) <- liftIO $ getCurrentTime >>= \x -> return (x ,utctDay x,timeToTimeOfDay (utctDayTime x))
 
     insert_ $ Business { businessName = "Salon"
                        , businessAddress = "5331 Rexford Court, Montgomery AL 36116"
@@ -414,7 +414,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
 
     r212 <- insert $ Role { roleStaff = e2
                           , roleService = s12
-                          , roleName = "Barbers"
+                          , roleName = "Hairdresser"
                           , roleRating = Just 3
                           }
 
@@ -532,8 +532,8 @@ We will continue to offer the latest treatments, the most innovative techniques 
 
     r51511 <- insert $ Role { roleStaff = e5
                             , roleService = s1511
-                            , roleName = "Hairdresser"
-                            , roleRating = Just 2
+                            , roleName = "Barber"
+                            , roleRating = Just 4
                             }
 
     s1512 <- insert $ Service { serviceName = "Before Perm Conditioner"
@@ -1008,18 +1008,27 @@ We will continue to offer the latest treatments, the most innovative techniques 
                         , userFullName = Just "Patty O’Furniture"
                         , userEmail = Just "pattyofurniture@mail.org"
                         }
+          
     insert_ $ UserPhoto { userPhotoUser = c1
                         , userPhotoPhoto = $(embedFile "static/img/customer-women-1.avif")
                         , userPhotoMime = "image/avif"
                         }
 
-    insert_ $ Book { bookOffer = o131
-                   , bookRole = Just r212 
-                   , bookUser = c1
-                   , bookDay = addDays 1 today
-                   , bookTime = time
-                   , bookTz = utc
-                   , bookStatus = BookStatusRequest
+    b1 <- insert $ Book { bookOffer = o131
+                        , bookRole = Just r212 
+                        , bookUser = c1
+                        , bookDay = addDays 1 today
+                        , bookTime = time
+                        , bookTz = utc
+                        , bookStatus = BookStatusRequest
+                        }
+          
+    insert_ $ Hist { histBook = b1
+                   , histLogtime = now
+                   , histDay = addDays 1 today
+                   , histTime = time
+                   , histTz = utc
+                   , histStatus = BookStatusRequest
                    }
 
 
@@ -1030,18 +1039,27 @@ We will continue to offer the latest treatments, the most innovative techniques 
                         , userFullName = Just "Ray Sin"
                         , userEmail = Just "raysin@mail.org"
                         }
+          
     insert_ $ UserPhoto { userPhotoUser = c2
                         , userPhotoPhoto = $(embedFile "static/img/customer-men-1.avif")
                         , userPhotoMime = "image/avif"
                         }
 
-    insert_ $ Book { bookOffer = o111
-                   , bookRole = Just r51511 
-                   , bookUser = c2
-                   , bookDay = addDays 2 today
-                   , bookTime = time
-                   , bookTz = utc
-                   , bookStatus = BookStatusRequest
+    b2 <- insert $ Book { bookOffer = o111
+                        , bookRole = Just r51511 
+                        , bookUser = c2
+                        , bookDay = addDays 2 today
+                        , bookTime = time
+                        , bookTz = utc
+                        , bookStatus = BookStatusRequest
+                        }
+          
+    insert_ $ Hist { histBook = b2
+                   , histLogtime = now
+                   , histDay = addDays 2 today
+                   , histTime = time
+                   , histTz = utc
+                   , histStatus = BookStatusRequest
                    }
 
     insert_ $ Book { bookOffer = o141

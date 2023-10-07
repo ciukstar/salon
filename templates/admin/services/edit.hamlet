@@ -2,7 +2,7 @@
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
       <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button
-        href="@{AdminR $ AdmServicesR (Services sids)}?scrollY=#{scrollY}&open=subservices">
+        href="@{AdminR $ AdmServicesR (Services sids)}?y=#{y}&open=subservices">
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
@@ -10,10 +10,10 @@
         
 <main.mdc-top-app-bar--fixed-adjust>
   <form method=POST enctype=#{enctype} novalidate
-    action="@{AdminR $ AdmServiceR (Services sids)}?scrollY=#{scrollY}&open=subservices">
+    action="@{AdminR $ AdmServiceR (Services sids)}?y=#{y}&open=subservices">
     ^{widget}
     <div.actions>
-      <a.mdc-button href="@{AdminR $ AdmServicesR (Services sids)}?scrollY=#{scrollY}&open=subservices" role=button>
+      <a.mdc-button href="@{AdminR $ AdmServicesR (Services sids)}?y=#{y}&open=subservices" role=button>
         <span.mdc-button__ripple>
         <span.mdc-button__focus-ring>
         <span.mdc-button__label>_{MsgCancel}

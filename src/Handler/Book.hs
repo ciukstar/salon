@@ -59,7 +59,7 @@ import Yesod.Form.Input (runInputPost, iopt, runInputGet)
 import Settings (widgetFile)
 
 import Yesod.Persist.Core (runDB)
-import Database.Persist ( Entity(Entity), PersistStoreWrite (insert) )
+import Database.Persist ( Entity(Entity), PersistStoreWrite (insert, insert_) )
 import Database.Persist.Sql ( fromSqlKey, toSqlKey, SqlBackend )
 
 import Database.Esqueleto.Experimental
@@ -106,7 +106,7 @@ import Model
       , ServiceName, RoleStaff, RoleRating, RoleService, OfferId, BookOffer
       , BookUser, BookRole, ThumbnailService, ThumbnailAttribution
       , ServiceOverview, ServiceDescr, ServiceGroup
-      ), BookStatus (BookStatusRequest)
+      ), BookStatus (BookStatusRequest), Hist (Hist)
     )
 
 import Menu (menu)
@@ -204,8 +204,12 @@ postBookCustomerR = do
           ((fr,fw),et) <- runFormPost $ formCustomer user Nothing Nothing Nothing ioffers ioffers irole (maybeToList irole)
           case fr of
             FormSuccess (items,role,day,time,tz,Entity uid _) -> do
-                bids <- forM items $ \((_,Entity oid _),_) -> runDB $
-                    insert $ Book uid oid ((\(_,Entity rid _) -> rid) <$> role) day time tz BookStatusRequest
+                now <- liftIO getCurrentTime
+                bids <- forM items $ \((_,Entity oid _),_) -> do
+                    bid  <- runDB $ insert $
+                        Book uid oid ((\(_,Entity rid _) -> rid) <$> role) day time tz BookStatusRequest
+                    runDB $ insert_ $ Hist bid now day time tz BookStatusRequest
+                    return bid
                 addMessageI "info" MsgRecordAdded
                 deleteSession sessKeyBooking
                 redirect (BookEndR, ("bid",) . pack . show . fromSqlKey <$> bids)

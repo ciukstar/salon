@@ -2,7 +2,7 @@
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
       <a.mdc-top-app-bar__navigation-icon.mdc-icon-button 
-        href=@?{(AdminR $ AdmServicesR sids,catMaybes [scrollY,open,Just ("pid",pack $ show $ fromSqlKey pid)])}>
+        href=@?{(AdminR $ AdmServicesR sids,catMaybes [y,o,Just ("pid",pack $ show $ fromSqlKey pid)])}>
         <span.mdc-icon-button__ripple>
         <i.material-symbols-outlined>arrow_back
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgOffer}
@@ -12,7 +12,7 @@
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>delete
       <a.mdc-top-app-bar__action-item.mdc-icon-button role=button
-        href=@?{(AdminR $ AdmPriceEditR pid sids,catMaybes [scrollY,open])}>
+        href=@?{(AdminR $ AdmPriceEditR pid sids,catMaybes [y,o])}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>edit
@@ -27,7 +27,7 @@
             <span.mdc-button__ripple>
             <span.mdc-button__focus-ring>
             <span.mdc-button__label>_{MsgCancel}
-          <form method=POST action=@?{(AdminR $ AdmPriceDeleteR pid sids,catMaybes [scrollY,open])}>
+          <form method=POST action=@?{(AdminR $ AdmPriceDeleteR pid sids,catMaybes [y,o])}>
             <button.mdc-button.mdc-button--raised type=submit>
               <span.mdc-button__ripple>
               <span.mdc-button__focus-ring>

@@ -12,7 +12,7 @@ $if null sids
       $else
         $with sid <- pack $ show $ fromSqlKey $ last sids
           <a.mdc-top-app-bar__navigation-icon.mdc-icon-button 
-            href=@?{(AdminR $ AdmServicesR (Services (init sids)),[("sid",sid),("scrollY",scrollY),("open","subservices")])}>
+            href=@?{(AdminR $ AdmServicesR (Services (init sids)),[("sid",sid),("y",y),("o","subservices")])}>
             <span.mdc-icon-button__ripple>
             <span.mdc-icon-button__focus-ring>
             <i.material-symbols-outlined>arrow_back
@@ -39,7 +39,8 @@ $if null sids
             <span.mdc-icon-button__focus-ring>
             <i.material-symbols-outlined>login
       $else
-        <button.mdc-top-app-bar__action-item.mdc-icon-button type=button #btnDelete>
+        <button.mdc-top-app-bar__action-item.mdc-icon-button type=button ##{btnDelete}
+          onclick="document.getElementById('#{dlgDelete}').MDCDialog.open()">
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>delete
@@ -48,22 +49,22 @@ $if null sids
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>edit
 
-<div.mdc-dialog data-mdc-auto-init=MDCDialog #dlgDelete>
-  <div.mdc-dialog__container>
-    <div.mdc-dialog__surface role=alertdialog tabindex=-1 aria-modal=true>
-      <h4.mdc-dialog__title>
-        _{MsgPleaseConfirm}
-      <div.mdc-dialog__content>
-        _{MsgDeleteAreYouSure}
-      <div.mdc-dialog__actions>
-        <button.mdc-dialog__button.mdc-button data-mdc-dialog-action=cancel>
-          <span.mdc-button__ripple>
-          <span.mdc-button__label>_{MsgCancel}
-        <button.mdc-dialog__button.mdc-button.mdc-button--raised type=submit form=formDelete>
-          <span.mdc-button__ripple>
-          <span.mdc-button__label>_{MsgYesDelete}
-        <form method=POST action=@{AdminR $ AdmServiceDeleteR (Services sids)} #formDelete>
-  <div.mdc-dialot__scrim>
+        <div.mdc-dialog data-mdc-auto-init=MDCDialog ##{dlgDelete}>
+          <div.mdc-dialog__container>
+            <div.mdc-dialog__surface role=alertdialog tabindex=-1 aria-modal=true>
+              <h4.mdc-dialog__title>
+                _{MsgPleaseConfirm}
+              <div.mdc-dialog__content>
+                _{MsgDeleteAreYouSure}
+              <div.mdc-dialog__actions>
+                <button.mdc-dialog__button.mdc-button data-mdc-dialog-action=cancel>
+                  <span.mdc-button__ripple>
+                  <span.mdc-button__label>_{MsgCancel}
+                <button.mdc-dialog__button.mdc-button.mdc-button--raised type=submit form=formDelete>
+                  <span.mdc-button__ripple>
+                  <span.mdc-button__label>_{MsgYesDelete}
+                <form method=POST action=@{AdminR $ AdmServiceDeleteR (Services sids)} #formDelete>
+          <div.mdc-dialot__scrim>
   
 <main.mdc-top-app-bar--fixed-adjust>
 
@@ -117,9 +118,9 @@ $if null sids
           #{preEscapedToMarkup $ unTextarea descr}
 
   $if not (null sids)
-    <details.mdc-list ##{detailsOffer} data-mdc-auto-init=MDCList :open == Just "offer":open
+    <details.mdc-list ##{detailsOffer} data-mdc-auto-init=MDCList :o == Just "offer":open
       ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
-      <summary.mdc-list-item :open == Just "offer":.mdc-list-item--activated
+      <summary.mdc-list-item :o == Just "offer":.mdc-list-item--activated
         .mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
         <span.mdc-list-item__ripple>
         <span.mdc-list-item__content>
@@ -129,9 +130,9 @@ $if null sids
               <div.badge>#{length offer}
         <span.mdc-list-item__end>
           <i.expand.material-symbols-outlined>
-            $if open == Just "offer"
+            $if o == Just "offer"
               expand_less
-            $elseif open == Nothing
+            $elseif o == Nothing
               expand_more
             $else
               expand_more
@@ -144,7 +145,7 @@ $if null sids
       $else
         <nav.mdc-list data-mdc-auto-init=MDCList>
           $forall Entity pid (Offer _ name price prefix suffix _) <- offer
-            <a.mdc-list-item href=@?{(AdminR $ AdmPriceR pid (Services sids),[("open","offer")])}
+            <a.mdc-list-item href=@?{(AdminR $ AdmPriceR pid (Services sids),[("o","offer")])}
               :Just pid == mpid:.mdc-list-item--activated
               .mdc-list-item--with-two-lines.mdc-list-item--with-trailing-icon>
               <span.mdc-list-item__ripple>
@@ -164,7 +165,7 @@ $if null sids
 
       <div.mdc-touch-target-wrapper ##{fabAddOffer}>
         <a.mdc-fab.mdc-fab--extended.mdc-fab--touch href=@{AdminR $ AdmOfferCreateR (Services sids)}
-          onclick="this.href = `${this.href}?scrollY=${window.scrollY}&open=offer`">
+          onclick="this.href = `${this.href}?y=${window.scrollY}&o=offer`">
           <span.mdc-fab__ripple>
           <span.mdc-fab__focus-ring>
           <span.mdc-fab__icon.material-symbols-outlined>add
@@ -172,9 +173,9 @@ $if null sids
           <span.mdc-fab__touch>
 
   $if not (null sids)
-    <details.mdc-list ##{detailsExperts} data-mdc-auto-init=MDCList :open == Just "experts":open
+    <details.mdc-list ##{detailsExperts} data-mdc-auto-init=MDCList :o == Just "experts":open
       ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
-      <summary.mdc-list-item :open == Just "experts":.mdc-list-item--activated
+      <summary.mdc-list-item :o == Just "experts":.mdc-list-item--activated
         .mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
         <span.mdc-list-item__ripple>
         <span.mdc-list-item__content>
@@ -184,9 +185,9 @@ $if null sids
               <div.badge>#{length experts}
         <span.mdc-list-item__end>
           <i.expand.material-symbols-outlined>
-            $if open == Just "experts"
+            $if o == Just "experts"
               expand_less
-            $elseif open == Nothing
+            $elseif o == Nothing
               expand_more
             $else
               expand_more
@@ -199,8 +200,10 @@ $if null sids
       $else
         <nav.mdc-list data-mdc-auto-init=MDCList>
           $forall (Entity rid (Role _ _ rname rating),Entity eid (Staff ename _ _ _ _ _)) <- experts
-            <a.mdc-list-item.mdc-list-item--with-leading-image href=@?{(AdminR $ AdmExpertR rid (Services sids),stati)}
-              .mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon>
+            <a.mdc-list-item.mdc-list-item--with-leading-image 
+              href=@?{(AdminR $ AdmExpertR rid (Services sids),[("o","experts")])}
+              .mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon
+              onclick="this.href = [new window.URL(this.href)].map(x => {x.searchParams.append('y',window.scrollY); return x.href;})[0]">
               <span.mdc-list-item__ripple>
               <span.mdc-list-item__start>
                 <img src=@{AdminR $ AdmStaffPhotoR eid} width=56 height=56 alt=_{MsgPhoto} loading=lazy>
@@ -221,8 +224,8 @@ $if null sids
 
       <div.mdc-touch-target-wrapper ##{fabAddExpert}>
         <a.mdc-fab.mdc-fab--extended.mdc-fab--touch 
-          href=@?{(AdminR $ AdmExpertCreateR (Services sids),[("open","experts")])}
-          onclick="this.href = [new window.URL(this.href)].map(x => {x.searchParams.append('scrollY',window.scrollY); return x.href;})[0]">
+          href=@?{(AdminR $ AdmExpertCreateR (Services sids),[("o","experts")])}
+          onclick="this.href = [new window.URL(this.href)].map(x => {x.searchParams.append('y',window.scrollY); return x.href;})[0]">
           <span.mdc-fab__ripple>
           <span.mdc-fab__focus-ring>
           <span.mdc-fab__icon.material-symbols-outlined>add
@@ -231,9 +234,9 @@ $if null sids
       
             
   $if not (null sids)
-    <details.mdc-list ##{detailsSubservices} data-mdc-auto-init=MDCList :open == Just "subservices":open
+    <details.mdc-list ##{detailsSubservices} data-mdc-auto-init=MDCList :o == Just "subservices":open
       ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
-      <summary.mdc-list-item :open == Just "subservices":.mdc-list-item--activated
+      <summary.mdc-list-item :o == Just "subservices":.mdc-list-item--activated
         .mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
         <span.mdc-list-item__ripple>
         <span.mdc-list-item__content>
@@ -243,9 +246,9 @@ $if null sids
               <div.badge>#{length services}
         <span.mdc-list-item__end>
           <i.expand.material-symbols-outlined>
-            $if open == Just "subservices"
+            $if o == Just "subservices"
               expand_less
-            $elseif open == Nothing
+            $elseif o == Nothing
               expand_more
             $else
               expand_more

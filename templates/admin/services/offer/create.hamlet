@@ -2,7 +2,7 @@
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
       <a.mdc-top-app-bar__navigation-icon.mdc-icon-button
-        href=@?{(AdminR $ AdmServicesR (Services sids),catMaybes [scrollY,open])}>
+        href=@?{(AdminR $ AdmServicesR (Services sids),catMaybes [y,o])}>
         <span.mdc-icon-button__ripple>
         <i.material-symbols-outlined>arrow_back
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgOffer}
@@ -10,10 +10,10 @@
   
 <main.mdc-top-app-bar--fixed-adjust>
   <form method=POST enctype=#{enctype} novalidate
-    action=@?{(AdminR $ AdmOfferR (Services sids),catMaybes [scrollY,open])}>
+    action=@?{(AdminR $ AdmOfferR (Services sids),catMaybes [y,o])}>
     ^{widget}
     <div.actions>
-      <a.mdc-button href=@?{(AdminR $ AdmServicesR (Services sids),catMaybes [scrollY,open])} role=button>
+      <a.mdc-button href=@?{(AdminR $ AdmServicesR (Services sids),catMaybes [y,o])} role=button>
         <span.mdc-button__ripple>
         <span.mdc-button__focus-ring>
         <span.mdc-button__label>_{MsgCancel}

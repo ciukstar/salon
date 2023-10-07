@@ -1,8 +1,8 @@
 
 Array.from(
-  document.querySelectorAll('.datetime')
+  document.querySelectorAll('time[datetime]')
 ).forEach(function (x) {
-  x.textContent = new Date(x.textContent).toLocaleDateString(
+  x.textContent = new Date(x.getAttribute('datetime')).toLocaleDateString(
     navigator.language,
     { weekday: 'short',
       year: 'numeric',

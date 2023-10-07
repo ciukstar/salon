@@ -15,35 +15,6 @@
       <figcaption>
         _{MsgNoHistoryYet}.
   $else
-    $maybe Entity _ (Book _ _ _ day time tz status) <- book
-      $with (color,icon,msg) <- resolve status
-        <details.mdc-list data-mdc-auto-init=MDCList
-          ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
-          <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-two-lines
-            .mdc-list-item--with-trailing-icon>
-            <span.mdc-list-item__ripple>
-            <span.mdc-list-item__start>
-              <i.material-symbols-outlined style="color:#{color}">#{icon}
-            <span.mdc-list-item__content>
-              <div.datetime.mdc-list-item__primary-text>
-                #{show now}
-              <div.mdc-list-item__secondary-text>
-                _{msg}
-            <span.mdc-list-item__end>
-              <i.expand.material-symbols-outlined>expand_more
-          <dl>
-            <dt>_{MsgDay}
-            <dd>#{show day}
-
-            <dt>_{MsgTime}
-            <dd>#{show time}
-
-            <dt>_{MsgTimezone}
-            <dd>#{show tz}
-
-            <dt>_{MsgStatus}
-            <dd>#{show status}
-        <div.mdc-list-divider role=separator>  
     $forall Entity _ (Hist _ logtime day time tz status) <- hist
       $with (color,icon,msg) <- resolve status
         <details.mdc-list data-mdc-auto-init=MDCList
@@ -54,8 +25,9 @@
             <span.mdc-list-item__start>
               <i.material-symbols-outlined style="color:#{color}">#{icon}
             <span.mdc-list-item__content>
-              <div.datetime.mdc-list-item__primary-text>
-                #{show logtime}
+              $with dt <- formatTime defaultTimeLocale "%Y-%m-%d %H:%M:%S" logtime
+                <time.mdc-list-item__primary-text datetime="#{dt}">
+                  #{dt}
               <div.mdc-list-item__secondary-text>
                 _{msg}
             <span.mdc-list-item__end>

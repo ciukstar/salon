@@ -10,7 +10,7 @@
       <a.mdc-list-item href=@{AdminR $ AdmServicesR $ Services (sids ++ [sid])}
         :Just sid == msid:.mdc-list-item--activated
         .mdc-list-item--with-one-line.mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon
-        onclick="this.href = `${this.href}?scrollY=${window.scrollY}`">
+        onclick="this.href = `${this.href}?y=${window.scrollY}`">
         <span.mdc-list-item__ripple>
         <span.mdc-list-item__start>
           <img src=@{AdminR $ AdmServiceImageR sid} height=56 width=56 loading=lazy
@@ -27,7 +27,7 @@
   <div.mdc-touch-target-wrapper #fabAddSubservice>
     <a.mdc-fab.mdc-fab--extended.mdc-fab--touch
       href=@?{(AdminR $ AdmServiceCreateFormR (Services sids),[("open","subservices")])}
-      onclick="this.href = `${this.href}&scrollY=${window.scrollY}`">
+      onclick="this.href = `${this.href}&y=${window.scrollY}`">
       <span.mdc-fab__ripple>
       <span.mdc-fab__focus-ring>
       <span.mdc-fab__icon.material-symbols-outlined>add

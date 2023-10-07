@@ -35,27 +35,23 @@
             <span.mdc-button__label>_{MsgBookAppointment}
   $else
     <nav.mdc-list data-mdc-auto-init=MDCList>
-      $forall (Entity bid (Book _ _ _ date time _ status),Entity _ (Service sname _ _ dur _ _)) <- books
-        <a.mdc-list-item href=@{AppointmentR bid}
-          .mdc-list-item--with-leading-icon.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon>
-          <span.mdc-list-item__ripple>
-          <span.mdc-list-item__start>
-            $with (color,icon,msg) <- resolve status
+      $forall (Entity bid (Book _ _ _ date time _ status),Entity _ (Service sname _ _ _ _ _)) <- books
+        $with (color,icon,msg) <- resolve status
+          <a.mdc-list-item href=@{AppointmentR bid}
+            .mdc-list-item--with-leading-icon.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon>
+            <span.mdc-list-item__ripple>
+            <span.mdc-list-item__start>
               <i.material-symbols-outlined style="color:#{color}" title=_{msg}>#{icon}                
-          <span.mdc-list-item__content>
-            <div.appointment-time.mdc-list-item__primary-text>
-              #{show date} #{show time}
-            <div.mdc-list-item__secondary-text>
-              #{sname}
-            <div.mdc-list-item__secondary-text>
-              $maybe duration <- dur
-                $with translate <- renderMessage app langs
-                  $with pat <- intercalate "" ["%H",translate MsgSymbolHour," %M",translate MsgSymbolMinute]
-                    $with duration <- formatTime defaultTimeLocale (unpack pat) duration
-                      #{duration}
-          <span.mdc-list-item__end>
-            <i.material-symbols-outlined>arrow_forward_ios
-        <div.mdc-list-divider role=separator>
+            <span.mdc-list-item__content>
+              <div.appointment-time.mdc-list-item__primary-text>
+                #{show date} #{show time}
+              <div.mdc-list-item__secondary-text style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                #{sname}
+              <div.mdc-list-item__secondary-text style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                _{msg}
+            <span.mdc-list-item__end>
+              <i.material-symbols-outlined>arrow_forward_ios
+          <div.mdc-list-divider role=separator>
 
 $forall (_,msg) <- msgs
   <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>

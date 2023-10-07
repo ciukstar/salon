@@ -238,51 +238,7 @@ formExpert sid role extra = do
         , fsAttrs = [("class","mdc-text-field__input"),("min","0"),("max","5")]
         } (roleRating . entityVal <$> role)
     let r = Role <$> emplR <*> FormSuccess sid <*> nameR <*> ratingR
-    let w = [whamlet|
-#{extra}
-<div.form-field>
-  <div.mdc-select.mdc-select--filled.mdc-select--required data-mdc-auto-init=MDCSelect
-    :isJust (fvErrors emplV):.mdc-select--invalid>
-    ^{fvInput emplV}
-    <div.mdc-select__anchor role=button aria-aspopup=listbox aria-expanded=false aria-required=true>
-      <span.mdc-select__ripple>
-      <span.mdc-floating-label>#{fvLabel emplV}
-      <span.mdc-select__selected-text-container>
-        <span.mdc-select__selected-text>
-      <span.mdc-select__dropdown-icon>
-        <svg.mdc-select__dropdown-icon-graphic viewBox="7 10 10 5" focusable=false>
-          <polygon.mdc-select__dropdown-icon-inactive stroke=none fill-rule=evenodd points="7 10 12 15 17 10">
-          <polygon.mdc-select__dropdown-icon-active stroke=none fill-rule=evenodd points="7 15 12 10 17 15">
-      <span.mdc-line-ripple>
-
-    <div.mdc-select__menu.mdc-menu.mdc-menu-surface.mdc-menu-surface--fullwidth>
-      <ul.mdc-deprecated-list role=listbox>
-        $forall Entity eid (Staff ename _ _ _ _ _) <- staff
-          <li.mdc-deprecated-list-item role=option data-value=#{fromSqlKey eid} aria-selected=false>
-            <span.mdc-deprecated-list-item__ripple>
-            <span.mdc-deprecated-list-item__text>
-              #{ename}
-
-  $maybe errs <- fvErrors emplV
-    <div.mdc-select-helper-text.mdc-select-helper-text--validation-msg>
-      #{errs}
-
-$forall v <- [nameV,ratingV]
-  <div.form-field>
-    <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
-      :isJust (fvErrors v):.mdc-text-field--invalid
-      :isJust (fvErrors v):.mdc-text-field--with-trailing-icon>
-      <span.mdc-text-field__ripple>
-      <span.mdc-floating-label>#{fvLabel v}
-      ^{fvInput v}
-      $maybe _ <- fvErrors v
-        <i.mdc-text-field__icon.mdc-text-field__icon--trailing.material-symbols-outlined>error
-      <span.mdc-line-ripple>
-    $maybe errs <- fvErrors v
-      <div.mdc-text-field-helper-line>
-        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
-          #{errs}
-|]
+    let w = $(widgetFile "admin/services/expert/form")
     return (r,w)
   where
 
@@ -347,17 +303,17 @@ getAdmServicesSearchR = do
 
 postAdmPriceDeleteR :: OfferId -> Services -> Handler Html
 postAdmPriceDeleteR pid sids = do
-    scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
-    open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
+    y <- (("y",) <$>) <$> runInputGet (iopt textField "y")
+    o <- (("o",) <$>) <$> runInputGet (iopt textField "o")
     runDB $ delete pid
     addMessageI "info" MsgRecordDeleted
-    redirect (AdminR $ AdmServicesR sids,catMaybes [scrollY,open])
+    redirect (AdminR $ AdmServicesR sids,catMaybes [y,o])
 
 
 getAdmPriceEditR :: OfferId -> Services -> Handler Html
 getAdmPriceEditR pid (Services sids) = do
-    scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
-    open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
+    y <- (("y",) <$>) <$> runInputGet (iopt textField "y")
+    o <- (("o",) <$>) <$> runInputGet (iopt textField "o")
     price <- runDB $ selectOne $ do
         x <- from $ table @Offer
         where_ $ x ^. OfferId ==. val pid
@@ -370,8 +326,8 @@ getAdmPriceEditR pid (Services sids) = do
 
 postAdmPriceR :: OfferId -> Services -> Handler Html
 postAdmPriceR pid (Services sids) = do
-    scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
-    open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
+    y <- (("y",) <$>) <$> runInputGet (iopt textField "y")
+    o <- (("o",) <$>) <$> runInputGet (iopt textField "o")
     price <- runDB $ selectOne $ do
         x <- from $ table @Offer
         where_ $ x ^. OfferId ==. val pid
@@ -382,7 +338,7 @@ postAdmPriceR pid (Services sids) = do
           runDB $ replace pid r
           addMessageI "info" MsgRecordEdited
           redirect ( AdminR $ AdmPriceR pid (Services sids)
-                   , catMaybes [scrollY,open,Just ("pid",pack $ show $ fromSqlKey pid)]
+                   , catMaybes [y,o,Just ("pid",pack $ show $ fromSqlKey pid)]
                    )
       _ -> defaultLayout $ do
           setTitleI MsgPrice
@@ -391,8 +347,8 @@ postAdmPriceR pid (Services sids) = do
 
 getAdmPriceR :: OfferId -> Services -> Handler Html
 getAdmPriceR pid sids = do
-    scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
-    open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
+    y <- (("y",) <$>) <$> runInputGet (iopt textField "y")
+    o <- (("o",) <$>) <$> runInputGet (iopt textField "o")
     price <- runDB $ selectOne $ do
         x <- from $ table @Offer
         where_ $ x ^. OfferId ==. val pid
@@ -405,15 +361,15 @@ getAdmPriceR pid sids = do
 
 postAdmOfferR :: Services -> Handler Html
 postAdmOfferR (Services sids) = do
-    scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
-    open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
+    y <- (("y",) <$>) <$> runInputGet (iopt textField "y")
+    o <- (("o",) <$>) <$> runInputGet (iopt textField "o")
     ((fr,widget),enctype) <- runFormPost $ formOffer (last sids) Nothing
     case fr of
       FormSuccess r -> do
           pid <- runDB $ insert r
           addMessageI "info" MsgRecordAdded
           redirect ( AdminR $ AdmServicesR (Services sids)
-                   , catMaybes [scrollY,open,Just ("pid",pack $ show $ fromSqlKey pid)]
+                   , catMaybes [y,o,Just ("pid",pack $ show $ fromSqlKey pid)]
                    )
       _ -> defaultLayout $ do
           setTitleI MsgPrice
@@ -422,8 +378,8 @@ postAdmOfferR (Services sids) = do
 
 getAdmOfferCreateR :: Services -> Handler Html
 getAdmOfferCreateR (Services sids) = do
-    scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
-    open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
+    y <- (("y",) <$>) <$> runInputGet (iopt textField "y")
+    o <- (("o",) <$>) <$> runInputGet (iopt textField "o")
     (widget,enctype) <- generateFormPost $ formOffer (last sids) Nothing
     defaultLayout $ do
         setTitleI MsgOffer
@@ -525,10 +481,10 @@ getAdmServiceImageR sid = do
 
 postAdmServiceDeleteR :: Services -> Handler Html
 postAdmServiceDeleteR (Services sids) = do
-    scrollY <- fromMaybe "0" <$> runInputGet (iopt textField "scrollY")
+    y <- fromMaybe "0" <$> runInputGet (iopt textField "y")
     runDB $ delete (last sids)
     addMessageI "info" MsgRecordDeleted
-    redirect (AdminR $ AdmServicesR (Services (init sids)),[("scrollY",scrollY)])
+    redirect (AdminR $ AdmServicesR (Services (init sids)),[("y",y)])
 
 
 postAdmServiceR :: Services -> Handler Html
@@ -539,7 +495,7 @@ postAdmServiceR (Services sids) = do
         where_ $ x ^. ServiceId ==. val (last sids)
         return (x,t)
     ((fr,widget),enctype) <- runFormPost $ formService (fst <$> service) Nothing (snd =<< service)
-    scrollY <- fromMaybe "0" <$> runInputGet (iopt textField "scrollY")
+    y <- fromMaybe "0" <$> runInputGet (iopt textField "y")
     case fr of
       FormSuccess (s,mfi,ma) -> do
           _ <- runDB $ replace (last sids) s
@@ -553,9 +509,9 @@ postAdmServiceR (Services sids) = do
                 _ <- runDB $ upsert
                      (Thumbnail (last sids) bs (fileContentType fi) ma)
                      [ThumbnailPhoto P.=. bs, ThumbnailMime P.=. fileContentType fi, ThumbnailAttribution P.=. ma]
-                redirect (AdminR $ AdmServicesR (Services sids),[("scrollY",scrollY)])
+                redirect (AdminR $ AdmServicesR (Services sids),[("y",y)])
             Nothing -> redirect ( AdminR $ AdmServicesR (Services sids)
-                                , [("sid",pack $ show $ fromSqlKey $ last sids),("scrollY",scrollY)]
+                                , [("sid",pack $ show $ fromSqlKey $ last sids),("y",y)]
                                 )
       _ -> defaultLayout $ do
           setTitleI MsgService
@@ -564,7 +520,7 @@ postAdmServiceR (Services sids) = do
 
 getAdmServiceEditFormR :: Services -> Handler Html
 getAdmServiceEditFormR (Services sids) = do
-    scrollY <- fromMaybe "0" <$> runInputGet (iopt textField "scrollY")
+    y <- fromMaybe "0" <$> runInputGet (iopt textField "y")
     service <- runDB $ selectOne $ do
         x :& t <- from $ table @Service `leftJoin` table @Thumbnail
             `on` (\(x :& t) -> just (x ^. ServiceId) ==. t ?. ThumbnailService)
@@ -578,8 +534,8 @@ getAdmServiceEditFormR (Services sids) = do
 
 getAdmServiceCreateFormR :: Services -> Handler Html
 getAdmServiceCreateFormR (Services sids) = do
-    scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
-    open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
+    y <- (("y",) <$>) <$> runInputGet (iopt textField "y")
+    o <- (("o",) <$>) <$> runInputGet (iopt textField "o")
     (widget,enctype) <- generateFormPost $ formService Nothing (LS.last sids) Nothing
     defaultLayout $ do
         setTitleI MsgService
@@ -588,8 +544,8 @@ getAdmServiceCreateFormR (Services sids) = do
 
 postAdmServicesR :: Services -> Handler Html
 postAdmServicesR (Services sids) = do
-    scrollY <- (("scrollY",) <$>) <$> runInputGet (iopt textField "scrollY")
-    open <- (("open",) <$>) <$> runInputGet (iopt textField "open")
+    y <- (("y",) <$>) <$> runInputGet (iopt textField "y")
+    o <- (("o",) <$>) <$> runInputGet (iopt textField "o")
     ((fr,widget),enctype) <- runFormPost $ formService Nothing (LS.last sids) Nothing
     case fr of
       FormSuccess (s,mfi,a) -> do
@@ -605,7 +561,7 @@ postAdmServicesR (Services sids) = do
                                           }
             Nothing -> return ()
           redirect ( AdminR $ AdmServicesR (Services sids)
-                   , catMaybes [Just ("sid",pack $ show $ fromSqlKey sid),scrollY,open]
+                   , catMaybes [Just ("sid",pack $ show $ fromSqlKey sid),y,o]
                    )
       _ -> defaultLayout $ do
           setTitleI MsgService
@@ -614,9 +570,8 @@ postAdmServicesR (Services sids) = do
 
 getAdmServicesR :: Services -> Handler Html
 getAdmServicesR (Services sids) = do
-    stati <- reqGetParams <$> getRequest
-    open <- runInputGet (iopt textField "open")
-    scrollY <- fromMaybe "0" <$> runInputGet (iopt textField "scrollY")
+    o <- runInputGet (iopt textField "o")
+    y <- fromMaybe "0" <$> runInputGet (iopt textField "y")
     mpid <- (toSqlKey <$>) <$> runInputGet (iopt intField "pid")
     msid <- (toSqlKey <$>) <$> runInputGet (iopt intField "sid")
     user <- maybeAuth
@@ -634,7 +589,7 @@ getAdmServicesR (Services sids) = do
           orderBy [asc (x ^. OfferId)]
           return x
       Nothing -> return []
-      
+
     experts <- case service of
       Just (Entity sid _,_) -> runDB $ select $ do
         r :& e <- from $ table @Role
@@ -642,19 +597,21 @@ getAdmServicesR (Services sids) = do
         where_ $ r ^. RoleService ==. val sid
         return (r,e)
       Nothing -> return []
-      
+
     services <- (second (join . unValue) <$>) <$> runDB ( select $ do
-        x :& t <- from $ table @Service `leftJoin` table @Thumbnail
-            `on` (\(x :& t) -> just (x ^. ServiceId) ==. t ?. ThumbnailService)
+        s :& t <- from $ table @Service `leftJoin` table @Thumbnail
+            `on` (\(s :& t) -> just (s ^. ServiceId) ==. t ?. ThumbnailService)
         case sids of
-          [] -> where_ $ isNothing $ x ^. ServiceGroup
-          (last -> y) -> where_ $ x ^. ServiceGroup ==. just (val y)
-        orderBy [asc (x ^. ServiceId)]
-        return (x,t ?. ThumbnailAttribution) )
+          [] -> where_ $ isNothing $ s ^. ServiceGroup
+          (last -> x) -> where_ $ s ^. ServiceGroup ==. just (val x)
+        orderBy [asc (s ^. ServiceId)]
+        return (s,t ?. ThumbnailAttribution) )
     setUltDestCurrent
     msgs <- getMessages
     app <- getYesod
     langs <- languages
+    btnDelete <- newIdent
+    dlgDelete <- newIdent
     detailsDescription <- newIdent
     detailsOffer <- newIdent
     detailsExperts <- newIdent
