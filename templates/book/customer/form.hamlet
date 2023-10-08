@@ -29,15 +29,17 @@
     <span.mdc-list-item__content>
       $case (day,time,tz,dayR,timeR,tzR)
         $of (Just day,Just time,Just tz,_,_,_)
-          <div.mdc-list-item__primary-text style="color:var(--theme-accent)" #appointmentTime>
-            #{show day} #{show time} #{show tz}
-          <div.mdc-list-item__secondary-text #appointmentFullLongTime>
-            #{show day} #{show time}
+          $with dt <- ((<>) ((<>) (show day) " ") (show time))
+            <time.mdc-list-item__primary-text datetime="#{dt}" #appointmentTime>
+              #{dt}
+            <time.mdc-list-item__secondary-text datetime="#{dt}" #appointmentFullLongTime>
+              #{dt}
         $of (_,_,_,FormSuccess day,FormSuccess time, FormSuccess tz)
-          <div.mdc-list-item__primary-text style="color:var(--theme-accent)" #appointmentTime>
-            #{show day} #{show time} #{show tz}
-          <div.mdc-list-item__secondary-text #appointmentFullLongTime>
-            #{show day} #{show time} #{show tz}
+          $with dt <- ((<>) ((<>) (show day) " ") (show time))
+            <time.mdc-list-item__primary-text datetime="#{dt}" #appointmentTime>
+              #{dt}
+            <time.mdc-list-item__secondary-text datetime="#{dt}" #appointmentFullLongTime>
+              #{dt}
         $of _
           
   $forall v <- [dayV,timeV,tzV]

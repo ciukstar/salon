@@ -1,6 +1,6 @@
 
 document.getElementById('appointmentFullLongTime').textContent = new Date(
-  document.getElementById('appointmentTime').textContent
+  document.getElementById('appointmentTime').getAttribute('datetime')
 ).toLocaleDateString(
   navigator.language,
   { weekday: 'long',

@@ -1,0 +1,4 @@
+
+main
+  time.mdc-list-item__primary-text
+    color: var(--theme-accent)

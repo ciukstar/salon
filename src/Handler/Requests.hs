@@ -98,7 +98,7 @@ import Model
       , ThumbnailService, BookUser, UserId, BookStatus, ServiceName, ServiceDescr
       , ServiceOverview, RoleName, OfferName, OfferPrefix, OfferSuffix, OfferDescr
       , StaffName, StaffPhone, StaffMobile, StaffEmail, UserName, UserFullName
-      , UserEmail, BookTz, HistBook, HistLogtime, RoleService
+      , UserEmail, BookTz, HistBook, HistLogtime, RoleService, HistUser
       )
     )
 
@@ -112,13 +112,14 @@ getRequestHistR bid = do
     case user of
       Just _ -> do
           hist <- runDB $ select $ do
-              x <- from $ table @Hist
-              where_ $ x ^. HistBook ==. val bid
+              h :& u <- from $ table @Hist `innerJoin` table @User
+                  `on` (\(h :& u) -> h ^. HistUser ==. u ^. UserId)
+              where_ $ h ^. HistBook ==. val bid
               where_ $ exists $ do
                   b <- from $ table @Book
-                  where_ $ b ^. BookId ==. x ^. HistBook
-              orderBy [desc (x ^. HistLogtime)]
-              return x
+                  where_ $ b ^. BookId ==. h ^. HistBook
+              orderBy [desc (h ^. HistLogtime)]
+              return (h, u)
           defaultLayout $ do
               setTitleI MsgHistory
               $(widgetFile "requests/hist")
@@ -231,7 +232,7 @@ postRequestFinishR bid = do
     ((fr,_),_) <- runFormPost $ formApprove Nothing
     user <- maybeAuth
     case (fr, user) of
-      (FormSuccess _bid, Just _) -> do
+      (FormSuccess _bid, Just (Entity uid _)) -> do
           book <- runDB $ selectOne $ do
               x <- from $ table @Book
               where_ $ x ^. BookId ==. val _bid
@@ -242,7 +243,7 @@ postRequestFinishR bid = do
                     set x [BookStatus =. val BookStatusPaid]
                     where_ $ x ^. BookId ==. val bid
                 now <- liftIO getCurrentTime
-                runDB $ insert_ $ Hist bid now day time tz BookStatusPaid
+                runDB $ insert_ $ Hist bid uid now day time tz BookStatusPaid
                 redirect $ RequestR bid
 
             Nothing -> do
@@ -287,7 +288,7 @@ postRequestApproveR bid = do
                     set x [BookRole =. just (val rid), BookStatus =. val BookStatusApproved]
                     where_ $ x ^. BookId ==. val bid
                 now <- liftIO getCurrentTime
-                runDB $ insert_ $ Hist bid now day time tz BookStatusApproved
+                runDB $ insert_ $ Hist bid uid now day time tz BookStatusApproved
                 redirect $ RequestR bid
 
             _ -> do
@@ -408,7 +409,7 @@ postRequestR bid = do
                           ]
                     where_ $ x ^. BookId ==. val bid
                 now <- liftIO getCurrentTime
-                runDB $ insert_ $ Hist bid now day time tz BookStatusAdjusted
+                runDB $ insert_ $ Hist bid uid now day time tz BookStatusAdjusted
                 redirect $ RequestR bid
 
             _ -> do

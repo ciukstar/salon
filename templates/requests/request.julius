@@ -1,8 +1,8 @@
 
 Array.from(
-  document.querySelectorAll('.appointment-datetime')
+  document.querySelectorAll('time.appointment-datetime')
 ).filter(x => !!x).forEach(function (x) {
-  x.textContent = new Date(x.textContent).toLocaleDateString(
+  x.textContent = new Date(x.getAttribute('datetime')).toLocaleDateString(
     navigator.language,
     { weekday: 'long',
       year: 'numeric',
@@ -15,9 +15,9 @@ Array.from(
 });
 
 Array.from(
-  document.querySelectorAll('.appointment-date')
+  document.querySelectorAll('time.appointment-date')
 ).filter(x => !!x).forEach(function (x) {
-  x.textContent = new Date(x.textContent).toLocaleDateString(
+  x.textContent = new Date(x.getAttribute('datetime')).toLocaleDateString(
     navigator.language,
     { weekday: 'long',
       year: 'numeric',
@@ -28,9 +28,9 @@ Array.from(
 });
 
 Array.from(
-  document.querySelectorAll('.appointment-time')
+  document.querySelectorAll('time.appointment-time')
 ).filter(x => !!x).forEach(function (x) {
-  x.textContent = new Date(x.textContent).toLocaleTimeString(
+  x.textContent = new Date(x.getAttribute('datetime')).toLocaleTimeString(
     navigator.language,
     { hour: "numeric",
       minute: "numeric"

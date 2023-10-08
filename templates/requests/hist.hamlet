@@ -15,11 +15,11 @@
       <figcaption>
         _{MsgNoHistoryYet}.
   $else
-    $forall Entity _ (Hist _ logtime day time tz status) <- hist
+    $forall (Entity _ (Hist _ _ logtime day time tz status),Entity _ (User uname _ _ fname _)) <- hist
       $with (color,icon,msg) <- resolve status
         <details.mdc-list data-mdc-auto-init=MDCList
           ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
-          <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-two-lines
+          <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-three-lines
             .mdc-list-item--with-trailing-icon>
             <span.mdc-list-item__ripple>
             <span.mdc-list-item__start>
@@ -28,6 +28,11 @@
               $with dt <- formatTime defaultTimeLocale "%Y-%m-%d %H:%M:%S" logtime
                 <time.mdc-list-item__primary-text datetime="#{dt}">
                   #{dt}
+              <div.mdc-list-item__secondary-text>
+                $maybe fname <- fname
+                  #{fname}
+                $nothing
+                  #{uname}
               <div.mdc-list-item__secondary-text>
                 _{msg}
             <span.mdc-list-item__end>
@@ -45,4 +50,4 @@
             <dt>_{MsgStatus}
             <dd>#{show status}
         
-        <div.mdc-list-divider role=separator>
+          <div.mdc-list-divider role=separator>

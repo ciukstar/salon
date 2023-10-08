@@ -39,7 +39,7 @@ import Model
     , Contents (Contents, contentsSection, contentsContent)
     , BookStatus (BookStatusRequest)
     , Book (Book, bookUser, bookOffer, bookRole, bookDay, bookTime, bookTz, bookStatus)
-    , Business (Business, businessName, businessAddress, businessPhone, businessMobile, businessEmail), Hist (histBook, histLogtime, histDay, histTime, histTz, histStatus, Hist)
+    , Business (Business, businessName, businessAddress, businessPhone, businessMobile, businessEmail), Hist (histBook, histLogtime, histDay, histTime, histTz, histStatus, Hist, histUser)
     )
 import Data.FileEmbed (embedFile)
 import Demo.DemoPhotos
@@ -398,13 +398,13 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             , serviceGroup = Just s1
                             }
 
-    o121 <- insert $ Offer { offerService = s12
-                           , offerName = "Price"
-                           , offerPrice = 28
-                           , offerPrefix = Just "$"
-                           , offerSuffix = Nothing
-                           , offerDescr = Nothing
-                           }
+    insert_ $ Offer { offerService = s12
+                    , offerName = "Price"
+                    , offerPrice = 28
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
 
     insert_ $ Thumbnail { thumbnailService = s12
                         , thumbnailPhoto = $(embedFile "static/img/women-hair-cuts-above-shoulders.avif")
@@ -1024,6 +1024,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                         }
           
     insert_ $ Hist { histBook = b1
+                   , histUser = c1
                    , histLogtime = now
                    , histDay = addDays 1 today
                    , histTime = time
@@ -1055,6 +1056,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                         }
           
     insert_ $ Hist { histBook = b2
+                   , histUser = c2
                    , histLogtime = now
                    , histDay = addDays 2 today
                    , histTime = time
@@ -1062,13 +1064,22 @@ We will continue to offer the latest treatments, the most innovative techniques 
                    , histStatus = BookStatusRequest
                    }
 
-    insert_ $ Book { bookOffer = o141
-                   , bookRole = Nothing 
-                   , bookUser = c1
-                   , bookDay = addDays 3 today
-                   , bookTime = time
-                   , bookTz = utc
-                   , bookStatus = BookStatusRequest
+    b3 <- insert $ Book { bookOffer = o141
+                        , bookRole = Nothing 
+                        , bookUser = c1
+                        , bookDay = addDays 3 today
+                        , bookTime = time
+                        , bookTz = utc
+                        , bookStatus = BookStatusRequest
+                        }
+          
+    insert_ $ Hist { histBook = b3
+                   , histUser = c1 
+                   , histLogtime = now
+                   , histDay = addDays 3 today
+                   , histTime = time
+                   , histTz = utc
+                   , histStatus = BookStatusRequest
                    }
 
     return ()

@@ -208,7 +208,7 @@ postBookCustomerR = do
                 bids <- forM items $ \((_,Entity oid _),_) -> do
                     bid  <- runDB $ insert $
                         Book uid oid ((\(_,Entity rid _) -> rid) <$> role) day time tz BookStatusRequest
-                    runDB $ insert_ $ Hist bid now day time tz BookStatusRequest
+                    runDB $ insert_ $ Hist bid uid now day time tz BookStatusRequest
                     return bid
                 addMessageI "info" MsgRecordAdded
                 deleteSession sessKeyBooking

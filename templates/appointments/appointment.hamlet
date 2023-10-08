@@ -30,11 +30,11 @@
           <div.mdc-card__primary-action>
             <div.mdc-card__media.mdc-card__media--16-9 style="background-image:url('@{ServiceThumbnailR sid}')">
               <div.mdc-card__media-content>
+                <h6.mdc-typography--headline6>#{sname}
                 $maybe Entity _ (Thumbnail _ _ _ attrib) <- thumbnail
                   $maybe attribution <- attrib
                     <div style="text-align:end;font-size:0.5rem;position:absolute;bottom:0;right:0;padding-right:4px">
                       ^{attribution}
-                <h4>#{sname}
             <div.mdc-card__ripple>
 
           <details.mdc-list.mdc-card-wrapper__text-section
@@ -112,12 +112,12 @@
                   _{MsgAcquaintance}
               <span.mdc-list-item__end>
                <i.expand.material-symbols-outlined>expand_more
-            <div style="margin:0.5rem 0;display:flex;flex-direction:row;align-items:flex-start;justify-content:space-around">
+            <div #acquaintanceContent>
               $maybe Entity uid (User uname _ _ fname _) <- user
-                <figure style="margin:0;padding:0;text-align:center">
-                  <img src=@{AccountPhotoR uid} width=56 height=56 style="clip-path:circle(50%)" alt=_{MsgPhoto}
+                <figure>
+                  <img src=@{AccountPhotoR uid} width=56 height=56 alt=_{MsgPhoto}
                     onerror="this.src = '@{PhotoPlaceholderR}'">
-                  <figcaption style="line-height:1">
+                  <figcaption>
                     <small>
                       $maybe fname <- fname
                         #{fname}
@@ -130,16 +130,15 @@
                   handshake
 
               $maybe Entity eid (Staff ename _ _ _ _ _) <- staff
-                <figure style="margin:0;padding:0;text-align:center">
-                  <img src=@{AdminR $ AdmStaffPhotoR eid} width=56 height=56 alt=_{MsgPhoto} loading=lazy
-                    style="clip-path:circle(50%)">
-                  <figcaption style="line-height:1">
+                <figure>
+                  <img src=@{AdminR $ AdmStaffPhotoR eid} width=56 height=56 alt=_{MsgPhoto} loading=lazy>
+                  <figcaption>
                     <small>#{ename}
                     $maybe Entity _ (Role _ _ rname _) <- role
                       <div>
                         <small>(#{rname})
               $nothing
-                <figure style="margin:0;padding:0">
+                <figure>
                   <i.material-symbols-outlined style="font-size:3rem">indeterminate_question_box
 
           $maybe Entity _ (Contents _ content) <- location
