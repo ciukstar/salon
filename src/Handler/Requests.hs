@@ -66,7 +66,7 @@ import Foundation
       , MsgSearch, MsgNoRequestsFound, MsgFromCoworkers, MsgApproveAppointmentConfirm
       , MsgDate, MsgTime, MsgLocation, MsgEntityNotFound, MsgInvalidFormData
       , MsgMissingForm, MsgLoginToPerformAction, MsgBook, MsgRequestFinish
-      , MsgFinishAppointmentConfirm, MsgDay, MsgTimezone, MsgMinutes, MsgContinue
+      , MsgFinishAppointmentConfirm, MsgDay, MsgTimeZone, MsgMinutes, MsgContinue
       , MsgAppointmentTimeIsInThePast, MsgAppointmentDayIsInThePast, MsgSave
       , MsgNoHistoryYet, MsgAdjusted, MsgLoginBanner, MsgNoAssigneeRequestApprove
       , MsgNoAssigneeRequestReschedule
@@ -98,7 +98,7 @@ import Model
       , ThumbnailService, BookUser, UserId, BookStatus, ServiceName, ServiceDescr
       , ServiceOverview, RoleName, OfferName, OfferPrefix, OfferSuffix, OfferDescr
       , StaffName, StaffPhone, StaffMobile, StaffEmail, UserName, UserFullName
-      , UserEmail, BookTz, HistBook, HistLogtime, RoleService, HistUser
+      , UserEmail, BookTz, HistBook, HistLogtime, RoleService, HistUser, BookTzo
       )
     )
 
@@ -147,7 +147,7 @@ formReschedule tz extra = do
         } Nothing
 
     (tzR,tzV) <- mreq intField FieldSettings
-        { fsLabel = SomeMessage MsgTimezone
+        { fsLabel = SomeMessage MsgTimeZone
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (timeZoneMinutes <$> tz)
@@ -238,12 +238,12 @@ postRequestFinishR bid = do
               where_ $ x ^. BookId ==. val _bid
               return x
           case book of
-            Just (Entity _ (Book _ _ _ day time tz _)) -> do
+            Just (Entity _ (Book _ _ _ day time tzo _ _)) -> do
                 runDB $ update $ \x -> do
                     set x [BookStatus =. val BookStatusPaid]
                     where_ $ x ^. BookId ==. val bid
                 now <- liftIO getCurrentTime
-                runDB $ insert_ $ Hist bid uid now day time tz BookStatusPaid
+                runDB $ insert_ $ Hist bid uid now day time tzo BookStatusPaid
                 redirect $ RequestR bid
 
             Nothing -> do
@@ -283,12 +283,12 @@ postRequestApproveR bid = do
               return r
               
           case (book,role) of
-            (Just (Entity _ (Book _ _ _ day time tz _),_),Just (Entity rid _)) -> do
+            (Just (Entity _ (Book _ _ _ day time tzo _ _),_),Just (Entity rid _)) -> do
                 runDB $ update $ \x -> do
                     set x [BookRole =. just (val rid), BookStatus =. val BookStatusApproved]
                     where_ $ x ^. BookId ==. val bid
                 now <- liftIO getCurrentTime
-                runDB $ insert_ $ Hist bid uid now day time tz BookStatusApproved
+                runDB $ insert_ $ Hist bid uid now day time tzo BookStatusApproved
                 redirect $ RequestR bid
 
             _ -> do
@@ -380,7 +380,7 @@ postRequestR bid = do
     user <- maybeAuth
     ((fr,fw),et) <- runFormPost $ formReschedule Nothing
     case (fr,user) of
-      (FormSuccess (day,time,tz), Just (Entity uid _)) -> do
+      (FormSuccess (day,time,tzo), Just (Entity uid _)) -> do
           book <- runDB $ selectOne $ do
               x :& o <- from $ table @Book `innerJoin` table @Offer
                   `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
@@ -404,12 +404,13 @@ postRequestR bid = do
                     set x [ BookRole =. just (val rid)
                           , BookDay =. val day
                           , BookTime =. val time
-                          , BookTz =. val tz
+                          , BookTzo =. val tzo
+                          , BookTz =. val "Europe/London"
                           , BookStatus =. val BookStatusAdjusted
                           ]
                     where_ $ x ^. BookId ==. val bid
                 now <- liftIO getCurrentTime
-                runDB $ insert_ $ Hist bid uid now day time tz BookStatusAdjusted
+                runDB $ insert_ $ Hist bid uid now day time tzo BookStatusAdjusted
                 redirect $ RequestR bid
 
             _ -> do

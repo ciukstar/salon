@@ -7,6 +7,7 @@ main
     border-radius: 0
     tbody
       tr th
+        white-space: normal
         font-weight: 500
       tr td
         white-space: normal

@@ -38,8 +38,15 @@ import Model
     , Role (Role, roleStaff, roleService, roleName, roleRating)
     , Contents (Contents, contentsSection, contentsContent)
     , BookStatus (BookStatusRequest)
-    , Book (Book, bookUser, bookOffer, bookRole, bookDay, bookTime, bookTz, bookStatus)
-    , Business (Business, businessName, businessAddress, businessPhone, businessMobile, businessEmail), Hist (histBook, histLogtime, histDay, histTime, histTz, histStatus, Hist, histUser)
+    , Book
+      ( Book, bookUser, bookOffer, bookRole, bookDay, bookTime, bookTzo
+      , bookTz, bookStatus
+      )
+    , Business
+      ( Business, businessName, businessAddress, businessTzo, businessTz
+      , businessPhone, businessMobile, businessEmail
+      )
+    , Hist (histBook, histLogtime, histDay, histTime, histTz, histStatus, Hist, histUser)
     )
 import Data.FileEmbed (embedFile)
 import Demo.DemoPhotos
@@ -53,10 +60,12 @@ populateEN = do
     (now,today,time) <- liftIO $ getCurrentTime >>= \x -> return (x ,utctDay x,timeToTimeOfDay (utctDayTime x))
 
     insert_ $ Business { businessName = "Salon"
-                       , businessAddress = "5331 Rexford Court, Montgomery AL 36116"
-                       , businessPhone = Just "937-810-6140"
+                       , businessAddress = "73 Parsons Green Ln Fulham London SW6 4JA"
+                       , businessTzo = utc
+                       , businessTz = "Europe/London"
+                       , businessPhone = Just "020-7736-6600"
                        , businessMobile = Just "567-274-7469"
-                       , businessEmail = Just "salon@mail.org"
+                       , businessEmail = Just "salon@mail.uk"
                        }
 
     insert_ $ Contents { contentsSection = "CONTACTS"
@@ -65,7 +74,7 @@ populateEN = do
   <h3 style="color:gray">Call Us</h3>
   <dl>
     <dt><i>Telephone</i></dt>
-    <dd>937-810-6140</dd>
+    <dd>020-7736-6600</dd>
     <dt><i>Mobile</i></dt>
     <dd>567-274-7469</dd>
   </dl>
@@ -74,14 +83,14 @@ populateEN = do
   <h3 style="color:gray">Email Us</h3>
   <dl>
     <dt><i>Email</i></dt>
-    <dd>salon@mail.org</dd>
+    <dd>salon@mail.uk</dd>
   </dl>
 </section>
 <section style="margin:0 1rem">
   <h3 style="color:gray">Come see us</h3>
   <dl>
     <dt><i>Address</i><dt>
-    <dd>5331 Rexford Court, Montgomery AL 36116</dd>
+    <dd>73 Parsons Green Ln Fulham London SW6 4JA</dd>
   </dl>
 </section>
 <p>
@@ -1019,7 +1028,8 @@ We will continue to offer the latest treatments, the most innovative techniques 
                         , bookUser = c1
                         , bookDay = addDays 1 today
                         , bookTime = time
-                        , bookTz = utc
+                        , bookTzo = utc
+                        , bookTz = "Europe/London"
                         , bookStatus = BookStatusRequest
                         }
           
@@ -1051,7 +1061,8 @@ We will continue to offer the latest treatments, the most innovative techniques 
                         , bookUser = c2
                         , bookDay = addDays 2 today
                         , bookTime = time
-                        , bookTz = utc
+                        , bookTzo = utc
+                        , bookTz = "Europe/London"
                         , bookStatus = BookStatusRequest
                         }
           
@@ -1069,7 +1080,8 @@ We will continue to offer the latest treatments, the most innovative techniques 
                         , bookUser = c1
                         , bookDay = addDays 3 today
                         , bookTime = time
-                        , bookTz = utc
+                        , bookTzo = utc
+                        , bookTz = "Europe/London"
                         , bookStatus = BookStatusRequest
                         }
           

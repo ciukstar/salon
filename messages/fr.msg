@@ -1,3 +1,4 @@
+TimeZoneOffset: Décalage de fuseau horaire
 AddExpert: Ajouter un expert
 NoExpertsYet: Il n'y a pas encore d'experts
 Expert: Expert
@@ -55,7 +56,7 @@ ChooseImage: Choisir image
 Attribution: Attribution
 AddOffer: Ajouter offre
 Minutes: Minutes
-Timezone: Fuseau horaire
+TimeZone: Fuseau horaire
 AppointmentTimeIsInThePast: L'heure du rendez-vous est passée
 AppointmentDayIsInThePast: Le jour du rendez-vous est passé
 BookingSequenceRestarted: La séquence de réservation a redémarré

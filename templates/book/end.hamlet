@@ -46,7 +46,7 @@
     <span.mdc-list-item__end>
       <i.expand.material-symbols-outlined>expand_more
 
-  $forall (Entity bid (Book _ _ _ date time _ _),offer,service,role,empl) <- books
+  $forall (Entity bid (Book _ _ _ date time _ _ _),offer,service,role,empl) <- books
     $with Entity _ (Offer _ oname price _ _ _) <- offer
       $with Entity _ (Service sname _ _ _ _ _) <- service
         <a.mdc-list-item.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon href=@{AppointmentR bid}>

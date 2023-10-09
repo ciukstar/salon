@@ -33,8 +33,10 @@
     ^{fw}
 
 <footer>
+  <input type="text" name=tz form=formStaff hidden #inputTimeZone>
   <button.mdc-button.mdc-button--raised.mdc-button--icon-trailing
-    type=submit form=formStaff name=tz onclick="this.value = -(new Date().getTimezoneOffset())">
+    type=submit form=formStaff name=tzo 
+    onclick="this.value = -(new Date().getTimezoneOffset());document.getElementById('inputTimeZone').value = Intl.DateTimeFormat().resolvedOptions().timeZone;">
     <span.mdc-button__ripple>
     <span.mdc-button__focus-ring>
     <span.mdc-button__label>_{MsgContinue}

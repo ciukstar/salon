@@ -27,7 +27,7 @@
     <span.mdc-list-item__start>
       <i.material-symbols-outlined>language
     <span.mdc-list-item__content>
-      <div.mdc-list-item__primary-text>_{MsgTimezone}
+      <div.mdc-list-item__primary-text>_{MsgTimeZone}
     <span.mdc-list-item__end>
       <i.expand.material-symbols-outlined>expand_more
   <div.form-field>
@@ -35,9 +35,30 @@
       :isJust (fvErrors tzV):.mdc-text-field--invalid data-mdc-auto-init=MDCTextField>
       <span.mdc-text-field__ripple>
       ^{fvInput tzV}
-      <span.mdc-text-field__affix.mdc-text-field__affix--suffix>_{MsgMinutes}
       <div.mdc-line-ripple>
     $maybe errs <- fvErrors tzV
+      <div.mdc-text-field-helper-line>
+        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+          #{errs}
+
+<details.mdc-list #detailsTimezoneOffset data-mdc-auto-init=MDCList :isJust (fvErrors tzoV):open
+  ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+  <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+    <span.mdc-list-item__ripple>
+    <span.mdc-list-item__start>
+      <i.material-symbols-outlined>language
+    <span.mdc-list-item__content>
+      <div.mdc-list-item__primary-text>_{MsgTimeZoneOffset}
+    <span.mdc-list-item__end>
+      <i.expand.material-symbols-outlined>expand_more
+  <div.form-field>
+    <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--no-label 
+      :isJust (fvErrors tzoV):.mdc-text-field--invalid data-mdc-auto-init=MDCTextField>
+      <span.mdc-text-field__ripple>
+      ^{fvInput tzoV}
+      <span.mdc-text-field__affix.mdc-text-field__affix--suffix>_{MsgMinutes}
+      <div.mdc-line-ripple>
+    $maybe errs <- fvErrors tzoV
       <div.mdc-text-field-helper-line>
         <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
           #{errs}

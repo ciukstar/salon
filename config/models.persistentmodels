@@ -19,7 +19,8 @@ Book
   role RoleId Maybe OnDeleteCascade
   day Day
   time TimeOfDay
-  tz TimeZone
+  tzo TimeZone
+  tz Text
   status BookStatus
 
 Schedule
@@ -106,6 +107,8 @@ Brand
 Business
   name Text
   address Textarea
+  tzo TimeZone
+  tz Text
   phone Text Maybe
   mobile Text Maybe
   email Text Maybe

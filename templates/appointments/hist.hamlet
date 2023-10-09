@@ -44,7 +44,7 @@
             <dt>_{MsgTime}
             <dd>#{show time}
 
-            <dt>_{MsgTimezone}
+            <dt>_{MsgTimeZone}
             <dd>#{show tz}
 
             <dt>_{MsgStatus}

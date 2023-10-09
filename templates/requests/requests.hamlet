@@ -65,7 +65,7 @@
           <span.mdc-button__label>_{MsgShowAll}
   $else
     <nav.mdc-list data-mdc-auto-init=MDCList>
-      $forall (Entity bid (Book _ _ _ date time _ status),Entity _ (Service sname _ _ _ _ _)) <- requests
+      $forall (Entity bid (Book _ _ _ date time _ _ status),Entity _ (Service sname _ _ _ _ _)) <- requests
         $with (color,icon,msg) <- resolve status
           <a.mdc-list-item href=@?{(RequestR bid,stati ++ owners)}
             :mbid == Just bid:.mdc-list-item--activated

@@ -27,14 +27,14 @@
       <i.material-symbols-outlined style="font-size:3rem;color:var(--mdc-theme-primary)">
         schedule
     <span.mdc-list-item__content>
-      $case (day,time,tz,dayR,timeR,tzR)
-        $of (Just day,Just time,Just tz,_,_,_)
+      $case (day,time,tzo,tz,dayR,timeR,tzoR,tzR)
+        $of (Just day,Just time,Just _,Just _,_,_,_,_)
           $with dt <- ((<>) ((<>) (show day) " ") (show time))
             <time.mdc-list-item__primary-text datetime="#{dt}" #appointmentTime>
               #{dt}
             <time.mdc-list-item__secondary-text datetime="#{dt}" #appointmentFullLongTime>
               #{dt}
-        $of (_,_,_,FormSuccess day,FormSuccess time, FormSuccess tz)
+        $of (_,_,_,_,FormSuccess day,FormSuccess time, FormSuccess _, FormSuccess _)
           $with dt <- ((<>) ((<>) (show day) " ") (show time))
             <time.mdc-list-item__primary-text datetime="#{dt}" #appointmentTime>
               #{dt}
@@ -42,7 +42,7 @@
               #{dt}
         $of _
           
-  $forall v <- [dayV,timeV,tzV]
+  $forall v <- [dayV,timeV,tzoV,tzV]
     ^{fvInput v}
 
 <details.mdc-list data-mdc-auto-init=MDCList

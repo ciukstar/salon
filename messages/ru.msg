@@ -1,3 +1,4 @@
+TimeZoneOffset: Смещение часового пояса
 AddExpert: Добавить эксперта
 NoExpertsYet: Экспертов пока нет
 Expert: Эксперт
@@ -55,7 +56,7 @@ ChooseImage: Выбрать изображение
 Attribution: Атрибуция
 AddOffer: Добавить предложение
 Minutes: Минуты
-Timezone: Часовой пояс
+TimeZone: Часовой пояс
 AppointmentTimeIsInThePast: Время приема в прошлом
 AppointmentDayIsInThePast: День приема в прошлом
 BookingSequenceRestarted: Последовательность бронирования возобновлена

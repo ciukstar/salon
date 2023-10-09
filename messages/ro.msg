@@ -1,3 +1,4 @@
+TimeZoneOffset: Decalajul de fus orar
 AddExpert: Adaugă un expert
 NoExpertsYet: Nu există încă experți
 Expert: Expert
@@ -55,7 +56,7 @@ ChooseImage: Alege imagine
 Attribution: Atribuire
 AddOffer: Adaugă ofertă
 Minutes: Minute
-Timezone: Fusul orar
+TimeZone: Fusul orar
 AppointmentTimeIsInThePast: Ora programării este în trecut
 AppointmentDayIsInThePast: Ziua programării este în trecut
 BookingSequenceRestarted: Secvența de rezervare a fost repornită

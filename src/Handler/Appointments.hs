@@ -70,7 +70,7 @@ import Foundation
       , MsgCancelled, MsgPaid, MsgCustomer, MsgCancelAppointment
       , MsgPleaseConfirm, MsgAcquaintance, MsgCancelAppointmentReally
       , MsgNo, MsgYes, MsgLoginToPerformAction, MsgEntityNotFound
-      , MsgNoHistoryYet, MsgStatus, MsgTimezone, MsgTime, MsgDay
+      , MsgNoHistoryYet, MsgStatus, MsgTimeZone, MsgTime, MsgDay
       , MsgInvalidFormData, MsgMissingForm, MsgSave, MsgCancel, MsgApprove
       , MsgAppointmentTimeIsInThePast, MsgAppointmentDayIsInThePast, MsgMinutes
       )
@@ -86,7 +86,7 @@ import Model
     , EntityField
       ( BookOffer, OfferId, BookUser, BookId, OfferService, ServiceId
       , BookDay, BookTime, BookRole, RoleId, RoleStaff, StaffId, ThumbnailService
-      , ContentsSection, BookStatus, HistBook, HistLogtime, BookTz, HistUser, UserId
+      , ContentsSection, BookStatus, HistBook, HistLogtime, BookTz, HistUser, UserId, BookTzo
       )
     )
 
@@ -106,7 +106,7 @@ postAppointmentApproveR bid = do
               where_ $ x ^. BookUser ==. val uid
               return x
           case book of
-            Just (Entity _ (Book _ _ _ day time tz _)) -> do
+            Just (Entity _ (Book _ _ _ day time tz _ _)) -> do
                 runDB $ update $ \x -> do
                     set x [BookStatus =. val BookStatusApproved]
                     where_ $ x ^. BookId ==. val bid
@@ -152,7 +152,7 @@ formReschedule tz extra = do
         } Nothing
 
     (tzR,tzV) <- mreq intField FieldSettings
-        { fsLabel = SomeMessage MsgTimezone
+        { fsLabel = SomeMessage MsgTimeZone
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (timeZoneMinutes <$> tz)
@@ -267,7 +267,7 @@ postAppointmentCancelR bid = do
               where_ $ x ^. BookUser ==. val uid
               return x
           case book of
-            Just (Entity _ (Book _ _ _ day time tz _)) -> do
+            Just (Entity _ (Book _ _ _ day time tz _ _)) -> do
                 runDB $ update $ \x -> do
                     set x [BookStatus =. val BookStatusCancelled]
                     where_ $ x ^. BookId ==. val bid
@@ -295,7 +295,7 @@ postAppointmentR bid = do
     user <- maybeAuth
     ((fr,fw),et) <- runFormPost $ formReschedule Nothing
     case (fr,user) of
-      (FormSuccess (day,time,tz), Just (Entity uid _)) -> do
+      (FormSuccess (day,time,tzo), Just (Entity uid _)) -> do
           book <- runDB $ selectOne $ do
               x <- from $ table @Book
               where_ $ x ^. BookId ==. val bid
@@ -306,13 +306,14 @@ postAppointmentR bid = do
                 runDB $ update $ \x -> do
                     set x [ BookDay =. val day
                           , BookTime =. val time
-                          , BookTz =. val tz
+                          , BookTzo =. val tzo
+                          , BookTz =. val "Europe/London"
                           , BookStatus =. val BookStatusRequest
                           ]
                     where_ $ x ^. BookId ==. val bid
                     where_ $ x ^. BookUser ==. val uid
                 now <- liftIO getCurrentTime
-                runDB $ insert_ $ Hist bid uid now day time tz BookStatusRequest
+                runDB $ insert_ $ Hist bid uid now day time tzo BookStatusRequest
                 redirect $ AppointmentR bid
 
             Nothing -> do

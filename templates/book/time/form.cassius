@@ -11,7 +11,7 @@
       input.mdc-text-field__input
         caret-color: var(--mdc-theme-text-primary-on-background)
 
-#detailsTimezone
+#detailsTimezone, #detailsTimezoneOffset
   div.form-field
     margin: 1rem
     display: flex

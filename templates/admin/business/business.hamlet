@@ -34,7 +34,7 @@
                   <span.mdc-button__ripple>
                   <span.mdc-button__label>_{MsgYesDelete}
           <div.mdc-dialog__scrim>
-          
+
       $maybe Entity uid _ <- user
         <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{ProfileR} role=button>
           <span.mdc-icon-button__ripple>
@@ -46,7 +46,7 @@
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>login
-          
+
 <main.mdc-top-app-bar--fixed-adjust>
 
   $forall (_,msg) <- filter (((==) "warn" . fst)) msgs
@@ -62,7 +62,7 @@
             <span.mdc-icon-button__ripple>
             <i.material-symbols-outlined>close
 
-  $maybe Entity _ (Business name address phone mobile email) <- business
+  $maybe Entity _ (Business name address tzo tz phone mobile email) <- business
     <div.mdc-data-table>
       <div.mdc-data-table__container>
         <table.mdc-data-table__table>
@@ -73,6 +73,10 @@
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgAddress}
               <td.mdc-data-table__cell>#{address}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgTimeZone}
+              <td.mdc-data-table__cell>
+                #{tz} (#{show tzo})
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgPhone}
               <td.mdc-data-table__cell>
@@ -109,4 +113,3 @@ $forall (_,msg) <- filter (((==) "info") . fst) msgs
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>close
-

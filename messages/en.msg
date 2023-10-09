@@ -1,3 +1,4 @@
+TimeZoneOffset: Time zone offset
 AddExpert: Add expert
 NoExpertsYet: There are no experts yet
 Expert: Expert
@@ -55,7 +56,7 @@ ChooseImage: Choose image
 Attribution: Attribution
 AddOffer: Add offer
 Minutes: Minutes
-Timezone: Timezone
+TimeZone: Time zone
 AppointmentTimeIsInThePast: Appointment time is in the past
 AppointmentDayIsInThePast: Appointment day is in the past
 BookingSequenceRestarted: Booking sequence restarted

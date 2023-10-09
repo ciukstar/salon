@@ -1,0 +1,13 @@
+
+form
+  div.form-field
+    display: flex
+    flex-direction: column
+    margin-bottom: 1rem
+    .mdc-text-field__input
+      caret-color: var(---mdc-theme-text-primary-on-light)
+  div.form-actions
+    display: flex
+    flex-direction: row
+    justify-content: flex-end
+    gap: 0.5rem

@@ -18,12 +18,12 @@ import Data.Text (Text)
 import Text.Hamlet (Html)
 import Yesod.Auth (maybeAuth, Route (LoginR))
 import Yesod.Core
-    ( Yesod(defaultLayout), getMessages, whamlet, SomeMessage (SomeMessage)
-    , redirect, addMessageI
+    ( Yesod(defaultLayout), getMessages, SomeMessage (SomeMessage)
+    , redirect, addMessageI, newIdent
     )
 import Yesod.Core.Handler (setUltDestCurrent)
 import Yesod.Core.Widget (setTitleI)
-import Yesod.Form.Fields (textField, emailField, textareaField)
+import Yesod.Form.Fields (textField, emailField, textareaField, intField)
 import Yesod.Form.Functions (generateFormPost, mreq, mopt, runFormPost, checkM)
 import Yesod.Form.Types
     ( MForm, FormResult (FormSuccess), FieldView (fvLabel, fvInput, fvErrors)
@@ -41,7 +41,7 @@ import Foundation
       ( MsgBusiness, MsgPhoto, MsgNoBusinessYet, MsgTheName, MsgAddress
       , MsgPhone, MsgMobile, MsgEmail, MsgSave, MsgCancel, MsgRecordAdded
       , MsgYesDelete, MsgDeleteAreYouSure, MsgPleaseConfirm, MsgRecordEdited
-      , MsgRecordDeleted, MsgBusinessAlreadyExists
+      , MsgRecordDeleted, MsgBusinessAlreadyExists, MsgTimeZoneOffset, MsgTimeZone, MsgMinutes
       )
     )
 
@@ -55,16 +55,17 @@ import Database.Esqueleto.Experimental
 import Model
     ( Business
       ( Business, businessName, businessAddress, businessPhone, businessMobile
-      , businessEmail
+      , businessEmail, businessTzo, businessTz
       )
     , BusinessId
     , EntityField
       ( BusinessName, BusinessAddress, BusinessPhone, BusinessMobile, BusinessEmail
-      , BusinessId
+      , BusinessId, BusinessTzo, BusinessTz
       )
     )
 
 import Menu (menu)
+import Data.Time.LocalTime (TimeZone(timeZoneMinutes), minutesToTimeZone)
 
 
 postBusinessDeleteR :: Handler Html
@@ -82,10 +83,12 @@ postBusinessEditR bid = do
         return x
     ((fr,fw),et) <- runFormPost $ formBusiness business
     case fr of
-      FormSuccess (Business name address phone mobile email) -> do
+      FormSuccess (Business name address tzo tz phone mobile email) -> do
           runDB $ update $ \x -> do
               set x [ BusinessName =. val name
                     , BusinessAddress =. val address
+                    , BusinessTzo =. val tzo
+                    , BusinessTz =. val tz
                     , BusinessPhone =. val phone
                     , BusinessMobile =. val mobile
                     , BusinessEmail =. val email
@@ -145,6 +148,7 @@ getBusinessR = do
 
 formBusiness :: Maybe (Entity Business) -> Html -> MForm Handler (FormResult Business, Widget)
 formBusiness business extra = do
+    datalistTz <- newIdent
     (nameR,nameV) <- mreq uniqueNameField FieldSettings
         { fsLabel = SomeMessage MsgTheName
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
@@ -155,6 +159,16 @@ formBusiness business extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (businessAddress . entityVal <$> business)
+    (tzR,tzV) <- mreq textField FieldSettings
+        { fsLabel = SomeMessage MsgTimeZone
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input"),("list",datalistTz)]
+        } (businessTz . entityVal <$> business)
+    (tzoR,tzoV) <- mreq intField FieldSettings
+        { fsLabel = SomeMessage MsgTimeZoneOffset
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (timeZoneMinutes . businessTzo . entityVal <$> business)
     (phoneR,phoneV) <- mopt textField FieldSettings
         { fsLabel = SomeMessage MsgPhone
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
@@ -170,49 +184,9 @@ formBusiness business extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (businessEmail . entityVal <$> business)
-    
-    let r = Business <$> nameR <*> addrR <*> phoneR <*> mobileR <*> emailR
-    let w = [whamlet|
-#{extra}
-<div.form-field>
-  <div.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
-    :isJust (fvErrors nameV):.mdc-text-field--invalid>
-    <span.mdc-text-field__ripple>
-    <span.mdc-floating-label>#{fvLabel nameV}
-    ^{fvInput nameV}
-    <span.mdc-line-ripple>
-  $maybe errs <- fvErrors nameV
-    <div.mdc-text-field-helper-line>
-      <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
-        #{errs}
-        
-<div.form-field>
-  <div.mdc-text-field.mdc-text-field--textarea.mdc-text-field--filled data-mdc-auto-init=MDCTextField
-    :isJust (fvErrors addrV):.mdc-text-field--invalid>
-    <span.mdc-text-field__ripple>
-    <span.mdc-floating-label>#{fvLabel addrV}
-    <span.mdc-text-field__resizer>
-      ^{fvInput addrV}
-    <span.mdc-line-ripple>
-  $maybe errs <- fvErrors addrV
-    <div.mdc-text-field-helper-line>
-      <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
-        #{errs}
-          
-$forall v <- [phoneV,mobileV,emailV]
-  <div.form-field>
-    <div.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
-      :isJust (fvErrors v):.mdc-text-field--invalid>
-      <span.mdc-text-field__ripple>
-      <span.mdc-floating-label>#{fvLabel v}
-      ^{fvInput v}
-      <span.mdc-line-ripple>
-    $maybe errs <- fvErrors v
-      <div.mdc-text-field-helper-line>
-        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
-          #{errs}
-|]
-    return (r,w)
+
+    let r = Business <$> nameR <*> addrR <*> (minutesToTimeZone <$> tzoR) <*> tzR <*> phoneR <*> mobileR <*> emailR
+    return (r,$(widgetFile "admin/business/form"))
   where
       uniqueNameField :: Field Handler Text
       uniqueNameField = checkM uniqueName textField

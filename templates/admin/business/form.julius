@@ -1,0 +1,5 @@
+
+document.getElementById(#{datalistTz}).insertAdjacentHTML(
+  'beforeend',
+  Intl.supportedValuesOf('timeZone').map(x => `<option value="${x}"></option>`).join('')
+);
