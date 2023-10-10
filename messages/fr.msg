@@ -1,3 +1,4 @@
+PreviouslySelected: Précédemment sélectionné
 TimeZoneOffset: Décalage de fuseau horaire
 AddExpert: Ajouter un expert
 NoExpertsYet: Il n'y a pas encore d'experts

@@ -1,5 +1,5 @@
 
-#sectionDateTime
+##{sectionDateTime}
   margin: 1rem
   display: flex
   flex-direction: column
@@ -11,7 +11,7 @@
       input.mdc-text-field__input
         caret-color: var(--mdc-theme-text-primary-on-background)
 
-#detailsTimezone, #detailsTimezoneOffset
+##{detailsLocation}
   div.form-field
     margin: 1rem
     display: flex
@@ -21,4 +21,15 @@
     .mdc-text-field
       input.mdc-text-field__input
         caret-color: var(--mdc-theme-text-primary-on-background)
-  
+
+##{detailsStaff}, ##{detailsServices}
+  div.mdc-list-item__primary-text
+    div.wrapper
+      display: flex
+      align-items: center
+      justify-content: space-between
+      span.badge
+        padding: 2px 4px
+        line-height: 1
+        border-radius: 25%
+        background-color: var(--mdc-theme-primary)

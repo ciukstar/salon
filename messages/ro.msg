@@ -1,3 +1,4 @@
+PreviouslySelected: Selectate anterior
 TimeZoneOffset: Decalajul de fus orar
 AddExpert: Adaugă un expert
 NoExpertsYet: Nu există încă experți

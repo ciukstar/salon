@@ -1,13 +1,15 @@
 
-document.getElementById('appointmentFullLongTime').textContent = new Date(
-  document.getElementById('appointmentTime').getAttribute('datetime')
-).toLocaleDateString(
-  navigator.language,
-  { weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: "numeric",
-    minute: "numeric"
-  }
-);
+[document.getElementById(#{appointmentFullLongTime})].forEach(function (x) {
+  x.textContent = new Date(x.getAttribute('datetime')).toLocaleDateString(
+    navigator.language,
+    { timeZone: x.dataset.tz,
+      timeZoneName: 'long',
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: "numeric",
+      minute: "numeric"
+    }
+  );
+});

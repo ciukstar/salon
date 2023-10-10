@@ -1,0 +1,24 @@
+
+#{extra}
+^{fvInput rolesV}
+
+<details.mdc-list data-mdc-auto-init=MDCList ##{detailsServices}
+  ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+  <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+    <span.mdc-list-item__ripple>
+    <span.mdc-list-item__start>
+      <i.material-symbols-outlined>counter_1
+    <span.mdc-list-item__content>
+      <div.mdc-list-item__primary-text>
+        <div.wrapper>
+          <span>_{MsgServices}
+          <span.badge>
+            <small>
+              $case offersR
+                $of FormSuccess xs
+                  #{length xs}
+                $of _
+                  #{length items}
+    <span.mdc-list-item__end>
+      <i.expand.material-symbols-outlined>expand_more
+  ^{fvInput offersV}

@@ -1,5 +1,5 @@
 
-window.scroll("0",#{fromMaybe "0" scrollY});
+window.scroll("0",#{fromMaybe "0" y});
 
 window.mdc.autoInit();
 

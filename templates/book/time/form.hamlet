@@ -1,6 +1,6 @@
 
 #{extra}
-<section #sectionDateTime>
+<section ##{sectionDateTime}>
   $forall (v,icon) <- [(dayV,"event"),(timeV,"schedule")]
     <div.form-field>
       <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--with-trailing-icon data-mdc-auto-init=MDCTextField
@@ -20,41 +20,47 @@
           <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
             #{errs}
 
-<details.mdc-list #detailsTimezone data-mdc-auto-init=MDCList :isJust (fvErrors tzV):open
+<details.mdc-list ##{detailsLocation} data-mdc-auto-init=MDCList :isJust (fvErrors tzoV):open
   ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
   <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
     <span.mdc-list-item__ripple>
     <span.mdc-list-item__start>
-      <i.material-symbols-outlined>language
+      <i.material-symbols-outlined>pin_drop
     <span.mdc-list-item__content>
-      <div.mdc-list-item__primary-text>_{MsgTimeZone}
+      <div.mdc-list-item__primary-text>_{MsgLocation}
     <span.mdc-list-item__end>
       <i.expand.material-symbols-outlined>expand_more
+
   <div.form-field>
-    <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--no-label 
+    <div.mdc-text-field.mdc-text-field--textarea.mdc-text-field--filled data-mdc-auto-init=MDCTextField
+      :isJust (fvErrors addrV):.mdc-text-field--invalid>
+      <span.mdc-text-field__ripple>
+      <span.mdc-floating-label>#{fvLabel addrV}
+      <span.mdc-text-field__resizer>
+        ^{fvInput addrV}
+      <span.mdc-line-ripple>
+    $maybe errs <- fvErrors addrV
+      <div.mdc-text-field-helper-line>
+        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+          #{errs}
+          
+  <div.form-field>
+    <label.mdc-text-field.mdc-text-field--filled
       :isJust (fvErrors tzV):.mdc-text-field--invalid data-mdc-auto-init=MDCTextField>
       <span.mdc-text-field__ripple>
+      <span.mdc-floating-label>#{fvLabel tzV}
       ^{fvInput tzV}
       <div.mdc-line-ripple>
     $maybe errs <- fvErrors tzV
       <div.mdc-text-field-helper-line>
         <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
           #{errs}
-
-<details.mdc-list #detailsTimezoneOffset data-mdc-auto-init=MDCList :isJust (fvErrors tzoV):open
-  ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
-  <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
-    <span.mdc-list-item__ripple>
-    <span.mdc-list-item__start>
-      <i.material-symbols-outlined>language
-    <span.mdc-list-item__content>
-      <div.mdc-list-item__primary-text>_{MsgTimeZoneOffset}
-    <span.mdc-list-item__end>
-      <i.expand.material-symbols-outlined>expand_more
+        
   <div.form-field>
-    <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--no-label 
+    <label.mdc-text-field.mdc-text-field--filled
       :isJust (fvErrors tzoV):.mdc-text-field--invalid data-mdc-auto-init=MDCTextField>
       <span.mdc-text-field__ripple>
+      <span.mdc-floating-label>#{fvLabel tzoV}
       ^{fvInput tzoV}
       <span.mdc-text-field__affix.mdc-text-field__affix--suffix>_{MsgMinutes}
       <div.mdc-line-ripple>
@@ -63,7 +69,7 @@
         <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
           #{errs}
 
-<details.mdc-list data-mdc-auto-init=MDCList
+<details.mdc-list data-mdc-auto-init=MDCList ##{detailsStaff}
   ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
   <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
     <span.mdc-list-item__ripple>
@@ -71,9 +77,9 @@
       <i.material-symbols-outlined>counter_2
     <span.mdc-list-item__content>
       <div.mdc-list-item__primary-text>
-        <div style="display:flex;align-items:center;justify-content:space-between">
-          <span>_{MsgSelectedStaff}
-          <span style="padding:2px 4px;line-height:1;border-radius:25%;background-color:var(--mdc-theme-primary)">
+        <div.wrapper>
+          <span>_{MsgStaff}
+          <span.badge>
             <small>
               $case (role,roleR)
                 $of (Just _,_)
@@ -86,7 +92,7 @@
       <i.expand.material-symbols-outlined>expand_more
   ^{fvInput roleV}
 
-<details.mdc-list data-mdc-auto-init=MDCList
+<details.mdc-list data-mdc-auto-init=MDCList ##{detailsServices}
   ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
   <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
     <span.mdc-list-item__ripple>
@@ -94,9 +100,9 @@
       <i.material-symbols-outlined>counter_1
     <span.mdc-list-item__content>
       <div.mdc-list-item__primary-text>
-        <div style="display:flex;align-items:center;justify-content:space-between">
-          <span>_{MsgSelectedServices}
-          <span style="padding:2px 4px;line-height:1;border-radius:25%;background-color:var(--mdc-theme-primary)">
+        <div.wrapper>
+          <span>_{MsgServices}
+          <span.badge>
             <small>
               $case offersR
                 $of FormSuccess xs

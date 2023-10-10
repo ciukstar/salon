@@ -36,7 +36,7 @@ import Yesod.Core.Widget (setTitleI)
 import Yesod.Auth ( Route(LoginR, LogoutR), maybeAuth )
 import Yesod.Form.Fields
     ( Textarea(unTextarea, Textarea), searchField, intField, timeField
-    , dayField
+    , dayField, textField, textareaField
     )
 import Yesod.Form.Types
     ( MForm, FormResult (FormSuccess, FormFailure, FormMissing)
@@ -69,11 +69,11 @@ import Foundation
       , MsgFinishAppointmentConfirm, MsgDay, MsgTimeZone, MsgMinutes, MsgContinue
       , MsgAppointmentTimeIsInThePast, MsgAppointmentDayIsInThePast, MsgSave
       , MsgNoHistoryYet, MsgAdjusted, MsgLoginBanner, MsgNoAssigneeRequestApprove
-      , MsgNoAssigneeRequestReschedule
+      , MsgNoAssigneeRequestReschedule, MsgTimeZoneOffset
       )
     )
 
-import Database.Persist (Entity (Entity, entityKey), PersistStoreWrite (insert_))
+import Database.Persist (Entity (Entity, entityKey, entityVal), PersistStoreWrite (insert_))
 import Database.Persist.Sql (fromSqlKey, toSqlKey)
 import Yesod.Persist.Core (YesodPersist(runDB))
 import Database.Esqueleto.Experimental
@@ -84,7 +84,7 @@ import Database.Esqueleto.Experimental
     )
 
 import Model
-    ( Book (Book), BookId, Offer, Service (Service), Role (Role), Staff (Staff)
+    ( Book (Book, bookDay, bookTz, bookTzo, bookTime, bookAddr), BookId, Offer, Service (Service), Role (Role), Staff (Staff)
     , Offer (Offer), Thumbnail (Thumbnail), User (User), Contents (Contents)
     , BookStatus
       ( BookStatusRequest, BookStatusApproved, BookStatusCancelled
@@ -98,7 +98,7 @@ import Model
       , ThumbnailService, BookUser, UserId, BookStatus, ServiceName, ServiceDescr
       , ServiceOverview, RoleName, OfferName, OfferPrefix, OfferSuffix, OfferDescr
       , StaffName, StaffPhone, StaffMobile, StaffEmail, UserName, UserFullName
-      , UserEmail, BookTz, HistBook, HistLogtime, RoleService, HistUser, BookTzo
+      , UserEmail, BookTz, HistBook, HistLogtime, RoleService, HistUser, BookTzo, BookAddr
       )
     )
 
@@ -130,35 +130,53 @@ getRequestHistR bid = do
 
 getRequestRescheduleR :: BookId -> Handler Html
 getRequestRescheduleR bid = do
-    tz <- (minutesToTimeZone <$>) <$> runInputGet ( iopt intField "tz" )
-    (fw,et) <- generateFormPost $ formReschedule tz
+    tzo <- (minutesToTimeZone <$>) <$> runInputGet ( iopt intField "tzo" )
+    tz <- runInputGet ( iopt textField "tz" )
+    book <- runDB $ selectOne $ do
+        x <- from $ table @Book
+        where_ $ x ^. BookId ==. val bid
+        return x    
+    (fw,et) <- generateFormPost $ formReschedule book
     defaultLayout $ do
         setTitleI MsgReschedule
         $(widgetFile "requests/reschedule/reschedule")
 
 
-formReschedule :: Maybe TimeZone -> Html -> MForm Handler (FormResult (Day, TimeOfDay, TimeZone), Widget)
-formReschedule tz extra = do
+formReschedule :: Maybe (Entity Book)
+               -> Html -> MForm Handler (FormResult (Day,TimeOfDay,Textarea,TimeZone,Text), Widget)
+formReschedule book extra = do
 
     (dayR,dayV) <- mreq futureDayField FieldSettings
         { fsLabel = SomeMessage MsgDay
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
-        } Nothing
+        } (bookDay . entityVal <$> book)
 
-    (tzR,tzV) <- mreq intField FieldSettings
+    (tzR,tzV) <- mreq textField FieldSettings
         { fsLabel = SomeMessage MsgTimeZone
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
-        } (timeZoneMinutes <$> tz)
+        } (bookTz . entityVal <$> book)
 
-    (timeR,timeV) <- mreq (futureTimeField dayR (minutesToTimeZone <$> tzR)) FieldSettings
+    (tzoR,tzoV) <- mreq intField FieldSettings
+        { fsLabel = SomeMessage MsgTimeZoneOffset
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (timeZoneMinutes . bookTzo . entityVal <$> book)
+
+    (timeR,timeV) <- mreq (futureTimeField dayR (minutesToTimeZone <$> tzoR)) FieldSettings
         { fsLabel = SomeMessage MsgTime
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
-        } Nothing
+        } (bookTime . entityVal <$> book)
 
-    let r = (,,) <$> dayR <*> timeR <*> (minutesToTimeZone <$> tzR)
+    (addrR,addrV) <- mreq textareaField FieldSettings
+        { fsLabel = SomeMessage MsgLocation
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (bookAddr . entityVal <$> book)
+
+    let r = (,,,,) <$> dayR <*> timeR <*> addrR <*> (minutesToTimeZone <$> tzoR) <*> tzR
 
     let w = [whamlet|
 #{extra}
@@ -180,7 +198,7 @@ $forall (v,icon) <- [(dayV,"event"),(timeV,"schedule")]
       <div.mdc-text-field-helper-line>
         <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
           #{errs}
-$forall (v,icon) <- [(tzV,"language")]
+$forall (v,icon) <- [(tzoV,"language"),(tzV,"language")]
   <div.form-field>
     <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--with-trailing-icon data-mdc-auto-init=MDCTextField
       :isJust (fvErrors v):.mdc-text-field--invalid>
@@ -238,12 +256,12 @@ postRequestFinishR bid = do
               where_ $ x ^. BookId ==. val _bid
               return x
           case book of
-            Just (Entity _ (Book _ _ _ day time tzo _ _)) -> do
+            Just (Entity _ (Book _ _ _ day time addr tzo tz _)) -> do
                 runDB $ update $ \x -> do
                     set x [BookStatus =. val BookStatusPaid]
                     where_ $ x ^. BookId ==. val bid
                 now <- liftIO getCurrentTime
-                runDB $ insert_ $ Hist bid uid now day time tzo BookStatusPaid
+                runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusPaid
                 redirect $ RequestR bid
 
             Nothing -> do
@@ -283,12 +301,12 @@ postRequestApproveR bid = do
               return r
               
           case (book,role) of
-            (Just (Entity _ (Book _ _ _ day time tzo _ _),_),Just (Entity rid _)) -> do
+            (Just (Entity _ (Book _ _ _ day time addr tzo tz _),_),Just (Entity rid _)) -> do
                 runDB $ update $ \x -> do
                     set x [BookRole =. just (val rid), BookStatus =. val BookStatusApproved]
                     where_ $ x ^. BookId ==. val bid
                 now <- liftIO getCurrentTime
-                runDB $ insert_ $ Hist bid uid now day time tzo BookStatusApproved
+                runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusApproved
                 redirect $ RequestR bid
 
             _ -> do
@@ -378,9 +396,13 @@ getRequestsSearchR = do
 postRequestR :: BookId -> Handler Html
 postRequestR bid = do
     user <- maybeAuth
-    ((fr,fw),et) <- runFormPost $ formReschedule Nothing
+    book <- runDB $ selectOne $ do
+        x <- from $ table @Book
+        where_ $ x ^. BookId ==. val bid
+        return x
+    ((fr,fw),et) <- runFormPost $ formReschedule book
     case (fr,user) of
-      (FormSuccess (day,time,tzo), Just (Entity uid _)) -> do
+      (FormSuccess (day,time,addr,tzo,tz), Just (Entity uid _)) -> do
           book <- runDB $ selectOne $ do
               x :& o <- from $ table @Book `innerJoin` table @Offer
                   `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
@@ -404,13 +426,14 @@ postRequestR bid = do
                     set x [ BookRole =. just (val rid)
                           , BookDay =. val day
                           , BookTime =. val time
+                          , BookAddr =. val addr
                           , BookTzo =. val tzo
-                          , BookTz =. val "Europe/London"
+                          , BookTz =. val tz
                           , BookStatus =. val BookStatusAdjusted
                           ]
                     where_ $ x ^. BookId ==. val bid
                 now <- liftIO getCurrentTime
-                runDB $ insert_ $ Hist bid uid now day time tzo BookStatusAdjusted
+                runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusAdjusted
                 redirect $ RequestR bid
 
             _ -> do

@@ -40,13 +40,13 @@ import Model
     , BookStatus (BookStatusRequest)
     , Book
       ( Book, bookUser, bookOffer, bookRole, bookDay, bookTime, bookTzo
-      , bookTz, bookStatus
+      , bookTz, bookStatus, bookAddr
       )
     , Business
-      ( Business, businessName, businessAddress, businessTzo, businessTz
+      ( Business, businessName, businessAddr, businessTzo, businessTz
       , businessPhone, businessMobile, businessEmail
       )
-    , Hist (histBook, histLogtime, histDay, histTime, histTz, histStatus, Hist, histUser)
+    , Hist (Hist, histBook, histLogtime, histDay, histTime, histAddr, histTzo, histStatus, histUser, histTz)
     )
 import Data.FileEmbed (embedFile)
 import Demo.DemoPhotos
@@ -59,8 +59,17 @@ populateEN = do
 
     (now,today,time) <- liftIO $ getCurrentTime >>= \x -> return (x ,utctDay x,timeToTimeOfDay (utctDayTime x))
 
+    let business = Business { businessName = "Salon"
+                            , businessAddr = "73 Parsons Green Ln Fulham London SW6 4JA"
+                            , businessTzo = utc
+                            , businessTz = "Europe/London"
+                            , businessPhone = Just "020-7736-6600"
+                            , businessMobile = Just "567-274-7469"
+                            , businessEmail = Just "salon@mail.uk"
+                            }
+
     insert_ $ Business { businessName = "Salon"
-                       , businessAddress = "73 Parsons Green Ln Fulham London SW6 4JA"
+                       , businessAddr = "73 Parsons Green Ln Fulham London SW6 4JA"
                        , businessTzo = utc
                        , businessTz = "Europe/London"
                        , businessPhone = Just "020-7736-6600"
@@ -1023,22 +1032,27 @@ We will continue to offer the latest treatments, the most innovative techniques 
                         , userPhotoMime = "image/avif"
                         }
 
-    b1 <- insert $ Book { bookOffer = o131
-                        , bookRole = Just r212 
-                        , bookUser = c1
-                        , bookDay = addDays 1 today
-                        , bookTime = time
-                        , bookTzo = utc
-                        , bookTz = "Europe/London"
-                        , bookStatus = BookStatusRequest
-                        }
+    let book1 = Book { bookOffer = o131
+                     , bookRole = Just r212 
+                     , bookUser = c1
+                     , bookDay = addDays 1 today
+                     , bookTime = time
+                     , bookAddr = businessAddr business
+                     , bookTzo = businessTzo business
+                     , bookTz = businessTz business
+                     , bookStatus = BookStatusRequest
+                     }
+
+    b1 <- insert book1
           
     insert_ $ Hist { histBook = b1
                    , histUser = c1
                    , histLogtime = now
-                   , histDay = addDays 1 today
-                   , histTime = time
-                   , histTz = utc
+                   , histDay = bookDay book1
+                   , histTime = bookTime book1
+                   , histAddr = bookAddr book1
+                   , histTzo = bookTzo book1
+                   , histTz = bookTz book1
                    , histStatus = BookStatusRequest
                    }
 
@@ -1056,41 +1070,51 @@ We will continue to offer the latest treatments, the most innovative techniques 
                         , userPhotoMime = "image/avif"
                         }
 
-    b2 <- insert $ Book { bookOffer = o111
-                        , bookRole = Just r51511 
-                        , bookUser = c2
-                        , bookDay = addDays 2 today
-                        , bookTime = time
-                        , bookTzo = utc
-                        , bookTz = "Europe/London"
-                        , bookStatus = BookStatusRequest
-                        }
+    let book2 = Book { bookOffer = o111
+                     , bookRole = Just r51511 
+                     , bookUser = c2
+                     , bookDay = addDays 2 today
+                     , bookTime = time
+                     , bookAddr = businessAddr business
+                     , bookTzo = businessTzo business
+                     , bookTz = businessTz business
+                     , bookStatus = BookStatusRequest
+                     }
+
+    b2 <- insert book2
           
     insert_ $ Hist { histBook = b2
                    , histUser = c2
                    , histLogtime = now
-                   , histDay = addDays 2 today
-                   , histTime = time
-                   , histTz = utc
+                   , histDay = bookDay book2
+                   , histTime = bookTime book2
+                   , histAddr = bookAddr book2
+                   , histTzo = bookTzo book2
+                   , histTz = bookTz book2
                    , histStatus = BookStatusRequest
                    }
 
-    b3 <- insert $ Book { bookOffer = o141
-                        , bookRole = Nothing 
-                        , bookUser = c1
-                        , bookDay = addDays 3 today
-                        , bookTime = time
-                        , bookTzo = utc
-                        , bookTz = "Europe/London"
-                        , bookStatus = BookStatusRequest
-                        }
+    let book3 = Book { bookOffer = o141
+                     , bookRole = Nothing 
+                     , bookUser = c1
+                     , bookDay = addDays 3 today
+                     , bookTime = time
+                     , bookAddr = businessAddr business
+                     , bookTzo = businessTzo business
+                     , bookTz = businessTz business
+                     , bookStatus = BookStatusRequest
+                     }
+
+    b3 <- insert book3
           
     insert_ $ Hist { histBook = b3
                    , histUser = c1 
                    , histLogtime = now
-                   , histDay = addDays 3 today
-                   , histTime = time
-                   , histTz = utc
+                   , histDay = bookDay book3
+                   , histTime = bookTime book3
+                   , histAddr = bookAddr book3
+                   , histTzo = bookTzo book3
+                   , histTz = bookTz book3
                    , histStatus = BookStatusRequest
                    }
 

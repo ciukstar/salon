@@ -40,7 +40,6 @@ dependencies:
 - containers
 - vector
 - time
-- tz
 - case-insensitive
 - wai
 - foreign-store

@@ -2,7 +2,7 @@
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section-align-start>
       <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button
-        href="@?{(BookOffersR,oids <> scrollY)}#{fragment scrollY oids}">
+        href="@?{(BookOffersR,oids <> ys)}#{fragment ys oids}">
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
@@ -33,10 +33,7 @@
     ^{fw}
 
 <footer>
-  <input type="text" name=tz form=formStaff hidden #inputTimeZone>
-  <button.mdc-button.mdc-button--raised.mdc-button--icon-trailing
-    type=submit form=formStaff name=tzo 
-    onclick="this.value = -(new Date().getTimezoneOffset());document.getElementById('inputTimeZone').value = Intl.DateTimeFormat().resolvedOptions().timeZone;">
+  <button.mdc-button.mdc-button--raised.mdc-button--icon-trailing type=submit form=formStaff>
     <span.mdc-button__ripple>
     <span.mdc-button__focus-ring>
     <span.mdc-button__label>_{MsgContinue}

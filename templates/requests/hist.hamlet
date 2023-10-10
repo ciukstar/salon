@@ -15,7 +15,7 @@
       <figcaption>
         _{MsgNoHistoryYet}.
   $else
-    $forall (Entity _ (Hist _ _ logtime day time tz status),Entity _ (User uname _ _ fname _)) <- hist
+    $forall (Entity _ (Hist _ _ logtime day time addr tzo tz status),Entity _ (User uname _ _ fname _)) <- hist
       $with (color,icon,msg) <- resolve status
         <details.mdc-list data-mdc-auto-init=MDCList
           ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
@@ -44,8 +44,14 @@
             <dt>_{MsgTime}
             <dd>#{show time}
 
+            <dt>_{MsgLocation}
+            <dd>#{addr}
+
             <dt>_{MsgTimeZone}
-            <dd>#{show tz}
+            <dd>#{tz}
+
+            <dt>_{MsgTimeZoneOffset}
+            <dd>#{show tzo}
 
             <dt>_{MsgStatus}
             <dd>#{show status}

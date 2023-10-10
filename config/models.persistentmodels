@@ -10,7 +10,9 @@ Hist
   logtime UTCTime
   day Day
   time TimeOfDay
-  tz TimeZone
+  addr Textarea
+  tzo TimeZone
+  tz Text
   status BookStatus
 
 Book
@@ -19,6 +21,7 @@ Book
   role RoleId Maybe OnDeleteCascade
   day Day
   time TimeOfDay
+  addr Textarea
   tzo TimeZone
   tz Text
   status BookStatus
@@ -106,7 +109,7 @@ Brand
 
 Business
   name Text
-  address Textarea
+  addr Textarea
   tzo TimeZone
   tz Text
   phone Text Maybe

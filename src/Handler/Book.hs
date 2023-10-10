@@ -21,7 +21,7 @@ module Handler.Book
 
 import Control.Monad (unless, forM, when, join)
 import Control.Monad.Trans.Reader (ReaderT)
-import Data.Bifunctor (Bifunctor(second, bimap))
+import Data.Bifunctor (Bifunctor(second))
 import Data.Either (isLeft)
 import Data.Maybe (maybeToList, isJust, fromMaybe)
 import Data.Fixed (Centi)
@@ -52,10 +52,12 @@ import Yesod.Form.Types
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
     )
 import Yesod.Form.Fields
-    ( timeField, dayField, textField, intField, searchField, Textarea (Textarea))
+    ( Textarea (Textarea, unTextarea), timeField, dayField, textField, intField
+    , searchField, textareaField
+    )
 import Yesod.Form.Functions
     ( mreq, check, mopt, runFormPost, generateFormPost, checkM)
-import Yesod.Form.Input (runInputPost, iopt, runInputGet)
+import Yesod.Form.Input (iopt, runInputGet)
 import Settings (widgetFile)
 
 import Yesod.Persist.Core (runDB)
@@ -84,16 +86,15 @@ import Foundation
       , MsgSymbolHour, MsgSymbolMinute, MsgStaff, MsgNoPreference
       , MsgMaximumAvailability, MsgSelectStaff, MsgInvalidFormData
       , MsgSelectAtLeastOneServicePlease, MsgOffer, MsgAppointmentTime
-      , MsgRole, MsgSignUp, MsgSignIn, MsgSelectedServices
-      , MsgSelectedStaff, MsgOffers, MsgCustomerInformation
+      , MsgRole, MsgSignUp, MsgSignIn, MsgOffers, MsgCustomerInformation
       , MsgCustomer, MsgStepNofM, MsgContinue, MsgNotYourAccount
       , MsgLogin, MsgDay, MsgTime , MsgEnd, MsgAlreadyHaveAnAccount
-      , MsgLoginToIdentifyCustomer, MsgSelectedTime, MsgRecordAdded
-      , MsgYouSuccessfullyCreatedYourBooking, MsgShowDetails
-      , MsgBookNewAppointment, MsgBookingSequenceRestarted, MsgThumbnail
-      , MsgAppointmentDayIsInThePast, MsgAppointmentTimeIsInThePast
-      , MsgTimeZone, MsgTimeZoneOffset, MsgMinutes, MsgSearch, MsgNoServicesFound
-      , MsgCategory, MsgSelect, MsgCancel, MsgCategories
+      , MsgLoginToIdentifyCustomer, MsgRecordAdded, MsgShowDetails
+      , MsgYouSuccessfullyCreatedYourBooking, MsgBookNewAppointment
+      , MsgBookingSequenceRestarted, MsgThumbnail, MsgAppointmentDayIsInThePast
+      , MsgAppointmentTimeIsInThePast, MsgTimeZone, MsgTimeZoneOffset
+      , MsgMinutes, MsgSearch, MsgAddress, MsgCategory, MsgSelect, MsgCancel
+      , MsgCategories, MsgNoServicesFound, MsgLocation
       )
     )
 
@@ -101,12 +102,14 @@ import Model
     ( Service(Service), ServiceId, Offer (Offer), OfferId, Staff (Staff)
     , Role (Role), RoleId
     , User (User), Book (Book), Thumbnail
+    , BookStatus (BookStatusRequest), Hist (Hist)
+    , Business (businessAddr, businessTzo, businessTz, Business)
     , EntityField
       ( StaffId, RoleId, ServiceId, OfferService, ServicePublished, BookId
       , ServiceName, RoleStaff, RoleRating, RoleService, OfferId, BookOffer
       , BookUser, BookRole, ThumbnailService, ThumbnailAttribution
-      , ServiceOverview, ServiceDescr, ServiceGroup, BusinessTzo, BusinessTz
-      ), BookStatus (BookStatusRequest), Hist (Hist), Business (Business, businessTzo, businessTz)
+      , ServiceOverview, ServiceDescr, ServiceGroup
+      )
     )
 
 import Menu (menu)
@@ -116,7 +119,7 @@ postBookSearchR :: Handler Html
 postBookSearchR = do
     formSearch <- newIdent
     mq <- runInputGet $ iopt (searchField True) "q"
-    scrollY <- filter ((== "y") . fst) <$> getPostParams
+    y <- filter ((== "y") . fst) <$> getPostParams
     oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
     categs <- (toSqlKey . read . unpack . snd <$>) . filter ((== "categ") . fst) . reqGetParams <$> getRequest
     offers <- runDB $ queryOffers categs mq []
@@ -126,7 +129,7 @@ postBookSearchR = do
       FormSuccess items -> do
           setSession sessKeyBooking "BOOKING_START"
           redirect ( BookStaffR
-                   , scrollY <> ((\((_,Entity oid _),_) -> ("oid",pack $ show $ fromSqlKey oid)) <$> items)
+                   , y <> ((\((_,Entity oid _),_) -> ("oid",pack $ show $ fromSqlKey oid)) <$> items)
                    )
       _ -> do
           msgs <- getMessages
@@ -140,13 +143,13 @@ getBookSearchR :: Handler Html
 getBookSearchR = do
     formSearch <- newIdent
     dlgCategList <- newIdent
-    mq <- runInputGet $ iopt (searchField True) "q" 
+    mq <- runInputGet $ iopt (searchField True) "q"
     oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
     categs <- (toSqlKey . read . unpack . snd <$>) . filter ((== "categ") . fst) . reqGetParams <$> getRequest
     offers <- runDB $ queryOffers categs mq []
     items <- runDB $ queryItems categs mq (toSqlKey . read . unpack . snd <$> oids)
     (fw,et) <- generateFormPost $ formOffers items offers
-        
+
     groups <- runDB $ select $ do
         x <- from $ table @Service
         where_ $ x ^. ServicePublished
@@ -155,7 +158,7 @@ getBookSearchR = do
             where_ $ y ^. ServiceGroup ==. just (x ^. ServiceId)
             where_ $ x ^. ServicePublished
         return x
-        
+
     msgs <- getMessages
     setUltDestCurrent
     defaultLayout $ do
@@ -197,19 +200,18 @@ postBookCustomerR = do
           oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
           dates <- filter ((== "date") . fst) . reqGetParams <$> getRequest
           times <- filter ((== "time") . fst) . reqGetParams <$> getRequest
-          tzs <- filter ((== "tz") . fst) . reqGetParams <$> getRequest
           user <- maybeAuth
           ioffers <- runDB $ queryOffers [] Nothing (toSqlKey . read . unpack . snd <$> oids)
           irole <- runDB $ queryRole (toSqlKey . read . unpack . snd <$> LS.head rids)
           ((fr,fw),et) <- runFormPost $ formCustomer
-              user Nothing Nothing Nothing Nothing ioffers ioffers irole (maybeToList irole)
+              user Nothing Nothing Nothing ioffers ioffers irole (maybeToList irole)
           case fr of
-            FormSuccess (items,role,day,time,tzo,tz,Entity uid _) -> do
-                now <- liftIO getCurrentTime
+            FormSuccess (items,role,day,time,addr,tzo,tz,Entity uid _) -> do
                 bids <- forM items $ \((_,Entity oid _),_) -> do
                     bid  <- runDB $ insert $
-                        Book uid oid ((\(_,Entity rid _) -> rid) <$> role) day time tzo tz BookStatusRequest
-                    runDB $ insert_ $ Hist bid uid now day time tzo BookStatusRequest
+                        Book uid oid ((\(_,Entity rid _) -> rid) <$> role) day time addr tzo tz BookStatusRequest
+                    now <- liftIO getCurrentTime
+                    runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusRequest
                     return bid
                 addMessageI "info" MsgRecordAdded
                 deleteSession sessKeyBooking
@@ -228,19 +230,17 @@ getBookCustomerR = do
     oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
     dates <- filter ((== "date") . fst) . reqGetParams <$> getRequest
     times <- filter ((== "time") . fst) . reqGetParams <$> getRequest
-    tzos <- filter ((== "tzo") . fst) . reqGetParams <$> getRequest
-    tzs <- filter ((== "tz") . fst) . reqGetParams <$> getRequest
     items <- runDB $ queryItems [] Nothing (toSqlKey . read . unpack . snd <$> oids)
     role <- runDB $ selectOne $ do
         x :& s <- from $ table @Role `innerJoin` table @Staff `on` (\(x :& s) -> x ^. RoleStaff ==. s ^. StaffId)
         where_ $ x ^. RoleId `in_` valList (toSqlKey . read . unpack . snd <$> rids)
         return (s,x)
+    business <- runDB $ selectOne $ from $ table @Business
     (fw,et) <- generateFormPost $ formCustomer
         user
         ((read . unpack . snd <$>) $ LS.head dates)
         ((read . unpack . snd <$>) $ LS.head times)
-        ((minutesToTimeZone . read . unpack . snd <$>) $ LS.head tzos)
-        ((snd <$>) $ LS.head tzs)
+        business
         items items role (maybeToList role)
     msgs <- getMessages
     setUltDestCurrent
@@ -266,7 +266,7 @@ postBookTimeR = do
               Nothing Nothing Nothing ioffers ioffers irole (maybeToList irole)
           msgs <- getMessages
           case fr of
-            FormSuccess (items,role,date,time,tzo,tz) -> do
+            FormSuccess (items,role,date,time,addr,tzo,tz) -> do
                 redirect ( BookCustomerR
                          , maybeToList (("rid",) . (\(_,Entity rid _) -> pack $ show $ fromSqlKey rid) <$> role)
                            <> ((\((_,Entity oid _),_) -> ("oid",pack $ show $ fromSqlKey oid)) <$> items)
@@ -274,6 +274,7 @@ postBookTimeR = do
                               , ("time",pack $ show time)
                               , ("tzo",pack $ show (timeZoneMinutes tzo))
                               , ("tz",tz)
+                              , ("addr",unTextarea addr)
                               ]
                          )
             _ -> defaultLayout $ do
@@ -312,7 +313,7 @@ postBookStaffR = do
           redirect BookOffersR
       _ -> do
           user <- maybeAuth
-          scrollY <- filter ((== "scrollY") . fst) . reqGetParams <$> getRequest
+          ys <- filter ((== "y") . fst) . reqGetParams <$> getRequest
           oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
           offers <- runDB $ queryOffers [] Nothing (toSqlKey . read . unpack . snd <$> oids)
           roles <- runDB $ queryRoles (fst <$> offers)
@@ -320,13 +321,9 @@ postBookStaffR = do
           msgs <- getMessages
           case fr of
             FormSuccess (items,role) -> do
-                tzo <- runInputPost $ iopt textField "tzo"
-                tz <- runInputPost $ iopt textField "tz"
                 redirect ( BookTimeR
                          , maybeToList (("rid",) . (\(_,Entity rid _) -> pack $ show $ fromSqlKey rid) <$> role)
                            <> ((\((_,Entity oid _),_) -> ("oid",pack $ show $ fromSqlKey oid)) <$> items)
-                           <> maybeToList (("tzo",) <$> tzo)
-                           <> maybeToList (("tz",) <$> tz)
                          )
             _ -> defaultLayout $ do
                 setTitleI MsgStaff
@@ -336,7 +333,7 @@ postBookStaffR = do
 getBookStaffR :: Handler Html
 getBookStaffR = do
     user <- maybeAuth
-    scrollY <- filter ((== "scrollY") . fst) . reqGetParams <$> getRequest
+    ys <- filter ((== "y") . fst) . reqGetParams <$> getRequest
     oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
     rids <- filter ((== "rid") . fst) . reqGetParams <$> getRequest
     items <- runDB $ queryOffers [] Nothing (toSqlKey . read . unpack . snd <$> oids)
@@ -352,7 +349,7 @@ getBookStaffR = do
 
 postBookOffersR :: Handler Html
 postBookOffersR = do
-    scrollY <- filter ((== "scrollY") . fst) <$> getPostParams
+    ys <- filter ((== "y") . fst) <$> getPostParams
     oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
     user <- maybeAuth
     offers <- runDB $ queryOffers [] Nothing []
@@ -362,7 +359,7 @@ postBookOffersR = do
       FormSuccess items -> do
           setSession sessKeyBooking "BOOKING_START"
           redirect ( BookStaffR
-                   , scrollY <> ((\((_,Entity oid _),_) -> ("oid",pack $ show $ fromSqlKey oid)) <$> items)
+                   , ys <> ((\((_,Entity oid _),_) -> ("oid",pack $ show $ fromSqlKey oid)) <$> items)
                    )
       _ -> do
           msgs <- getMessages
@@ -374,7 +371,7 @@ postBookOffersR = do
 
 getBookOffersR :: Handler Html
 getBookOffersR = do
-    scrollY <- runInputGet (iopt textField "scrollY")
+    y <- runInputGet (iopt textField "y")
     oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
     user <- maybeAuth
     offers <- runDB $ queryOffers [] Nothing []
@@ -388,19 +385,19 @@ getBookOffersR = do
 
 
 formCustomer :: Maybe (Entity User)
-         -> Maybe Day -> Maybe TimeOfDay -> Maybe TimeZone -> Maybe Text
-         -> [((Entity Service, Entity Offer),Maybe Html)]
-         -> [((Entity Service, Entity Offer),Maybe Html)]
-         -> Maybe (Entity Staff, Entity Role)
-         -> [(Entity Staff, Entity Role)]
-         -> Html -> MForm Handler ( FormResult ( [((Entity Service, Entity Offer),Maybe Html)]
-                                               , Maybe (Entity Staff, Entity Role)
-                                               , Day, TimeOfDay, TimeZone, Text
-                                               , Entity User
-                                               )
-                                  , Widget
-                                  )
-formCustomer user day time tzo tz items offers role roles extra = do
+             -> Maybe Day -> Maybe TimeOfDay -> Maybe (Entity Business)
+             -> [((Entity Service, Entity Offer),Maybe Html)]
+             -> [((Entity Service, Entity Offer),Maybe Html)]
+             -> Maybe (Entity Staff, Entity Role)
+             -> [(Entity Staff, Entity Role)]
+             -> Html -> MForm Handler ( FormResult ( [((Entity Service, Entity Offer),Maybe Html)]
+                                                   , Maybe (Entity Staff, Entity Role)
+                                                   , Day, TimeOfDay, Textarea, TimeZone, Text
+                                                   , Entity User
+                                                   )
+                                      , Widget
+                                      )
+formCustomer user day time business items offers role roles extra = do
 
     (offersR,offersV) <- mreq (check notNull (offersField offers)) FieldSettings
         { fsLabel = SomeMessage MsgOffer
@@ -426,28 +423,38 @@ formCustomer user day time tzo tz items offers role roles extra = do
         , fsAttrs = [("hidden","hidden")]
         } time
 
+    (addrR,addrV) <- mreq textareaField FieldSettings
+        { fsLabel = SomeMessage MsgAddress
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("hidden","hidden")]
+        } (businessAddr . entityVal <$> business)
+
     (tzoR,tzoV) <- mreq textField FieldSettings
         { fsLabel = SomeMessage MsgTimeZoneOffset
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("hidden","hidden")]
-        } (pack . show <$> tzo)
+        } (pack . show . businessTzo . entityVal <$> business)
 
     (tzR,tzV) <- mreq textField FieldSettings
         { fsLabel = SomeMessage MsgTimeZone
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("hidden","hidden")]
-        } tz
+        } (businessTz . entityVal <$> business)
 
     app <- getYesod
     langs <- languages
 
-    let r = (,,,,,,) <$> offersR <*> roleR <*> dayR <*> timeR <*> (read . unpack <$> tzoR) <*> tzR
+    let r = (,,,,,,,) <$> offersR <*> roleR <*> dayR <*> timeR <*> addrR <*> (read . unpack <$> tzoR) <*> tzR
             <*> case user of
                   Just u -> FormSuccess u
                   Nothing -> FormFailure [renderMessage app langs MsgLoginToIdentifyCustomer]
 
-    let w = $(widgetFile "book/customer/form")
-    return (r,w)
+    detailsAppointmentTime <- newIdent
+    appointmentTime <- newIdent
+    appointmentFullLongTime <- newIdent
+    detailsStaff <- newIdent
+    detailsServices <- newIdent
+    return (r,$(widgetFile "book/customer/form"))
   where
 
       notNull xs = case xs of
@@ -493,7 +500,7 @@ formTime :: Maybe Day -> Maybe TimeOfDay -> Maybe (Entity Business)
          -> Html
          -> MForm Handler ( FormResult ( [((Entity Service, Entity Offer),Maybe Html)]
                                        , Maybe (Entity Staff, Entity Role)
-                                       , Day, TimeOfDay, TimeZone, Text
+                                       , Day, TimeOfDay, Textarea, TimeZone, Text
                                        )
                            , Widget
                            )
@@ -517,6 +524,12 @@ formTime day time business items offers role roles extra = do
         , fsAttrs = [("class","mdc-text-field__input")]
         } day
 
+    (addrR,addrV) <- mreq textareaField FieldSettings
+        { fsLabel = SomeMessage MsgAddress
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (businessAddr . entityVal <$> business)
+
     (tzoR,tzoV) <- mreq intField FieldSettings
         { fsLabel = SomeMessage MsgTimeZoneOffset
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
@@ -535,7 +548,11 @@ formTime day time business items offers role roles extra = do
         , fsAttrs = [("class","mdc-text-field__input")]
         } time
 
-    return ( (,,,,,) <$> offersR <*> roleR <*> dayR <*> timeR <*> (minutesToTimeZone <$> tzoR) <*> tzR
+    sectionDateTime <- newIdent
+    detailsLocation <- newIdent
+    detailsStaff <- newIdent
+    detailsServices <- newIdent
+    return ( (,,,,,,) <$> offersR <*> roleR <*> dayR <*> timeR <*> addrR <*> (minutesToTimeZone <$> tzoR) <*> tzR
            , $(widgetFile "book/time/form")
            )
   where
@@ -613,36 +630,12 @@ formStaff items offers role roles extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = []
         } (Just items)
-
+        
+    detailsServices <- newIdent
     (rolesR,rolesV) <- mopt (rolesField roles) "" (Just role)
-
-    let r = (,) <$> offersR <*> rolesR
-    let w = [whamlet|
-#{extra}
-^{fvInput rolesV}
-
-<details.mdc-list data-mdc-auto-init=MDCList
-  ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
-  <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
-    <span.mdc-list-item__ripple>
-    <span.mdc-list-item__start>
-      <i.material-symbols-outlined>counter_1
-    <span.mdc-list-item__content>
-      <div.mdc-list-item__primary-text>
-        <div style="display:flex;align-items:center;justify-content:space-between">
-          <span>_{MsgSelectedServices}
-          <span style="padding:2px 4px;line-height:1;border-radius:25%;background-color:var(--mdc-theme-primary)">
-            <small>
-              $case offersR
-                $of FormSuccess xs
-                  #{length xs}
-                $of _
-                  #{length items}
-    <span.mdc-list-item__end>
-      <i.expand.material-symbols-outlined>expand_more
-  ^{fvInput offersV}
-|]
-    return (r,w)
+    return ( (,) <$> offersR <*> rolesR
+           , $(widgetFile "book/staff/form")
+           )
   where
 
       notNull xs = case xs of

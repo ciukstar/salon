@@ -1,3 +1,4 @@
+PreviouslySelected: Ранее выбрано
 TimeZoneOffset: Смещение часового пояса
 AddExpert: Добавить эксперта
 NoExpertsYet: Экспертов пока нет

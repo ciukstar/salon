@@ -54,12 +54,12 @@ import Database.Esqueleto.Experimental
 
 import Model
     ( Business
-      ( Business, businessName, businessAddress, businessPhone, businessMobile
+      ( Business, businessName, businessAddr, businessPhone, businessMobile
       , businessEmail, businessTzo, businessTz
       )
     , BusinessId
     , EntityField
-      ( BusinessName, BusinessAddress, BusinessPhone, BusinessMobile, BusinessEmail
+      ( BusinessName, BusinessAddr, BusinessPhone, BusinessMobile, BusinessEmail
       , BusinessId, BusinessTzo, BusinessTz
       )
     )
@@ -86,7 +86,7 @@ postBusinessEditR bid = do
       FormSuccess (Business name address tzo tz phone mobile email) -> do
           runDB $ update $ \x -> do
               set x [ BusinessName =. val name
-                    , BusinessAddress =. val address
+                    , BusinessAddr =. val address
                     , BusinessTzo =. val tzo
                     , BusinessTz =. val tz
                     , BusinessPhone =. val phone
@@ -158,7 +158,7 @@ formBusiness business extra = do
         { fsLabel = SomeMessage MsgAddress
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
-        } (businessAddress . entityVal <$> business)
+        } (businessAddr . entityVal <$> business)
     (tzR,tzV) <- mreq textField FieldSettings
         { fsLabel = SomeMessage MsgTimeZone
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
