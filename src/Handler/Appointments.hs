@@ -33,14 +33,14 @@ import Yesod.Core
     )
 import Yesod.Core.Handler (setUltDestCurrent)
 import Yesod.Core.Widget (setTitleI)
-import Yesod.Form.Input (runInputGet, iopt)
 import Yesod.Form.Types
     ( MForm, FormResult (FormSuccess, FormFailure, FormMissing)
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
     , FieldView (fvErrors, fvLabel, fvInput, fvId)
     )
 import Yesod.Form.Functions (generateFormPost, runFormPost, mreq, checkM)
-import Yesod.Form.Fields (unTextarea, intField, timeField, dayField, textField, Textarea, textareaField)
+import Yesod.Form.Fields
+    (Textarea, unTextarea, intField, timeField, dayField, textField, textareaField)
 import Yesod.Persist
     ( Entity (Entity, entityVal), YesodPersist(runDB), PersistStoreWrite (insert_) )
 import Settings (widgetFile)
@@ -72,7 +72,8 @@ import Foundation
       , MsgNo, MsgYes, MsgLoginToPerformAction, MsgEntityNotFound
       , MsgNoHistoryYet, MsgStatus, MsgTimeZone, MsgTime, MsgDay
       , MsgInvalidFormData, MsgMissingForm, MsgSave, MsgCancel, MsgApprove
-      , MsgAppointmentTimeIsInThePast, MsgAppointmentDayIsInThePast, MsgMinutes, MsgTimeZoneOffset, MsgLocation
+      , MsgAppointmentTimeIsInThePast, MsgAppointmentDayIsInThePast, MsgMinutes
+      , MsgTimeZoneOffset, MsgLocation
       )
     )
 
@@ -81,12 +82,14 @@ import Model
       ( BookStatusRequest, BookStatusApproved, BookStatusCancelled, BookStatusPaid
       , BookStatusAdjusted
       )
-    , BookId, Book(Book, bookDay, bookTz, bookTzo, bookTime, bookAddr), Offer (Offer), Service (Service), Role (Role), Hist (Hist)
+    , BookId, Book (Book, bookDay, bookTz, bookTzo, bookTime, bookAddr)
+    , Offer (Offer), Service (Service), Role (Role), Hist (Hist)
     , Staff (Staff), Thumbnail (Thumbnail), User (User), Contents (Contents)
     , EntityField
-      ( BookOffer, OfferId, BookUser, BookId, OfferService, ServiceId
+      ( BookOffer, OfferId, BookCustomer, BookId, OfferService, ServiceId
       , BookDay, BookTime, BookRole, RoleId, RoleStaff, StaffId, ThumbnailService
-      , ContentsSection, BookStatus, HistBook, HistLogtime, BookTz, HistUser, UserId, BookTzo, BookAddr
+      , ContentsSection, BookStatus, HistBook, HistLogtime, BookTz, HistUser
+      , UserId, BookTzo, BookAddr
       )
     )
 
@@ -103,14 +106,14 @@ postAppointmentApproveR bid = do
           book <- runDB $ selectOne $ do
               x <- from $ table @Book
               where_ $ x ^. BookId ==. val bid
-              where_ $ x ^. BookUser ==. val uid
+              where_ $ x ^. BookCustomer ==. val uid
               return x
           case book of
             Just (Entity _ (Book _ _ _ day time addr tzo tz _)) -> do
                 runDB $ update $ \x -> do
                     set x [BookStatus =. val BookStatusApproved]
                     where_ $ x ^. BookId ==. val bid
-                    where_ $ x ^. BookUser ==. val uid
+                    where_ $ x ^. BookCustomer ==. val uid
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusApproved
                 redirect $ AppointmentR bid
@@ -142,7 +145,7 @@ getAppointmentRescheduleR bid = do
     (fw,et) <- generateFormPost $ formReschedule book
     defaultLayout $ do
         setTitleI MsgReschedule
-        $(widgetFile "appointments/reschedule")
+        $(widgetFile "appointments/reschedule/reschedule")
 
 
 formReschedule :: Maybe (Entity Book)
@@ -158,13 +161,13 @@ formReschedule book extra = do
     (tzR,tzV) <- mreq textField FieldSettings
         { fsLabel = SomeMessage MsgTimeZone
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
-        , fsAttrs = [("class","mdc-text-field__input")]
+        , fsAttrs = [("class","mdc-text-field__input"),("readonly","readonly")]
         } (bookTz . entityVal <$> book)
 
     (tzoR,tzoV) <- mreq intField FieldSettings
         { fsLabel = SomeMessage MsgTimeZoneOffset
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
-        , fsAttrs = [("class","mdc-text-field__input")]
+        , fsAttrs = [("class","mdc-text-field__input"),("readonly","readonly")]
         } (timeZoneMinutes . bookTzo . entityVal <$> book)
 
     (timeR,timeV) <- mreq (futureTimeField dayR (minutesToTimeZone <$> tzoR)) FieldSettings
@@ -176,54 +179,16 @@ formReschedule book extra = do
     (addrR,addrV) <- mreq textareaField FieldSettings
         { fsLabel = SomeMessage MsgLocation
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
-        , fsAttrs = [("class","mdc-text-field__input")]
+        , fsAttrs = [ ("class","mdc-text-field__input")
+                    , ("readonly","readonly")
+                    ]
         } (bookAddr . entityVal <$> book)
 
-    let r = (,,,,) <$> dayR <*> timeR <*> addrR <*> (minutesToTimeZone <$> tzoR) <*> tzR
-
-    let w = [whamlet|
-#{extra}
-$forall (v,icon) <- [(dayV,"event"),(timeV,"schedule")]
-  <div.form-field>
-    <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--with-trailing-icon data-mdc-auto-init=MDCTextField
-      :isJust (fvErrors v):.mdc-text-field--invalid>
-      <span.mdc-text-field__ripple>
-      <span.mdc-floating-label>#{fvLabel v}
-      ^{fvInput v}
-      <button.mdc-icon-button.mdc-text-field__icon.mdc-text-field__icon--trailing.material-symbols-outlined
-        tabindex=0 role=button onclick="document.getElementById('#{fvId v}').showPicker()"
-        style="position:absolute;right:2px;background-color:inherit">
-        <span.mdc-icon-button__ripple>
-        <span.mdc-icon-button__focus-ring>
-        #{pack icon}
-      <div.mdc-line-ripple>
-    $maybe errs <- fvErrors v
-      <div.mdc-text-field-helper-line>
-        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
-          #{errs}
-$forall (v,icon) <- [(tzoV,"language"),(tzV,"language")]
-  <div.form-field>
-    <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--with-trailing-icon data-mdc-auto-init=MDCTextField
-      :isJust (fvErrors v):.mdc-text-field--invalid>
-      <span.mdc-text-field__ripple>
-      <span.mdc-floating-label>#{fvLabel v}
-      ^{fvInput v}
-      <button.mdc-icon-button.mdc-text-field__icon.mdc-text-field__icon--trailing.material-symbols-outlined
-        tabindex=0 role=button onclick="document.getElementById('#{fvId v}').showPicker()"
-        style="position:absolute;right:2px;background-color:inherit">
-        <span.mdc-icon-button__ripple>
-        <span.mdc-icon-button__focus-ring>
-        #{pack icon}
-      <div.mdc-line-ripple>
-    <div.mdc-text-field-helper-line>
-      $maybe errs <- fvErrors v
-        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
-          #{errs}
-      $nothing
-        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--persistent>
-          _{MsgMinutes}
-|]
-    return (r,w)
+    sectionTime <- newIdent
+    sectionLocation <- newIdent
+    return ( (,,,,) <$> dayR <*> timeR <*> addrR <*> (minutesToTimeZone <$> tzoR) <*> tzR
+           , $(widgetFile "appointments/reschedule/form")
+           )
   where
 
       futureTimeField dayR tzR = checkM (futureTime dayR tzR) timeField
@@ -260,7 +225,7 @@ getAppointmentHistR bid = do
               where_ $ exists $ do
                   b <- from $ table @Book
                   where_ $ b ^. BookId ==. h ^. HistBook
-                  where_ $ b ^. BookUser ==. val uid
+                  where_ $ b ^. BookCustomer ==. val uid
               orderBy [desc (h ^. HistLogtime)]
               return (h,u)
           defaultLayout $ do
@@ -280,14 +245,14 @@ postAppointmentCancelR bid = do
           book <- runDB $ selectOne $ do
               x <- from $ table @Book
               where_ $ x ^. BookId ==. val bid
-              where_ $ x ^. BookUser ==. val uid
+              where_ $ x ^. BookCustomer ==. val uid
               return x
           case book of
             Just (Entity _ (Book _ _ _ day time addr tzo tz _)) -> do
                 runDB $ update $ \x -> do
                     set x [BookStatus =. val BookStatusCancelled]
                     where_ $ x ^. BookId ==. val bid
-                    where_ $ x ^. BookUser ==. val uid
+                    where_ $ x ^. BookCustomer ==. val uid
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusCancelled
                 redirect $ AppointmentR bid
@@ -311,24 +276,24 @@ postAppointmentR bid = do
     user <- maybeAuth
     ((fr,fw),et) <- runFormPost $ formReschedule Nothing
     case (fr,user) of
-      (FormSuccess (day,time,addr,tzo,tz), Just (Entity uid _)) -> do
+      (FormSuccess (day,time,_,_,_), Just (Entity uid _)) -> do
           book <- runDB $ selectOne $ do
               x <- from $ table @Book
               where_ $ x ^. BookId ==. val bid
-              where_ $ x ^. BookUser ==. val uid
+              where_ $ x ^. BookCustomer ==. val uid
               return x
           case book of
-            Just _ -> do
+            Just (Entity _ (Book _ _ _ _ _ addr tzo tz _)) -> do
                 runDB $ update $ \x -> do
                     set x [ BookDay =. val day
                           , BookTime =. val time
                           , BookAddr =. val addr
                           , BookTzo =. val tzo
-                          , BookTz =. val "Europe/London"
+                          , BookTz =. val tz
                           , BookStatus =. val BookStatusRequest
                           ]
                     where_ $ x ^. BookId ==. val bid
-                    where_ $ x ^. BookUser ==. val uid
+                    where_ $ x ^. BookCustomer ==. val uid
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusRequest
                 redirect $ AppointmentR bid
@@ -344,7 +309,7 @@ postAppointmentR bid = do
           redirect $ AppointmentR bid
       (FormFailure _, _) -> defaultLayout $ do
           setTitleI MsgReschedule
-          $(widgetFile "appointments/reschedule")
+          $(widgetFile "appointments/reschedule/reschedule")
 
 
 getAppointmentR :: BookId -> Handler Html
@@ -365,13 +330,12 @@ getAppointmentR bid = do
             `leftJoin` table @Staff `on` (\(_ :& _ :& _ :& _ :& r :& e) -> r ?. RoleStaff ==. e ?. StaffId)
         where_ $ x ^. BookId ==. val bid
         case user of
-          Just (Entity uid _) -> where_ $ x ^. BookUser ==. val uid
+          Just (Entity uid _) -> where_ $ x ^. BookCustomer ==. val uid
           Nothing -> where_ $ val False
         orderBy [desc (x ^. BookDay), desc (x ^. BookTime)]
         return (x,o,s,t,r,e)
     dlgCancelAppointment <- newIdent
     formAppoitmentCancel <- newIdent
-    formGetAppointmentReschedule <- newIdent
     formGetAppointmentApprove <- newIdent
     msgs <- getMessages
     (fwCancel,etCancel) <- generateFormPost formCancel
@@ -399,7 +363,7 @@ getAppointmentsR = do
               x :& _ :& s <- from $ table @Book
                   `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
                   `innerJoin` table @Service `on` (\(_ :& o :& s) -> o ^. OfferService ==. s ^. ServiceId)
-              where_ $ x ^. BookUser ==. val uid
+              where_ $ x ^. BookCustomer ==. val uid
               orderBy [desc (x ^. BookDay), desc (x ^. BookTime)]
               return (x,s)
           defaultLayout $ do

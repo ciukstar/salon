@@ -190,10 +190,8 @@
                   <div.mdc-dialog__scrim>
                   
               $if elem status [BookStatusRequest,BookStatusApproved,BookStatusAdjusted]
-                <form method=get action=@{AppointmentRescheduleR bid} ##{formGetAppointmentReschedule}>
-                <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--unelevated 
-                  type=submit name=tz form=#{formGetAppointmentReschedule}
-                  onclick="this.value = -(new Date().getTimezoneOffset())">
+                <a.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--unelevated 
+                  href=@{AppointmentRescheduleR bid} role=button>
                   <span.mdc-button__ripple>
                   <span.mdc-button__focus-ring>
                   <span.mdc-button__label>_{MsgReschedule}

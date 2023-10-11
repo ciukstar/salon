@@ -1,3 +1,6 @@
+InvalidBusinessTimeZone: Неверный часовой пояс компании
+InvalidBusinessTimeZoneOffset: Неверное смещение часового пояса компании
+InvalidBusinessAddress: Неверный адрес компании
 PreviouslySelected: Ранее выбрано
 TimeZoneOffset: Смещение часового пояса
 AddExpert: Добавить эксперта

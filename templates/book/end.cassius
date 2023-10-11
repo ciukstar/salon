@@ -4,7 +4,12 @@ header.mdc-top-app-bar
     transition: height 0.3s ease-out
 
 main
-  margin: 0 1rem
-  display: flex
-  flex-direction: column
-  align-items: center
+  section.header
+    display: flex
+    flex-direction: column
+    align-items: center
+    figure
+      text-align: center
+      i.material-symbols-outlined
+        font-size: 4rem
+        color: var(--theme-success)

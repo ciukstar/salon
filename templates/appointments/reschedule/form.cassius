@@ -1,0 +1,16 @@
+
+##{sectionTime}, ##{sectionLocation}
+  margin: 1rem
+  display: flex
+  flex-direction: column
+  gap: 1rem
+  div.form-field
+    display: flex
+    flex-direction: column
+    span.mdc-text-field__affix.mdc-text-field__affix--suffix
+      text-transform: lowercase
+
+##{sectionLocation}
+  textarea[readonly], input[readonly]
+    pointer-events: none
+    color: var(--mdc-theme-text-disabled-on-light)

@@ -14,3 +14,14 @@ window.onscroll = function (e) {
 Array.from(
   document.querySelectorAll('aside.mdc-snackbar')
 ).forEach(function (x) { x.MDCSnackbar.open(); });
+
+Array.from(
+  document.getElementById(#{detailsBooks}).querySelectorAll('span.price')
+).forEach(function (x) {
+  x.textContent = Number(x.dataset.amount).toLocaleString(
+    navigator.language,
+    { minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    }
+  );
+});

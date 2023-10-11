@@ -344,7 +344,7 @@ formLogin route = do
                    where_ $ e ^. StaffUser E.==. just (x ^. UserId)
                where_ $ E.exists $ do
                    b <- from $ table @Book
-                   where_ $ b ^. BookUser E.==. x ^. UserId
+                   where_ $ b ^. BookCustomer E.==. x ^. UserId
                return $ x :& val False
             `unionAll_`
             do x <- from $ table @User

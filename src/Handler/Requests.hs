@@ -95,7 +95,7 @@ import Model
     , EntityField
       ( BookOffer, OfferId, OfferService, ServiceId, BookDay, BookTime
       , BookRole, RoleId, RoleStaff, StaffId, StaffUser, ContentsSection, BookId
-      , ThumbnailService, BookUser, UserId, BookStatus, ServiceName, ServiceDescr
+      , ThumbnailService, BookCustomer, UserId, BookStatus, ServiceName, ServiceDescr
       , ServiceOverview, RoleName, OfferName, OfferPrefix, OfferSuffix, OfferDescr
       , StaffName, StaffPhone, StaffMobile, StaffEmail, UserName, UserFullName
       , UserEmail, BookTz, HistBook, HistLogtime, RoleService, HistUser, BookTzo, BookAddr
@@ -130,8 +130,6 @@ getRequestHistR bid = do
 
 getRequestRescheduleR :: BookId -> Handler Html
 getRequestRescheduleR bid = do
-    tzo <- (minutesToTimeZone <$>) <$> runInputGet ( iopt intField "tzo" )
-    tz <- runInputGet ( iopt textField "tz" )
     book <- runDB $ selectOne $ do
         x <- from $ table @Book
         where_ $ x ^. BookId ==. val bid
@@ -155,13 +153,13 @@ formReschedule book extra = do
     (tzR,tzV) <- mreq textField FieldSettings
         { fsLabel = SomeMessage MsgTimeZone
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
-        , fsAttrs = [("class","mdc-text-field__input")]
+        , fsAttrs = [("class","mdc-text-field__input"),("readonly","readonly")]
         } (bookTz . entityVal <$> book)
 
     (tzoR,tzoV) <- mreq intField FieldSettings
         { fsLabel = SomeMessage MsgTimeZoneOffset
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
-        , fsAttrs = [("class","mdc-text-field__input")]
+        , fsAttrs = [("class","mdc-text-field__input"),("readonly","readonly")]
         } (timeZoneMinutes . bookTzo . entityVal <$> book)
 
     (timeR,timeV) <- mreq (futureTimeField dayR (minutesToTimeZone <$> tzoR)) FieldSettings
@@ -173,54 +171,14 @@ formReschedule book extra = do
     (addrR,addrV) <- mreq textareaField FieldSettings
         { fsLabel = SomeMessage MsgLocation
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
-        , fsAttrs = [("class","mdc-text-field__input")]
+        , fsAttrs = [("class","mdc-text-field__input"),("readonly","readonly")]
         } (bookAddr . entityVal <$> book)
 
-    let r = (,,,,) <$> dayR <*> timeR <*> addrR <*> (minutesToTimeZone <$> tzoR) <*> tzR
-
-    let w = [whamlet|
-#{extra}
-$forall (v,icon) <- [(dayV,"event"),(timeV,"schedule")]
-  <div.form-field>
-    <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--with-trailing-icon data-mdc-auto-init=MDCTextField
-      :isJust (fvErrors v):.mdc-text-field--invalid>
-      <span.mdc-text-field__ripple>
-      <span.mdc-floating-label>#{fvLabel v}
-      ^{fvInput v}
-      <button.mdc-icon-button.mdc-text-field__icon.mdc-text-field__icon--trailing.material-symbols-outlined
-        tabindex=0 role=button onclick="document.getElementById('#{fvId v}').showPicker()"
-        style="position:absolute;right:2px;background-color:inherit">
-        <span.mdc-icon-button__ripple>
-        <span.mdc-icon-button__focus-ring>
-        #{pack icon}
-      <div.mdc-line-ripple>
-    $maybe errs <- fvErrors v
-      <div.mdc-text-field-helper-line>
-        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
-          #{errs}
-$forall (v,icon) <- [(tzoV,"language"),(tzV,"language")]
-  <div.form-field>
-    <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--with-trailing-icon data-mdc-auto-init=MDCTextField
-      :isJust (fvErrors v):.mdc-text-field--invalid>
-      <span.mdc-text-field__ripple>
-      <span.mdc-floating-label>#{fvLabel v}
-      ^{fvInput v}
-      <button.mdc-icon-button.mdc-text-field__icon.mdc-text-field__icon--trailing.material-symbols-outlined
-        tabindex=0 role=button onclick="document.getElementById('#{fvId v}').showPicker()"
-        style="position:absolute;right:2px;background-color:inherit">
-        <span.mdc-icon-button__ripple>
-        <span.mdc-icon-button__focus-ring>
-        #{pack icon}
-      <div.mdc-line-ripple>
-    <div.mdc-text-field-helper-line>
-      $maybe errs <- fvErrors v
-        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
-          #{errs}
-      $nothing
-        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--persistent>
-          _{MsgMinutes}
-|]
-    return (r,w)
+    sectionTime <- newIdent
+    sectionLocation <- newIdent
+    return ( (,,,,) <$> dayR <*> timeR <*> addrR <*> (minutesToTimeZone <$> tzoR) <*> tzR
+           , $(widgetFile "requests/reschedule/form")
+           )
   where
 
       futureTimeField dayR tzR = checkM (futureTime dayR tzR) timeField
@@ -397,18 +355,13 @@ postRequestR :: BookId -> Handler Html
 postRequestR bid = do
     user <- maybeAuth
     book <- runDB $ selectOne $ do
-        x <- from $ table @Book
+        x :& o <- from $ table @Book `innerJoin` table @Offer
+            `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
         where_ $ x ^. BookId ==. val bid
-        return x
-    ((fr,fw),et) <- runFormPost $ formReschedule book
+        return (x,o)
+    ((fr,fw),et) <- runFormPost $ formReschedule (fst <$> book)
     case (fr,user) of
-      (FormSuccess (day,time,addr,tzo,tz), Just (Entity uid _)) -> do
-          book <- runDB $ selectOne $ do
-              x :& o <- from $ table @Book `innerJoin` table @Offer
-                  `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
-              where_ $ x ^. BookId ==. val bid
-              return (x,o)
-          
+      (FormSuccess (day,time,_,_,_), Just (Entity uid _)) -> do
           role <- runDB $ selectOne $ do
               r :& _ :& u :& s <- from $ table @Role
                   `innerJoin` table @Staff `on` (\(r :& e) -> r ^. RoleStaff ==. e ^. StaffId)
@@ -421,7 +374,7 @@ postRequestR bid = do
               return r
               
           case (book,role) of
-            (Just _,Just (Entity rid _)) -> do
+            (Just (Entity _ (Book _ _ _ _ _ addr tzo tz _),_),Just (Entity rid _)) -> do
                 runDB $ update $ \x -> do
                     set x [ BookRole =. just (val rid)
                           , BookDay =. val day
@@ -436,9 +389,14 @@ postRequestR bid = do
                 runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusAdjusted
                 redirect $ RequestR bid
 
-            _ -> do
+            (Nothing,_) -> do
                 addMessageI "warn" MsgEntityNotFound
                 redirect $ RequestR bid
+
+            (_,Nothing) -> do
+                addMessageI "warn" MsgMinutes
+                redirect $ RequestR bid
+                
       (FormSuccess _, Nothing) -> do
           app <- getYesod
           langs <- languages
@@ -472,7 +430,7 @@ getRequestR bid = do
             `leftJoin` table @Thumbnail `on` (\(_ :& _ :& s :& t) -> just (s ^. ServiceId) ==. t ?. ThumbnailService)
             `leftJoin` table @Role `on` (\(x :& _ :& _ :& _ :& r) -> x ^. BookRole ==. r ?. RoleId)
             `leftJoin` table @Staff `on` (\(_ :& _ :& _ :& _ :& r :& e) -> r ?. RoleStaff ==. e ?. StaffId)
-            `innerJoin` table @User `on` (\(x :& _ :& _ :& _ :& _ :& _ :& c) -> x ^. BookUser ==. c ^. UserId)
+            `innerJoin` table @User `on` (\(x :& _ :& _ :& _ :& _ :& _ :& c) -> x ^. BookCustomer ==. c ^. UserId)
         where_ $ x ^. BookId ==. val bid
         return (x,(o,s,t,r,e,c))
     msgs <- getMessages

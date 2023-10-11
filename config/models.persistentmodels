@@ -16,7 +16,7 @@ Hist
   status BookStatus
 
 Book
-  user UserId OnDeleteCascade
+  customer UserId OnDeleteCascade
   offer OfferId OnDeleteCascade
   role RoleId Maybe OnDeleteCascade
   day Day

@@ -166,9 +166,8 @@
                 <form method=get action=@{RequestRescheduleR bid} ##{formGetRequestReschedule}>
                 
                 $maybe _ <- rid
-                  <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--outlined
-                    type=submit name=tz form=#{formGetRequestReschedule}
-                    onclick="this.value = -(new Date().getTimezoneOffset())">
+                  <a.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--outlined
+                    href=@{RequestRescheduleR bid} role=button>
                     <span.mdc-button__ripple>
                     <span.mdc-button__focus-ring>
                     <span.mdc-button__label>_{MsgReschedule}

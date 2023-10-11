@@ -1,3 +1,6 @@
+InvalidBusinessTimeZone: Fuseau horaire professionnel non valide
+InvalidBusinessTimeZoneOffset: Décalage de fuseau horaire professionnel non valide
+InvalidBusinessAddress: Adresse professionnelle invalide
 PreviouslySelected: Précédemment sélectionné
 TimeZoneOffset: Décalage de fuseau horaire
 AddExpert: Ajouter un expert

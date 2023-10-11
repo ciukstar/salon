@@ -20,7 +20,8 @@
           <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
             #{errs}
 
-<details.mdc-list ##{detailsLocation} data-mdc-auto-init=MDCList :isJust (fvErrors tzoV):open
+<details.mdc-list ##{detailsLocation} data-mdc-auto-init=MDCList
+  :(isJust (fvErrors addrV) || isJust (fvErrors tzoV)) || isJust (fvErrors tzV):open
   ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
   <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
     <span.mdc-list-item__ripple>
@@ -32,8 +33,8 @@
       <i.expand.material-symbols-outlined>expand_more
 
   <div.form-field>
-    <div.mdc-text-field.mdc-text-field--textarea.mdc-text-field--filled data-mdc-auto-init=MDCTextField
-      :isJust (fvErrors addrV):.mdc-text-field--invalid>
+    <div.mdc-text-field.mdc-text-field--textarea.mdc-text-field--filled.mdc-text-field--disabled
+      :isJust (fvErrors addrV):.mdc-text-field--invalid data-mdc-auto-init=MDCTextField>
       <span.mdc-text-field__ripple>
       <span.mdc-floating-label>#{fvLabel addrV}
       <span.mdc-text-field__resizer>
@@ -45,7 +46,7 @@
           #{errs}
           
   <div.form-field>
-    <label.mdc-text-field.mdc-text-field--filled
+    <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--disabled
       :isJust (fvErrors tzV):.mdc-text-field--invalid data-mdc-auto-init=MDCTextField>
       <span.mdc-text-field__ripple>
       <span.mdc-floating-label>#{fvLabel tzV}
@@ -57,7 +58,7 @@
           #{errs}
         
   <div.form-field>
-    <label.mdc-text-field.mdc-text-field--filled
+    <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--disabled
       :isJust (fvErrors tzoV):.mdc-text-field--invalid data-mdc-auto-init=MDCTextField>
       <span.mdc-text-field__ripple>
       <span.mdc-floating-label>#{fvLabel tzoV}

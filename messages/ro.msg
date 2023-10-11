@@ -1,3 +1,6 @@
+InvalidBusinessTimeZone: Fus orar al afacerii nevalid
+InvalidBusinessTimeZoneOffset: Compensație nevalidă de fus orar al companiei
+InvalidBusinessAddress: Adresa companiei nevalidă
 PreviouslySelected: Selectate anterior
 TimeZoneOffset: Decalajul de fus orar
 AddExpert: Adaugă un expert
