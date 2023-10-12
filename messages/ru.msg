@@ -1,3 +1,5 @@
+OnlyEmployeesMaySeeRequests: Запросы могут видеть только сотрудники
+YouAreNotAnEmployeeOfFacility: Вы не сотрудник этого учреждения
 InvalidBusinessTimeZone: Неверный часовой пояс компании
 InvalidBusinessTimeZoneOffset: Неверное смещение часового пояса компании
 InvalidBusinessAddress: Неверный адрес компании

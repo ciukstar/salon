@@ -9,7 +9,7 @@
     flex-direction: column
     .mdc-text-field
       input.mdc-text-field__input
-        caret-color: var(--mdc-theme-text-primary-on-background)
+        caret-color: var(--theme-accent)
 
 ##{detailsLocation}
   div.form-field
@@ -20,7 +20,10 @@
       text-transform: lowercase
     .mdc-text-field
       input.mdc-text-field__input
-        caret-color: var(--mdc-theme-text-primary-on-background)
+        caret-color: var(--theme-accent)
+    textarea[readonly], input[readonly]
+      pointer-events: none
+      color: var(--mdc-theme-text-disabled-on-light)
 
 ##{detailsStaff}, ##{detailsServices}
   div.mdc-list-item__primary-text

@@ -11,4 +11,4 @@
     border-color: var(--theme-accent,#018786)
 .mdc-text-field:not(.mdc-text-field--disabled)
   .mdc-text-field__input
-    caret-color: var(--theme-accent,#018786)
+    caret-color: var(--theme-accent)

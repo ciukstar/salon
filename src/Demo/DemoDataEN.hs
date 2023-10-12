@@ -103,7 +103,7 @@ populateEN = do
   </dl>
 </section>
 <p>
-  <iframe width="100%" height="400px" loding="lazy" title="Salon" style="border:none" src='https://api.mapbox.com/styles/v1/mapbox/streets-v12.html?title=false&zoomwheel=false&access_token=pk.eyJ1IjoiY2l1a3N0YXIiLCJhIjoiY2o1enNibDNsMGNrNDJ3dDhxeTJuc3luMiJ9.Jgc5GdYUMbYwGq-zRWtzfw'></iframe>
+  <iframe width="100%" height="400px" loding="lazy" title="Salon" style="border:none" src="https://api.mapbox.com/styles/v1/mapbox/streets-v12.html?title=false&zoomwheel=false&access_token=pk.eyJ1IjoiY2l1a3N0YXIiLCJhIjoiY2o1enNibDNsMGNrNDJ3dDhxeTJuc3luMiJ9.Jgc5GdYUMbYwGq-zRWtzfw#15/51.474680/-0.200540"></iframe>
 </p>
 |]
                        }
@@ -251,14 +251,14 @@ We will continue to offer the latest treatments, the most innovative techniques 
                         , userPassword = decodeUtf8 pass5
                         , userAdmin = False
                         , userFullName = Just "Chris Wilson"
-                        , userEmail = Just "cwilson@mail.en"
+                        , userEmail = Just "cwilson@mail.uk"
                         }
 
     e5 <- insert $ Staff { staffName = "Chris Wilson"
                          , staffStatus = EmplStatusEmployed
                          , staffPhone = Just "0491 570 006"
                          , staffMobile = Just "0491 570 156"
-                         , staffEmail = Just "cwilson@mail.en"
+                         , staffEmail = Just "cwilson@mail.uk"
                          , staffUser = Just u5
                          }
 
@@ -404,9 +404,15 @@ We will continue to offer the latest treatments, the most innovative techniques 
 
     r111 <- insert $ Role { roleStaff = e1
                           , roleService = s11
-                          , roleName = "Makeup artist"
+                          , roleName = "Barber"
                           , roleRating = Just 5
                           }
+
+    insert_ $ Role { roleStaff = e2
+                   , roleService = s11
+                   , roleName = "Barber"
+                   , roleRating = Just 5
+                   }
 
     o111 <- insert $ Offer { offerService = s11
                            , offerName = "Price"
@@ -450,6 +456,18 @@ We will continue to offer the latest treatments, the most innovative techniques 
                    , roleService = s12
                    , roleName = "Hairdresser"
                    , roleRating = Just 3
+                   }
+
+    insert_ $ Role { roleStaff = e3
+                   , roleService = s12
+                   , roleName = "Hairdresser"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e4
+                   , roleService = s12
+                   , roleName = "Hairdresser"
+                   , roleRating = Just 5
                    }
 
     s13 <- insert $ Service { serviceName = "Women hair cuts (below shoulders)"
@@ -569,9 +587,21 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
+    insert_ $ Role { roleStaff = e3
+                   , roleService = s1511
+                   , roleName = "Stylist"
+                   , roleRating = Just 4
+                   }
+
+    insert_ $ Role { roleStaff = e4
+                   , roleService = s1511
+                   , roleName = "Stylist"
+                   , roleRating = Just 4
+                   }
+
     insert_ $ Role { roleStaff = e5
                    , roleService = s1511
-                   , roleName = "Barber"
+                   , roleName = "Stylist"
                    , roleRating = Just 4
                    }
 
@@ -590,6 +620,24 @@ We will continue to offer the latest treatments, the most innovative techniques 
                     , offerSuffix = Just " & up"
                     , offerDescr = Nothing
                     }
+
+    insert_ $ Role { roleStaff = e4
+                   , roleService = s1512
+                   , roleName = "Stylist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e5
+                   , roleService = s1512
+                   , roleName = "Stylist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e6
+                   , roleService = s1512
+                   , roleName = "Stylist"
+                   , roleRating = Just 5
+                   }
 
     insert_ $ Thumbnail { thumbnailService = s1512
                         , thumbnailPhoto = $(embedFile "static/img/before-perm-conditioner.avif")
@@ -642,6 +690,18 @@ We will continue to offer the latest treatments, the most innovative techniques 
                    , roleRating = Just 5
                    }
 
+    insert_ $ Role { roleStaff = e9
+                   , roleService = s1521
+                   , roleName = "Colourist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e10
+                   , roleService = s1521
+                   , roleName = "Colourist"
+                   , roleRating = Just 5
+                   }
+
     s1522 <- insert $ Service { serviceName = "Partial"
                               , servicePublished = True
                               , serviceOverview = Just "Partial"
@@ -664,6 +724,18 @@ We will continue to offer the latest treatments, the most innovative techniques 
                         , thumbnailAttribution = Just [shamlet|
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
+
+    insert_ $ Role { roleStaff = e10
+                   , roleService = s1522
+                   , roleName = "Colourist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e11
+                   , roleService = s1522
+                   , roleName = "Colourist"
+                   , roleRating = Just 5
+                   }
 
     s1523 <- insert $ Service { serviceName = "Permanent Color"
                               , servicePublished = True
@@ -688,13 +760,38 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
+    insert_ $ Role { roleStaff = e9
+                   , roleService = s1523
+                   , roleName = "Colourist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e10
+                   , roleService = s1523
+                   , roleName = "Colourist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e11
+                   , roleService = s1523
+                   , roleName = "Colourist"
+                   , roleRating = Just 5
+                   }
+
     s153 <- insert $ Service { serviceName = "Perm"
                              , servicePublished = True
-                             , serviceOverview = Just "Perm"
-                             , serviceDescr = Just "Perm"
+                             , serviceOverview = Just "A permanent wave"
+                             , serviceDescr = Just "Perm is a great way to give you a new look"
                              , serviceDuration = duration "00:45"
                              , serviceGroup = Just s15
                              }
+
+    insert_ $ Thumbnail { thumbnailService = s153
+                        , thumbnailPhoto = $(embedFile "static/img/perm.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
 
     s1531 <- insert $ Service { serviceName = "Full Perm"
                               , servicePublished = True
@@ -719,6 +816,24 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
+    insert_ $ Role { roleStaff = e1
+                   , roleService = s1531
+                   , roleName = "Stylist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e2
+                   , roleService = s1531
+                   , roleName = "Stylist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e3
+                   , roleService = s1531
+                   , roleName = "Stylist"
+                   , roleRating = Just 5
+                   }
+
     s1532 <- insert $ Service { serviceName = "Acid Repair Perm"
                               , servicePublished = True
                               , serviceOverview = Just "Acid Repair Perm"
@@ -742,6 +857,24 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
+    insert_ $ Role { roleStaff = e3
+                   , roleService = s1532
+                   , roleName = "Stylist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e4
+                   , roleService = s1532
+                   , roleName = "Stylist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e5
+                   , roleService = s1532
+                   , roleName = "Stylist"
+                   , roleRating = Just 5
+                   }
+
     s1533 <- insert $ Service { serviceName = "Japanese Straightening Perm"
                               , servicePublished = True
                               , serviceOverview = Just "Japanese Straightening Perm"
@@ -764,6 +897,24 @@ We will continue to offer the latest treatments, the most innovative techniques 
                         , thumbnailAttribution = Just [shamlet|
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
+
+    insert_ $ Role { roleStaff = e5
+                   , roleService = s1533
+                   , roleName = "Stylist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e6
+                   , roleService = s1533
+                   , roleName = "Stylist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e7
+                   , roleService = s1533
+                   , roleName = "Stylist"
+                   , roleRating = Just 5
+                   }
 
     s2 <- insert $ Service { serviceName = "Facial Treatments"
                            , servicePublished = True
@@ -811,6 +962,18 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
+    insert_ $ Role { roleStaff = e8
+                   , roleService = s21
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e9
+                   , roleService = s21
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
     insert_ $ Role { roleStaff = e10
                    , roleService = s21
                    , roleName = "Esthetician"
@@ -848,6 +1011,24 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
+    insert_ $ Role { roleStaff = e6
+                   , roleService = s22
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e7
+                   , roleService = s22
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e8
+                   , roleService = s22
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
     s23 <- insert $ Service { serviceName = "Pampering Facial (90 min)"
                             , servicePublished = True
                             , serviceOverview = Just "Pampering Facial (90 min)"
@@ -878,6 +1059,30 @@ We will continue to offer the latest treatments, the most innovative techniques 
                         , thumbnailAttribution = Just [shamlet|
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
+
+    insert_ $ Role { roleStaff = e3
+                   , roleService = s23
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e4
+                   , roleService = s23
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e5
+                   , roleService = s23
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e6
+                   , roleService = s23
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
 
     s24 <- insert $ Service { serviceName = "Acne Treatment (120 min)"
                             , servicePublished = True
@@ -910,6 +1115,24 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
+    insert_ $ Role { roleStaff = e1
+                   , roleService = s24
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e2
+                   , roleService = s24
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e3
+                   , roleService = s24
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
     s25 <- insert $ Service { serviceName = "24k Gold Whitening Treatment"
                             , servicePublished = True
                             , serviceOverview = Just "24k Gold Whitening Treatment"
@@ -941,6 +1164,30 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
+    insert_ $ Role { roleStaff = e9
+                   , roleService = s25
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e10
+                   , roleService = s25
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e11
+                   , roleService = s25
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e1
+                   , roleService = s25
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
     s3 <- insert $ Service { serviceName = "Advanced Facial Treatments"
                            , servicePublished = True
                            , serviceOverview = Just "Advanced Facial Treatments"
@@ -951,6 +1198,64 @@ We will continue to offer the latest treatments, the most innovative techniques 
 
     insert_ $ Thumbnail { thumbnailService = s3
                         , thumbnailPhoto = $(embedFile "static/img/advanced-facial-treatments.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s31 <- insert $ Service { serviceName = "Milk Peel (90 min)"
+                            , servicePublished = True
+                            , serviceOverview = Just "Safe skin exfoliation"
+                            , serviceDescr = Just $ Textarea [st|
+<p>
+Milk Peel includes a natural extract from sour milk (lactic acid), papain (enzyme from papaya), salicylic acid (from natural plants), and a special penetration controller. Milk Peel provides a safe skin exfoliation process without the side effects phenol and TCA peels can cause.
+</p>
+<p>
+Milk Peeling Formula performs the following functions:
+</p>
+<ul>
+  <li>Generating maximum but gentle skin exfoliation.</li>
+  <li>Stimulating proliferation of fibroblasts to increase dermal collagen and elastin.</li>
+  <li>Normalizing skin cells and tissues.</li>
+</ul>
+<p>
+As a result, the milk peel is a powerful skin resurfacing process with substantial dermal effects. It has several skin benefits such as:
+</p>
+<ol>
+  <li>Removing wrinkles and visible fine lines on the skin.</li>
+  <li>Diminishing pimple or acne marks.</li>
+  <li>Reducing scars.</li>
+  <li>Smoothing depressed pits on the skin.</li>
+  <li>Decreasing stretch marks and birth marks.</li>
+  <li>Polishing the skin gently for facial renewal.</li>
+</ol>
+|]
+                            , serviceDuration = duration "01:30"
+                            , serviceGroup = Just s3
+                            }
+
+    insert_ $ Offer { offerService = s31
+                    , offerName = "Price"
+                    , offerPrice = 330
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e8
+                   , roleService = s31
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e9
+                   , roleService = s31
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s31
+                        , thumbnailPhoto = $(embedFile "static/img/milk-peel.avif")
                         , thumbnailMime = "image/avif"
                         , thumbnailAttribution = Just [shamlet|
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]

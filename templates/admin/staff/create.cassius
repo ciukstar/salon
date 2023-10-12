@@ -10,6 +10,8 @@ main
       margin-bottom: 1rem
       display: flex
       flex-direction: column
+      .mdc-text-field .mdc-text-field__input
+        caret-color: var(--theme-accent)
     div.form-actions
       display: flex
       flex-direction: row

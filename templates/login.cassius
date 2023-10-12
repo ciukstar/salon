@@ -12,7 +12,7 @@ main
       gap: 1rem
       .mdc-text-field
         input.mdc-text-field__input
-          caret-color: var(--mdc-theme-text-primary-on-background)
+          caret-color: var(--theme-accent)
       #btnLogin
         margin: 1rem 0
 

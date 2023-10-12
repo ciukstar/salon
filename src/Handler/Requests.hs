@@ -69,7 +69,7 @@ import Foundation
       , MsgFinishAppointmentConfirm, MsgDay, MsgTimeZone, MsgMinutes, MsgContinue
       , MsgAppointmentTimeIsInThePast, MsgAppointmentDayIsInThePast, MsgSave
       , MsgNoHistoryYet, MsgAdjusted, MsgLoginBanner, MsgNoAssigneeRequestApprove
-      , MsgNoAssigneeRequestReschedule, MsgTimeZoneOffset
+      , MsgNoAssigneeRequestReschedule, MsgTimeZoneOffset, MsgYouAreNotAnEmployeeOfFacility, MsgOnlyEmployeesMaySeeRequests
       )
     )
 
@@ -95,20 +95,29 @@ import Model
     , EntityField
       ( BookOffer, OfferId, OfferService, ServiceId, BookDay, BookTime
       , BookRole, RoleId, RoleStaff, StaffId, StaffUser, ContentsSection, BookId
-      , ThumbnailService, BookCustomer, UserId, BookStatus, ServiceName, ServiceDescr
-      , ServiceOverview, RoleName, OfferName, OfferPrefix, OfferSuffix, OfferDescr
-      , StaffName, StaffPhone, StaffMobile, StaffEmail, UserName, UserFullName
-      , UserEmail, BookTz, HistBook, HistLogtime, RoleService, HistUser, BookTzo, BookAddr
+      , ThumbnailService, BookCustomer, UserId, BookStatus, ServiceName
+      , ServiceDescr, ServiceOverview, RoleName, OfferName, OfferPrefix
+      , OfferSuffix, OfferDescr, StaffName, StaffPhone, StaffMobile, StaffEmail
+      , UserName, UserFullName, UserEmail, BookTz, HistBook, HistLogtime
+      , RoleService, HistUser, BookTzo, BookAddr
       )
     )
 
 import Menu (menu)
 import Handler.Contacts (section)
+import Control.Monad (unless)
 
 
 getRequestHistR :: BookId -> Handler Html
 getRequestHistR bid = do
     user <- maybeAuth
+    empl <- runDB $ selectOne $ do
+        x <- from $ table @Staff
+        where_ $ case user of
+          Nothing -> val False
+          Just (Entity uid _) -> x ^. StaffUser ==. just (val uid)
+        return x
+    unless (isJust empl) $ redirect RequestsR
     case user of
       Just _ -> do
           hist <- runDB $ select $ do
@@ -130,6 +139,14 @@ getRequestHistR bid = do
 
 getRequestRescheduleR :: BookId -> Handler Html
 getRequestRescheduleR bid = do
+    user <- maybeAuth
+    unless (isJust user) $ redirect RequestsR
+    empls <- runDB $ selectOne $ do
+        x <- from $ table @Staff
+        where_ $ case user of
+          Nothing -> val False
+          Just (Entity uid _) -> x ^. StaffUser ==. just (val uid)
+    unless (isJust empls) $ redirect RequestsR
     book <- runDB $ selectOne $ do
         x <- from $ table @Book
         where_ $ x ^. BookId ==. val bid
@@ -284,6 +301,12 @@ postRequestApproveR bid = do
 getRequestsSearchR :: Handler Html
 getRequestsSearchR = do
     user <- maybeAuth
+    empl <- runDB $ selectOne $ do
+        x <- from $ table @Staff
+        where_ $ case user of
+          Nothing -> val False
+          Just (Entity uid _) -> x ^. StaffUser ==. just (val uid)
+    unless (isJust empl) $ redirect RequestsR
     setUltDestCurrent
     msgs <- getMessages
     case user of
@@ -416,6 +439,14 @@ postRequestR bid = do
 getRequestR :: BookId -> Handler Html
 getRequestR bid = do
     stati <- reqGetParams <$> getRequest
+    user <- maybeAuth
+    unless (isJust user) $ redirect (RequestsR, stati)
+    empl <- runDB $ selectOne $ do
+        x <- from $ table @Staff
+        where_ $ case user of
+          Nothing -> val False
+          Just (Entity uid _) -> x ^. StaffUser ==. just (val uid)
+    unless (isJust empl) $ redirect (RequestsR, stati)
     app <- getYesod
     langs <- languages
     location <- runDB $ selectOne $ do
@@ -474,34 +505,40 @@ getRequestsR = do
           owners <- filter ((== "assignee") . fst) . reqGetParams <$> getRequest
           let assignees = mapMaybe (readMaybe . unpack . snd) owners
           dlgAssignee <- newIdent
-          requests <- runDB $ select $ do
-              x :& _ :& s :& _ :& e <- from $ table @Book
-                  `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
-                  `innerJoin` table @Service `on` (\(_ :& o :& s) -> o ^. OfferService ==. s ^. ServiceId)
-                  `leftJoin` table @Role `on` (\(x :& _ :& _ :& r) -> x ^. BookRole ==. r ?. RoleId)
-                  `leftJoin` table @Staff `on` (\(_ :& _ :& _ :& r :& e) -> r ?. RoleStaff ==. e ?. StaffId)
+          empl <- runDB $ selectOne $ do
+              x <- from $ table @Staff
+              where_ $ x ^. StaffUser ==. just (val uid)
+              return x
+          requests <- case empl of
+            Nothing -> return []
+            Just _ -> runDB $ select $ do
+                x :& _ :& s :& _ :& e <- from $ table @Book
+                    `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
+                    `innerJoin` table @Service `on` (\(_ :& o :& s) -> o ^. OfferService ==. s ^. ServiceId)
+                    `leftJoin` table @Role `on` (\(x :& _ :& _ :& r) -> x ^. BookRole ==. r ?. RoleId)
+                    `leftJoin` table @Staff `on` (\(_ :& _ :& _ :& r :& e) -> r ?. RoleStaff ==. e ?. StaffId)
 
-              case states of
-                [] -> return ()
-                xs -> where_ $ x ^. BookStatus `in_` valList xs
+                case states of
+                  [] -> return ()
+                  xs -> where_ $ x ^. BookStatus `in_` valList xs
 
-              let ors = [ ( AssigneesMe `elem` assignees
-                          , e ?. StaffUser ==. just (just (val uid))
-                          )
-                        , ( AssigneesNone `elem` assignees
-                          , isNothing_ $ e ?. StaffUser
-                          )
-                        , ( AssigneesOthers `elem` assignees
-                          , not_ (isNothing_ $ e ?. StaffUser) &&. not_ (e ?. StaffUser ==. just (just (val uid)))
-                          )
-                        ]
+                let ors = [ ( AssigneesMe `elem` assignees
+                            , e ?. StaffUser ==. just (just (val uid))
+                            )
+                          , ( AssigneesNone `elem` assignees
+                            , isNothing_ $ e ?. StaffUser
+                            )
+                          , ( AssigneesOthers `elem` assignees
+                            , not_ (isNothing_ $ e ?. StaffUser) &&. not_ (e ?. StaffUser ==. just (just (val uid)))
+                            )
+                          ]
 
-              case snd <$> filter fst ors of
-                [] -> return ()
-                xs -> where_ $ foldr (||.) (val False) xs
+                case snd <$> filter fst ors of
+                  [] -> return ()
+                  xs -> where_ $ foldr (||.) (val False) xs
 
-              orderBy [desc (x ^. BookDay), desc (x ^. BookTime)]
-              return (x,s)
+                orderBy [desc (x ^. BookDay), desc (x ^. BookTime)]
+                return (x,s)
           defaultLayout $ do
               setTitleI MsgRequests
               $(widgetFile "requests/requests")

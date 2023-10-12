@@ -21,7 +21,7 @@
             #{errs}
 
 <details.mdc-list ##{detailsLocation} data-mdc-auto-init=MDCList
-  :(isJust (fvErrors addrV) || isJust (fvErrors tzoV)) || isJust (fvErrors tzV):open
+  :any (isJust . fvErrors) [addrV,tzoV,tzV]:open
   ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
   <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
     <span.mdc-list-item__ripple>

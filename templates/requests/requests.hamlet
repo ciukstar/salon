@@ -30,59 +30,76 @@
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
 
-  <div role=toolbar>
-    <button.mdc-button.mdc-button--outlined.mdc-button--icon-trailing type=button
-      :not (null states):style="color:var(--theme-accent)"
-      onclick="document.getElementById('#{dlgStatusList}').MDCDialog.open()">
-      <span.mdc-button__ripple>
-      <span.mdc-button__focus-ring>
-      <span.mdc-button__label>_{MsgStatus}
-      $if null states
-        <i.mdc-button__icon.material-symbols-outlined>arrow_drop_down
-      $else
-        <i.mdc-button__icon.material-symbols-outlined>counter_#{show (length states)}
-      
-    <button.mdc-button.mdc-button--outlined.mdc-button--icon-trailing type=button
-      :not (null assignees):style="color:var(--theme-accent)"
-      onclick="document.getElementById('#{dlgAssignee}').MDCDialog.open()">
-      <span.mdc-button__ripple>
-      <span.mdc-button__focus-ring>
-      <span.mdc-button__label>_{MsgAssignee}
-      $if null assignees
-        <i.mdc-button__icon.material-symbols-outlined>arrow_drop_down
-      $else
-        <i.mdc-button__icon.material-symbols-outlined>counter_#{show (length assignees)}
+  $maybe _ <- empl
+    <div role=toolbar>
+      <button.mdc-button.mdc-button--outlined.mdc-button--icon-trailing type=button
+        :not (null states):style="color:var(--theme-accent)"
+        onclick="document.getElementById('#{dlgStatusList}').MDCDialog.open()">
+        <span.mdc-button__ripple>
+        <span.mdc-button__focus-ring>
+        <span.mdc-button__label>_{MsgStatus}
+        $if null states
+          <i.mdc-button__icon.material-symbols-outlined>arrow_drop_down
+        $else
+          <i.mdc-button__icon.material-symbols-outlined>counter_#{show (length states)}
+
+      <button.mdc-button.mdc-button--outlined.mdc-button--icon-trailing type=button
+        :not (null assignees):style="color:var(--theme-accent)"
+        onclick="document.getElementById('#{dlgAssignee}').MDCDialog.open()">
+        <span.mdc-button__ripple>
+        <span.mdc-button__focus-ring>
+        <span.mdc-button__label>_{MsgAssignee}
+        $if null assignees
+          <i.mdc-button__icon.material-symbols-outlined>arrow_drop_down
+        $else
+          <i.mdc-button__icon.material-symbols-outlined>counter_#{show (length assignees)}
   
-  $if null requests
+    $if null requests
+      <figure style="text-align:center">
+        <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
+        <figcaption>
+          <p>_{MsgNoPendingRequestsYet}.
+          <a.mdc-button.mdc-button--outlined role=button 
+            href=@?{(RequestsR,[("status",pack $ show BookStatusRequest),("assignee",pack $ show AssigneesMe)])}>
+            <span.mdc-button__ripple>
+            <span.mdc-button__focus-ring>
+            <span.mdc-button__label>_{MsgShowAll}
+    $else
+      <nav.mdc-list data-mdc-auto-init=MDCList>
+        $forall (Entity bid (Book _ _ _ date time _ _ _ status),Entity _ (Service sname _ _ _ _ _)) <- requests
+          $with (color,icon,msg) <- resolve status
+            <a.mdc-list-item href=@?{(RequestR bid,stati ++ owners)}
+              :mbid == Just bid:.mdc-list-item--activated
+              .mdc-list-item--with-leading-icon.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon>
+              <span.mdc-list-item__ripple>
+              <span.mdc-list-item__start>
+                <i.material-symbols-outlined style="color:#{color}" title=_{msg}>#{icon}                
+              <span.mdc-list-item__content>
+                <div.appointment-time.mdc-list-item__primary-text>
+                  #{show date} #{show time}
+                <div.mdc-list-item__secondary-text>
+                  #{sname}
+                <div.mdc-list-item__secondary-text>
+                  _{msg}
+              <span.mdc-list-item__end>
+                <i.material-symbols-outlined>arrow_forward_ios
+            <div.mdc-list-divider role=separator>
+  $nothing
     <figure style="text-align:center">
       <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
       <figcaption>
-        <p>_{MsgNoPendingRequestsYet}.
-        <a.mdc-button.mdc-button--outlined role=button 
-          href=@?{(RequestsR,[("status",pack $ show BookStatusRequest),("assignee",pack $ show AssigneesMe)])}>
+        <p>
+          _{MsgNoRequestsFound}.
+          <div>
+            <small style="color:var(--mdc-theme-text-hint-on-light)">
+              _{MsgYouAreNotAnEmployeeOfFacility}.
+          <div>
+            <small style="color:var(--mdc-theme-text-hint-on-light)">
+              _{MsgOnlyEmployeesMaySeeRequests}.
+        <a.mdc-button.mdc-button--outlined role=button href=@{AuthR LoginR}>
           <span.mdc-button__ripple>
           <span.mdc-button__focus-ring>
-          <span.mdc-button__label>_{MsgShowAll}
-  $else
-    <nav.mdc-list data-mdc-auto-init=MDCList>
-      $forall (Entity bid (Book _ _ _ date time _ _ _ status),Entity _ (Service sname _ _ _ _ _)) <- requests
-        $with (color,icon,msg) <- resolve status
-          <a.mdc-list-item href=@?{(RequestR bid,stati ++ owners)}
-            :mbid == Just bid:.mdc-list-item--activated
-            .mdc-list-item--with-leading-icon.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon>
-            <span.mdc-list-item__ripple>
-            <span.mdc-list-item__start>
-              <i.material-symbols-outlined style="color:#{color}" title=_{msg}>#{icon}                
-            <span.mdc-list-item__content>
-              <div.appointment-time.mdc-list-item__primary-text>
-                #{show date} #{show time}
-              <div.mdc-list-item__secondary-text>
-                #{sname}
-              <div.mdc-list-item__secondary-text>
-                _{msg}
-            <span.mdc-list-item__end>
-              <i.material-symbols-outlined>arrow_forward_ios
-          <div.mdc-list-divider role=separator>
+          <span.mdc-button__label>_{MsgLogin}
 
 $forall (_,msg) <- msgs
   <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>

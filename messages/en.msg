@@ -1,3 +1,5 @@
+OnlyEmployeesMaySeeRequests: Only employees may see requests
+YouAreNotAnEmployeeOfFacility: You are not an employee of this facility 
 InvalidBusinessTimeZone: Invalid business time zone
 InvalidBusinessTimeZoneOffset: Invalid business time zone offset
 InvalidBusinessAddress: Invalid business address

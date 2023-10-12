@@ -5,7 +5,7 @@ form
     flex-direction: column
     margin-bottom: 1rem
     .mdc-text-field__input
-      caret-color: var(---mdc-theme-text-primary-on-light)
+      caret-color: var(--theme-accent)
   div.form-actions
     display: flex
     flex-direction: row

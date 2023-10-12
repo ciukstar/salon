@@ -16,7 +16,7 @@ main
       flex-direction: column
       .mdc-text-field
         input.mdc-text-field__input
-          caret-color: var(--mdc-theme-text-primary-on-background)
+          caret-color: var(--theme-accent)
     div.actions
       display: flex
       flex-direction: row

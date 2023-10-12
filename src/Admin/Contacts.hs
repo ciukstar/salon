@@ -49,7 +49,7 @@ import Database.Esqueleto.Experimental
     ( selectOne, from, table, where_, val
     , (^.), (==.)
     )
-    
+
 import Model
     ( ContentsId, Contents (Contents, contentsContent)
     , EntityField (ContentsSection)
@@ -164,7 +164,7 @@ formContacts c extra = do
               x <- runDB $ selectOne $ do
                   y <- from $ table @Contents
                   where_ $ y ^. ContentsSection ==. val section
-                  return y 
+                  return y
               case x of
                 Just _ -> return $ Left MsgAlreadyExists
                 Nothing -> return $ Right text

@@ -1,3 +1,5 @@
+OnlyEmployeesMaySeeRequests: Seuls les employés peuvent voir les demandes
+YouAreNotAnEmployeeOfFacility: Vous n'êtes pas un employé de cet établissement
 InvalidBusinessTimeZone: Fuseau horaire professionnel non valide
 InvalidBusinessTimeZoneOffset: Décalage de fuseau horaire professionnel non valide
 InvalidBusinessAddress: Adresse professionnelle invalide

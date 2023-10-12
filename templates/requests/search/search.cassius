@@ -4,7 +4,7 @@ header
     width: 100%
     border-radius: 0
     input[type=search]
-      caret-color: var(--mdc-theme-on-background)
+      caret-color: var(--theme-accent)
     .mdc-line-ripple.mdc-line-ripple--active::before
       border-bottom-color: var(--theme-accent)
 main
