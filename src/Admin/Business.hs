@@ -43,6 +43,7 @@ import Foundation
       , MsgYesDelete, MsgDeleteAreYouSure, MsgPleaseConfirm, MsgRecordEdited
       , MsgRecordDeleted, MsgBusinessAlreadyExists, MsgTimeZoneOffset, MsgTimeZone
       , MsgMinutes, MsgLogin, MsgUserProfile, MsgNavigationMenu, MsgDel, MsgEdit
+      , MsgBack
       )
     )
 
@@ -142,6 +143,8 @@ getBusinessR = do
     business <- runDB $ selectOne $ from $ table @Business
     setUltDestCurrent
     msgs <- getMessages
+    dlgBusinessDelete <- newIdent
+    formBusinessDelete <- newIdent
     defaultLayout $ do
         setTitleI MsgBusiness
         $(widgetFile "admin/business/business")

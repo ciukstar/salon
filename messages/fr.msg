@@ -1,3 +1,4 @@
+Back: Retour
 Close: Fermer
 Edit: Modifier
 Del: Supprimer
@@ -145,6 +146,7 @@ Select: Sélectionner
 Status: Statut
 NoStaffMembersFound: Aucun membre du personnel trouvé
 Search: Recherche
+UnregisterAsUser: Se désinscrire en tant qu'utilisateur
 UnregisterAreYouSure: Voulez-vous vraiment désinscrire l'utilisateur ?
 RegisterAsUser: S'inscrire en tant qu'utilisateur
 PasswordChanged: Mot de passe changé

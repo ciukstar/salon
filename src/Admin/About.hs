@@ -43,7 +43,7 @@ import Foundation
     , Route (AdminR, AuthR, PhotoPlaceholderR, AccountPhotoR, ProfileR)
     , AdminR (AdmAboutCreateR, AdmAboutR, AdmAboutEditR, AdmAboutDeleteR)
     , AppMessage
-      ( MsgAboutUs, MsgPhoto, MsgNoContentYet, MsgDel
+      ( MsgAboutUs, MsgPhoto, MsgNoContentYet, MsgDel, MsgBack
       , MsgContent, MsgCancel, MsgSave, MsgRecordAdded, MsgAlreadyExists
       , MsgRecordEdited, MsgYesDelete, MsgPleaseConfirm, MsgDeleteAreYouSure
       , MsgRecordDeleted, MsgNavigationMenu, MsgLogin, MsgUserProfile, MsgEdit

@@ -44,7 +44,7 @@ import Foundation
     , Route (AccountPhotoR, HomeR, AccountR, PhotoPlaceholderR, AuthR)
     , AppMessage
       ( MsgAccount, MsgCancel, MsgUsername, MsgPassword
-      , MsgPhoto, MsgFullName, MsgEmail, MsgSignUp
+      , MsgPhoto, MsgFullName, MsgEmail, MsgSignUp, MsgBack
       , MsgConfirmPassword, MsgYouMustEnterTwoValues
       , MsgPasswordsDoNotMatch, MsgRegistration, MsgUserProfile
       , MsgLogout, MsgLogin, MsgLoginToSeeYourProfile

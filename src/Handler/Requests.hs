@@ -56,7 +56,7 @@ import Foundation
       )
     , AdminR (AdmStaffPhotoR)
     , AppMessage
-      ( MsgRequests, MsgPhoto, MsgLogin, MsgSymbolHour
+      ( MsgRequests, MsgPhoto, MsgLogin, MsgSymbolHour, MsgBack
       , MsgSymbolMinute, MsgAwaitingApproval, MsgApproved, MsgCancelled
       , MsgPaid, MsgLoginToSeeTheRequests, MsgRequest, MsgStatus, MsgAssignee
       , MsgPleaseConfirm, MsgHistory, MsgReschedule, MsgMeetingLocation

@@ -81,7 +81,7 @@ import Foundation
       , AdmExpertDeleteR
       )
     , AppMessage
-      ( MsgServices, MsgPhoto, MsgTheName, MsgAttribution
+      ( MsgServices, MsgPhoto, MsgTheName, MsgAttribution, MsgBack
       , MsgPrice, MsgDescription, MsgRecordEdited, MsgChoosePhoto
       , MsgService, MsgSave, MsgCancel, MsgRecordAdded, MsgThumbnail
       , MsgSubservices, MsgAddService, MsgAddSubservice, MsgNoServicesYet
@@ -93,7 +93,7 @@ import Foundation
       , MsgInvalidDurationHourMinute, MsgSymbolHour, MsgSymbolMinute
       , MsgOffer, MsgExperts, MsgNoExpertsYet, MsgAddExpert, MsgExpert
       , MsgValueNotInRange, MsgExpertAlreadyInTheList, MsgRating, MsgEmployee
-      , MsgRole, MsgLogin, MsgUserProfile, MsgNavigationMenu
+      , MsgRole, MsgLogin, MsgUserProfile, MsgNavigationMenu, MsgEdit, MsgDel
       )
     )
 
@@ -354,6 +354,7 @@ getAdmPriceR pid sids = do
         where_ $ x ^. OfferId ==. val pid
         return x
     msgs <- getMessages
+    dlgDeleteOffer <- newIdent
     defaultLayout $ do
         setTitleI MsgPrice
         $(widgetFile "admin/services/offer/offer")

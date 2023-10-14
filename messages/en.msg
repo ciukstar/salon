@@ -1,3 +1,4 @@
+Back: Back
 Close: Close
 Edit: Edit
 Del: Delete
@@ -145,6 +146,7 @@ Select: Select
 Status: Status
 NoStaffMembersFound: No staff members found
 Search: Search
+UnregisterAsUser: Unregister as user
 UnregisterAreYouSure: Are you sure you want to unregister user?
 RegisterAsUser: Register as user
 PasswordChanged: Password changed

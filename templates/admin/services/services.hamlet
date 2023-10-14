@@ -11,7 +11,7 @@ $if null sids
           <i.material-symbols-outlined>menu
       $else
         $with sid <- pack $ show $ fromSqlKey $ last sids
-          <a.mdc-top-app-bar__navigation-icon.mdc-icon-button 
+          <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
             href=@?{(AdminR $ AdmServicesR (Services (init sids)),[("sid",sid),("y",y),("o","subservices")])}>
             <span.mdc-icon-button__ripple>
             <span.mdc-icon-button__focus-ring>
@@ -39,12 +39,13 @@ $if null sids
             <span.mdc-icon-button__focus-ring>
             <i.material-symbols-outlined>login
       $else
-        <button.mdc-top-app-bar__action-item.mdc-icon-button type=button ##{btnDelete}
+        <button.mdc-top-app-bar__action-item.mdc-icon-button type=button ##{btnDelete} title=_{MsgDel}
           onclick="document.getElementById('#{dlgDelete}').MDCDialog.open()">
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>delete
-        <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{AdminR $ AdmServiceEditFormR (Services sids)}>
+        <a.mdc-top-app-bar__action-item.mdc-icon-button role=button title=_{MsgEdit}
+          href=@{AdminR $ AdmServiceEditFormR (Services sids)}>
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>edit

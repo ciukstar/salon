@@ -47,7 +47,7 @@ import Foundation
     , Route (ProfileR, AdminR, AuthR, PhotoPlaceholderR, AccountPhotoR, StaticR)
     , AdminR (BrandR, BrandCreateR, BrandEditR, BrandDeleteR, BrandMarkR, BrandIcoR)
     , AppMessage
-      ( MsgBrand, MsgYesDelete, MsgPleaseConfirm, MsgPhoto
+      ( MsgBrand, MsgYesDelete, MsgPleaseConfirm, MsgPhoto, MsgBack
       , MsgDeleteAreYouSure, MsgSave, MsgCancel, MsgBrandMark
       , MsgNoBrandYet, MsgBrandName, MsgBrandStrapline, MsgFavicon, MsgMore
       , MsgRecordAdded, MsgRecordEdited, MsgRecordDeleted, MsgNavigationMenu

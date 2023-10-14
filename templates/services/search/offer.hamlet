@@ -2,7 +2,7 @@
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
       $with stati <- catMaybes (((qs ++ cs) ++ ys) ++ [Just ("oid",pack $ show $ fromSqlKey oid)])
-        <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button
+        <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
           href=@?{(ServiceSearchOffersR (Services (init sids)),stati)}>
           <span.mdc-icon-button__ripple>
           <spam.mdc-icon-button__focus-ring>

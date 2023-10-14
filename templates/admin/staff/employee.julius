@@ -2,22 +2,6 @@
 window.scroll(0,#{fromMaybe "0" scrollY});
 window.mdc.autoInit();
 
-document.getElementById('detailsRoles').addEventListener('toggle',function (e) {
-  if (this.open) {
-    document.getElementById('expanDetailsIcon').textContent = 'expand_less';
-  } else {
-    document.getElementById('expanDetailsIcon').textContent = 'expand_more';
-  }
-});
-
-document.getElementById('btnEmplDelete').addEventListener('click',function (x) {
-  document.getElementById('dlgEmplDelete').MDCDialog.open();
-});
-
-document.getElementById('btnEmplDeleteCancel').addEventListener('click',function (x) {
-  document.getElementById('dlgEmplDelete').MDCDialog.close();
-});
-
 Array.from(
   document.querySelectorAll('aside.mdc-snackbar')
 ).map(x => x.MDCSnackbar).forEach(function (x) { x.open(); });

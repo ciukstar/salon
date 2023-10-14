@@ -56,7 +56,7 @@ import Foundation
       , ServiceSearchOffersR, OfferSearchR
       )
     , AppMessage
-      ( MsgServices, MsgPhoto, MsgThumbnail, MsgNoServicesYet
+      ( MsgServices, MsgPhoto, MsgThumbnail, MsgNoServicesYet, MsgBack
       , MsgBookAppointment, MsgOffers, MsgSearch, MsgSelect, MsgCancel
       , MsgCategories, MsgNoServicesFound, MsgCategories, MsgNoOffersYet
       , MsgCategory, MsgService, MsgDescription, MsgOffer, MsgLogin, MsgUserProfile

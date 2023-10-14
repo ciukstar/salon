@@ -1,7 +1,8 @@
 <header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=@{AdminR $ AdmEmplR eid}>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
+        href=@{AdminR $ AdmEmplR eid}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back

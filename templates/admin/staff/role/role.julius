@@ -1,10 +1,1 @@
 
-window.mdc.autoInit();
-
-document.getElementById('btnRoleDelete').addEventListener('click',function (e) {
-  document.getElementById('dlgRoleDelete').MDCDialog.open();
-});
-
-document.getElementById('btnRoleDeleteCancel').addEventListener('click',function (e) {
-  document.getElementById('dlgRoleDelete').MDCDialog.close();
-});

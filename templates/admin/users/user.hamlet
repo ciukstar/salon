@@ -1,7 +1,7 @@
 <header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=@{AdminR UsersR}>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=@{AdminR UsersR} role=button title=_{MsgBack}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
@@ -12,25 +12,25 @@
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>lock_reset
-      <button.mdc-icon-button.mdc-theme--text-primary-on-light type=button #btnUserDelete
-        onclick="document.getElementById('dlgUserDelete').MDCDialog.open()">
+      <button.mdc-icon-button.mdc-theme--text-primary-on-light type=button title=_{MsgDel}
+        onclick="document.getElementById('#{dlgUserDelete}').MDCDialog.open()">
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>delete
-      <a.mdc-icon-button.mdc-theme--text-primary-on-light href=@{AdminR $ UserEditFormR uid} role=button>
+      <a.mdc-icon-button.mdc-theme--text-primary-on-light role=button title=_{MsgEdit}
+        href=@{AdminR $ UserEditFormR uid}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>edit
 
-<div.mdc-dialog data-mdc-auto-init=MDCDialog #dlgUserDelete>
+<div.mdc-dialog data-mdc-auto-init=MDCDialog ##{dlgUserDelete}>
   <div.mdc-dialog__container>
     <div.mdc-dialog__surface role=alertdialog tabindex=-1>
       <h4.mdc-dialog__title>_{MsgPleaseConfirm}
       <div.mdc-dialog__content>
         _{MsgDeleteAreYouSure}
       <div.mdc-dialog__actions>
-        <button.mdc-button type=button #btnUserDeleteCancel
-          onclick="document.getElementById('dlgUserDelete').MDCDialog.close()">
+        <button.mdc-button type=button data-mdc-dialog-action=close>
           <span.mdc-button__ripple>
           <span.mdc-button__label>_{MsgCancel}
         <form method=post action=@{AdminR $ UserDeleteR uid}>

@@ -1,7 +1,7 @@
 <header.mdc-top-app-bar.mdc-top-app-bar--fixed mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
         href=@?{(ServicesR,catMaybes ((open ++ LS.head ys) ++ [Just ("sid",pack $ show $ fromSqlKey sid)]))}>
         <span.mdc-icon-button__ripple>
         <spam.mdc-icon-button__focus-ring>

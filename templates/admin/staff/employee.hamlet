@@ -1,7 +1,7 @@
 <header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
         href=@?{(AdminR AdmStaffR,state)}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
@@ -10,21 +10,20 @@
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
       $maybe (Entity eid _, user) <- empl
         $maybe Entity uid _ <- user
-          <button.mdc-icon-button.mdc-theme--text-primary-on-light type=button
-            onclick="document.getElementById('dlgUnregEmplUser').MDCDialog.open()">
+          <button.mdc-icon-button.mdc-theme--text-primary-on-light type=button title=_{MsgUnregisterAsUser}
+            onclick="document.getElementById('#{dlgUnregEmplUser}').MDCDialog.open()">
             <span.mdc-icon-button__ripple>
             <span.mdc-icon-button__focus-ring>
             <i.material-symbols-outlined>person_cancel
 
-          <div.mdc-dialog data-mdc-auto-init=MDCDialog #dlgUnregEmplUser>
+          <div.mdc-dialog data-mdc-auto-init=MDCDialog ##{dlgUnregEmplUser}>
             <div.mdc-dialog__container>
               <div.mdc-dialog__surface role=alertdialog tabindex=-1>
                 <h4.mdc-dialog__title>_{MsgPleaseConfirm}
                 <div.mdc-dialog__content>
                   _{MsgUnregisterAreYouSure}
                 <div.mdc-dialog__actions>
-                  <button.mdc-button type=button 
-                    onclick="document.getElementById('dlgUnregEmplUser').MDCDialog.close()">
+                  <button.mdc-button type=button data-mdc-dialog-action=close>
                     <span.mdc-button__ripple>
                     <span.mdc-button__label>_{MsgCancel}
                   <form method=post action=@{AdminR $ AdmEmplUnregR eid uid}>
@@ -38,23 +37,25 @@
             <span.mdc-icon-button__ripple>
             <span.mdc-icon-button__focus-ring>
             <i.material-symbols-outlined>how_to_reg
-      <button.mdc-icon-button.mdc-theme--text-primary-on-light type=button #btnEmplDelete>
+      <button.mdc-icon-button.mdc-theme--text-primary-on-light type=button title=_{MsgDel}
+        onclick="document.getElementById('#{dlgEmplDelete}').MDCDialog.open()">
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>delete
-      <a.mdc-icon-button.mdc-theme--text-primary-on-light href=@{AdminR $ AdmStaffEditR sid} role=button>
+      <a.mdc-icon-button.mdc-theme--text-primary-on-light role=button title=_{MsgEdit}
+        href=@{AdminR $ AdmStaffEditR sid}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>edit
 
-<div.mdc-dialog data-mdc-auto-init=MDCDialog #dlgEmplDelete>
+<div.mdc-dialog data-mdc-auto-init=MDCDialog ##{dlgEmplDelete}>
   <div.mdc-dialog__container>
     <div.mdc-dialog__surface role=alertdialog tabindex=-1>
       <h4.mdc-dialog__title>_{MsgPleaseConfirm}
       <div.mdc-dialog__content>
         _{MsgDeleteAreYouSure}
       <div.mdc-dialog__actions>
-        <button.mdc-button type=button #btnEmplDeleteCancel>
+        <button.mdc-button type=button data-mdc-dialog-action=close>
           <span.mdc-button__ripple>
           <span.mdc-button__label>_{MsgCancel}
         <form method=post action=@{AdminR $ AdmStaffDeleteR sid}>
@@ -104,15 +105,16 @@
                 $maybe Entity _ (User uname _ _ _ _ ) <- user
                   #{uname}
 
-  <details.mdc-list #detailsRoles :Just "roles" == open:open>
+  <details.mdc-list ##{detailsRoles} :Just "roles" == open:open
+    ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
     <summary.mdc-list-item.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
       <span.mdc-list-item__ripple>
       <span.mdc-list-item__content>
         <div.label-with-badge>
-          <span>_{MsgRoles}
+          <span.label>_{MsgRoles}
           <span.badge>#{length roles}
       <span.mdc-list-item__end>
-        <i.material-symbols-outlined #expanDetailsIcon>expand_more
+        <i.expand.material-symbols-outlined #expanDetailsIcon>expand_more
     <nav.mdc-list data-mdc-auto-init=MDCList>
       $if not (null roles)
         $forall (Entity rid (Role _ _ name rating), Entity _ (Service sname _ _ _ _ _)) <- roles

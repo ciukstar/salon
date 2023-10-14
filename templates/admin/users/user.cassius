@@ -1,4 +1,4 @@
-#dlgUserDelete
+##{dlgUserDelete}
   div.mdc-dialog__actions
     display: flex
     flex-direction: row

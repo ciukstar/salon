@@ -1,3 +1,4 @@
+Back: Înapoi
 Close: Închide
 Edit: Editează
 Del: Șterge
@@ -145,6 +146,7 @@ Select: Selectează
 Status: Starea
 NoStaffMembersFound: Nu a fost găsit niciun membru al personalului
 Search: Caută
+UnregisterAsUser: Anulați înregistrarea ca utilizator
 UnregisterAreYouSure: Sigur doriți să anulați înregistrarea utilizatorului?
 RegisterAsUser: Înregistrați ca utilizator
 PasswordChanged: Parolă schimbată

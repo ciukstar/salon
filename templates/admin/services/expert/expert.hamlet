@@ -1,18 +1,19 @@
 <header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=@?{(AdminR $ AdmServicesR (Services sids),stati)}>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
+        href=@?{(AdminR $ AdmServicesR (Services sids),stati)}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgExpert}
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end.mdc-theme--text-primary-on-light role=toolbar>
-      <button.mdc-icon-button type=button 
+      <button.mdc-icon-button type=button title=_{MsgDel}
         onclick="document.getElementById('#{dlgRoleDelete}').MDCDialog.open()">
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>delete
-      <a.mdc-icon-button href=@?{(AdminR $ AdmExpertEditR rid (Services sids),stati)} role=button>
+      <a.mdc-icon-button href=@?{(AdminR $ AdmExpertEditR rid (Services sids),stati)} role=button title=_{MsgEdit}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>edit

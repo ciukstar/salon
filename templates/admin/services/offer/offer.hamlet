@@ -1,29 +1,31 @@
 <header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button 
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
         href=@?{(AdminR $ AdmServicesR sids,catMaybes [y,o,Just ("pid",pack $ show $ fromSqlKey pid)])}>
         <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgOffer}
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
-      <button.mdc-top-app-bar__action-item.mdc-icon-button type=button #buttonDeletePrice>
+      <button.mdc-top-app-bar__action-item.mdc-icon-button type=button title=_{MsgDel}
+        onclick="document.getElementById('#{dlgDeleteOffer}').MDCDialog.open()">
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>delete
-      <a.mdc-top-app-bar__action-item.mdc-icon-button role=button
+      <a.mdc-top-app-bar__action-item.mdc-icon-button role=button title=_{MsgEdit}
         href=@?{(AdminR $ AdmPriceEditR pid sids,catMaybes [y,o])}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>edit
 
-  <div.mdc-dialog #dialogDeletePrice data-mdc-auto-init=MDCDialog>
+  <div.mdc-dialog ##{dlgDeleteOffer} data-mdc-auto-init=MDCDialog>
     <div.mdc-dialog__container>
       <div.mdc-dialog__surface role=alertdialog aria-modal=true tabindex=-1>
         <h4.mdc-dialog__title>_{MsgPleaseConfirm}
         <div.mdc-dialog__content>_{MsgDeleteAreYouSure}
         <div.mdc-dialog__actions>
-          <button.mdc-button type=button #buttonCancelPriceDelete>
+          <button.mdc-button type=button data-mdc-dialog-action=close>
             <span.mdc-button__ripple>
             <span.mdc-button__focus-ring>
             <span.mdc-button__label>_{MsgCancel}

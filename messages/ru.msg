@@ -1,3 +1,4 @@
+Back: Вернуться
 Close: Закрыть
 Edit: Редактировать
 Del: Удалить
@@ -145,6 +146,7 @@ Select: Выбирать
 Status: Статус
 NoStaffMembersFound: Сотрудников не найдено
 Search: Поиск
+UnregisterAsUser: Отменить регистрацию пользователя
 UnregisterAreYouSure: Вы уверены, что хотите отменить регистрацию пользователя?
 RegisterAsUser: Зарегистрировать как пользователь
 PasswordChanged: Пароль изменен

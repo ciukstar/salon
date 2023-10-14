@@ -61,7 +61,7 @@ import Foundation
       )
     , AdminR (AdmStaffPhotoR)
     , AppMessage
-      ( MsgMyAppointments, MsgLogin, MsgPhoto
+      ( MsgMyAppointments, MsgLogin, MsgPhoto, MsgBack
       , MsgLoginToSeeYourAppointments, MsgNoAppointmentsYet
       , MsgBookAppointment, MsgAppointment, MsgDuration, MsgAdjusted
       , MsgSymbolHour, MsgSymbolMinute, MsgAppoinmentStatus

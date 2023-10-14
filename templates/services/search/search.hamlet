@@ -6,7 +6,7 @@
       .mdc-text-field--with-leading-icon.mdc-text-field--with-trailing-icon #labelSearch>
       <span.mdc-text-field__ripple>
       <div.mdc-touch-target-wrapper style="align-self:center">
-        <a.mdc-icon-button.mdc-theme--text-primary-on-light href=@{ServicesR} role=button tabindex=0>
+        <a.mdc-icon-button.mdc-theme--text-primary-on-light href=@{ServicesR} role=button tabindex=0 title=_{MsgBack}>
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>arrow_back

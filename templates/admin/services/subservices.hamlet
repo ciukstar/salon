@@ -13,7 +13,7 @@
         onclick="this.href = `${this.href}?y=${window.scrollY}`">
         <span.mdc-list-item__ripple>
         <span.mdc-list-item__start>
-          <img src=@{AdminR $ AdmServiceImageR sid} height=56 width=56 loading=lazy
+          <img src=@{AdminR $ AdmServiceImageR sid} height=56 width=56 loading=lazy alt=_{MsgThumbnail}
             onerror="this.src = '@{StaticR img_photo_FILL0_wght400_GRAD0_opsz48_svg}'">
         <span.mdc-list-item__content>
           <div.mdc-list-item__primary-text>#{name}

@@ -86,7 +86,7 @@ import Foundation
       )
     , Route (AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR, StaticR, ProfileR)
     , AppMessage
-      ( MsgStaff, MsgPhoto, MsgCancel, MsgSave
+      ( MsgStaff, MsgPhoto, MsgCancel, MsgSave, MsgBack
       , MsgNoStaffYet, MsgEmployee, MsgRecordEdited, MsgName
       , MsgRole, MsgPhone, MsgMobile, MsgEmail, MsgRecordAdded
       , MsgEmployeeAlreadyInTheList, MsgDeleteAreYouSure, MsgYesDelete
@@ -94,10 +94,10 @@ import Foundation
       , MsgAddRole, MsgService, MsgTheName, MsgRating, MsgRoleAlreadyInTheList
       , MsgRegisterAsUser, MsgUser, MsgRegistration, MsgUsername, MsgPassword
       , MsgFullName, MsgAlreadyExists, MsgUnregisterAreYouSure, MsgSearch
-      , MsgNoStaffMembersFound, MsgStatus, MsgSelect, MsgRatings
-      , MsgDismissed, MsgEmployed, MsgAccountStatus, MsgRegistered
+      , MsgNoStaffMembersFound, MsgStatus, MsgSelect, MsgRatings, MsgEdit
+      , MsgDismissed, MsgEmployed, MsgAccountStatus, MsgRegistered, MsgDel
       , MsgUnregistered, MsgValueNotInRange, MsgAdministrator, MsgUnregister
-      , MsgNavigationMenu, MsgUserProfile, MsgLogin
+      , MsgNavigationMenu, MsgUserProfile, MsgLogin, MsgUnregisterAsUser
       )
     )
 
@@ -372,6 +372,7 @@ getAdmRoleR sid rid = do
             `innerJoin` table @Service `on` (\(x :& _ :& s) -> x ^. RoleService ==. s ^. ServiceId)
         where_ $ x ^. RoleId ==. val rid
         return (x,e,s)
+    dlgRoleDelete <- newIdent
     defaultLayout $ do
         setTitleI MsgRole
         $(widgetFile "admin/staff/role/role")
@@ -552,6 +553,9 @@ getAdmEmplR sid = do
           return (x,s)
       _ -> return []
     msgs <- getMessages
+    dlgUnregEmplUser <- newIdent
+    dlgEmplDelete <- newIdent
+    detailsRoles <- newIdent
     defaultLayout $ do
         setTitleI MsgEmployee
         $(widgetFile "admin/staff/employee")

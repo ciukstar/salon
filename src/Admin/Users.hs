@@ -62,7 +62,7 @@ import Foundation
     , Route (ProfileR, AuthR, AdminR, PhotoPlaceholderR, AccountPhotoR, AdminR, StaticR)
     , AdminR (UsersSearchR, UserCreateFormR, UsersR, UserR, UserEditFormR, UserDeleteR, UserPwdResetR)
     , AppMessage
-      ( MsgUsers, MsgNoUsersYet, MsgPhoto, MsgSave
+      ( MsgUsers, MsgNoUsersYet, MsgPhoto, MsgSave, MsgBack, MsgDel, MsgEdit
       , MsgUser, MsgCancel, MsgUsername, MsgPassword, MsgFullName, MsgEmail
       , MsgRecordAdded, MsgAlreadyExists, MsgYesDelete, MsgDeleteAreYouSure
       , MsgPleaseConfirm, MsgRecordDeleted, MsgRecordEdited, MsgResetPassword
@@ -261,6 +261,7 @@ getUserR uid = do
         where_ $ x ^. UserId ==. val uid
         return x
     msgs <- getMessages
+    dlgUserDelete <- newIdent
     defaultLayout $ do
         setTitleI MsgUser
         $(widgetFile "admin/users/user")

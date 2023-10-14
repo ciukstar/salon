@@ -87,7 +87,7 @@ import Foundation
       , MsgMaximumAvailability, MsgSelectStaff, MsgInvalidFormData
       , MsgSelectAtLeastOneServicePlease, MsgOffer, MsgAppointmentTime
       , MsgRole, MsgSignUp, MsgSignIn, MsgOffers, MsgCustomerInformation
-      , MsgCustomer, MsgStepNofM, MsgContinue, MsgNotYourAccount
+      , MsgCustomer, MsgStepNofM, MsgContinue, MsgNotYourAccount, MsgBack
       , MsgLogin, MsgDay, MsgTime , MsgEnd, MsgAlreadyHaveAnAccount
       , MsgLoginToIdentifyCustomer, MsgRecordAdded, MsgShowDetails
       , MsgYouSuccessfullyCreatedYourBooking, MsgBookNewAppointment

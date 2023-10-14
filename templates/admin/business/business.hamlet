@@ -11,7 +11,7 @@
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
       $maybe Entity bid _ <- business
         <button.mdc-top-app-bar__action-item.mdc-icon-button type=button title=_{MsgDel}
-          onclick="document.getElementById('dlgBusinessDelete').MDCDialog.open()">
+          onclick="document.getElementById('#{dlgBusinessDelete}').MDCDialog.open()">
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>delete
@@ -20,8 +20,8 @@
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>edit
 
-        <form method=post action=@{AdminR BusinessDeleteR} #formBusinessDelete>
-        <div.mdc-dialog #dlgBusinessDelete data-mdc-auto-init=MDCDialog>
+        <form method=post action=@{AdminR BusinessDeleteR} ##{formBusinessDelete}>
+        <div.mdc-dialog ##{dlgBusinessDelete} data-mdc-auto-init=MDCDialog>
           <div.mdc-dialog__container>
             <div.mdc-dialog__surface role=alertdialog tabindex=-1>
               <h4.mdc-dialog__title>_{MsgPleaseConfirm}
@@ -30,7 +30,7 @@
                 <button.mdc-dialog-button.mdc-button type=button data-mdc-dialog-action=cancel>
                   <span.mdc-button__ripple>
                   <span.mdc-button__label>_{MsgCancel}
-                <button.mdc-dialog-button.mdc-button.mdc-button--raised type=submit form=formBusinessDelete>
+                <button.mdc-dialog-button.mdc-button.mdc-button--raised type=submit form=#{formBusinessDelete}>
                   <span.mdc-button__ripple>
                   <span.mdc-button__label>_{MsgYesDelete}
           <div.mdc-dialog__scrim>

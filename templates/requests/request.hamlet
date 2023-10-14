@@ -2,7 +2,7 @@
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
       $with stati <- stati ++ [("bid",pack $ show $ fromSqlKey bid)]
-        <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button href=@?{(RequestsR,stati)}>
+        <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=@?{(RequestsR,stati)} role=button title=_{MsgBack}>
           <span.mdc-icon-button__ripple>
           <spam.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>arrow_back
