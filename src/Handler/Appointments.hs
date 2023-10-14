@@ -11,6 +11,7 @@ module Handler.Appointments
   , getAppointmentHistR
   , getAppointmentRescheduleR
   , postAppointmentApproveR
+  , resolveBookStatus
   ) where
 
 import Data.Maybe (isJust)
@@ -371,9 +372,9 @@ getAppointmentsR = do
               $(widgetFile "appointments/appointments")
 
 
-resolve :: BookStatus -> (Text, Text, AppMessage)
-resolve BookStatusRequest = ("orange", "hourglass_top", MsgAwaitingApproval)
-resolve BookStatusAdjusted = ("blue", "reply_all", MsgAdjusted)
-resolve BookStatusApproved = ("green", "verified", MsgApproved)
-resolve BookStatusCancelled = ("red", "block", MsgCancelled)
-resolve BookStatusPaid = ("green", "paid", MsgPaid)
+resolveBookStatus :: BookStatus -> (Text, Text, AppMessage)
+resolveBookStatus BookStatusRequest = ("orange", "hourglass_top", MsgAwaitingApproval)
+resolveBookStatus BookStatusAdjusted = ("blue", "reply_all", MsgAdjusted)
+resolveBookStatus BookStatusApproved = ("green", "verified", MsgApproved)
+resolveBookStatus BookStatusCancelled = ("red", "block", MsgCancelled)
+resolveBookStatus BookStatusPaid = ("green", "paid", MsgPaid)

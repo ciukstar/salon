@@ -1,5 +1,5 @@
-:root
 
+:root
   --theme-success: #98FB98
   --theme-on-success: #FFFFFF
 
@@ -67,18 +67,18 @@
 
 @media screen and (min-width: 992px)
   main
-    margin-left: 7rem
-    margin-right: 7rem
+    margin-left: 10rem
+    margin-right: 10rem
 
 @media screen and (min-width: 1200px)
   main
-    margin-left: 8rem
-    margin-right: 8rem
+    margin-left: 20%
+    margin-right: 20%
 
 @media screen and (min-width: 1400px)
   main
-    margin-left: 20rem
-    margin-right: 20rem
+    margin-left: 25%
+    margin-right: 25%
 
 html body
   margin: 0

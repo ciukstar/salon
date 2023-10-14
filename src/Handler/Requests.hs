@@ -14,6 +14,7 @@ module Handler.Requests
   , getRequestHistR
   ) where
 
+import Control.Monad (unless)
 import Data.Maybe (mapMaybe, isJust, isNothing)
 import Data.Text (intercalate, unpack, Text, pack)
 import Data.Time.Calendar (Day)
@@ -57,7 +58,7 @@ import Foundation
     , AdminR (AdmStaffPhotoR)
     , AppMessage
       ( MsgRequests, MsgPhoto, MsgLogin, MsgSymbolHour, MsgBack
-      , MsgSymbolMinute, MsgAwaitingApproval, MsgApproved, MsgCancelled
+      , MsgSymbolMinute, MsgApproved, MsgCancelled
       , MsgPaid, MsgLoginToSeeTheRequests, MsgRequest, MsgStatus, MsgAssignee
       , MsgPleaseConfirm, MsgHistory, MsgReschedule, MsgMeetingLocation
       , MsgCustomer, MsgSelect, MsgCancel, MsgService, MsgMeetingTime
@@ -68,7 +69,7 @@ import Foundation
       , MsgMissingForm, MsgLoginToPerformAction, MsgBook, MsgRequestFinish
       , MsgFinishAppointmentConfirm, MsgDay, MsgTimeZone, MsgMinutes, MsgContinue
       , MsgAppointmentTimeIsInThePast, MsgAppointmentDayIsInThePast, MsgSave
-      , MsgNoHistoryYet, MsgAdjusted, MsgLoginBanner, MsgNoAssigneeRequestApprove
+      , MsgNoHistoryYet, MsgLoginBanner, MsgNoAssigneeRequestApprove
       , MsgNoAssigneeRequestReschedule, MsgTimeZoneOffset, MsgNavigationMenu
       , MsgYouAreNotAnEmployeeOfFacility, MsgOnlyEmployeesMaySeeRequests
       , MsgUserProfile
@@ -106,8 +107,8 @@ import Model
     )
 
 import Menu (menu)
+import Handler.Appointments (resolveBookStatus)
 import Handler.Contacts (section)
-import Control.Monad (unless)
 
 
 getRequestHistR :: BookId -> Handler Html
@@ -559,10 +560,3 @@ assigneeList = [ (AssigneesMe,MsgAssignedToMe)
                , (AssigneesOthers,MsgFromCoworkers)
                ]
 
-
-resolve :: BookStatus -> (Text, Text, AppMessage)
-resolve BookStatusRequest = ("orange", "hourglass_top", MsgAwaitingApproval)
-resolve BookStatusAdjusted = ("blue", "reply_all", MsgAdjusted)
-resolve BookStatusApproved = ("green", "verified", MsgApproved)
-resolve BookStatusCancelled = ("red", "block", MsgCancelled)
-resolve BookStatusPaid = ("green", "paid", MsgPaid)

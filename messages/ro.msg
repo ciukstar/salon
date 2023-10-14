@@ -243,6 +243,10 @@ MetaKeywords: frumusețe, salon, aplicație
 MetaDescription: Aplicația salon de frumusețe
 
 Documentation: Documentație
-Doc001: Aplicația „Salon” oferă posibilitatea de a publica și de a face publicitate serviciilor proprietarilor de saloane de înfrumusețare pe web.
+Doc001 hrefHome: Aplicația <a href=#{hrefHome}>„Salon”</a> oferă posibilitatea de a publica și de a face publicitate serviciilor proprietarilor de saloane de înfrumusețare pe web.
 
-Doc002 hrefServices: Serviciile care vor fi promovate sunt definite în secțiunea <a href=#{hrefServices}>„Servicii”</a> din grupul „Date”. Dacă este necesar, serviciile pot fi definite ca o ierarhie de grupuri și subservicii.
+Doc002 hrefServices: Serviciile care vor fi promovate sunt definite și publicate în secțiunea <a href=#{hrefServices}>„Servicii”</a> din grupul „Date”. Dacă este necesar, serviciile pot fi definite ca o ierarhie de grupuri și subservicii.
+
+Doc003: Fiecare serviciu poate avea mai multe oferte cu prețuri și valute corespunzătoare. Ofertele sunt definite pentru fiecare Serviciu în secțiunea „Servicii” din grupul „Date”.
+
+Doc004 hrefServices hrefBook: Odată ce serviciul și ofertele sale sunt definite, serviciul poate fi publicat. Serviciul și ofertele vor fi afișate clientului în secțiunea <a href=#{hrefServices}>„Servicii”</a> și disponibile pentru rezervare în secțiunea <a href=#{hrefBook}>„Rezervă o programare”</a>.

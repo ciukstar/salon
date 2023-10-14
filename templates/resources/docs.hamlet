@@ -24,9 +24,11 @@
       
 <main.mdc-top-app-bar--prominent-fixed-adjust>
   <div.mdc-typography--headline4>_{MsgAppName}
-  <p>_{MsgDoc001}
+  <p>#{preEscapedToMarkup $ renderMessage app langs (MsgDoc001 $ rndr HomeR)}
   <div.mdc-typography--headline4>_{MsgOverview}
   <p>#{preEscapedToMarkup $ renderMessage app langs (MsgDoc002 (rndr $ AdminR $ AdmServicesR (Services []))) }
+  <p>_{MsgDoc003}
+  <p>#{preEscapedToMarkup $ renderMessage app langs (MsgDoc004 (rndr ServicesR) (rndr BookOffersR))}
   
   <div.mdc-typography--headline4>
     _{MsgErdDiagram}

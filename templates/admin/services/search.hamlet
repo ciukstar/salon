@@ -6,7 +6,8 @@
       .mdc-text-field--with-leading-icon.mdc-text-field--with-trailing-icon #labelSearch>
       <span.mdc-text-field__ripple>
       <div.mdc-touch-target-wrapper style="align-self:center">
-        <a.mdc-icon-button.mdc-theme--text-primary-on-light href=@{AdminR $ AdmServicesR (Services [])} role=button tabindex=0>
+        <a.mdc-icon-button.mdc-theme--text-primary-on-light role=button tabindex=0 title=_{MsgBack}
+          href=@{AdminR $ AdmServicesR (Services [])}>
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>arrow_back
@@ -16,7 +17,7 @@
       $nothing
         <input.mdc-text-field__input type=search name=q form=#{formSearch} placeholder=_{MsgSearch} autofocus>
       <div.mdc-touch-target-wrapper style="align-self:center">
-        <button.mdc-icon-button.mdc-theme--text-primary-on-light type=submit form=#{formSearch} tabindex=0>
+        <button.mdc-icon-button.mdc-theme--text-primary-on-light type=submit form=#{formSearch} tabindex=0 title=_{MsgSearch}>
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>search

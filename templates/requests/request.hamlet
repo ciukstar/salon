@@ -69,7 +69,7 @@
                       <small>
                         _{MsgDuration}:&nbsp;#{duration}
 
-          $with (color,icon,msg) <- resolve status
+          $with (color,icon,msg) <- resolveBookStatus status
             <details.mdc-list.mdc-card-wrapper__text-section open
               ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
               <summary.mdc-list-item.mdc-list-item--with-leading-icon

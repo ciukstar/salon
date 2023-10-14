@@ -22,7 +22,7 @@ main
         color: var(--theme-accent)
         opacity: 0.6
 
-@media screen and (max-width: 768px)
+@media screen and (min-width: 0) and (max-width: 767px)
   main div.mdc-card
     box-shadow: none
     border-radius: 0

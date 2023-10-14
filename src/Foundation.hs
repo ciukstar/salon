@@ -352,7 +352,7 @@ formLogin route = do
                    e <- from $ table @Staff
                    where_ $ e ^. StaffUser E.==. just (x ^. UserId)
                return $ x :& val True
-        
+
         orderBy [asc y, asc (x ^. UserName)]
         return (x ^. UserId, x ^. UserName, y)
     $(widgetFile "login")

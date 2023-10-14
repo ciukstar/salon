@@ -99,7 +99,7 @@ getServiceOffersR (Services sids) = do
     ys <- (Just <$>) . filter ((== "y") . fst) . reqGetParams <$> getRequest
     let scrollY = case ys of _:y:_ -> snd <$> y; _ -> Nothing
     let sid = last sids
-    moid <- (toSqlKey <$>) <$> runInputGet (iopt intField "oid") 
+    moid <- (toSqlKey <$>) <$> runInputGet (iopt intField "oid")
     service <- (second (join . unValue) <$>) <$> runDB ( selectOne $ do
         x :& t <- from $ table @Service `leftJoin` table @Thumbnail
             `on` (\(x :& t) -> just (x ^. ServiceId) ==. t ?. ThumbnailService)
@@ -164,7 +164,7 @@ getServiceSearchOffersR (Services sids) = do
     ys <- (Just <$>) . filter ((== "y") . fst) . reqGetParams <$> getRequest
     let scrollY = case ys of _:y:_ -> snd <$> y; _ -> Nothing
     let sid = last sids
-    moid <- (toSqlKey <$>) <$> runInputGet (iopt intField "oid") 
+    moid <- (toSqlKey <$>) <$> runInputGet (iopt intField "oid")
     service <- (second (join . unValue) <$>) <$> runDB ( selectOne $ do
         x :& t <- from $ table @Service `leftJoin` table @Thumbnail
             `on` (\(x :& t) -> just (x ^. ServiceId) ==. t ?. ThumbnailService)
@@ -255,7 +255,7 @@ getServicesSearchR = do
         orderBy [asc (x ^. ServiceName)]
 
         return ((x,n),a) )
-        
+
     groups <- runDB $ select $ do
         x <- from $ table @Service
         where_ $ x ^. ServicePublished
@@ -437,6 +437,7 @@ buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
             <div style="position:absolute;bottom:0;left:4px;font-size:0.5rem;line-height:1">
               ^{attribution}
 |]
+
 
 newtype Srvs = Srvs [(((Entity Service, Maybe Html), [Entity Offer]), Srvs)]
 

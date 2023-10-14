@@ -68,7 +68,7 @@
                       <small>
                         _{MsgDuration}:&nbsp;#{duration}
 
-          $with (color,icon,msg) <- resolve status
+          $with (color,icon,msg) <- resolveBookStatus status
             <details.mdc-list.mdc-card-wrapper__text-section open
               ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
               <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line
@@ -188,18 +188,18 @@
                           <span.mdc-button__label>_{MsgYes}
 
                   <div.mdc-dialog__scrim>
-                  
+
               $if elem status [BookStatusRequest,BookStatusApproved,BookStatusAdjusted]
-                <a.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--unelevated 
+                <a.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--unelevated
                   href=@{AppointmentRescheduleR bid} role=button>
                   <span.mdc-button__ripple>
                   <span.mdc-button__focus-ring>
                   <span.mdc-button__label>_{MsgReschedule}
-                  
+
               $if status == BookStatusAdjusted
                 <form method=post action=@{AppointmentApproveR bid} ##{formGetAppointmentApprove} enctype=#{etApprove}>
                   ^{fwApprove}
-                <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--unelevated 
+                <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--unelevated
                   type=submit name=tz form=#{formGetAppointmentApprove}>
                   <span.mdc-button__ripple>
                   <span.mdc-button__focus-ring>
