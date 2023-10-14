@@ -5,7 +5,7 @@ $if null sids
   <div.mdc-top-app-bar__row :not $ null sids:.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
       $if null sids
-        <button.mdc-top-app-bar__navigation-icon.mdc-icon-button #btnMainMenu>
+        <button.mdc-top-app-bar__navigation-icon.mdc-icon-button #btnMainMenu title=_{MsgNavigationMenu}>
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>menu
@@ -23,18 +23,18 @@ $if null sids
           _{MsgService}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
-      <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{AdminR AdmServicesSearchR} role=button>
+      <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{AdminR AdmServicesSearchR} role=button title=_{MsgSearch}>
         <span.mdc-icon-button__ripple>
         <i.material-symbols-outlined>search
       $if null sids
         $maybe Entity uid _ <- user
-          <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{ProfileR} role=button>
+          <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{ProfileR} role=button title=_{MsgUserProfile}>
             <span.mdc-icon-button__ripple>
             <span.mdc-icon-button__focus-ring>
             <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" alt=_{MsgPhoto}
               onerror="this.src = '@{PhotoPlaceholderR}'">
         $nothing
-          <a.mdc-top-app-bar__action-item.mdc-icon-button role=button href=@{AuthR LoginR}>
+          <a.mdc-top-app-bar__action-item.mdc-icon-button role=button href=@{AuthR LoginR} title=_{MsgLogin}>
             <span.mdc-icon-button__ripple>
             <span.mdc-icon-button__focus-ring>
             <i.material-symbols-outlined>login

@@ -1261,6 +1261,156 @@ As a result, the milk peel is a powerful skin resurfacing process with substanti
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
+    s32 <- insert $ Service { serviceName = "Derma Roller"
+                            , servicePublished = True
+                            , serviceOverview = Just "Help your skin renew itself"
+                            , serviceDescr = Just $ Textarea [st|
+<h4>Benefits:</h4>
+<ul>
+  <li>Remove and treat stretch mark, acne scar, wrinkles.</li>
+  <li>Anti-aging.</li>
+  <li>Hair Loss Treatment or Hair Restoration.</li>
+  <li>Cellulite Treatment and Cellulite Reduction.</li>
+  <li>Replace the collagen you can help your skin renew itself and repair to a cosmetic level.</li>
+</ul>
+<h4>So what is a Derma Roller?</h4>
+<p>
+The Scientia Derma Roller is an incredible device which naturally increases the levels of collagen and elastin in your skin. Stretch marks, wrinkles, scars and uneven, pitted skin are all due to a lack of collagen – so by using a DermaRoller to replace the collagen you can help your skin renew itself and repair to a cosmetic level.
+</p>
+|]
+                            , serviceDuration = duration "01:30"
+                            , serviceGroup = Just s3
+                            }
+
+    insert_ $ Offer { offerService = s32
+                    , offerName = "Price"
+                    , offerPrice = 330
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e7
+                   , roleService = s32
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e8
+                   , roleService = s32
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e9
+                   , roleService = s32
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s32
+                        , thumbnailPhoto = $(embedFile "static/img/derma-roller.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s33 <- insert $ Service { serviceName = "Micro-Dermabrasion"
+                            , servicePublished = True
+                            , serviceOverview = Just "Micro-Dermabrasion"
+                            , serviceDescr = Just $ Textarea [st|
+<p>
+A painless procedure, it helps to remove acne scars, enlarged pores, facial lines, wrinkles, blackheads as well as sun damage etc. This technique also helps to thicken your collagen, which results in a younger looking complexion. Collagen is a protein in your skin that’s abundant when you’re a child and makes skin appear taut and smooth. Collagen production declines as we age, resulting in looser, uneven skin.
+</p>
+|]
+                            , serviceDuration = duration "00:45"
+                            , serviceGroup = Just s3
+                            }
+
+    insert_ $ Offer { offerService = s33
+                    , offerName = "Price"
+                    , offerPrice = 70
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e5
+                   , roleService = s33
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e6
+                   , roleService = s33
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e7
+                   , roleService = s33
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s33
+                        , thumbnailPhoto = $(embedFile "static/img/micro-dermabrasion.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s34 <- insert $ Service { serviceName = "Freckle Bleaching (120 min)"
+                            , servicePublished = True
+                            , serviceOverview = Just "A synergistic effect to improve skin tone"
+                            , serviceDescr = Just $ Textarea [st|
+<p>This treatment achieves a synergistic effect to improve skin tone, pigmentation problems as well as dark eye circles.</p>
+|]
+                            , serviceDuration = duration "02:00"
+                            , serviceGroup = Just s3
+                            }
+
+    insert_ $ Offer { offerService = s34
+                    , offerName = "Price"
+                    , offerPrice = 95
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Offer { offerService = s34
+                    , offerName = "Package"
+                    , offerPrice = 600
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Just "/7 sessions"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e3
+                   , roleService = s34
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e4
+                   , roleService = s34
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e5
+                   , roleService = s34
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s34
+                        , thumbnailPhoto = $(embedFile "static/img/freckle-bleaching.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
     s4 <- insert $ Service { serviceName = "Anti-Aging Treatments"
                            , servicePublished = True
                            , serviceOverview = Just "Anti-Aging Treatments"
@@ -1276,7 +1426,208 @@ As a result, the milk peel is a powerful skin resurfacing process with substanti
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
-    s5 <- insert $ Service { serviceName = "Eye Treatment Center"
+    s41 <- insert $ Service { serviceName = "Sea C Spa (100% Vitamin C)"
+                            , servicePublished = True
+                            , serviceOverview = Just "Restoring youthful appearance"
+                            , serviceDescr = Just $ Textarea [st|
+<p>
+A powerful age-defying skin care designed to delay the visible signs of aging and energize the skin.
+</p>
+<p>
+Formulated with marine and vegetal ingredients (Vitamin C Concentrate, Algae Biomatrix Patches, and Thermal Organic Mud).
+</p>
+<p>
+This treatment is exceptional for both pre and post-sun exposure. Ideal for people who live in urban areas with high pollution levels.
+</p>
+<h4>Benefits:</h4>
+<p>
+This treatment reduces the appearance of lines and wrinkles Evens out skin tone And illuminates the skin, thus restoring its youthful appearance
+</p>
+|]
+                            , serviceDuration = duration "00:60"
+                            , serviceGroup = Just s4
+                            }
+
+    insert_ $ Offer { offerService = s41
+                    , offerName = "Price"
+                    , offerPrice = 95
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Offer { offerService = s41
+                    , offerName = "Package"
+                    , offerPrice = 430
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Just "/5 sessions"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e2
+                   , roleService = s41
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e3
+                   , roleService = s41
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s41
+                        , thumbnailPhoto = $(embedFile "static/img/sea-C-spa.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s42 <- insert $ Service { serviceName = "Botinol Facial (150 min)"
+                            , servicePublished = True
+                            , serviceOverview = Just "Mask the signs of aging"
+                            , serviceDescr = Just $ Textarea [st|
+<p>
+A highly advanced elective treatment formulated to hydrate, regenerate and reduce the appearance of lines & wrinkles.
+</p>
+<p>
+This relaxing treatment session offers pleasant textures and exquisite essences delivering an overall sense of well-being. An ideal treatment for people determined to mask the signs of aging.
+</p>
+<h4>Benefits:</h4>
+<p>
+After just one treatment, expression lines appear relaxed Lines and wrinkles are visibly reduced The skin appears visibly younger.
+</p>
+|]
+                            , serviceDuration = duration "02:30"
+                            , serviceGroup = Just s4
+                            }
+
+    insert_ $ Offer { offerService = s42
+                    , offerName = "Price"
+                    , offerPrice = 170
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Offer { offerService = s42
+                    , offerName = "Package"
+                    , offerPrice = 780
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Just "/5 sessions"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e1
+                   , roleService = s42
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e2
+                   , roleService = s42
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s42
+                        , thumbnailPhoto = $(embedFile "static/img/botinol-facial.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s43 <- insert $ Service { serviceName = "Collagen 90-II (150 min)"
+                            , servicePublished = True
+                            , serviceOverview = Just "Hydrated and radiant"
+                            , serviceDescr = Just $ Textarea [st|
+<p>
+This hydrating age-defying treatment provides intensive hydration, cellular regeneration, and epidermal renewal.  With age, the cellular renewal process is delayed. Facial contours lose their definition and the skin appears to sag.
+</p>
+<p>
+Collagen 90-II is an exclusive age-defying treatment by G.M. Collin Skin Care that associates a pure native collagen sheet with selected ingredients, to provide intense hydration, firm the skin, and reduce the appearance of aging.
+</p>
+<p>
+Collagen 90-II is a highly respected and sought-after age-defying skin renewing treatment that hydrates, smoothes and tones wrinkles to combat the visible signs of aging.
+</p>
+<h4>Benefits:</h4>
+<p>
+This treatment improves the overall complexion by minimizing the appearance of fine lines and wrinkles. It restores moisture, leaving the skin well hydrated and radiant. Recommended for all skin types
+</p>
+|]
+                            , serviceDuration = duration "02:30"
+                            , serviceGroup = Just s4
+                            }
+
+    insert_ $ Offer { offerService = s43
+                    , offerName = "Price"
+                    , offerPrice = 160
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Offer { offerService = s43
+                    , offerName = "Package"
+                    , offerPrice = 730
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Just "/5 sessions"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e10
+                   , roleService = s43
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e1
+                   , roleService = s43
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s43
+                        , thumbnailPhoto = $(embedFile "static/img/collagen-90-II.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s44 <- insert $ Service { serviceName = "Electro Ionization"
+                            , servicePublished = True
+                            , serviceOverview = Just "Less wrinkles in just 15 min!"
+                            , serviceDescr = Just $ Textarea [st|
+<p>
+It promotes collagen production, tightens and firms skin tissues, hydrates & rejuvenates the epidermis, treats acne and fine lines. Less wrinkles in just 15 min!
+</p>
+|]
+                            , serviceDuration = duration "00:15"
+                            , serviceGroup = Just s4
+                            }
+
+    insert_ $ Offer { offerService = s44
+                    , offerName = "Price"
+                    , offerPrice = 180
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e9
+                   , roleService = s44
+                   , roleName = "Esthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s44
+                        , thumbnailPhoto = $(embedFile "static/img/electro-ionization.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s5 <- insert $ Service { serviceName = "Eye Treatments"
                            , servicePublished = True
                            , serviceOverview = Just "Eye Treatment Center"
                            , serviceDescr = Just "Eye Treatment Center"
@@ -1286,6 +1637,225 @@ As a result, the milk peel is a powerful skin resurfacing process with substanti
 
     insert_ $ Thumbnail { thumbnailService = s5
                         , thumbnailPhoto = $(embedFile "static/img/eye-treatment-center.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s51 <- insert $ Service { serviceName = "Eyelash Perm"
+                            , servicePublished = True
+                            , serviceOverview = Just "Eyelash Perm"
+                            , serviceDescr = Just $ Textarea [st|
+<p>
+Our technique and eyelash perm solution have been refined over a decade to work consistently and gently on your lashes.
+</p>
+<p>
+Despite the name, eyelash perms are not permanent. The results of an eyelash perm typically last from 2-3 months, or the natural growth cycle of the eyelashes. When the permed eyelashes naturally fall out, the new eyelash hair will grow in straight (as it was before your eyelash perm).
+</p>
+<p>
+Before your eyelash perm, you will be asked to remove your contact lenses and eye makeup (complimentary makeup remover, lens solution and temporary lens cups are readily available for you.) During your eyelash perm, which takes approximately 1 hour, you may lay back and relax, and take in the sounds of our soothing spa music. Please keep your eyes closed and relaxed for the duration of the treatment for the best eyelash perm results.
+</p>
+<p>
+Similar to a regular hair perm, try to avoid wetting your eyelashes for 4 hours after your eyelash perm. We recommend applying Eyelash Conditioner to the eyelashes daily. Conditioning eyelash gel and mascara is available in the spa, by phone, and through our online store. Using Eyelash Conditioner regularly will ensure that your lashes stay healthy.
+</p>
+|]
+                            , serviceDuration = duration "00:60"
+                            , serviceGroup = Just s5
+                            }
+
+    insert_ $ Offer { offerService = s51
+                    , offerName = "Price"
+                    , offerPrice = 45
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e7
+                   , roleService = s51
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e8
+                   , roleService = s51
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e9
+                   , roleService = s51
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s51
+                        , thumbnailPhoto = $(embedFile "static/img/eyelash-perm.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s52 <- insert $ Service { serviceName = "Eyelash Extension"
+                            , servicePublished = True
+                            , serviceOverview = Just "Eyelash Extension"
+                            , serviceDescr = Just $ Textarea [st|
+<h4>Eyelash Extension Home Care</h4>
+<ol>
+  <li>Within the first 2 hours, do not allow water to be in contact with the lashes.</li>
+  <li>Within the first 2 hours, do not steam face, use steam bath, swim or wash face with hot water.</li>
+  <li>Use only washable mascara, and lightly brush through the tip of lashes.</li>
+  <li>Do not use mascara on lashes adhesive area with mascara remover.</li>
+  <li>Do not perm lashes.</li>
+  <li>Do not use a lash curler as it will break both lashes and natural lashes.</li>
+  <li>Do not rub your eyes or lashes.</li>
+  <li>When washing your face, always pat the lashes dry after cleansing.</li>
+</ol>
+|]
+                            , serviceDuration = duration "01:30"
+                            , serviceGroup = Just s5
+                            }
+
+    insert_ $ Offer { offerService = s52
+                    , offerName = "Price"
+                    , offerPrice = 130
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Just " & up" 
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e6
+                   , roleService = s52
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e7
+                   , roleService = s52
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s52
+                        , thumbnailPhoto = $(embedFile "static/img/eyelash-extension.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s53 <- insert $ Service { serviceName = "Eyebrow or Eyelash Tint"
+                            , servicePublished = True
+                            , serviceOverview = Just "Eyebrow or Eyelash Tint"
+                            , serviceDescr = Just $ Textarea [st|Eyebrow or Eyelash Tint|]
+                            , serviceDuration = duration "00:30"
+                            , serviceGroup = Just s5
+                            }
+
+    insert_ $ Offer { offerService = s53
+                    , offerName = "Price"
+                    , offerPrice = 25
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e4
+                   , roleService = s53
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e5
+                   , roleService = s53
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e6
+                   , roleService = s53
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s53
+                        , thumbnailPhoto = $(embedFile "static/img/eyebrow-or-eyelash-tint.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s54 <- insert $ Service { serviceName = "Eye Rejuvenating Treatment"
+                            , servicePublished = True
+                            , serviceOverview = Just "A synergistic effect on eye area"
+                            , serviceDescr = Just $ Textarea [st|
+<p>
+This is elegantly designed to gently reduce puffiness and wrinkles as well as dark circles around the eyes. It’s a powerful eye treatment that encompasses a number of Rejuvi products, such as: “i” Eye Repair Gel, Fruit Complex, Vitamin A Complex, Vitamin C Complex, Contour Formula and Facial Mask, etc., to impart a synergistic effect on eye area. Amazing results can be seen immediately following the procedure.
+</p>
+<p>
+Treatments can be performed every week or every other week, depending upon skin condition. A complete eye treatment should consist of 4 – 6 applications of the individual treatments, plus a home care program.
+</p>
+|]
+                            , serviceDuration = duration "01:30"
+                            , serviceGroup = Just s5
+                            }
+
+    insert_ $ Offer { offerService = s54
+                    , offerName = "Price"
+                    , offerPrice = 40
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e3
+                   , roleService = s54
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e4
+                   , roleService = s54
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s54
+                        , thumbnailPhoto = $(embedFile "static/img/eye-rejuvenating-treatment.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s55 <- insert $ Service { serviceName = "Anti-Aging Eye Treatment"
+                            , servicePublished = True
+                            , serviceOverview = Just "Anti-Aging Eye Treatment"
+                            , serviceDescr = Just $ Textarea [st||]
+                            , serviceDuration = duration "01:45"
+                            , serviceGroup = Just s5
+                            }
+
+    insert_ $ Offer { offerService = s55
+                    , offerName = "Price"
+                    , offerPrice = 40
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e2
+                   , roleService = s55
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e3
+                   , roleService = s55
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s55
+                        , thumbnailPhoto = $(embedFile "static/img/anti-aging-eye-treatment.avif")
                         , thumbnailMime = "image/avif"
                         , thumbnailAttribution = Just [shamlet|
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
@@ -1306,22 +1876,294 @@ As a result, the milk peel is a powerful skin resurfacing process with substanti
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
+    s61 <- insert $ Service { serviceName = "Swedish Massage"
+                            , servicePublished = True
+                            , serviceOverview = Just "Swedish massage therapy"
+                            , serviceDescr = Just $ Textarea [st|
+<p>
+Swedish massage therapy is the modality that comes to mind when most people think about massage. As the best-known type of bodywork performed today, one of the primary goals of the Swedish massage technique is to relax the entire body. This is accomplished by rubbing the muscles with long gliding strokes in the direction of blood returning to the heart. But Swedish massage therapy goes beyond relaxation. Swedish massage is exceptionally beneficial for increasing the level of oxygen in the blood, decreasing muscle toxins, improving circulation and flexibility while easing tension.
+</p>
+|]
+                            , serviceDuration = duration "01:00"
+                            , serviceGroup = Just s6
+                            }
+
+    insert_ $ Offer { offerService = s61
+                    , offerName = "Price"
+                    , offerPrice = 60
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
     insert_ $ Role { roleStaff = e9
-                   , roleService = s6
-                   , roleName = "Massage Therapist"
+                   , roleService = s61
+                   , roleName = "Massage therapist"
                    , roleRating = Just 5
                    }
+
+    insert_ $ Role { roleStaff = e1
+                   , roleService = s61
+                   , roleName = "Massage therapist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e2
+                   , roleService = s61
+                   , roleName = "Massage therapist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s61
+                        , thumbnailPhoto = $(embedFile "static/img/swedish-massage.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s62 <- insert $ Service { serviceName = "Chair Massage"
+                            , servicePublished = True
+                            , serviceOverview = Just "Chair Massage"
+                            , serviceDescr = Just $ Textarea [st|
+<p>
+Chair massage is a 15-20 minute massage focused on the back, shoulders, neck, arms, and head. It is designed to relax the muscles and improve flexibility and movement.
+</p>
+|]
+                            , serviceDuration = duration "00:20"
+                            , serviceGroup = Just s6
+                            }
+
+    insert_ $ Offer { offerService = s62
+                    , offerName = "Price"
+                    , offerPrice = 60
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e10
+                   , roleService = s62
+                   , roleName = "Massage therapist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s62
+                        , thumbnailPhoto = $(embedFile "static/img/chair-massage.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s63 <- insert $ Service { serviceName = "Foot Massage"
+                            , servicePublished = True
+                            , serviceOverview = Just "Foot Massage"
+                            , serviceDescr = Just $ Textarea [st|
+<p>
+A foot massage is a therapeutic practice that involves manipulating the feet and applying pressure to specific areas to promote relaxation, relieve tension, and improve overall well-being. Unlike reflexology, which is a specialized practice that focuses on specific reflex points on the feet that correspond to different organs and systems in the body, a foot massage typically involves a more general approach.
+</p>
+<p>
+During a foot massage, various techniques may be used, including kneading, stroking, rubbing, and applying pressure with hands, fingers, or specialized tools. The massage may target specific areas of the feet, such as the arches, heels, toes, and the balls of the feet, as well as the surrounding muscles and joints.
+</p>
+<h4>Benefits:</h4>
+<ol>
+  <li>Relaxation: Foot massages can help reduce stress and induce a state of relaxation.</li>
+  <li>Improved circulation: The massage techniques used can enhance blood flow to the feet and lower extremities, promoting better circulation.</li>
+  <li>Pain relief: Foot massages may help alleviate foot pain, including conditions like plantar fasciitis or general foot discomfort.</li>
+  <li>Reduced muscle tension: By targeting specific muscles in the feet, a massage can help release tension and improve flexibility.</li>
+  <li>Enhanced overall well-being: Foot massages are believed to have a positive impact on the body’s energy flow, contributing to a sense of well-being.</li>
+</ol>
+|]
+                            , serviceDuration = duration "00:30"
+                            , serviceGroup = Just s6
+                            }
+
+    insert_ $ Offer { offerService = s63
+                    , offerName = "Price"
+                    , offerPrice = 30
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e1
+                   , roleService = s63
+                   , roleName = "Massage therapist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e11
+                   , roleService = s63
+                   , roleName = "Massage therapist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s63
+                        , thumbnailPhoto = $(embedFile "static/img/foot-massage.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
 
     s7 <- insert $ Service { serviceName = "Makeup Services"
                            , servicePublished = True
                            , serviceOverview = Just "Makeup Services"
                            , serviceDescr = Just "Makeup Services"
-                           , serviceDuration = duration "01:30"
+                           , serviceDuration = duration "03:30"
                            , serviceGroup = Nothing
                            }
 
     insert_ $ Thumbnail { thumbnailService = s7
                         , thumbnailPhoto = $(embedFile "static/img/makeup-services.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s71 <- insert $ Service { serviceName = "Wedding Special"
+                            , servicePublished = True
+                            , serviceOverview = Just "Wedding Special"
+                            , serviceDescr = Just $ Textarea [st|
+<p>
+Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
+</p>
+|]
+                            , serviceDuration = duration "03:30"
+                            , serviceGroup = Just s7
+                            }
+
+    insert_ $ Offer { offerService = s71
+                    , offerName = "Price"
+                    , offerPrice = 200
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e3
+                   , roleService = s71
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e2
+                   , roleService = s71
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e1
+                   , roleService = s71
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s71
+                        , thumbnailPhoto = $(embedFile "static/img/wedding-special.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s72 <- insert $ Service { serviceName = "Bridal Make-up"
+                            , servicePublished = True
+                            , serviceOverview = Just "Bridal Make-up"
+                            , serviceDescr = Just $ Textarea [st|Bridal Make-up (45 min)|]
+                            , serviceDuration = duration "00:45"
+                            , serviceGroup = Just s7
+                            }
+
+    insert_ $ Offer { offerService = s72
+                    , offerName = "Price"
+                    , offerPrice = 85
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e4
+                   , roleService = s72
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e3
+                   , roleService = s72
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s72
+                        , thumbnailPhoto = $(embedFile "static/img/bridal-make-up.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s73 <- insert $ Service { serviceName = "Evening Make-up"
+                            , servicePublished = True
+                            , serviceOverview = Just "Evening Make-up"
+                            , serviceDescr = Just $ Textarea [st|Evening Make-up (30 min)|]
+                            , serviceDuration = duration "00:30"
+                            , serviceGroup = Just s7
+                            }
+
+    insert_ $ Offer { offerService = s73
+                    , offerName = "Price"
+                    , offerPrice = 60
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e5
+                   , roleService = s73
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e4
+                   , roleService = s73
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s73
+                        , thumbnailPhoto = $(embedFile "static/img/evening-make-up.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s74 <- insert $ Service { serviceName = "Make-up Lesson"
+                            , servicePublished = True
+                            , serviceOverview = Just "Make-up Lesson"
+                            , serviceDescr = Just $ Textarea [st|Make-up Lesson (60 min)|]
+                            , serviceDuration = duration "00:60"
+                            , serviceGroup = Just s7
+                            }
+
+    insert_ $ Offer { offerService = s74
+                    , offerName = "Price"
+                    , offerPrice = 100
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e6
+                   , roleService = s74
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e5
+                   , roleService = s74
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s74
+                        , thumbnailPhoto = $(embedFile "static/img/make-up-lesson.avif")
                         , thumbnailMime = "image/avif"
                         , thumbnailAttribution = Just [shamlet|
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
@@ -1342,17 +2184,87 @@ As a result, the milk peel is a powerful skin resurfacing process with substanti
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
-    insert_ $ Role { roleStaff = e6
-                   , roleService = s8
+    s81 <- insert $ Service { serviceName = "Body Waxing"
+                            , servicePublished = True
+                            , serviceOverview = Just "Body Waxing"
+                            , serviceDescr = Just $ Textarea [st|Body Waxing|]
+                            , serviceDuration = duration "00:30"
+                            , serviceGroup = Just s8
+                            }
+
+    insert_ $ Offer { offerService = s81
+                    , offerName = "Price"
+                    , offerPrice = 50
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e8
+                   , roleService = s81
                    , roleName = "Waxing specialist"
                    , roleRating = Just 5
                    }
 
+    insert_ $ Role { roleStaff = e7
+                   , roleService = s81
+                   , roleName = "Waxing specialist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e6
+                   , roleService = s81
+                   , roleName = "Waxing specialist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s81
+                        , thumbnailPhoto = $(embedFile "static/img/body-waxing.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s82 <- insert $ Service { serviceName = "Face Waxing"
+                            , servicePublished = True
+                            , serviceOverview = Just "Face Waxing"
+                            , serviceDescr = Just $ Textarea [st|Face Waxing|]
+                            , serviceDuration = duration "00:20"
+                            , serviceGroup = Just s8
+                            }
+
+    insert_ $ Offer { offerService = s82
+                    , offerName = "Price"
+                    , offerPrice = 45
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e9
+                   , roleService = s82
+                   , roleName = "Waxing specialist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e8
+                   , roleService = s82
+                   , roleName = "Waxing specialist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s82
+                        , thumbnailPhoto = $(embedFile "static/img/face-waxing.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
     s9 <- insert $ Service { serviceName = "Nail Care"
                            , servicePublished = True
-                           , serviceOverview = Just "Nail Care"
-                           , serviceDescr = Just "Nail Care"
-                           , serviceDuration = duration "01:00"
+                           , serviceOverview = Just "Nail Services"
+                           , serviceDescr = Just "Nail Care Services"
+                           , serviceDuration = duration "00:45"
                            , serviceGroup = Nothing
                            }
 
@@ -1363,22 +2275,341 @@ As a result, the milk peel is a powerful skin resurfacing process with substanti
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
-    insert_ $ Role { roleStaff = e7
-                   , roleService = s9
+    s91 <- insert $ Service { serviceName = "Manicure"
+                            , servicePublished = True
+                            , serviceOverview = Just "Manicure"
+                            , serviceDescr = Just $ Textarea [st|Manicure|]
+                            , serviceDuration = duration "00:20"
+                            , serviceGroup = Just s9
+                            }
+
+    insert_ $ Offer { offerService = s91
+                    , offerName = "Price"
+                    , offerPrice = 15
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e9
+                   , roleService = s91
                    , roleName = "Nail technician"
                    , roleRating = Just 5
                    }
+
+    insert_ $ Role { roleStaff = e8
+                   , roleService = s91
+                   , roleName = "Nail technician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e7
+                   , roleService = s91
+                   , roleName = "Nail technician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s91
+                        , thumbnailPhoto = $(embedFile "static/img/manicure.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s92 <- insert $ Service { serviceName = "No-Chip Manicure"
+                            , servicePublished = True
+                            , serviceOverview = Just "No- Chip Manicure"
+                            , serviceDescr = Just $ Textarea [st|No-Chip Manicure|]
+                            , serviceDuration = duration "00:30"
+                            , serviceGroup = Just s9
+                            }
+
+    insert_ $ Offer { offerService = s92
+                    , offerName = "Price"
+                    , offerPrice = 32
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e10
+                   , roleService = s92
+                   , roleName = "Nail technician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e9
+                   , roleService = s92
+                   , roleName = "Nail technician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s92
+                        , thumbnailPhoto = $(embedFile "static/img/no-chip-manicure.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s93 <- insert $ Service { serviceName = "Pedicure"
+                            , servicePublished = True
+                            , serviceOverview = Just "Pedicure"
+                            , serviceDescr = Just $ Textarea [st|Pedicure|]
+                            , serviceDuration = duration "00:30"
+                            , serviceGroup = Just s9
+                            }
+
+    insert_ $ Offer { offerService = s93
+                    , offerName = "Price"
+                    , offerPrice = 35
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e1
+                   , roleService = s93
+                   , roleName = "Nail technician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e11
+                   , roleService = s93
+                   , roleName = "Nail technician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s93
+                        , thumbnailPhoto = $(embedFile "static/img/pedicure.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s94 <- insert $ Service { serviceName = "No-Chip Pedicure"
+                            , servicePublished = True
+                            , serviceOverview = Just "No-Chip Pedicure"
+                            , serviceDescr = Just $ Textarea [st|No-Chip Pedicure|]
+                            , serviceDuration = duration "00:40"
+                            , serviceGroup = Just s9
+                            }
+
+    insert_ $ Offer { offerService = s94
+                    , offerName = "Price"
+                    , offerPrice = 55
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e2
+                   , roleService = s94
+                   , roleName = "Nail technician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e1
+                   , roleService = s94
+                   , roleName = "Nail technician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s94
+                        , thumbnailPhoto = $(embedFile "static/img/no-chip-pedicure.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s95 <- insert $ Service { serviceName = "Acrylic Nail-Full Set"
+                            , servicePublished = True
+                            , serviceOverview = Just "Acrylic Nail-Full Set"
+                            , serviceDescr = Just $ Textarea [st|Acrylic Nail-Full Set|]
+                            , serviceDuration = duration "00:25"
+                            , serviceGroup = Just s9
+                            }
+
+    insert_ $ Offer { offerService = s95
+                    , offerName = "Price"
+                    , offerPrice = 38
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e3
+                   , roleService = s95
+                   , roleName = "Nail technician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e2
+                   , roleService = s95
+                   , roleName = "Nail technician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s95
+                        , thumbnailPhoto = $(embedFile "static/img/acrylic-nail-full-set.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s96 <- insert $ Service { serviceName = "Hand Paraffin Dip"
+                            , servicePublished = True
+                            , serviceOverview = Just "Hand Paraffin Dip"
+                            , serviceDescr = Just $ Textarea [st|Hand Paraffin Dip|]
+                            , serviceDuration = duration "00:20"
+                            , serviceGroup = Just s9
+                            }
+
+    insert_ $ Offer { offerService = s96
+                    , offerName = "Price"
+                    , offerPrice = 10
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e4
+                   , roleService = s96
+                   , roleName = "Nail technician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e3
+                   , roleService = s96
+                   , roleName = "Nail technician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s96
+                        , thumbnailPhoto = $(embedFile "static/img/hand-paraffin-dip.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s97 <- insert $ Service { serviceName = "Polish Change"
+                            , servicePublished = True
+                            , serviceOverview = Just "Polish Change"
+                            , serviceDescr = Just $ Textarea [st|Polish Change|]
+                            , serviceDuration = duration "00:15"
+                            , serviceGroup = Just s9
+                            }
+
+    insert_ $ Offer { offerService = s97
+                    , offerName = "Price"
+                    , offerPrice = 5
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e6
+                   , roleService = s97
+                   , roleName = "Nail technician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e5
+                   , roleService = s97
+                   , roleName = "Nail technician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s97
+                        , thumbnailPhoto = $(embedFile "static/img/polish-change.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
 
     s10 <- insert $ Service { serviceName = "Body Shaping & Fitness"
                             , servicePublished = True
                             , serviceOverview = Just "Body Shaping & Fitness"
                             , serviceDescr = Just "Body Shaping & Fitness"
-                            , serviceDuration = duration "01:15" 
+                            , serviceDuration = duration "01:15"
                             , serviceGroup = Nothing
                             }
 
     insert_ $ Thumbnail { thumbnailService = s10
                         , thumbnailPhoto = $(embedFile "static/img/body-shaping-and-fitness.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s101 <- insert $ Service { serviceName = "Body Shaping"
+                             , servicePublished = True
+                             , serviceOverview = Just "Abdomen & waist, hips & thighs, legs & arms"
+                             , serviceDescr = Just $ Textarea [st|
+<p>
+Body Shaping: Abdomen & waist, hips & thighs, legs & arms
+</p>
+|]
+                             , serviceDuration = duration "01:15"
+                             , serviceGroup = Just s10
+                             }
+
+    insert_ $ Offer { offerService = s101
+                    , offerName = "Price"
+                    , offerPrice = 350
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e7
+                   , roleService = s101
+                   , roleName = "Aesthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e6
+                   , roleService = s101
+                   , roleName = "Aesthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s101
+                        , thumbnailPhoto = $(embedFile "static/img/body-shaping.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s102 <- insert $ Service { serviceName = "Face Shaping"
+                             , servicePublished = True
+                             , serviceOverview = Just "Face Shaping"
+                             , serviceDescr = Just $ Textarea [st|Face Shaping|]
+                             , serviceDuration = duration "00:45"
+                             , serviceGroup = Just s10
+                             }
+
+    insert_ $ Offer { offerService = s102
+                    , offerName = "Price"
+                    , offerPrice = 300
+                    , offerPrefix = Just "$"
+                    , offerSuffix = Nothing
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e8
+                   , roleService = s102
+                   , roleName = "Aesthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e7
+                   , roleService = s102
+                   , roleName = "Aesthetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s102
+                        , thumbnailPhoto = $(embedFile "static/img/face-shaping.avif")
                         , thumbnailMime = "image/avif"
                         , thumbnailAttribution = Just [shamlet|
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]

@@ -50,7 +50,8 @@ import Foundation
       ( MsgBrand, MsgYesDelete, MsgPleaseConfirm, MsgPhoto
       , MsgDeleteAreYouSure, MsgSave, MsgCancel, MsgBrandMark
       , MsgNoBrandYet, MsgBrandName, MsgBrandStrapline, MsgFavicon, MsgMore
-      , MsgRecordAdded, MsgRecordEdited, MsgRecordDeleted
+      , MsgRecordAdded, MsgRecordEdited, MsgRecordDeleted, MsgNavigationMenu
+      , MsgLogin, MsgUserProfile, MsgEdit, MsgDel
       )
     )
     

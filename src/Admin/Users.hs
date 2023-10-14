@@ -69,7 +69,7 @@ import Foundation
       , MsgConfirmPassword, MsgNewPassword, MsgPasswordsDoNotMatch
       , MsgPasswordChanged, MsgSearch, MsgNoUsersFound, MsgEmployee
       , MsgCustomer, MsgAdministrator, MsgYes, MsgNo, MsgCategory
-      , MsgSelect, MsgCategories
+      , MsgSelect, MsgCategories, MsgNavigationMenu, MsgUserProfile, MsgLogin
       )
     )
 import Model

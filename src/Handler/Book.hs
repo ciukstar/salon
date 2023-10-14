@@ -96,6 +96,7 @@ import Foundation
       , MsgMinutes, MsgSearch, MsgAddress, MsgCategory, MsgSelect, MsgCancel
       , MsgCategories, MsgNoServicesFound, MsgLocation, MsgInvalidBusinessAddress
       , MsgInvalidBusinessTimeZoneOffset, MsgInvalidBusinessTimeZone
+      , MsgUserProfile, MsgNavigationMenu
       )
     )
 

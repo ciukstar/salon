@@ -6,7 +6,7 @@
         <div #drawerTitleStart>
           <img src=@{StaticR img_salon_svg} height=24 width=24 loading=lazy>
           _{MsgSalon}
-        <div #drawerTitleEnd>
+        <div #drawerTitleEnd title=_{MsgClose}>
           &#x2715;
   <div.mdc-drawer__content>
     <div.mdc-deprecated-list-group>

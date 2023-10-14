@@ -1,3 +1,7 @@
+Close: Закрыть
+Edit: Редактировать
+Del: Удалить
+NavigationMenu: Навигационное меню
 OnlyEmployeesMaySeeRequests: Запросы могут видеть только сотрудники
 YouAreNotAnEmployeeOfFacility: Вы не сотрудник этого учреждения
 InvalidBusinessTimeZone: Неверный часовой пояс компании

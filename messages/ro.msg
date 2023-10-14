@@ -1,3 +1,7 @@
+Close: Închide
+Edit: Editează
+Del: Șterge
+NavigationMenu: Meniul de navigare
 OnlyEmployeesMaySeeRequests: Doar angajații pot vedea cererile
 YouAreNotAnEmployeeOfFacility: Nu sunteți angajat al acestei unități
 InvalidBusinessTimeZone: Fus orar al afacerii nevalid

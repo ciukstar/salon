@@ -97,6 +97,7 @@ import Foundation
       , MsgNoStaffMembersFound, MsgStatus, MsgSelect, MsgRatings
       , MsgDismissed, MsgEmployed, MsgAccountStatus, MsgRegistered
       , MsgUnregistered, MsgValueNotInRange, MsgAdministrator, MsgUnregister
+      , MsgNavigationMenu, MsgUserProfile, MsgLogin
       )
     )
 

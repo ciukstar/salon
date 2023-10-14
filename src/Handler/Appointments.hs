@@ -25,7 +25,7 @@ import Data.Time
 import Text.Hamlet (Html)
 import Text.Shakespeare.I18N (renderMessage, SomeMessage (SomeMessage))
 
-import Yesod.Auth (maybeAuth, Route (LoginR, LogoutR))
+import Yesod.Auth (maybeAuth, Route (LoginR))
 import Yesod.Core
     ( Yesod(defaultLayout), getMessages, getYesod, languages
     , preEscapedToMarkup, redirect, addMessageI, MonadIO (liftIO)
@@ -61,7 +61,7 @@ import Foundation
       )
     , AdminR (AdmStaffPhotoR)
     , AppMessage
-      ( MsgMyAppointments, MsgLogin, MsgLogout, MsgPhoto
+      ( MsgMyAppointments, MsgLogin, MsgPhoto
       , MsgLoginToSeeYourAppointments, MsgNoAppointmentsYet
       , MsgBookAppointment, MsgAppointment, MsgDuration, MsgAdjusted
       , MsgSymbolHour, MsgSymbolMinute, MsgAppoinmentStatus
@@ -73,7 +73,7 @@ import Foundation
       , MsgNoHistoryYet, MsgStatus, MsgTimeZone, MsgTime, MsgDay
       , MsgInvalidFormData, MsgMissingForm, MsgSave, MsgCancel, MsgApprove
       , MsgAppointmentTimeIsInThePast, MsgAppointmentDayIsInThePast, MsgMinutes
-      , MsgTimeZoneOffset, MsgLocation
+      , MsgTimeZoneOffset, MsgLocation, MsgNavigationMenu, MsgUserProfile
       )
     )
 

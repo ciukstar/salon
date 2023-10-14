@@ -33,7 +33,7 @@ import Yesod.Core
     , addMessageI, getUrlRender
     )
 import Yesod.Core.Widget (setTitleI)
-import Yesod.Auth ( Route(LoginR, LogoutR), maybeAuth )
+import Yesod.Auth ( Route(LoginR), maybeAuth )
 import Yesod.Form.Fields
     ( Textarea(unTextarea, Textarea), searchField, intField, timeField
     , dayField, textField, textareaField
@@ -56,7 +56,7 @@ import Foundation
       )
     , AdminR (AdmStaffPhotoR)
     , AppMessage
-      ( MsgRequests, MsgPhoto, MsgLogin, MsgLogout, MsgSymbolHour
+      ( MsgRequests, MsgPhoto, MsgLogin, MsgSymbolHour
       , MsgSymbolMinute, MsgAwaitingApproval, MsgApproved, MsgCancelled
       , MsgPaid, MsgLoginToSeeTheRequests, MsgRequest, MsgStatus, MsgAssignee
       , MsgPleaseConfirm, MsgHistory, MsgReschedule, MsgMeetingLocation
@@ -69,7 +69,9 @@ import Foundation
       , MsgFinishAppointmentConfirm, MsgDay, MsgTimeZone, MsgMinutes, MsgContinue
       , MsgAppointmentTimeIsInThePast, MsgAppointmentDayIsInThePast, MsgSave
       , MsgNoHistoryYet, MsgAdjusted, MsgLoginBanner, MsgNoAssigneeRequestApprove
-      , MsgNoAssigneeRequestReschedule, MsgTimeZoneOffset, MsgYouAreNotAnEmployeeOfFacility, MsgOnlyEmployeesMaySeeRequests
+      , MsgNoAssigneeRequestReschedule, MsgTimeZoneOffset, MsgNavigationMenu
+      , MsgYouAreNotAnEmployeeOfFacility, MsgOnlyEmployeesMaySeeRequests
+      , MsgUserProfile
       )
     )
 

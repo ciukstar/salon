@@ -40,6 +40,7 @@ import Foundation
       , MsgYesDelete, MsgCancel, MsgDeleteAreYouSure, MsgPleaseConfirm
       , MsgAlreadyExists, MsgContent, MsgCancel, MsgSave
       , MsgRecordDeleted, MsgRecordEdited, MsgRecordAdded
+      , MsgNavigationMenu, MsgLogin, MsgUserProfile, MsgEdit, MsgDel
       )
     )
 

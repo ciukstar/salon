@@ -20,7 +20,7 @@ import Foundation
       ( MsgSourceCode, MsgDocumentation, MsgBrand, MsgContactUs
       , MsgAboutUs, MsgMyAppointments, MsgServices, MsgBookAppointment
       , MsgWelcome, MsgSalon, MsgUsers, MsgContact, MsgStaff, MsgData
-      , MsgResources, MsgRequests, MsgCalendar, MsgBusiness
+      , MsgResources, MsgRequests, MsgCalendar, MsgBusiness, MsgClose
       )
     )
 

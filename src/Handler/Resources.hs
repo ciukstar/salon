@@ -21,7 +21,7 @@ import Foundation
       )
     , AdminR (AdmServicesR)
     , AppMessage
-      ( MsgDocumentation, MsgPhoto
+      ( MsgDocumentation, MsgPhoto, MsgNavigationMenu, MsgLogin, MsgUserProfile
       , MsgErdDiagram, MsgBookingStateDiagram, MsgAppointmentStateDiagram
       , MsgAppName, MsgOverview, MsgDoc001, MsgDoc002
       )

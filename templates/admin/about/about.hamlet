@@ -2,7 +2,7 @@
 <header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <button.mdc-top-app-bar__navigation-icon.mdc-icon-button #btnMainMenu>
+      <button.mdc-top-app-bar__navigation-icon.mdc-icon-button #btnMainMenu title=_{MsgNavigationMenu}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>menu
@@ -10,12 +10,12 @@
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
       $maybe Entity cid _ <- contents
-        <button.mdc-top-app-bar__action-item.mdc-icon-button type=button #btnAboutUsDelete
+        <button.mdc-top-app-bar__action-item.mdc-icon-button type=button #btnAboutUsDelete title=_{MsgDel}
           onclick="document.getElementById('dlgAboutUsDelete').MDCDialog.open()">
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>delete
-        <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{AdminR $ AdmAboutEditR cid} role=button>
+        <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{AdminR $ AdmAboutEditR cid} role=button title=_{MsgEdit}>
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>edit
@@ -36,13 +36,13 @@
           <div.mdc-dialog__scrim>
           
       $maybe Entity uid _ <- user
-        <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{ProfileR} role=button>
+        <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{ProfileR} role=button title=_{MsgUserProfile}>
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" alt=_{MsgPhoto}
             onerror="this.src = '@{PhotoPlaceholderR}'">
       $nothing
-        <a.mdc-top-app-bar__action-item.mdc-icon-button role=button href=@{AuthR LoginR}>
+        <a.mdc-top-app-bar__action-item.mdc-icon-button role=button href=@{AuthR LoginR} title=_{MsgLogin}>
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>login

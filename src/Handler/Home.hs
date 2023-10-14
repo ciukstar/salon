@@ -28,8 +28,8 @@ import Foundation
       )
     , AdminR (BrandMarkR)
     , AppMessage
-      ( MsgSalon, MsgWelcome, MsgServices, MsgAboutUs
-      , MsgBook, MsgPhoto, MsgBrandMark
+      ( MsgSalon, MsgWelcome, MsgServices, MsgAboutUs, MsgNavigationMenu
+      , MsgBook, MsgPhoto, MsgBrandMark, MsgLogin, MsgUserProfile
       )
     )
 import Model (Brand(Brand))

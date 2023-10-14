@@ -59,7 +59,8 @@ import Foundation
       ( MsgServices, MsgPhoto, MsgThumbnail, MsgNoServicesYet
       , MsgBookAppointment, MsgOffers, MsgSearch, MsgSelect, MsgCancel
       , MsgCategories, MsgNoServicesFound, MsgCategories, MsgNoOffersYet
-      , MsgCategory, MsgService, MsgDescription, MsgOffer
+      , MsgCategory, MsgService, MsgDescription, MsgOffer, MsgLogin, MsgUserProfile
+      , MsgNavigationMenu
       )
     )
 

@@ -17,7 +17,7 @@ import Settings (widgetFile)
 import Foundation
     ( Handler
     , Route (ProfileR, AuthR, PhotoPlaceholderR, AccountPhotoR)
-    , AppMessage (MsgAboutUs, MsgPhoto)
+    , AppMessage (MsgAboutUs, MsgPhoto, MsgUserProfile, MsgLogin, MsgNavigationMenu)
     )
 
 import Yesod.Persist.Core (YesodPersist(runDB))

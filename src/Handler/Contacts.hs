@@ -22,7 +22,10 @@ import Database.Esqueleto.Experimental
 import Foundation
     ( Handler
     , Route (ProfileR, AuthR, PhotoPlaceholderR, AccountPhotoR)
-    , AppMessage (MsgContactUs, MsgContact, MsgPhoto)
+    , AppMessage
+      ( MsgContactUs, MsgContact, MsgPhoto, MsgNavigationMenu, MsgUserProfile
+      , MsgLogin
+      )
     )
     
 import Model (Contents(Contents), EntityField (ContentsSection))

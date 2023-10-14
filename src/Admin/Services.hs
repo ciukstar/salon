@@ -93,7 +93,7 @@ import Foundation
       , MsgInvalidDurationHourMinute, MsgSymbolHour, MsgSymbolMinute
       , MsgOffer, MsgExperts, MsgNoExpertsYet, MsgAddExpert, MsgExpert
       , MsgValueNotInRange, MsgExpertAlreadyInTheList, MsgRating, MsgEmployee
-      , MsgRole
+      , MsgRole, MsgLogin, MsgUserProfile, MsgNavigationMenu
       )
     )
 
