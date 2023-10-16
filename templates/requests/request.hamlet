@@ -160,131 +160,125 @@
 
           <div.mdc-card__actions>
             <div.mdc-card__action-buttons>
+              $maybe _ <- rid
+                $if (elem status [BookStatusRequest,BookStatusApproved])
 
-              $if (elem status [BookStatusRequest,BookStatusApproved])
-
-                <form method=get action=@{RequestRescheduleR bid} ##{formGetRequestReschedule}>
-                
-                $maybe _ <- rid
                   <a.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--outlined
                     href=@{RequestRescheduleR bid} role=button>
                     <span.mdc-button__ripple>
                     <span.mdc-button__focus-ring>
                     <span.mdc-button__label>_{MsgReschedule}
-                $nothing
-                  <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--outlined type=button
-                    onclick="document.getElementById('#{dlgRescheduleConfirm}').MDCDialog.open()">
-                    <span.mdc-button__ripple>
-                    <span.mdc-button__focus-ring>
-                    <span.mdc-button__label>_{MsgReschedule}
 
-                  <div.mdc-dialog ##{dlgRescheduleConfirm} data-mdc-auto-init=MDCDialog>
-                    <div.mdc-dialog__container>
-                      <div.mdc-dialog__surface tabindex=-1 role=alertdialog aria-modal=true>
-                        <h4.mdc-dialog__title>_{MsgPleaseConfirm}
-                        <div.mdc-dialog__content>
-                          $if isNothing rid
-                            <i>
-                              _{MsgNoAssigneeRequestReschedule}.
+                $case status
+                  $of BookStatusRequest
+                    <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--unelevated type=button
+                      onclick="document.getElementById('#{dlgConfirmApprove}').MDCDialog.open()">
+                      <span.mdc-button__ripple>
+                      <span.mdc-button__focus-ring>
+                      <span.mdc-button__label>_{MsgApprove}
 
-                        <div.mdc-dialog__actions>
-                          <button.mdc-dialog__button.mdc-button type=button data-mdc-dialog-action=close>
-                            <span.mdc-button__ripple>
-                            <span.mdc-button__focus-ring>
-                            <span.mdc-button__label>_{MsgCancel}
+                    <form method=post action=@{RequestApproveR bid} ##{formRequestApprove} enctype=#{et}>
+                      ^{fw}
 
-                          <button.mdc-dialog__button.mdc-button.mdc-button--raised 
-                            type=submit name=tz form=#{formGetRequestReschedule}
-                            onclick="this.value = -(new Date().getTimezoneOffset())">
-                            <span.mdc-button__ripple>
-                            <span.mdc-button__focus-ring>
-                            <span.mdc-button__label>_{MsgContinue}
+                    <div.mdc-dialog ##{dlgConfirmApprove} data-mdc-auto-init=MDCDialog>
+                      <div.mdc-dialog__container>
+                        <div.mdc-dialog__surface tabindex=-1 role=alertdialog aria-modal=true>
+                          <h4.mdc-dialog__title>_{MsgPleaseConfirm}
+                          <div.mdc-dialog__content>
+                            <p>
+                              _{MsgApproveAppointmentConfirm}:
+                            <dl>
+                              <dt>
+                                <strong>_{MsgDate}
+                              <dd.appointment-date>
+                                <time.appointment-date datetime="#{show date} #{show time}">
+                                  #{show date} #{show time}
+                              <dt>
+                                <strong>_{MsgTime}
+                              <dd.appointment-time>
+                                <time.appointment-time datetime="#{show date} #{show time}">
+                                  #{show date} #{show time}
+                              <dt>
+                                <strong>_{MsgLocation}
+                              <dd>
+                                $maybe Entity _ (Business _ address _ _ _ _ _) <- business
+                                  #{address}
+                            $if isNothing rid
+                              <i>
+                                _{MsgNoAssigneeRequestApprove}.
 
-                    <div.mdc-dialog__scrim>
+                          <div.mdc-dialog__actions>
+                            <button.mdc-dialog__button.mdc-button type=button data-mdc-dialog-action=close>
+                              <span.mdc-button__ripple>
+                              <span.mdc-button__focus-ring>
+                              <span.mdc-button__label>_{MsgCancel}
 
+                            <button.mdc-dialog__button.mdc-button.mdc-button--raised type=submit form=#{formRequestApprove}>
+                              <span.mdc-button__ripple>
+                              <span.mdc-button__focus-ring>
+                              <span.mdc-button__label>_{MsgApprove}
 
-              $case status
-                $of BookStatusRequest
-                  <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--unelevated type=button
-                    onclick="document.getElementById('#{dlgConfirmApprove}').MDCDialog.open()">
-                    <span.mdc-button__ripple>
-                    <span.mdc-button__focus-ring>
-                    <span.mdc-button__label>_{MsgApprove}
+                      <div.mdc-dialog__scrim>
 
-                  <form method=post action=@{RequestApproveR bid} ##{formRequestApprove} enctype=#{et}>
-                    ^{fw}
+                  $of BookStatusApproved
+                    <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--unelevated type=button
+                      onclick="document.getElementById('#{dlgConfirmFinish}').MDCDialog.open()">
+                      <span.mdc-button__ripple>
+                      <span.mdc-button__focus-ring>
+                      <span.mdc-button__label>_{MsgRequestFinish}
 
-                  <div.mdc-dialog ##{dlgConfirmApprove} data-mdc-auto-init=MDCDialog>
-                    <div.mdc-dialog__container>
-                      <div.mdc-dialog__surface tabindex=-1 role=alertdialog aria-modal=true>
-                        <h4.mdc-dialog__title>_{MsgPleaseConfirm}
-                        <div.mdc-dialog__content>
-                          <p>
-                            _{MsgApproveAppointmentConfirm}:
-                          <dl>
-                            <dt>
-                              <strong>_{MsgDate}
-                            <dd.appointment-date>
-                              <time.appointment-date datetime="#{show date} #{show time}">
-                                #{show date} #{show time}
-                            <dt>
-                              <strong>_{MsgTime}
-                            <dd.appointment-time>
-                              <time.appointment-time datetime="#{show date} #{show time}">
-                                #{show date} #{show time}
-                            <dt>
-                              <strong>_{MsgLocation}
-                            <dd>
-                              $maybe Entity _ (Business _ address _ _ _ _ _) <- business
-                                #{address}
-                          $if isNothing rid
-                            <i>
-                              _{MsgNoAssigneeRequestApprove}.
+                    <form method=post action=@{RequestFinishR bid} ##{formAppoitmentFinish} enctype=#{et}>
+                      ^{fw}
 
-                        <div.mdc-dialog__actions>
-                          <button.mdc-dialog__button.mdc-button type=button data-mdc-dialog-action=close>
-                            <span.mdc-button__ripple>
-                            <span.mdc-button__focus-ring>
-                            <span.mdc-button__label>_{MsgCancel}
+                    <div.mdc-dialog ##{dlgConfirmFinish} data-mdc-auto-init=MDCDialog>
+                      <div.mdc-dialog__container>
+                        <div.mdc-dialog__surface tabindex=-1 role=alertdialog aria-modal=true>
+                          <h4.mdc-dialog__title>_{MsgPleaseConfirm}
+                          <div.mdc-dialog__content>
+                            <p>
+                              _{MsgFinishAppointmentConfirm}.
 
-                          <button.mdc-dialog__button.mdc-button.mdc-button--raised type=submit form=#{formRequestApprove}>
-                            <span.mdc-button__ripple>
-                            <span.mdc-button__focus-ring>
-                            <span.mdc-button__label>_{MsgApprove}
+                          <div.mdc-dialog__actions>
+                            <button.mdc-dialog__button.mdc-button type=button data-mdc-dialog-action=close>
+                              <span.mdc-button__ripple>
+                              <span.mdc-button__focus-ring>
+                              <span.mdc-button__label>_{MsgCancel}
 
-                    <div.mdc-dialog__scrim>
+                            <button.mdc-dialog__button.mdc-button.mdc-button--raised type=submit form=#{formAppoitmentFinish}>
+                              <span.mdc-button__ripple>
+                              <span.mdc-button__focus-ring>
+                              <span.mdc-button__label>_{MsgRequestFinish}
 
-                $of BookStatusApproved
-                  <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--unelevated type=button
-                    onclick="document.getElementById('#{dlgConfirmFinish}').MDCDialog.open()">
-                    <span.mdc-button__ripple>
-                    <span.mdc-button__focus-ring>
-                    <span.mdc-button__label>_{MsgRequestFinish}
+                      <div.mdc-dialog__scrim>
+                  $of _
+              $nothing
+                <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--outlined type=button
+                  onclick="document.getElementById('#{dlgAssignToMeConfirm}').MDCDialog.open()">
+                  <span.mdc-button__ripple>
+                  <span.mdc-button__focus-ring>
+                  <span.mdc-button__label>_{MsgAssignToMe}
 
-                  <form method=post action=@{RequestFinishR bid} ##{formAppoitmentFinish} enctype=#{et}>
-                    ^{fw}
+                <div.mdc-dialog ##{dlgAssignToMeConfirm} data-mdc-auto-init=MDCDialog>
+                  <div.mdc-dialog__container>
+                    <div.mdc-dialog__surface tabindex=-1 role=alertdialog aria-modal=true>
+                      <h4.mdc-dialog__title>_{MsgPleaseConfirm}
+                      <div.mdc-dialog__content>
+                        _{MsgAreYouSureYouWantToTakeOnThisTask}
 
-                  <div.mdc-dialog ##{dlgConfirmFinish} data-mdc-auto-init=MDCDialog>
-                    <div.mdc-dialog__container>
-                      <div.mdc-dialog__surface tabindex=-1 role=alertdialog aria-modal=true>
-                        <h4.mdc-dialog__title>_{MsgPleaseConfirm}
-                        <div.mdc-dialog__content>
-                          <p>
-                            _{MsgFinishAppointmentConfirm}.
+                      <div.mdc-dialog__actions>
+                        <button.mdc-dialog__button.mdc-button type=button data-mdc-dialog-action=cancel>
+                          <span.mdc-button__ripple>
+                          <span.mdc-button__focus-ring>
+                          <span.mdc-button__label>_{MsgCancel}
 
-                        <div.mdc-dialog__actions>
-                          <button.mdc-dialog__button.mdc-button type=button data-mdc-dialog-action=close>
-                            <span.mdc-button__ripple>
-                            <span.mdc-button__focus-ring>
-                            <span.mdc-button__label>_{MsgCancel}
+                        <form method=post action=@{RequestAssignR bid sid} enctype=#{eta} ##{formAssignToMe}>
+                          ^{fwa}
+                        <button.mdc-dialog__button.mdc-button.mdc-button--raised type=submit form=#{formAssignToMe}>
+                          <span.mdc-button__ripple>
+                          <span.mdc-button__focus-ring>
+                          <span.mdc-button__label>_{MsgAssignToMe}
 
-                          <button.mdc-dialog__button.mdc-button.mdc-button--raised type=submit form=#{formAppoitmentFinish}>
-                            <span.mdc-button__ripple>
-                            <span.mdc-button__focus-ring>
-                            <span.mdc-button__label>_{MsgRequestFinish}
-
-                    <div.mdc-dialog__scrim>
-                $of _
+                  <div.mdc-dialog__scrim>
 
             <div.mdc-card__action-icons>
               <a.mdc-card__action.mdc-card__action-icon.mdc-icon-button role=button title=_{MsgHistory}

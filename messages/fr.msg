@@ -1,3 +1,6 @@
+AreYouSureYouWantToTakeOnThisTask: Êtes-vous sûr de vouloir assumer cette tâche ?
+AssignToMe: Attribuez-moi
+Nonexpert: Vous n'êtes pas répertorié comme expert pour ce service
 Back: Retour
 Close: Fermer
 Edit: Modifier

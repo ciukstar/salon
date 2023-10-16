@@ -1,13 +1,14 @@
 
 /contact ContactR GET
 
-/search/requests             RequestsSearchR    GET
-/requests/#BookId/reschedule RequestRescheduleR GET
-/requests/#BookId/finish     RequestFinishR  	POST
-/requests/#BookId/approve    RequestApproveR 	POST
-/requests/#BookId/hist       RequestHistR    	GET
-/requests/#BookId 	     RequestR  	  	GET POST
-/requests 	  	     RequestsR 	  	GET
+/search/requests                    RequestsSearchR    GET
+/requests/#BookId/reschedule        RequestRescheduleR GET
+/requests/#BookId/#ServiceId/assign RequestAssignR     POST
+/requests/#BookId/finish     	    RequestFinishR     POST
+/requests/#BookId/approve    	    RequestApproveR    POST
+/requests/#BookId/hist       	    RequestHistR       GET
+/requests/#BookId 	     	    RequestR	       GET POST
+/requests 	  	     	    RequestsR	       GET
 
 /appointments/#BookId/approve    AppointmentApproveR    POST
 /appointments/#BookId/reschedule AppointmentRescheduleR GET

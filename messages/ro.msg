@@ -1,3 +1,6 @@
+AreYouSureYouWantToTakeOnThisTask: Sunteți sigur că doriți să vă ocupați de această sarcină?
+AssignToMe: Atribuie mie
+Nonexpert: Nu sunteți enumerat ca expert pentru acest serviciu 
 Back: Înapoi
 Close: Închide
 Edit: Editează

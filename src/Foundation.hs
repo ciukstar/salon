@@ -219,6 +219,7 @@ instance Yesod App where
     isAuthorized RequestsSearchR _ = return Authorized
     isAuthorized (RequestApproveR _) _ = return Authorized
     isAuthorized (RequestFinishR _) _ = return Authorized
+    isAuthorized (RequestAssignR _ _) _ = return Authorized
     isAuthorized (RequestRescheduleR _) _ = return Authorized
     isAuthorized (RequestHistR _) _ = return Authorized
 
@@ -355,6 +356,10 @@ formLogin route = do
 
         orderBy [asc y, asc (x ^. UserName)]
         return (x ^. UserId, x ^. UserName, y)
+    loginFormWrapper <- newIdent
+    loginForm <- newIdent
+    pCreateAccount <- newIdent
+    dlgSampleCreds <- newIdent
     $(widgetFile "login")
 
 

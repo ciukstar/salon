@@ -1,3 +1,6 @@
+AreYouSureYouWantToTakeOnThisTask: Вы уверены, что хотите взять на себя эту задачу?
+AssignToMe: Назначить мне
+Nonexpert: Вы не указаны в качестве эксперта по этой услуге
 Back: Вернуться
 Close: Закрыть
 Edit: Редактировать

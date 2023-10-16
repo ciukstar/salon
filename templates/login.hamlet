@@ -21,16 +21,16 @@
             <span.mdc-icon-button__ripple>
             <i.material-symbols-outlined>close
 
-  <div #loginFormWrapper>
+  <div ##{loginFormWrapper}>
     <h4.mdc-typography--headline6>_{MsgSignInToYourAccount}
-    <form method=POST action=@{route} #loginForm>
+    <form method=POST action=@{route} ##{loginForm}>
       <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
-        .mdc-text-field--label-floating.mdc-text-field--with-trailing-icon>
+        .mdc-text-field--with-trailing-icon>
         <span.mdc-text-field__ripple>
         <span.mdc-floating-label>_{MsgUsername}
-        <input.mdc-text-field__input type=text name=username autocomplete=username required #inputUsername>
+        <input.mdc-text-field__input type=text name=username autocomplete=username required>
         <button.mdc-icon-button.mdc-text-field__icon.mdc-text-field__icon--trailing tabindex=0 type=button
-          title=_{MsgDemoUserAccounts} onclick="document.getElementById('dlgSampleCreds').MDCDialog.open()">
+          title=_{MsgDemoUserAccounts} onclick="document.getElementById('#{dlgSampleCreds}').MDCDialog.open()">
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>demography
@@ -40,9 +40,9 @@
         .mdc-text-field--label-floating.mdc-text-field--with-trailing-icon>
         <span.mdc-text-field__ripple>
         <span.mdc-floating-label>_{MsgPassword}
-        <input.mdc-text-field__input type=password name=password autocomplete=current-password required #inputPassword>
+        <input.mdc-text-field__input type=password name=password autocomplete=current-password required>
         <button.mdc-icon-button.mdc-text-field__icon.mdc-text-field__icon--trailing tabindex=0 type=button
-          title=_{MsgDemoUserAccounts} onclick="document.getElementById('dlgSampleCreds').MDCDialog.open()">
+          title=_{MsgDemoUserAccounts} onclick="document.getElementById('#{dlgSampleCreds}').MDCDialog.open()">
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>demography
@@ -53,14 +53,14 @@
         <span.mdc-button__focus-ring>
         <span.mdc-button__label>_{MsgLogin}
 
-    <p #createAccount>
+    <p ##{pCreateAccount}>
       <small.hint>_{MsgDoNotHaveAnAccount}
       <a.mdc-button.mdc-button--outlined href=@{AccountR} role=button>
         <span.mdc-button__ripple>
         <span.mdc-button__focus-ring>
         <span.mdc-button__label>_{MsgCreateAccount}
 
-<div.mdc-dialog #dlgSampleCreds data-mdc-auto-init=MDCDialog>
+<div.mdc-dialog ##{dlgSampleCreds} data-mdc-auto-init=MDCDialog>
   <div.mdc-dialog__container>
     <div.mdc-dialog__surface role=dialog aria-modal=true tabindex=-1>
       <div.mdc-dialog__header>

@@ -1,10 +1,10 @@
 
 main
-  #loginFormWrapper
+  ##{loginFormWrapper}
     display: flex
     flex-direction: column
     align-items: center
-    #loginForm
+    ##{loginForm}
       width: 100%
       max-width: 20rem
       display: flex
@@ -16,7 +16,7 @@ main
       #btnLogin
         margin: 1rem 0
 
-    #createAccount
+    ##{pCreateAccount}
       margin-top: 2rem
       display: flex
       flex-direction: column
@@ -33,7 +33,7 @@ div.mdc-dialog
       .mdc-form-field
         .mdc-radio .mdc-radio__native-control:enabled:checked+.mdc-radio__background
           .mdc-radio__outer-circle, .mdc-radio__inner-circle
-            border-color: var(--theme-accent,#018786)
+            border-color: var(--theme-accent)
         label
           width: 100%
           display: flex

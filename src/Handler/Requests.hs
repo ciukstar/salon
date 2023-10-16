@@ -10,6 +10,7 @@ module Handler.Requests
   , getRequestsSearchR
   , postRequestApproveR
   , postRequestFinishR
+  , postRequestAssignR
   , getRequestRescheduleR
   , getRequestHistR
   ) where
@@ -54,25 +55,24 @@ import Foundation
       ( AuthR, PhotoPlaceholderR, AccountPhotoR, ProfileR, RequestsR, RequestR
       , AdminR, ServiceThumbnailR, RequestsSearchR, RequestsSearchR
       , RequestApproveR, RequestFinishR, RequestRescheduleR, RequestHistR
+      , RequestAssignR
       )
     , AdminR (AdmStaffPhotoR)
     , AppMessage
       ( MsgRequests, MsgPhoto, MsgLogin, MsgSymbolHour, MsgBack
-      , MsgSymbolMinute, MsgApproved, MsgCancelled
-      , MsgPaid, MsgLoginToSeeTheRequests, MsgRequest, MsgStatus, MsgAssignee
-      , MsgPleaseConfirm, MsgHistory, MsgReschedule, MsgMeetingLocation
-      , MsgCustomer, MsgSelect, MsgCancel, MsgService, MsgMeetingTime
-      , MsgAcquaintance, MsgAppoinmentStatus, MsgDuration, MsgApprove
+      , MsgSymbolMinute, MsgApproved, MsgCancelled, MsgPaid, MsgAssignee
+      , MsgLoginToSeeTheRequests, MsgRequest, MsgStatus, MsgMeetingLocation
+      , MsgPleaseConfirm, MsgHistory, MsgReschedule, MsgService, MsgMeetingTime
+      , MsgCustomer, MsgSelect, MsgCancel, MsgAcquaintance, MsgAppoinmentStatus
       , MsgNoPendingRequestsYet, MsgShowAll, MsgAssignedToMe, MsgWithoutAssignee
       , MsgSearch, MsgNoRequestsFound, MsgFromCoworkers, MsgApproveAppointmentConfirm
       , MsgDate, MsgTime, MsgLocation, MsgEntityNotFound, MsgInvalidFormData
-      , MsgMissingForm, MsgLoginToPerformAction, MsgBook, MsgRequestFinish
-      , MsgFinishAppointmentConfirm, MsgDay, MsgTimeZone, MsgMinutes, MsgContinue
-      , MsgAppointmentTimeIsInThePast, MsgAppointmentDayIsInThePast, MsgSave
-      , MsgNoHistoryYet, MsgLoginBanner, MsgNoAssigneeRequestApprove
-      , MsgNoAssigneeRequestReschedule, MsgTimeZoneOffset, MsgNavigationMenu
-      , MsgYouAreNotAnEmployeeOfFacility, MsgOnlyEmployeesMaySeeRequests
-      , MsgUserProfile
+      , MsgMissingForm, MsgLoginToPerformAction, MsgBook, MsgRequestFinish, MsgDuration
+      , MsgFinishAppointmentConfirm, MsgDay, MsgTimeZone, MsgMinutes, MsgSave
+      , MsgAppointmentTimeIsInThePast, MsgAppointmentDayIsInThePast, MsgNoHistoryYet
+      , MsgLoginBanner, MsgNoAssigneeRequestApprove, MsgTimeZoneOffset, MsgNavigationMenu
+      , MsgYouAreNotAnEmployeeOfFacility, MsgOnlyEmployeesMaySeeRequests, MsgUserProfile
+      , MsgNonexpert, MsgAssignToMe, MsgAreYouSureYouWantToTakeOnThisTask, MsgApprove
       )
     )
 
@@ -87,7 +87,8 @@ import Database.Esqueleto.Experimental
     )
 
 import Model
-    ( Book (Book, bookDay, bookTz, bookTzo, bookTime, bookAddr), BookId, Offer, Service (Service), Role (Role), Staff (Staff)
+    ( Book (Book, bookDay, bookTz, bookTzo, bookTime, bookAddr)
+    , BookId, Offer, ServiceId, Service (Service), Role (Role), Staff (Staff)
     , Offer (Offer), Thumbnail (Thumbnail), User (User), Contents (Contents)
     , BookStatus
       ( BookStatusRequest, BookStatusApproved, BookStatusCancelled
@@ -97,8 +98,8 @@ import Model
     , Business (Business), Hist (Hist)
     , EntityField
       ( BookOffer, OfferId, OfferService, ServiceId, BookDay, BookTime
-      , BookRole, RoleId, RoleStaff, StaffId, StaffUser, ContentsSection, BookId
-      , ThumbnailService, BookCustomer, UserId, BookStatus, ServiceName
+      , BookRole, RoleId, RoleStaff, StaffId, StaffUser, ContentsSection
+      , BookId, ThumbnailService, BookCustomer, UserId, BookStatus, ServiceName
       , ServiceDescr, ServiceOverview, RoleName, OfferName, OfferPrefix
       , OfferSuffix, OfferDescr, StaffName, StaffPhone, StaffMobile, StaffEmail
       , UserName, UserFullName, UserEmail, BookTz, HistBook, HistLogtime
@@ -110,6 +111,43 @@ import Menu (menu)
 import Handler.Appointments (resolveBookStatus)
 import Handler.Contacts (section)
 
+
+postRequestAssignR :: BookId -> ServiceId -> Handler Html
+postRequestAssignR bid sid = do
+    user <- maybeAuth
+    book <- runDB $ selectOne $ do
+        x <- from $ table @Book
+        where_ $ x ^. BookId ==. val bid
+        return x
+    case (user,book) of
+      (Just (Entity uid _), Just (Entity bid' (Book _ _ _ day' time' addr' tzo' tz' status'))) -> do
+          
+          role <- runDB $ selectOne $ do
+              r :& e <- from $ table @Role `innerJoin` table @Staff
+                  `on` (\(r :& e) -> r ^. RoleStaff ==. e ^. StaffId)
+              where_ $ r ^. RoleService ==. val sid
+              where_ $ e ^. StaffUser ==. just (val uid)
+              return r
+              
+          case role of
+            Just (Entity rid _) -> do
+                runDB $ update $ \x -> do
+                    set x [ BookRole =. just (val rid) ]
+                    where_ $ x ^. BookId ==. val bid'
+                now <- liftIO getCurrentTime
+                runDB $ insert_ $ Hist bid uid now day' time' addr' tzo' tz' status'
+                redirect $ RequestR bid
+            Nothing -> do
+                addMessageI "warn" MsgNonexpert
+                redirect $ RequestR bid
+            
+      (Nothing, _) -> do
+          addMessageI "warn" MsgLoginToPerformAction
+          redirect $ RequestR bid
+      (_, Nothing) -> do
+          addMessageI "warn" MsgEntityNotFound
+          redirect $ RequestR bid
+    
 
 getRequestHistR :: BookId -> Handler Html
 getRequestHistR bid = do
@@ -245,6 +283,7 @@ postRequestFinishR bid = do
             Nothing -> do
                 addMessageI "warn" MsgEntityNotFound
                 redirect $ RequestR bid
+                
       (FormSuccess _, Nothing) -> do
           addMessageI "warn" MsgLoginToPerformAction
           redirect $ RequestR bid
@@ -287,9 +326,13 @@ postRequestApproveR bid = do
                 runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusApproved
                 redirect $ RequestR bid
 
-            _ -> do
+            (Nothing,_) -> do
                 addMessageI "warn" MsgEntityNotFound
                 redirect $ RequestR bid
+            (_,Nothing) -> do
+                addMessageI "warn" MsgNonexpert
+                redirect $ RequestR bid
+                
       (FormSuccess _, Nothing) -> do
           addMessageI "warn" MsgLoginToPerformAction
           redirect $ RequestR bid
@@ -398,7 +441,7 @@ postRequestR bid = do
                 Just (_,Entity _ (Offer sid _ _ _ _ _)) -> s ^. ServiceId ==. val sid
                 Nothing -> val False
               return r
-              
+          
           case (book,role) of
             (Just (Entity _ (Book _ _ _ _ _ addr tzo tz _),_),Just (Entity rid _)) -> do
                 runDB $ update $ \x -> do
@@ -420,7 +463,7 @@ postRequestR bid = do
                 redirect $ RequestR bid
 
             (_,Nothing) -> do
-                addMessageI "warn" MsgMinutes
+                addMessageI "warn" MsgNonexpert
                 redirect $ RequestR bid
                 
       (FormSuccess _, Nothing) -> do
@@ -468,16 +511,21 @@ getRequestR bid = do
         where_ $ x ^. BookId ==. val bid
         return (x,(o,s,t,r,e,c))
     msgs <- getMessages
-    formGetRequestReschedule <- newIdent
-    dlgRescheduleConfirm <- newIdent
     dlgConfirmApprove <- newIdent
     formRequestApprove <- newIdent
     dlgConfirmFinish <- newIdent
     formAppoitmentFinish <- newIdent
+    formAssignToMe <- newIdent
+    (fwa,eta) <- generateFormPost formAssign
     (fw,et) <- generateFormPost $ formApprove (fst <$> request)
+    dlgAssignToMeConfirm <- newIdent
     defaultLayout $ do
         setTitleI MsgRequest
         $(widgetFile "requests/request")
+
+
+formAssign :: Html -> MForm Handler (FormResult (), Widget)
+formAssign extra = return (FormSuccess (),[whamlet|#{extra}|])
 
 
 formApprove :: Maybe (Entity Book) -> Html -> MForm Handler (FormResult BookId, Widget)

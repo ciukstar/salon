@@ -6,7 +6,7 @@ Array.from(
 ).forEach(function (x) { x.MDCBanner.open(); });
 
 document.getElementById('btnFillCreds').addEventListener('click',function (e) {
-  document.getElementById('loginForm').querySelectorAll('.mdc-text-field').forEach(function (x) {
+  document.getElementById(#{loginForm}).querySelectorAll('.mdc-text-field').forEach(function (x) {
     x.querySelector('input').value = document.forms.formUserOptions.uname.value;
     x.classList.add('mdc-text-field--label-floating');
     x.querySelector('.mdc-floating-label').classList.add('mdc-floating-label--float-above');

@@ -52,8 +52,8 @@ import System.Environment.Blank (getEnv)
 import Handler.Requests
     ( getRequestsR, getRequestR, postRequestR
     , getRequestsSearchR, postRequestApproveR
-    , postRequestFinishR, getRequestRescheduleR
-    , getRequestHistR
+    , postRequestFinishR, postRequestAssignR
+    , getRequestRescheduleR, getRequestHistR
     )
 
 import Handler.Appointments
