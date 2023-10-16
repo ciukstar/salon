@@ -1,3 +1,4 @@
+Unassigned: Unassigned
 AreYouSureYouWantToTakeOnThisTask: Are you sure you want to take on this task?
 AssignToMe: Assign to Me
 Nonexpert: You are not listed as an expert for this service

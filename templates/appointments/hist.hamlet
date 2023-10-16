@@ -15,7 +15,7 @@
       <figcaption>
         _{MsgNoHistoryYet}.
   $else
-    $forall (Entity _ (Hist _ _ logtime day time addr tzo tz status),Entity _ (User uname _ _ fname _)) <- hist
+    $forall (Entity _ (Hist _ _ logtime day time addr tzo tz status rname ename),Entity _ (User uname _ _ fname _)) <- hist
       $with (color,icon,msg) <- resolveBookStatus status
         <details.mdc-list data-mdc-auto-init=MDCList
           ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
@@ -52,6 +52,15 @@
 
             <dt>_{MsgTimeZoneOffset}
             <dd>#{show tzo}
+
+            <dt>_{MsgAssignee}
+            <dd>
+              $maybe ename <- ename
+                #{ename}
+                $maybe rname <- rname
+                  \ (#{rname})
+              $nothing
+                (_{MsgUnassigned})
 
             <dt>_{MsgStatus}
             <dd>#{show status}

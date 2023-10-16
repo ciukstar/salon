@@ -101,8 +101,8 @@ import Foundation
     )
 
 import Model
-    ( Service(Service), ServiceId, Offer (Offer), OfferId, Staff (Staff)
-    , Role (Role), RoleId
+    ( Service(Service), ServiceId, Offer (Offer), OfferId, Staff (Staff, staffName)
+    , Role (Role, roleName), RoleId
     , User (User), Book (Book), Thumbnail
     , BookStatus (BookStatusRequest), Hist (Hist)
     , Business (businessAddr, businessTzo, businessTz, Business)
@@ -213,6 +213,7 @@ postBookCustomerR = do
                         Book uid oid ((\(_,Entity rid _) -> rid) <$> role) day time addr tzo tz BookStatusRequest
                     now <- liftIO getCurrentTime
                     runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusRequest
+                        (roleName . entityVal . snd <$> role) (staffName . entityVal . fst <$> role)
                     return bid
                 addMessageI "info" MsgRecordAdded
                 deleteSession sessKeyBooking

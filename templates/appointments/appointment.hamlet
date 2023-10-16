@@ -140,6 +140,8 @@
               $nothing
                 <figure>
                   <i.material-symbols-outlined style="font-size:3rem">indeterminate_question_box
+                  <figcaption>
+                    <small>(_{MsgUnassigned})
 
           $maybe Entity _ (Contents _ content) <- location
             <details.mdc-list.mdc-card-wrapper__text-section

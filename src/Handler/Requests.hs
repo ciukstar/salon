@@ -73,6 +73,7 @@ import Foundation
       , MsgLoginBanner, MsgNoAssigneeRequestApprove, MsgTimeZoneOffset, MsgNavigationMenu
       , MsgYouAreNotAnEmployeeOfFacility, MsgOnlyEmployeesMaySeeRequests, MsgUserProfile
       , MsgNonexpert, MsgAssignToMe, MsgAreYouSureYouWantToTakeOnThisTask, MsgApprove
+      , MsgUnassigned
       )
     )
 
@@ -88,7 +89,7 @@ import Database.Esqueleto.Experimental
 
 import Model
     ( Book (Book, bookDay, bookTz, bookTzo, bookTime, bookAddr)
-    , BookId, Offer, ServiceId, Service (Service), Role (Role), Staff (Staff)
+    , BookId, Offer, ServiceId, Service (Service), Role (Role, roleName), Staff (Staff, staffName)
     , Offer (Offer), Thumbnail (Thumbnail), User (User), Contents (Contents)
     , BookStatus
       ( BookStatusRequest, BookStatusApproved, BookStatusCancelled
@@ -116,38 +117,39 @@ postRequestAssignR :: BookId -> ServiceId -> Handler Html
 postRequestAssignR bid sid = do
     user <- maybeAuth
     book <- runDB $ selectOne $ do
-        x <- from $ table @Book
-        where_ $ x ^. BookId ==. val bid
-        return x
+        b <- from $ table @Book
+        where_ $ b ^. BookId ==. val bid
+        return b
     case (user,book) of
       (Just (Entity uid _), Just (Entity bid' (Book _ _ _ day' time' addr' tzo' tz' status'))) -> do
-          
+
           role <- runDB $ selectOne $ do
               r :& e <- from $ table @Role `innerJoin` table @Staff
                   `on` (\(r :& e) -> r ^. RoleStaff ==. e ^. StaffId)
               where_ $ r ^. RoleService ==. val sid
               where_ $ e ^. StaffUser ==. just (val uid)
-              return r
-              
+              return (r,e)
+
           case role of
-            Just (Entity rid _) -> do
+            Just (Entity rid (Role _ _ rname _ ),Entity _ (Staff ename _ _ _ _ _)) -> do
                 runDB $ update $ \x -> do
                     set x [ BookRole =. just (val rid) ]
                     where_ $ x ^. BookId ==. val bid'
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid uid now day' time' addr' tzo' tz' status'
+                    (Just rname) (Just ename)
                 redirect $ RequestR bid
             Nothing -> do
                 addMessageI "warn" MsgNonexpert
                 redirect $ RequestR bid
-            
+
       (Nothing, _) -> do
           addMessageI "warn" MsgLoginToPerformAction
           redirect $ RequestR bid
       (_, Nothing) -> do
           addMessageI "warn" MsgEntityNotFound
           redirect $ RequestR bid
-    
+
 
 getRequestHistR :: BookId -> Handler Html
 getRequestHistR bid = do
@@ -191,7 +193,7 @@ getRequestRescheduleR bid = do
     book <- runDB $ selectOne $ do
         x <- from $ table @Book
         where_ $ x ^. BookId ==. val bid
-        return x    
+        return x
     (fw,et) <- generateFormPost $ formReschedule book
     defaultLayout $ do
         setTitleI MsgReschedule
@@ -268,22 +270,25 @@ postRequestFinishR bid = do
     case (fr, user) of
       (FormSuccess _bid, Just (Entity uid _)) -> do
           book <- runDB $ selectOne $ do
-              x <- from $ table @Book
-              where_ $ x ^. BookId ==. val _bid
-              return x
+              b :& r :& e <- from $ table @Book
+                  `leftJoin` table @Role `on` (\(b :& r) -> b ^. BookRole ==. r ?. RoleId)
+                  `leftJoin` table @Staff `on` (\(_ :& r :& e) -> r ?. RoleStaff ==. e ?. StaffId)
+              where_ $ b ^. BookId ==. val _bid
+              return (b,r,e)
           case book of
-            Just (Entity _ (Book _ _ _ day time addr tzo tz _)) -> do
+            Just (Entity _ (Book _ _ _ day time addr tzo tz _),role',empl') -> do
                 runDB $ update $ \x -> do
                     set x [BookStatus =. val BookStatusPaid]
                     where_ $ x ^. BookId ==. val bid
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusPaid
+                    (roleName . entityVal <$> role') (staffName . entityVal <$> empl')
                 redirect $ RequestR bid
 
             Nothing -> do
                 addMessageI "warn" MsgEntityNotFound
                 redirect $ RequestR bid
-                
+
       (FormSuccess _, Nothing) -> do
           addMessageI "warn" MsgLoginToPerformAction
           redirect $ RequestR bid
@@ -302,10 +307,12 @@ postRequestApproveR bid = do
     case (fr, user) of
       (FormSuccess _bid, Just (Entity uid _)) -> do
           book <- runDB $ selectOne $ do
-              x :& o <- from $ table @Book `innerJoin` table @Offer
-                  `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
+              x :& o :& r :& e <- from $ table @Book
+                  `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
+                  `leftJoin` table @Role `on` (\(b :& _ :& r) -> b ^. BookRole ==. r ?. RoleId)
+                  `leftJoin` table @Staff `on` (\(_ :& _ :& r :& e) -> r ?. RoleStaff ==. e ?. StaffId)
               where_ $ x ^. BookId ==. val _bid
-              return (x,o)
+              return ((x,o),(r,e))
           role <- runDB $ selectOne $ do
               r :& _ :& u :& s <- from $ table @Role
                   `innerJoin` table @Staff `on` (\(r :& e) -> r ^. RoleStaff ==. e ^. StaffId)
@@ -313,17 +320,18 @@ postRequestApproveR bid = do
                   `innerJoin` table @Service `on` (\(r :& _ :& _ :& s) -> r ^. RoleService ==. s ^. ServiceId)
               where_ $ u ^. UserId ==. val uid
               where_ $ case book of
-                Just (_,Entity _ (Offer sid _ _ _ _ _)) -> s ^. ServiceId ==. val sid
+                Just ((_,Entity _ (Offer sid _ _ _ _ _)),_) -> s ^. ServiceId ==. val sid
                 Nothing -> val False
               return r
-              
+
           case (book,role) of
-            (Just (Entity _ (Book _ _ _ day time addr tzo tz _),_),Just (Entity rid _)) -> do
+            (Just ((Entity _ (Book _ _ _ day time addr tzo tz _),_),(role',empl')),Just (Entity rid _)) -> do
                 runDB $ update $ \x -> do
                     set x [BookRole =. just (val rid), BookStatus =. val BookStatusApproved]
                     where_ $ x ^. BookId ==. val bid
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusApproved
+                    (roleName . entityVal <$> role') (staffName . entityVal <$> empl')
                 redirect $ RequestR bid
 
             (Nothing,_) -> do
@@ -332,7 +340,7 @@ postRequestApproveR bid = do
             (_,Nothing) -> do
                 addMessageI "warn" MsgNonexpert
                 redirect $ RequestR bid
-                
+
       (FormSuccess _, Nothing) -> do
           addMessageI "warn" MsgLoginToPerformAction
           redirect $ RequestR bid
@@ -424,11 +432,13 @@ postRequestR :: BookId -> Handler Html
 postRequestR bid = do
     user <- maybeAuth
     book <- runDB $ selectOne $ do
-        x :& o <- from $ table @Book `innerJoin` table @Offer
-            `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
-        where_ $ x ^. BookId ==. val bid
-        return (x,o)
-    ((fr,fw),et) <- runFormPost $ formReschedule (fst <$> book)
+        b :& o :& r :& e <- from $ table @Book
+            `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
+            `leftJoin` table @Role `on` (\(b :& _ :& r) -> b ^. BookRole ==. r ?. RoleId)
+            `leftJoin` table @Staff `on` (\(_ :& _ :& r :& e) -> r ?. RoleStaff ==. e ?. StaffId)
+        where_ $ b ^. BookId ==. val bid
+        return ((b,o),(r,e))
+    ((fr,fw),et) <- runFormPost $ formReschedule (fst . fst <$> book)
     case (fr,user) of
       (FormSuccess (day,time,_,_,_), Just (Entity uid _)) -> do
           role <- runDB $ selectOne $ do
@@ -438,12 +448,12 @@ postRequestR bid = do
                   `innerJoin` table @Service `on` (\(r :& _ :& _ :& s) -> r ^. RoleService ==. s ^. ServiceId)
               where_ $ u ^. UserId ==. val uid
               where_ $ case book of
-                Just (_,Entity _ (Offer sid _ _ _ _ _)) -> s ^. ServiceId ==. val sid
+                Just ((_,Entity _ (Offer sid _ _ _ _ _)),(_,_)) -> s ^. ServiceId ==. val sid
                 Nothing -> val False
               return r
-          
+
           case (book,role) of
-            (Just (Entity _ (Book _ _ _ _ _ addr tzo tz _),_),Just (Entity rid _)) -> do
+            (Just ( ( Entity _ (Book _ _ _ _ _ addr tzo tz _) ,_ ),(role',empl')), Just (Entity rid _) ) -> do
                 runDB $ update $ \x -> do
                     set x [ BookRole =. just (val rid)
                           , BookDay =. val day
@@ -456,8 +466,8 @@ postRequestR bid = do
                     where_ $ x ^. BookId ==. val bid
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusAdjusted
+                    (roleName . entityVal <$> role') (staffName . entityVal <$> empl')
                 redirect $ RequestR bid
-
             (Nothing,_) -> do
                 addMessageI "warn" MsgEntityNotFound
                 redirect $ RequestR bid
@@ -465,7 +475,7 @@ postRequestR bid = do
             (_,Nothing) -> do
                 addMessageI "warn" MsgNonexpert
                 redirect $ RequestR bid
-                
+
       (FormSuccess _, Nothing) -> do
           app <- getYesod
           langs <- languages
@@ -607,4 +617,3 @@ assigneeList = [ (AssigneesMe,MsgAssignedToMe)
                , (AssigneesNone,MsgWithoutAssignee)
                , (AssigneesOthers,MsgFromCoworkers)
                ]
-

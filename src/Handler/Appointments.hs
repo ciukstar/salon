@@ -62,19 +62,18 @@ import Foundation
       )
     , AdminR (AdmStaffPhotoR)
     , AppMessage
-      ( MsgMyAppointments, MsgLogin, MsgPhoto, MsgBack
-      , MsgLoginToSeeYourAppointments, MsgNoAppointmentsYet
-      , MsgBookAppointment, MsgAppointment, MsgDuration, MsgAdjusted
-      , MsgSymbolHour, MsgSymbolMinute, MsgAppoinmentStatus
-      , MsgService, MsgReschedule, MsgMeetingTime, MsgHistory
-      , MsgMeetingLocation, MsgAwaitingApproval, MsgApproved
-      , MsgCancelled, MsgPaid, MsgCustomer, MsgCancelAppointment
-      , MsgPleaseConfirm, MsgAcquaintance, MsgCancelAppointmentReally
-      , MsgNo, MsgYes, MsgLoginToPerformAction, MsgEntityNotFound
-      , MsgNoHistoryYet, MsgStatus, MsgTimeZone, MsgTime, MsgDay
-      , MsgInvalidFormData, MsgMissingForm, MsgSave, MsgCancel, MsgApprove
-      , MsgAppointmentTimeIsInThePast, MsgAppointmentDayIsInThePast, MsgMinutes
-      , MsgTimeZoneOffset, MsgLocation, MsgNavigationMenu, MsgUserProfile
+      ( MsgMyAppointments, MsgLogin, MsgPhoto, MsgNoAppointmentsYet
+      , MsgBack, MsgLoginToSeeYourAppointments, MsgBookAppointment
+      , MsgAppointment, MsgDuration, MsgAdjusted, MsgSymbolHour
+      , MsgSymbolMinute, MsgAppoinmentStatus, MsgService, MsgReschedule
+      , MsgMeetingTime, MsgHistory, MsgMeetingLocation, MsgAwaitingApproval
+      , MsgApproved, MsgCancelled, MsgPaid, MsgCustomer, MsgCancelAppointment
+      , MsgPleaseConfirm, MsgAcquaintance, MsgCancelAppointmentReally, MsgNo
+      , MsgYes, MsgLoginToPerformAction, MsgEntityNotFound, MsgNoHistoryYet
+      , MsgStatus, MsgTimeZone, MsgTime, MsgDay, MsgInvalidFormData, MsgSave
+      , MsgCancel, MsgApprove, MsgMissingForm, MsgAppointmentTimeIsInThePast
+      , MsgAppointmentDayIsInThePast, MsgMinutes, MsgTimeZoneOffset, MsgLocation
+      , MsgNavigationMenu, MsgUserProfile, MsgUnassigned, MsgAssignee
       )
     )
 
@@ -84,8 +83,8 @@ import Model
       , BookStatusAdjusted
       )
     , BookId, Book (Book, bookDay, bookTz, bookTzo, bookTime, bookAddr)
-    , Offer (Offer), Service (Service), Role (Role), Hist (Hist)
-    , Staff (Staff), Thumbnail (Thumbnail), User (User), Contents (Contents)
+    , Offer (Offer), Service (Service), Role (Role, roleName), Hist (Hist)
+    , Staff (Staff, staffName), Thumbnail (Thumbnail), User (User), Contents (Contents)
     , EntityField
       ( BookOffer, OfferId, BookCustomer, BookId, OfferService, ServiceId
       , BookDay, BookTime, BookRole, RoleId, RoleStaff, StaffId, ThumbnailService
@@ -105,18 +104,21 @@ postAppointmentApproveR bid = do
     case (fr, user) of
       (FormSuccess _, Just (Entity uid _)) -> do
           book <- runDB $ selectOne $ do
-              x <- from $ table @Book
-              where_ $ x ^. BookId ==. val bid
-              where_ $ x ^. BookCustomer ==. val uid
-              return x
+              b :& r :& e <- from $ table @Book
+                  `leftJoin` table @Role `on` (\(b :& r) -> b ^. BookRole ==. r ?. RoleId)
+                  `leftJoin` table @Staff `on` (\(_ :& r :& e) -> r ?. RoleStaff ==. e ?. StaffId)
+              where_ $ b ^. BookId ==. val bid
+              where_ $ b ^. BookCustomer ==. val uid
+              return (b,r,e)
           case book of
-            Just (Entity _ (Book _ _ _ day time addr tzo tz _)) -> do
+            Just (Entity _ (Book _ _ _ day time addr tzo tz _),role,empl) -> do
                 runDB $ update $ \x -> do
                     set x [BookStatus =. val BookStatusApproved]
                     where_ $ x ^. BookId ==. val bid
                     where_ $ x ^. BookCustomer ==. val uid
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusApproved
+                    (roleName . entityVal <$> role) (staffName . entityVal <$> empl)
                 redirect $ AppointmentR bid
 
             Nothing -> do
@@ -244,18 +246,21 @@ postAppointmentCancelR bid = do
     case (fr, user) of
       (FormSuccess _, Just (Entity uid _)) -> do
           book <- runDB $ selectOne $ do
-              x <- from $ table @Book
-              where_ $ x ^. BookId ==. val bid
-              where_ $ x ^. BookCustomer ==. val uid
-              return x
+              b :& r :& e <- from $ table @Book
+                  `leftJoin` table @Role `on` (\(b :& r) -> b ^. BookRole ==. r ?. RoleId)
+                  `leftJoin` table @Staff `on` (\(_ :& r :& e) -> r ?. RoleStaff ==. e ?. StaffId)
+              where_ $ b ^. BookId ==. val bid
+              where_ $ b ^. BookCustomer ==. val uid
+              return (b,r,e)
           case book of
-            Just (Entity _ (Book _ _ _ day time addr tzo tz _)) -> do
+            Just (Entity _ (Book _ _ _ day time addr tzo tz _),role,empl) -> do
                 runDB $ update $ \x -> do
                     set x [BookStatus =. val BookStatusCancelled]
                     where_ $ x ^. BookId ==. val bid
                     where_ $ x ^. BookCustomer ==. val uid
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusCancelled
+                    (roleName . entityVal <$> role) (staffName . entityVal <$> empl)
                 redirect $ AppointmentR bid
 
             Nothing -> do
@@ -279,12 +284,14 @@ postAppointmentR bid = do
     case (fr,user) of
       (FormSuccess (day,time,_,_,_), Just (Entity uid _)) -> do
           book <- runDB $ selectOne $ do
-              x <- from $ table @Book
-              where_ $ x ^. BookId ==. val bid
-              where_ $ x ^. BookCustomer ==. val uid
-              return x
+              b :& r :& e <- from $ table @Book
+                  `leftJoin` table @Role `on` (\(b :& r) -> b ^. BookRole ==. r ?. RoleId)
+                  `leftJoin` table @Staff `on` (\(_ :& r :& e) -> r ?. RoleStaff ==. e ?. StaffId)
+              where_ $ b ^. BookId ==. val bid
+              where_ $ b ^. BookCustomer ==. val uid
+              return (b,r,e)
           case book of
-            Just (Entity _ (Book _ _ _ _ _ addr tzo tz _)) -> do
+            Just (Entity _ (Book _ _ _ _ _ addr tzo tz _),role,empl) -> do
                 runDB $ update $ \x -> do
                     set x [ BookDay =. val day
                           , BookTime =. val time
@@ -297,6 +304,7 @@ postAppointmentR bid = do
                     where_ $ x ^. BookCustomer ==. val uid
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusRequest
+                    (roleName . entityVal <$> role) (staffName . entityVal <$> empl)
                 redirect $ AppointmentR bid
 
             Nothing -> do

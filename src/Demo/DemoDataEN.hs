@@ -46,7 +46,7 @@ import Model
       ( Business, businessName, businessAddr, businessTzo, businessTz
       , businessPhone, businessMobile, businessEmail
       )
-    , Hist (Hist, histBook, histLogtime, histDay, histTime, histAddr, histTzo, histStatus, histUser, histTz)
+    , Hist (Hist, histBook, histLogtime, histDay, histTime, histAddr, histTzo, histStatus, histUser, histTz, histRoleName, histStaffName)
     )
 import Data.FileEmbed (embedFile)
 import Demo.DemoPhotos
@@ -139,16 +139,18 @@ We will continue to offer the latest treatments, the most innovative techniques 
                         , userPassword = decodeUtf8 pass1
                         , userAdmin = False
                         , userFullName = Just "Johnny Smith"
-                        , userEmail = Just "jsmith@mail.en"
+                        , userEmail = Just "jsmith@mail.uk"
                         }
 
-    e1 <- insert $ Staff { staffName = "Johnny Smith"
-                         , staffStatus = EmplStatusEmployed
-                         , staffPhone = Just "0491 570 006"
-                         , staffMobile = Just "0491 570 156"
-                         , staffEmail = Just "jsmith@mail.en"
-                         , staffUser = Just u1
-                         }
+    let empl1 = Staff { staffName = "Johnny Smith"
+                      , staffStatus = EmplStatusEmployed
+                      , staffPhone = Just "0491 570 006"
+                      , staffMobile = Just "0491 570 156"
+                      , staffEmail = Just "jsmith@mail.uk"
+                      , staffUser = Just u1
+                      }
+
+    e1 <- insert empl1
 
     case B64.decode man01 of
       Left _ -> return ()
@@ -357,13 +359,15 @@ We will continue to offer the latest treatments, the most innovative techniques 
                         , userEmail = Just "ihughes@mail.uk"
                         }
 
-    e11 <- insert $ Staff { staffName = "Isabel Hughes"
-                          , staffStatus = EmplStatusDismissed
-                          , staffPhone = Just "0491 570 006"
-                          , staffMobile = Just "0491 570 156"
-                          , staffEmail = Just "ihughes@mail.uk"
-                          , staffUser = Just u8
-                          }
+    let empl11 = Staff { staffName = "Isabel Hughes"
+                       , staffStatus = EmplStatusDismissed
+                       , staffPhone = Just "0491 570 006"
+                       , staffMobile = Just "0491 570 156"
+                       , staffEmail = Just "ihughes@mail.uk"
+                       , staffUser = Just u8
+                       }
+
+    e11 <- insert empl11
 
     case B64.decode woman05 of
       Left _ -> return ()
@@ -402,11 +406,13 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             , serviceGroup = Just s1
                             }
 
-    r111 <- insert $ Role { roleStaff = e1
-                          , roleService = s11
-                          , roleName = "Barber"
-                          , roleRating = Just 5
-                          }
+    let role111 =  Role { roleStaff = e1
+                        , roleService = s11
+                        , roleName = "Barber"
+                        , roleRating = Just 5
+                        } 
+
+    r111 <- insert $ role111
 
     insert_ $ Role { roleStaff = e2
                    , roleService = s11
@@ -493,11 +499,13 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
-    r1311 <- insert $ Role { roleStaff = e11
-                           , roleService = s13
-                           , roleName = "Stylist"
-                           , roleRating = Just 5
-                           }
+    let role1311 = Role { roleStaff = e11
+                        , roleService = s13
+                        , roleName = "Stylist"
+                        , roleRating = Just 5
+                        }
+
+    r1311 <- insert role1311
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s13
@@ -1720,7 +1728,7 @@ Similar to a regular hair perm, try to avoid wetting your eyelashes for 4 hours 
                     , offerName = "Price"
                     , offerPrice = 130
                     , offerPrefix = Just "$"
-                    , offerSuffix = Just " & up" 
+                    , offerSuffix = Just " & up"
                     , offerDescr = Nothing
                     }
 
@@ -2623,14 +2631,14 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
                         , userFullName = Just "Patty O’Furniture"
                         , userEmail = Just "pattyofurniture@mail.org"
                         }
-          
+
     insert_ $ UserPhoto { userPhotoUser = c1
                         , userPhotoPhoto = $(embedFile "static/img/customer-women-1.avif")
                         , userPhotoMime = "image/avif"
                         }
 
     let book1 = Book { bookOffer = o131
-                     , bookRole = Just r1311 
+                     , bookRole = Just r1311
                      , bookCustomer = c1
                      , bookDay = addDays 1 today
                      , bookTime = time
@@ -2641,7 +2649,7 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
                      }
 
     b1 <- insert book1
-          
+
     insert_ $ Hist { histBook = b1
                    , histUser = c1
                    , histLogtime = now
@@ -2651,6 +2659,8 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
                    , histTzo = bookTzo book1
                    , histTz = bookTz book1
                    , histStatus = BookStatusRequest
+                   , histRoleName = Just $ roleName role1311
+                   , histStaffName = Just $ staffName empl11
                    }
 
 
@@ -2661,14 +2671,14 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
                         , userFullName = Just "Ray Sin"
                         , userEmail = Just "raysin@mail.org"
                         }
-          
+
     insert_ $ UserPhoto { userPhotoUser = c2
                         , userPhotoPhoto = $(embedFile "static/img/customer-men-1.avif")
                         , userPhotoMime = "image/avif"
                         }
 
     let book2 = Book { bookOffer = o111
-                     , bookRole = Just r111 
+                     , bookRole = Just r111
                      , bookCustomer = c2
                      , bookDay = addDays 2 today
                      , bookTime = time
@@ -2679,7 +2689,7 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
                      }
 
     b2 <- insert book2
-          
+
     insert_ $ Hist { histBook = b2
                    , histUser = c2
                    , histLogtime = now
@@ -2689,10 +2699,12 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
                    , histTzo = bookTzo book2
                    , histTz = bookTz book2
                    , histStatus = BookStatusRequest
+                   , histRoleName = Just $ roleName role111
+                   , histStaffName = Just $ staffName empl1
                    }
 
     let book3 = Book { bookOffer = o141
-                     , bookRole = Nothing 
+                     , bookRole = Nothing
                      , bookCustomer = c1
                      , bookDay = addDays 3 today
                      , bookTime = time
@@ -2703,9 +2715,9 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
                      }
 
     b3 <- insert book3
-          
+
     insert_ $ Hist { histBook = b3
-                   , histUser = c1 
+                   , histUser = c1
                    , histLogtime = now
                    , histDay = bookDay book3
                    , histTime = bookTime book3
@@ -2713,6 +2725,8 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
                    , histTzo = bookTzo book3
                    , histTz = bookTz book3
                    , histStatus = BookStatusRequest
+                   , histRoleName = Nothing
+                   , histStaffName = Nothing
                    }
 
     return ()

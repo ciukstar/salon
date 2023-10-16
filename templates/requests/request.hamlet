@@ -126,7 +126,9 @@
               $nothing
                 <figure>
                   <i.material-symbols-outlined style="font-size:3rem">indeterminate_question_box
-
+                  <figcaption>
+                    <small>(_{MsgUnassigned})
+  
               <i.material-symbols-outlined style="align-self:center;color:var(--mdc-theme-text-icon-on-background)">
                 handshake
 
