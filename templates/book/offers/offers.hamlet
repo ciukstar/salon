@@ -1,4 +1,6 @@
+
 ^{menu}
+
 <header.mdc-top-app-bar.mdc-top-app-bar--prominent.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
@@ -33,8 +35,14 @@
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
 
-  <form method=post action=@?{(BookOffersR,oids)} enctype=#{et} #formOffers novalidate>
-    ^{fw}
+  $if null offers
+    <figure style="display:flex;flex-direction:column;align-items:center">
+      <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
+      <figcaption>
+        _{MsgNoOffersYet}.
+  $else
+    <form method=post action=@?{(BookOffersR,oids)} enctype=#{et} ##{formPostOffers} novalidate>
+      ^{fw}
 
 <footer>
   <div #footerContent>
@@ -55,7 +63,8 @@
                 #{suffix}
     <section #footerSectionEnd>
       <button.mdc-button.mdc-button--raised.mdc-button--icon-trailing
-        type=submit form=formOffers name=y onclick="this.value = window.scrollY">
+        type=submit name=y form=#{formPostOffers} :null offers:disabled
+        onclick="this.value = window.scrollY">
         <span.mdc-button__ripple>
         <span.mdc-button__focus-ring>
         <span.mdc-button__label>_{MsgContinue}

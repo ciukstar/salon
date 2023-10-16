@@ -96,7 +96,8 @@ import Foundation
       , MsgMinutes, MsgSearch, MsgAddress, MsgCategory, MsgSelect, MsgCancel
       , MsgCategories, MsgNoServicesFound, MsgLocation, MsgInvalidBusinessAddress
       , MsgInvalidBusinessTimeZoneOffset, MsgInvalidBusinessTimeZone
-      , MsgUserProfile, MsgNavigationMenu
+      , MsgUserProfile, MsgNavigationMenu, MsgNoOffersYet, MsgNoOffersFound
+      , MsgNoCategoriesFound
       )
     )
 
@@ -364,6 +365,7 @@ postBookOffersR = do
       _ -> do
           msgs <- getMessages
           let items = ioffers
+          formPostOffers <- newIdent
           defaultLayout $ do
               setTitleI MsgOffers
               $(widgetFile "book/offers/banner")
@@ -379,6 +381,7 @@ getBookOffersR = do
     (fw,et) <- generateFormPost $ formOffers items offers
     msgs <- getMessages
     setUltDestCurrent
+    formPostOffers <- newIdent
     defaultLayout $ do
         setTitleI MsgOffers
         $(widgetFile "book/offers/offers")

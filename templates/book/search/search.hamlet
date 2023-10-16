@@ -42,7 +42,7 @@
     <figure style="text-align:center">
       <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
       <figcaption>
-        _{MsgNoServicesFound}.
+        _{MsgNoOffersFound}.
   $else
     <form method=post action=@?{(BookSearchR,oids)} enctype=#{et} #formOffers novalidate>
       ^{fw}
@@ -93,27 +93,33 @@ $forall (_,msg) <- msgs
           <span.mdc-icon-button__ripple>
           <i.material-symbols-outlined>close
       <div.mdc-dialog__content>
-        $forall Entity sid (Service name _ _ _ _ _) <- groups
-          $with ident <- fromSqlKey sid
-            <div.mdc-form-field.mdc-form-field--nowrap>
-              <div.mdc-checkbox data-mdc-auto-init=MDCCheckbox>
-                <input.mdc-checkbox__native-control type=checkbox form=#{formSearch} #checkbox#{ident}
-                 name=categ value=#{ident} :elem sid categs:checked>
-                <div.mdc-checkbox__background>
-                  <svg.mdc-checkbox__checkmark viewBox="0 0 24 24">
-                    <path.mdc-checkbox__checkmark-path fill=none d="M1.73,12.91 8.1,19.28 22.79,4.59">
-                  <div.mdc-checkbox__mixedmark>
-                <div.mdc-checkbox__ripple>
-                <div.mdc-checkbox__focus-ring>
-              <label.mdc-list-item__primary-text for=checkbox#{ident}>
-                #{name}
+        $if null groups
+          <figure style="text-align:center">
+            <span style="font-size:5rem;line-height:1;color:var(--mdc-theme-primary)">&varnothing;
+            <figcaption>
+              _{MsgNoCategoriesFound}.
+        $else
+          $forall Entity sid (Service name _ _ _ _ _) <- groups
+            $with ident <- fromSqlKey sid
+              <div.mdc-form-field.mdc-form-field--nowrap>
+                <div.mdc-checkbox data-mdc-auto-init=MDCCheckbox>
+                  <input.mdc-checkbox__native-control type=checkbox form=#{formSearch} #checkbox#{ident}
+                   name=categ value=#{ident} :elem sid categs:checked>
+                  <div.mdc-checkbox__background>
+                    <svg.mdc-checkbox__checkmark viewBox="0 0 24 24">
+                      <path.mdc-checkbox__checkmark-path fill=none d="M1.73,12.91 8.1,19.28 22.79,4.59">
+                    <div.mdc-checkbox__mixedmark>
+                  <div.mdc-checkbox__ripple>
+                  <div.mdc-checkbox__focus-ring>
+                <label.mdc-list-item__primary-text for=checkbox#{ident}>
+                  #{name}
               
       <div.mdc-dialog__actions>
-        <button.mdc-button type=button onclick="document.getElementById('#{dlgCategList}').MDCDialog.close()">
+        <button.mdc-button type=button data-mdc-dialog-action=cancel>
           <span.mdc-button__ripple>
           <span.mdc-button__focus-ring>
           <span.mdc-button__label>_{MsgCancel}
-        <button.mdc-button.mdc-button--raised type=submit form=#{formSearch}>
+        <button.mdc-button.mdc-button--raised type=submit form=#{formSearch} :null groups:disabled>
           <span.mdc-button__ripple>
           <span.mdc-button__focus-ring>
           <span.mdc-button__label>_{MsgSelect}

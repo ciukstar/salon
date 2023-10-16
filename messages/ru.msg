@@ -1,3 +1,5 @@
+NoCategoriesFound: Категории не найдены
+NoOffersFound: Предложений не найдено
 Unassigned: Не назначена 
 AreYouSureYouWantToTakeOnThisTask: Вы уверены, что хотите взять на себя эту задачу?
 AssignToMe: Назначить мне

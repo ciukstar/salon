@@ -1,3 +1,5 @@
+NoCategoriesFound: Aucune catégorie trouvée
+NoOffersFound: Aucune offre trouvée
 Unassigned: Non attribué
 AreYouSureYouWantToTakeOnThisTask: Êtes-vous sûr de vouloir assumer cette tâche ?
 AssignToMe: Attribuez-moi

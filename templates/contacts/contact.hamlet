@@ -26,6 +26,11 @@
 <main.mdc-top-app-bar--prominent-fixed-adjust>
   $maybe Entity _ (Contents _ content) <- contacts
     #{preEscapedToMarkup $ unTextarea content}
+  $nothing
+    <figure style="text-align:center">
+      <span style="font-size:5rem;line-height:1;color:var(--mdc-theme-primary)">&varnothing;
+      <figcaption>
+        _{MsgNoContentYet}.
 
 $forall (_,msg) <- msgs
   <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>

@@ -68,14 +68,7 @@ populateEN = do
                             , businessEmail = Just "salon@mail.uk"
                             }
 
-    insert_ $ Business { businessName = "Salon"
-                       , businessAddr = "73 Parsons Green Ln Fulham London SW6 4JA"
-                       , businessTzo = utc
-                       , businessTz = "Europe/London"
-                       , businessPhone = Just "020-7736-6600"
-                       , businessMobile = Just "567-274-7469"
-                       , businessEmail = Just "salon@mail.uk"
-                       }
+    insert_ business
 
     insert_ $ Contents { contentsSection = "CONTACTS"
                        , contentsContent = Textarea [st|

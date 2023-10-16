@@ -49,7 +49,7 @@
                 <i.material-symbols-outlined>close
     $of _
 
-  <form method=post action=@?{(BookOffersR,oids)} enctype=#{et} #formOffers novalidate>
+  <form method=post action=@?{(BookOffersR,oids)} enctype=#{et} ##{formPostOffers} novalidate>
     ^{fw}
 
 <footer>
@@ -71,7 +71,7 @@
                 #{suffix}
     <section #footerSectionEnd>
       <button.mdc-button.mdc-button--raised.mdc-button--icon-trailing
-        type=submit form=formOffers name=scrollY onclick="this.value = window.scrollY">
+        type=submit form=#{formPostOffers} name=scrollY onclick="this.value = window.scrollY">
         <span.mdc-button__ripple>
         <span.mdc-button__focus-ring>
         <span.mdc-button__label>_{MsgContinue}

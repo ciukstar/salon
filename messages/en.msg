@@ -1,3 +1,5 @@
+NoCategoriesFound: No categories found
+NoOffersFound: No offers found
 Unassigned: Unassigned
 AreYouSureYouWantToTakeOnThisTask: Are you sure you want to take on this task?
 AssignToMe: Assign to Me

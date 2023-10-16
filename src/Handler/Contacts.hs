@@ -6,7 +6,8 @@ module Handler.Contacts (getContactR, section) where
 
 import Text.Hamlet (Html)
 import Yesod.Auth (maybeAuth, Route (LoginR))
-import Yesod.Core (Yesod(defaultLayout), preEscapedToMarkup, setUltDestCurrent, getMessages)
+import Yesod.Core
+    ( Yesod(defaultLayout), preEscapedToMarkup, setUltDestCurrent, getMessages)
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Form.Fields (unTextarea)
 import Settings (widgetFile)
@@ -24,7 +25,7 @@ import Foundation
     , Route (ProfileR, AuthR, PhotoPlaceholderR, AccountPhotoR)
     , AppMessage
       ( MsgContactUs, MsgContact, MsgPhoto, MsgNavigationMenu, MsgUserProfile
-      , MsgLogin
+      , MsgLogin, MsgNoContentYet
       )
     )
     

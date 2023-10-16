@@ -1,3 +1,5 @@
+NoCategoriesFound: Nu a fost găsită nicio categorie
+NoOffersFound: Nu au fost găsite oferte
 Unassigned: Nealocat
 AreYouSureYouWantToTakeOnThisTask: Sunteți sigur că doriți să vă ocupați de această sarcină?
 AssignToMe: Atribuie mie
