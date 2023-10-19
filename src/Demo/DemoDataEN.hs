@@ -37,7 +37,7 @@ import Model
       ( Offer, offerName, offerPrice, offerPrefix
       , offerSuffix, offerDescr, offerService
       )
-    , EmplStatus (EmplStatusEmployed, EmplStatusDismissed)
+    , EmplStatus (EmplStatusAvailable, EmplStatusUnavailable)
     , Staff
       ( Staff, staffName, staffStatus, staffPhone, staffMobile, staffEmail
       , staffUser
@@ -51,8 +51,8 @@ import Model
       , bookTz, bookStatus, bookAddr
       )
     , Business
-      ( Business, businessName, businessAddr, businessTzo, businessTz
-      , businessPhone, businessMobile, businessEmail
+      ( Business, businessName, businessFullName, businessAddr, businessTzo, businessTz
+      , businessPhone, businessMobile, businessEmail, businessCurrency
       )
     , Hist
       ( Hist, histBook, histLogtime, histDay, histTime, histAddr, histTzo
@@ -71,6 +71,8 @@ populateEN = do
     (now,today,time) <- liftIO $ getCurrentTime >>= \x -> return (x ,utctDay x,timeToTimeOfDay (utctDayTime x))
 
     let business = Business { businessName = "Salon"
+                            , businessFullName = Just "Salon Ltd"
+                            , businessCurrency = "$"
                             , businessAddr = "73 Parsons Green Ln Fulham London SW6 4JA"
                             , businessTzo = utc
                             , businessTz = "Europe/London"
@@ -152,7 +154,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     u1 <- insert user1
 
     let empl1 = Staff { staffName = case userFullName user1 of Just name -> name; Nothing -> userName user1
-                      , staffStatus = EmplStatusEmployed
+                      , staffStatus = EmplStatusAvailable
                       , staffPhone = businessPhone business
                       , staffMobile = businessMobile business
                       , staffEmail = userEmail user1
@@ -183,7 +185,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     u2 <- insert user2
 
     e2 <- insert $ Staff { staffName = case userFullName user2 of Just name -> name; Nothing -> userName user2
-                         , staffStatus = EmplStatusEmployed
+                         , staffStatus = EmplStatusAvailable
                          , staffPhone = businessPhone business
                          , staffMobile = businessMobile business
                          , staffEmail = userEmail user2
@@ -213,7 +215,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     u3 <- insert user3
 
     e3 <- insert $ Staff { staffName = case userFullName user3 of Just name -> name; Nothing -> userName user3
-                         , staffStatus = EmplStatusEmployed
+                         , staffStatus = EmplStatusAvailable
                          , staffPhone = businessPhone business
                          , staffMobile = businessMobile business
                          , staffEmail = userEmail user3
@@ -243,7 +245,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     u4 <- insert user4
 
     e4 <- insert $ Staff { staffName = case userFullName user4 of Just name -> name; Nothing -> userName user4
-                         , staffStatus = EmplStatusEmployed
+                         , staffStatus = EmplStatusAvailable
                          , staffPhone = businessPhone business
                          , staffMobile = businessMobile business
                          , staffEmail = userEmail user4
@@ -272,7 +274,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     u5 <- insert user5
 
     e5 <- insert $ Staff { staffName = case userFullName user5 of Just name -> name; Nothing -> userName user5
-                         , staffStatus = EmplStatusEmployed
+                         , staffStatus = EmplStatusAvailable
                          , staffPhone = businessPhone business
                          , staffMobile = businessMobile business
                          , staffEmail = userEmail user5
@@ -292,7 +294,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               }
 
     e6 <- insert $ Staff { staffName = "Philip Davis"
-                         , staffStatus = EmplStatusEmployed
+                         , staffStatus = EmplStatusAvailable
                          , staffPhone = businessPhone business
                          , staffMobile = businessMobile business
                          , staffEmail = Just "phdavis@mail.uk"
@@ -307,7 +309,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                                       }
 
     e7 <- insert $ Staff { staffName = "Helen Taylor"
-                         , staffStatus = EmplStatusEmployed
+                         , staffStatus = EmplStatusAvailable
                          , staffPhone = businessPhone business
                          , staffMobile = businessMobile business
                          , staffEmail = Just "htaylor@mail.uk"
@@ -322,7 +324,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                                       }
 
     e8 <- insert $ Staff { staffName = "Barbara Young"
-                         , staffStatus = EmplStatusEmployed
+                         , staffStatus = EmplStatusAvailable
                          , staffPhone = businessPhone business
                          , staffMobile = businessMobile business
                          , staffEmail = Just "byoung@mail.uk"
@@ -337,7 +339,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                                       }
 
     e9 <- insert $ Staff { staffName = "Jorge Walker"
-                         , staffStatus = EmplStatusEmployed
+                         , staffStatus = EmplStatusAvailable
                          , staffPhone = businessPhone business
                          , staffMobile = businessMobile business
                          , staffEmail = Just "jwalker@mail.uk"
@@ -352,7 +354,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                                       }
 
     e10 <- insert $ Staff { staffName = "Robert William Evans"
-                         , staffStatus = EmplStatusEmployed
+                         , staffStatus = EmplStatusAvailable
                          , staffPhone = businessPhone business
                          , staffMobile = businessMobile business
                          , staffEmail = Just "revans@mail.uk"
@@ -377,7 +379,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     u11 <- insert user11
 
     let empl11 = Staff { staffName = case userFullName user11 of Just name -> name; Nothing -> userName user11
-                       , staffStatus = EmplStatusDismissed
+                       , staffStatus = EmplStatusUnavailable
                        , staffPhone = businessPhone business
                        , staffMobile = businessMobile business
                        , staffEmail = userEmail user11

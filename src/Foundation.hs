@@ -352,6 +352,7 @@ formLogin route = do
                where_ $ E.exists $ do
                    e <- from $ table @Staff
                    where_ $ e ^. StaffUser E.==. just (x ^. UserId)
+                   where_ $ e ^. StaffStatus E.==. val EmplStatusAvailable
                return $ x :& val True
 
         orderBy [asc y, asc (x ^. UserName)]

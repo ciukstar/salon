@@ -52,15 +52,14 @@
         <span>_{MsgServices}
       $with amount <- show $ amount items
         <div #footerBookAmount>
-          $maybe ((_,Entity _ (Offer _ _ _ prefix _ _)),_) <- LS.head offers
-            $maybe prefix <- prefix
-              #{prefix}
+          $maybe Entity _ (Business _ _ curr _ _ _ _ _ _) <- business
+            $if "$" == curr
+              #{curr}
           <span data-amount=#{amount}>#{amount}
-          $maybe ((_,Entity _ (Offer _ _ _ prefix suffix _)),_) <- LS.head offers
-            $maybe _ <- prefix
-            $nothing
-              $maybe suffix <- suffix
-                #{suffix}
+          $maybe Entity _ (Business _ _ curr _ _ _ _ _ _) <- business
+            $if "$" /= curr
+              #{curr}
+              
     <section #footerSectionEnd>
       <button.mdc-button.mdc-button--raised.mdc-button--icon-trailing
         type=submit name=y form=#{formPostOffers} :null offers:disabled

@@ -166,7 +166,7 @@
           <span.mdc-icon-button__ripple>
           <i.material-symbols-outlined>close
       <div.mdc-dialog__content>
-        $forall (status,label) <- [(EmplStatusEmployed,MsgEmployed),(EmplStatusDismissed,MsgDismissed)]
+        $forall (status,label) <- [(EmplStatusAvailable,MsgAvailable),(EmplStatusUnavailable,MsgUnavailable)]
           $with ident <- show status
             <div.mdc-form-field.mdc-form-field--nowrap>
               <div.mdc-checkbox data-mdc-auto-init=MDCCheckbox>

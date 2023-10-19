@@ -26,7 +26,7 @@ import Yesod.Core
     , SomeMessage (SomeMessage), setUltDestCurrent, fileSourceByteString
     , typeSvg, ToContent (toContent), emptyContent, addMessageI
     )
-import Yesod.Form.Fields (unTextarea, fileField, textareaField)
+import Yesod.Form.Fields (unTextarea, fileField, textField, textareaField)
 import Yesod.Form.Functions (generateFormPost, mopt, runFormPost)
 import Yesod.Form.Types
     ( MForm, FormResult (FormSuccess)
@@ -51,7 +51,7 @@ import Foundation
       , MsgDeleteAreYouSure, MsgSave, MsgCancel, MsgBrandMark
       , MsgNoBrandYet, MsgBrandName, MsgBrandStrapline, MsgFavicon, MsgMore
       , MsgRecordAdded, MsgRecordEdited, MsgRecordDeleted, MsgNavigationMenu
-      , MsgLogin, MsgUserProfile, MsgEdit, MsgDel
+      , MsgLogin, MsgUserProfile, MsgEdit, MsgDel, MsgMarkWidth, MsgMarkHeight
       )
     )
     
@@ -59,11 +59,11 @@ import Model
     ( BrandId
     , Brand
       (Brand, brandName, brandStrapline, brandMore, brandMark, brandIco
-      , brandMarkMime, brandIcoMime
+      , brandMarkMime, brandIcoMime, brandMarkHeight, brandMarkWidth
       )
     , EntityField
-      ( BrandId, BrandMark, BrandName, BrandStrapline, BrandMore, BrandMarkMime
-      , BrandIco, BrandIcoMime
+      ( BrandId, BrandMark, BrandMarkWidth, BrandMarkHeight, BrandName
+      , BrandStrapline, BrandMore, BrandMarkMime, BrandIco, BrandIcoMime
       )
     )
     
@@ -79,7 +79,7 @@ getBrandIcoR bid = do
         where_ $ x ^. BrandId ==. val bid
         return x
     return $ case brand of
-      Just (Entity _ (Brand _ _ _ _ (Just bs) (Just mime) _)) -> TypedContent (encodeUtf8 mime) (toContent bs)
+      Just (Entity _ (Brand _ _ _ _ _ _ (Just bs) (Just mime) _)) -> TypedContent (encodeUtf8 mime) (toContent bs)
       _ -> TypedContent typeSvg emptyContent
 
 
@@ -90,7 +90,7 @@ getBrandMarkR bid = do
         where_ $ x ^. BrandId ==. val bid
         return x
     return $ case brand of
-      Just (Entity _ (Brand (Just bs) (Just mime) _ _ _ _ _)) -> TypedContent (encodeUtf8 mime) (toContent bs)
+      Just (Entity _ (Brand (Just bs) (Just mime) _ _ _ _ _ _ _)) -> TypedContent (encodeUtf8 mime) (toContent bs)
       _ -> TypedContent typeSvg emptyContent
 
 
@@ -109,7 +109,9 @@ postBrandEditR bid = do
           (mark,markMime) <- (,fileContentType <$> mmark) <$> mapM fileSourceByteString mmark
           (ico,icoMime) <- (,fileContentType <$> mico) <$> mapM fileSourceByteString mico
           runDB $ update $ \x -> do
-              set x [ BrandName =. val (brandName r)
+              set x [ BrandMarkWidth =. val (brandMarkWidth r)
+                    , BrandMarkHeight =. val (brandMarkHeight r) 
+                    , BrandName =. val (brandName r)
                     , BrandStrapline =. val (brandStrapline r)
                     , BrandMore =. val (brandMore r)
                     ]
@@ -152,6 +154,8 @@ postBrandR = do
           (ico,icoMime) <- (,fileContentType <$> mico) <$> mapM fileSourceByteString mico
           runDB $ insert_ $ Brand { brandMark = mark
                                   , brandMarkMime = markMime
+                                  , brandMarkWidth = brandMarkWidth r
+                                  , brandMarkHeight = brandMarkHeight r
                                   , brandName = brandName r
                                   , brandStrapline = brandStrapline r
                                   , brandIco = ico
@@ -180,6 +184,16 @@ formBrand brand extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("style","display:none"),("accept","image/*")]
         } Nothing
+    (widthR,widthV) <- mopt textField FieldSettings
+        { fsLabel = SomeMessage MsgMarkWidth
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (brandMarkWidth . entityVal <$> brand)
+    (heightR,heightV) <- mopt textField FieldSettings
+        { fsLabel = SomeMessage MsgMarkHeight
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (brandMarkHeight . entityVal <$> brand)
     (nameR,nameV) <- mopt textareaField FieldSettings
         { fsLabel = SomeMessage MsgBrandName
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
@@ -201,7 +215,7 @@ formBrand brand extra = do
         , fsAttrs = [("class","mdc-text-field__input")]
         } (brandMore . entityVal <$> brand)
     let r = (,,) <$>
-            (Brand Nothing Nothing <$> nameR <*> strapR <*> pure Nothing <*> pure Nothing <*> moreR)
+            (Brand Nothing Nothing <$> widthR <*> heightR <*> nameR <*> strapR <*> pure Nothing <*> pure Nothing <*> moreR)
             <*> markR <*> icoR
     let w = $(widgetFile "admin/brand/form")
     return (r,w)

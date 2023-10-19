@@ -67,7 +67,7 @@ data BookStatus = BookStatusRequest
     deriving (Show, Read, Eq)
 derivePersistField "BookStatus"
 
-data EmplStatus = EmplStatusEmployed | EmplStatusDismissed
+data EmplStatus = EmplStatusAvailable | EmplStatusUnavailable
     deriving (Show, Read, Eq)
 derivePersistField "EmplStatus"
 

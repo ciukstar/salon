@@ -79,10 +79,10 @@
               <th.mdc-data-table__cell scope=row>_{MsgStatus}
               <td.mdc-data-table__cell>
                 $case status
-                  $of EmplStatusEmployed
-                    _{MsgEmployed}
-                  $of EmplStatusDismissed
-                    _{MsgDismissed}
+                  $of EmplStatusAvailable
+                    _{MsgAvailable}
+                  $of EmplStatusUnavailable
+                    _{MsgUnavailable}
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgPhone}
               <td.mdc-data-table__cell>
@@ -116,7 +116,12 @@
       <span.mdc-list-item__end>
         <i.expand.material-symbols-outlined #expanDetailsIcon>expand_more
     <nav.mdc-list data-mdc-auto-init=MDCList>
-      $if not (null roles)
+      $if null roles
+        <figure style="margin-bottom:4rem">
+          <span style="line-height:5rem;font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
+          <figcaption>
+            _{MsgNoRolesYes}.
+      $else
         $forall (Entity rid (Role _ _ name rating), Entity _ (Service sname _ _ _ _ _)) <- roles
           <a.mdc-list-item href=@?{(AdminR $ AdmRoleR sid rid,[("open","roles"),("rid",pack $ show $ fromSqlKey rid)])}
             :Just (pack $ show $ fromSqlKey rid) == mrid:.mdc-list-item--activated
@@ -131,11 +136,6 @@
             <span.mdc-list-item__end>
               <i.material-symbols-outlined>arrow_forward_ios
           <div.mdc-list-divider role=separator>
-      $else
-        <figure style="margin-bottom:4rem">
-          <span style="line-height:5rem;font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
-          <figcaption>
-            _{MsgNoRolesYes}.
 
     <div.mdc-touch-target-wrapper #touchTargetWrapperAddRole>
       <a.mdc-fab.mdc-fab--touch.mdc-fab--extended role=button

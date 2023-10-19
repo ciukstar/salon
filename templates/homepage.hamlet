@@ -24,15 +24,31 @@
         
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
-  $maybe Entity bid (Brand _ _ name strap _ _ more) <- brand
+  $maybe Entity bid (Brand mark _ width height name strap _ _ more) <- brand
     <div #brand>
-      <figure>
-        <img src=@{AdminR $ BrandMarkR bid} alt=_{MsgBrandMark}>
-        <figcaption>
-          $maybe name <- name
-            #{preEscapedToMarkup $ unTextarea name}
-          $maybe strap <- strap
-            #{preEscapedToMarkup $ unTextarea strap}
+      $maybe _ <- mark
+        <figure>
+          $case (width,height)
+            $of (Just w,Just h)
+              <img src=@{AdminR $ BrandMarkR bid} alt=_{MsgBrandMark} style="width:#{w};height:#{h};max-width:100%">
+            $of (Just w,Nothing)
+              <img src=@{AdminR $ BrandMarkR bid} alt=_{MsgBrandMark} style="width:#{w};max-width:100%">
+            $of (Nothing,Just h)
+              <img src=@{AdminR $ BrandMarkR bid} alt=_{MsgBrandMark} style="height:#{h};max-width:100%">
+            $of (Nothing,Nothing)
+              <img src=@{AdminR $ BrandMarkR bid} alt=_{MsgBrandMark} style="max-width:100%">
+          <figcaption>
+            $maybe name <- name
+              #{preEscapedToMarkup $ unTextarea name}
+            $maybe strap <- strap
+              #{preEscapedToMarkup $ unTextarea strap}
+      $nothing
+        <figure>
+          <figcaption>
+            $maybe name <- name
+              #{preEscapedToMarkup $ unTextarea name}
+            $maybe strap <- strap
+              #{preEscapedToMarkup $ unTextarea strap}
       $maybe more <- more
         #{preEscapedToMarkup $ unTextarea more}
   $nothing

@@ -67,27 +67,31 @@
         <h4.mdc-dialog__title>_{MsgDemoUserAccounts}
       <div.mdc-dialog__content>
         <form name=formUserOptions>
-          $forall (Value uid,Value uname,Value staff) <- users
-            $with ident <- T.pack $ show $ fromSqlKey uid
-              <div.mdc-form-field>
-                <div.mdc-radio tabindex=-1 data-mdc-auto-init=MDCRadio>
-                  <input.mdc-radio__native-control type=radio name=uname value=#{uname} #radio#{ident}>
-                  <div.mdc-radio__background>
-                    <div.mdc-radio__outer-circle>
-                    <div.mdc-radio__inner-circle>
-                  <div.mdc-radio__ripple>
-                  <div.mdc-radio__focus-ring>
-                <label for=radio#{ident}>
-                  <span style="line-height:1">
-                    <div>#{uname}
-                    <small style="color:var(--mdc-theme-text-hint-on-light);text-transform:lowercase">
+          <ul.mdc-list data-mdc-auto-init=MDCList>
+            $forall (Value uid,Value uname,Value staff) <- users
+              $with ident <- T.pack $ show $ fromSqlKey uid
+                <li.mdc-list-item.mdc-list-item--with-leading-radio
+                  .mdc-list-item--with-two-lines.mdc-list-item--with-trailing-image>
+                  <span.mdc-list-item__ripple>
+                  <span.mdc-list-item__start>
+                    <div.mdc-radio tabindex=-1 data-mdc-auto-init=MDCRadio>
+                      <input.mdc-radio__native-control type=radio name=uname value=#{uname} #radio#{ident}>
+                      <div.mdc-radio__background>
+                        <div.mdc-radio__outer-circle>
+                        <div.mdc-radio__inner-circle>
+                      <div.mdc-radio__ripple>
+                      <div.mdc-radio__focus-ring>
+                  <span.mdc-list-item__content>
+                    <div.mdc-list-item__primary-text>#{uname}
+                    <div.mdc-list-item__secondary-text style="text-transform:lowercase">
                       $if staff
                         _{MsgEmployee}
                       $else
                         _{MsgCustomer}
-                  <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" width=48 height=48 alt=_{MsgPhoto}
-                    onerror="this.src = '@{PhotoPlaceholderR}'">
-            <hr>
+                  <span.mdc-list-item__end>
+                    <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" width=48 height=48 alt=_{MsgPhoto}
+                      onerror="this.src = '@{PhotoPlaceholderR}'">
+              <li.mdc-list-divider role=separator>
             
       <div.mdc-dialog__actions>
         <button.mdc-button type=button data-mdc-dialog-action=close>

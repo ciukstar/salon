@@ -1,3 +1,9 @@
+MarkWidth: Largeur de l'image
+MarkHeight: Hauteur de l'image
+Currency: Devise
+Unavailable: Indisponible
+Available: Disponible
+TheFullName: Nom complet
 NoCategoriesFound: Aucune catégorie trouvée
 NoOffersFound: Aucune offre trouvée
 Unassigned: Non attribué

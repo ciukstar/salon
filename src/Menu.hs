@@ -1,16 +1,24 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeApplications #-}
 
 module Menu (menu) where
 
 import Data.Text (pack)
+import Yesod.Core (liftHandler)
 import Yesod.Core.Handler (getCurrentRoute)
+import Yesod.Persist.Core (YesodPersist(runDB))
+import Database.Persist (Entity (Entity))
+
+import Database.Esqueleto.Experimental
+    ( selectOne, from, table )
+    
 import Foundation
     ( Widget
     , ResourcesR (DocsR)
     , Route
       ( ResourcesR, AdminR, ContactR, AboutUsR, AppointmentsR
-      , BookOffersR, RequestsR, ServicesR, HomeR, StaticR
+      , BookOffersR, RequestsR, ServicesR, HomeR
       )
     , AdminR
       ( BrandR, UsersR, AdmContactsR, AdmAboutR, AdmStaffR, AdmServicesR
@@ -24,12 +32,15 @@ import Foundation
       )
     )
 
-import Model (BookStatus (BookStatusRequest), Services (Services), Assignees (AssigneesMe))
+import Model
+    ( BookStatus (BookStatusRequest), Services (Services), Business (Business)
+    , Assignees (AssigneesMe)    
+    )
 
 import Settings (widgetFile)
-import Settings.StaticFiles (img_salon_svg)
 
 menu :: Widget
 menu = do
+    business <- liftHandler $ runDB $ selectOne $ from $ table @Business
     curr <- getCurrentRoute
     $(widgetFile "menu")

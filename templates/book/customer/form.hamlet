@@ -29,7 +29,7 @@
         schedule
     <span.mdc-list-item__content>
       $case (day,time,business,dayR,timeR,addrR,tzoR,tzR)
-        $of (Just day,Just time,Just (Entity _ (Business _ _ tzo tz _ _ _)),_,_,_,_,_)
+        $of (Just day,Just time,Just (Entity _ (Business _ _ _ _ tzo tz _ _ _)),_,_,_,_,_)
           $with dt <- ((<>) ((<>) (pack $ show day) " ") (pack $ show time))
             $with z <- ((<>) ((<>) ((<>) (pack $ show tzo) " (") tz) ")")
               $with dtz <- ((<>) dt z)
@@ -55,7 +55,7 @@
     <span.mdc-list-item__content>
       <div.mdc-list-item__secondary-text style="white-space:wrap">
         $case (business,addrR)
-          $of (Just (Entity _ (Business _ addr _ _ _ _ _)),_)
+          $of (Just (Entity _ (Business _ _ _ addr _ _ _ _ _)),_)
             #{unTextarea addr}
           $of (_,FormSuccess addr)
             #{unTextarea addr}

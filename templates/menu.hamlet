@@ -4,8 +4,10 @@
     <h3.mdc-drawer__title>
       <div #drawerTitle>
         <div #drawerTitleStart>
-          <img src=@{StaticR img_salon_svg} height=24 width=24 loading=lazy>
-          _{MsgSalon}
+          $maybe Entity _ (Business name _ _ _ _ _ _ _ _) <- business
+            #{name}
+          $nothing
+            _{MsgSalon}
         <div #drawerTitleEnd title=_{MsgClose}>
           &#x2715;
   <div.mdc-drawer__content>

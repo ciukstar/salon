@@ -103,6 +103,8 @@ User
 Brand
   mark ByteString Maybe
   markMime Text Maybe
+  markWidth Text Maybe
+  markHeight Text Maybe
   name Textarea Maybe
   strapline Textarea Maybe
   ico ByteString Maybe
@@ -111,6 +113,8 @@ Brand
 
 Business
   name Text
+  fullName Textarea Maybe
+  currency Text
   addr Textarea
   tzo TimeZone
   tz Text

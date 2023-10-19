@@ -1,3 +1,9 @@
+MarkWidth: Ширина изображения
+MarkHeight: Высота изображения
+Currency: Валюта
+Unavailable: Недоступен
+Available: Доступен
+TheFullName: Полное название
 NoCategoriesFound: Категории не найдены
 NoOffersFound: Предложений не найдено
 Unassigned: Не назначена 

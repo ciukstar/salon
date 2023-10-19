@@ -10,7 +10,7 @@ $doctype 5
     <meta name="author" content="Sergiu Starciuc, ciukstar@gmail.com">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="theme-color" content="#FEDBD0">
-    $maybe Entity bid (Brand _ _ _ _ ico mime _) <- brand
+    $maybe Entity bid (Brand _ _ _ _ _ _ ico mime _) <- brand
       $maybe _ <- ico
         $maybe mime <- mime
           <link rel=icon type=#{mime} href=@{AdminR $ BrandIcoR bid}>

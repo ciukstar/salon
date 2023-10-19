@@ -102,16 +102,16 @@ import Foundation
     )
 
 import Model
-    ( Service(Service), ServiceId, Offer (Offer), OfferId, Staff (Staff, staffName)
-    , Role (Role, roleName), RoleId
-    , User (User), Book (Book), Thumbnail
+    ( EmplStatus (EmplStatusAvailable), Service(Service), ServiceId
+    , Offer (Offer), OfferId, Staff (Staff, staffName)
+    , Role (Role, roleName), RoleId, User (User), Book (Book), Thumbnail
     , BookStatus (BookStatusRequest), Hist (Hist)
     , Business (businessAddr, businessTzo, businessTz, Business)
     , EntityField
       ( StaffId, RoleId, ServiceId, OfferService, ServicePublished, BookId
       , ServiceName, RoleStaff, RoleRating, RoleService, OfferId, BookOffer
       , BookCustomer, ThumbnailService, ThumbnailAttribution
-      , ServiceOverview, ServiceDescr, ServiceGroup
+      , ServiceOverview, ServiceDescr, ServiceGroup, StaffStatus
       )
     )
 
@@ -376,6 +376,7 @@ getBookOffersR = do
     y <- runInputGet (iopt textField "y")
     oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
     user <- maybeAuth
+    business <- runDB $ selectOne $ from $ table @Business
     offers <- runDB $ queryOffers [] Nothing []
     items <- runDB $ queryItems [] Nothing (toSqlKey . read . unpack . snd <$> oids)
     (fw,et) <- generateFormPost $ formOffers items offers
@@ -739,8 +740,10 @@ queryRole rids = selectOne $ do
 
 queryRoles :: [(Entity Service, Entity Offer)] -> ReaderT SqlBackend Handler [(Entity Staff, Entity Role)]
 queryRoles services = select $ do
-    x :& e <- from $ table @Role `innerJoin` table @Staff `on` (\(x :& e) -> x ^. RoleStaff ==. e ^. StaffId)
-
+    x :& e <- from $ table @Role
+        `innerJoin` table @Staff `on` (\(x :& e) -> x ^. RoleStaff ==. e ^. StaffId)
+    where_ $ e ^. StaffStatus ==. val EmplStatusAvailable
+        
     where_ $ not_ $ exists $ do
         _ <- from (
             ( do

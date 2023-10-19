@@ -203,7 +203,7 @@
                               <dt>
                                 <strong>_{MsgLocation}
                               <dd>
-                                $maybe Entity _ (Business _ address _ _ _ _ _) <- business
+                                $maybe Entity _ (Business _ _ _ address _ _ _ _ _) <- business
                                   #{address}
                             $if isNothing rid
                               <i>

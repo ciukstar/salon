@@ -34,6 +34,10 @@ main
       .mdc-list-item.mdc-list-item--activated
         .mdc-list-item__primary-text
           color: var(--theme-accent)
+      .mdc-list-item__secondary-text
+        white-space: nowrap
+	overflow: hidden
+	text-verflow: ellipsis	
         
   #touchTargetWrapperAddRole
     position: fixed

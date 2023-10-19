@@ -43,7 +43,7 @@
 
     <div.mdc-select__menu.mdc-menu.mdc-menu-surface.mdc-menu-surface--fullwidth>
       <ul.mdc-deprecated-list role=listbox>
-        $forall (v,l) <- ((<$>) (first (pack . show)) [(EmplStatusEmployed,MsgEmployed),(EmplStatusDismissed,MsgDismissed)])
+        $forall (v,l) <- ((<$>) (first (pack . show)) [(EmplStatusAvailable,MsgAvailable),(EmplStatusUnavailable,MsgUnavailable)])
           <li.mdc-deprecated-list-item role=option data-value=#{v} aria-selected=false>
             <span.mdc-deprecated-list-item__ripple>
             <span.mdc-deprecated-list-item__text>

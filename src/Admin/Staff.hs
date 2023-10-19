@@ -95,7 +95,7 @@ import Foundation
       , MsgRegisterAsUser, MsgUser, MsgRegistration, MsgUsername, MsgPassword
       , MsgFullName, MsgAlreadyExists, MsgUnregisterAreYouSure, MsgSearch
       , MsgNoStaffMembersFound, MsgStatus, MsgSelect, MsgRatings, MsgEdit
-      , MsgDismissed, MsgEmployed, MsgAccountStatus, MsgRegistered, MsgDel
+      , MsgUnavailable, MsgAvailable, MsgAccountStatus, MsgRegistered, MsgDel
       , MsgUnregistered, MsgValueNotInRange, MsgAdministrator, MsgUnregister
       , MsgNavigationMenu, MsgUserProfile, MsgLogin, MsgUnregisterAsUser
       )
@@ -113,7 +113,7 @@ import Model
     , Role (Role, roleService, roleName, roleRating), RoleId
     , ServiceId, Service (Service)
     , UserId,  User (User), UserPhoto (UserPhoto)
-    , EmplStatus (EmplStatusDismissed, EmplStatusEmployed)
+    , EmplStatus (EmplStatusUnavailable, EmplStatusAvailable)
     )
 
 import Settings.StaticFiles (img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg)
@@ -592,7 +592,7 @@ formEmpl staff extra = do
         { fsLabel = SomeMessage MsgStatus
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
-        } (pack . show <$> ((staffStatus . entityVal <$> staff) <|> pure EmplStatusEmployed))
+        } (pack . show <$> ((staffStatus . entityVal <$> staff) <|> pure EmplStatusAvailable))
     (phoneR,phoneV) <- mopt textField FieldSettings
         { fsLabel = SomeMessage MsgPhone
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing

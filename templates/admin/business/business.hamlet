@@ -62,7 +62,7 @@
             <span.mdc-icon-button__ripple>
             <i.material-symbols-outlined>close
 
-  $maybe Entity _ (Business name address tzo tz phone mobile email) <- business
+  $maybe Entity _ (Business name fname curr address tzo tz phone mobile email) <- business
     <div.mdc-data-table>
       <div.mdc-data-table__container>
         <table.mdc-data-table__table>
@@ -70,6 +70,14 @@
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgTheName}
               <td.mdc-data-table__cell>#{name}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgTheFullName}
+              <td.mdc-data-table__cell>
+                $maybe fname <- fname
+                  #{fname}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgCurrency}
+              <td.mdc-data-table__cell>#{curr}
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgAddress}
               <td.mdc-data-table__cell>#{address}

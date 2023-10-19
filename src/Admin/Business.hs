@@ -43,7 +43,7 @@ import Foundation
       , MsgYesDelete, MsgDeleteAreYouSure, MsgPleaseConfirm, MsgRecordEdited
       , MsgRecordDeleted, MsgBusinessAlreadyExists, MsgTimeZoneOffset, MsgTimeZone
       , MsgMinutes, MsgLogin, MsgUserProfile, MsgNavigationMenu, MsgDel, MsgEdit
-      , MsgBack
+      , MsgBack, MsgTheFullName, MsgCurrency
       )
     )
 
@@ -56,13 +56,13 @@ import Database.Esqueleto.Experimental
 
 import Model
     ( Business
-      ( Business, businessName, businessAddr, businessPhone, businessMobile
-      , businessEmail, businessTzo, businessTz
+      ( Business, businessName, businessFullName, businessAddr, businessPhone
+      , businessMobile, businessEmail, businessTzo, businessTz, businessCurrency
       )
     , BusinessId
     , EntityField
-      ( BusinessName, BusinessAddr, BusinessPhone, BusinessMobile, BusinessEmail
-      , BusinessId, BusinessTzo, BusinessTz
+      ( BusinessName, BusinessFullName, BusinessAddr, BusinessPhone, BusinessMobile
+      , BusinessEmail, BusinessId, BusinessTzo, BusinessTz, BusinessCurrency
       )
     )
 
@@ -85,9 +85,11 @@ postBusinessEditR bid = do
         return x
     ((fr,fw),et) <- runFormPost $ formBusiness business
     case fr of
-      FormSuccess (Business name address tzo tz phone mobile email) -> do
+      FormSuccess (Business name fname curr address tzo tz phone mobile email) -> do
           runDB $ update $ \x -> do
               set x [ BusinessName =. val name
+                    , BusinessFullName =. val fname
+                    , BusinessCurrency =. val curr
                     , BusinessAddr =. val address
                     , BusinessTzo =. val tzo
                     , BusinessTz =. val tz
@@ -158,6 +160,16 @@ formBusiness business extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (businessName . entityVal <$> business)
+    (fnameR,fnameV) <- mopt textareaField FieldSettings
+        { fsLabel = SomeMessage MsgTheFullName
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (businessFullName . entityVal <$> business)
+    (currR,currV) <- mreq textField FieldSettings
+        { fsLabel = SomeMessage MsgCurrency
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (businessCurrency . entityVal <$> business)
     (addrR,addrV) <- mreq textareaField FieldSettings
         { fsLabel = SomeMessage MsgAddress
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
@@ -189,7 +201,8 @@ formBusiness business extra = do
         , fsAttrs = [("class","mdc-text-field__input")]
         } (businessEmail . entityVal <$> business)
 
-    let r = Business <$> nameR <*> addrR <*> (minutesToTimeZone <$> tzoR) <*> tzR <*> phoneR <*> mobileR <*> emailR
+    let r = Business <$> nameR <*> fnameR <*> currR <*> addrR
+            <*> (minutesToTimeZone <$> tzoR) <*> tzR <*> phoneR <*> mobileR <*> emailR
     return (r,$(widgetFile "admin/business/form"))
   where
       uniqueNameField :: Field Handler Text

@@ -1,3 +1,9 @@
+MarkWidth: Lățimea imaginii
+MarkHeight: Înălțimea imaginii
+Currency: Valuta
+Unavailable: Indisponibil
+Available: Disponibil
+TheFullName: Numele complet
 NoCategoriesFound: Nu a fost găsită nicio categorie
 NoOffersFound: Nu au fost găsite oferte
 Unassigned: Nealocat

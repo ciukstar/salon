@@ -30,7 +30,7 @@ div.mdc-dialog
     form
       display: flex
       flex-direction: column
-      .mdc-form-field
+      .mdc-list-item__start
         .mdc-radio .mdc-radio__native-control:enabled:checked+.mdc-radio__background
           .mdc-radio__outer-circle, .mdc-radio__inner-circle
             border-color: var(--theme-accent)

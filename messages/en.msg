@@ -1,3 +1,9 @@
+MarkWidth: Mark width
+MarkHeight: Mark height
+Currency: Currency
+Unavailable: Unavailable
+Available: Available
+TheFullName: Full name
 NoCategoriesFound: No categories found
 NoOffersFound: No offers found
 Unassigned: Unassigned

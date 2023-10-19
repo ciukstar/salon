@@ -34,7 +34,7 @@ import Model
       ( Offer, offerName, offerPrice, offerPrefix
       , offerSuffix, offerDescr, offerService
       )
-    , EmplStatus (EmplStatusEmployed, EmplStatusDismissed)
+    , EmplStatus (EmplStatusAvailable, EmplStatusUnavailable)
     , Staff (Staff, staffName, staffStatus, staffPhone, staffMobile, staffEmail, staffUser)
     , StaffPhoto (StaffPhoto, staffPhotoPhoto, staffPhotoMime, staffPhotoStaff)
     , Role (Role, roleStaff, roleService, roleName, roleRating)
@@ -45,8 +45,8 @@ import Model
       , bookTz, bookStatus, bookAddr
       )
     , Business
-      ( Business, businessName, businessAddr, businessTzo, businessTz
-      , businessPhone, businessMobile, businessEmail
+      ( Business, businessName, businessFullName, businessAddr, businessTzo, businessTz
+      , businessPhone, businessMobile, businessEmail, businessCurrency
       )
     , Hist
       ( Hist, histBook, histLogtime, histDay, histTime, histAddr, histTzo
@@ -66,6 +66,8 @@ populateRU = do
     (now,today,time) <- liftIO $ getCurrentTime >>= \x -> return (x ,utctDay x,timeToTimeOfDay (utctDayTime x))
 
     let business = Business { businessName = "Салон"
+                            , businessFullName = Just "ООО Салон"
+                            , businessCurrency = "₽"
                             , businessAddr = "Россия, г. Москва, проезд Воскресенские Ворота, 1А, Москва, 109012"
                             , businessTzo = TimeZone 180 False "MSK"
                             , businessTz = "Europe/Moscow"
@@ -147,7 +149,7 @@ populateRU = do
     u1 <- insert user1
 
     let empl1 = Staff { staffName = case userFullName user1 of Just name -> name; Nothing -> userName user1
-                      , staffStatus = EmplStatusEmployed
+                      , staffStatus = EmplStatusAvailable
                       , staffPhone = businessPhone business
                       , staffMobile = businessMobile business 
                       , staffEmail = userEmail user1
@@ -179,7 +181,7 @@ populateRU = do
     u2 <- insert user2
 
     e2 <- insert $ Staff { staffName = case userFullName user2 of Just name -> name; Nothing -> userName user2
-                         , staffStatus = EmplStatusEmployed
+                         , staffStatus = EmplStatusAvailable
                          , staffPhone = businessPhone business
                          , staffMobile = businessMobile business
                          , staffEmail = userEmail user2
@@ -209,7 +211,7 @@ populateRU = do
     u3 <- insert user3
 
     e3 <- insert $ Staff { staffName = case userFullName user3 of Just name -> name; Nothing -> userName user3
-                         , staffStatus = EmplStatusEmployed
+                         , staffStatus = EmplStatusAvailable
                          , staffPhone = businessPhone business
                          , staffMobile = businessMobile business
                          , staffEmail = userEmail user3
@@ -239,7 +241,7 @@ populateRU = do
     u4 <- insert user4
 
     e4 <- insert $ Staff { staffName = case userFullName user4 of Just name -> name; Nothing -> userName user4
-                         , staffStatus = EmplStatusEmployed
+                         , staffStatus = EmplStatusAvailable
                          , staffPhone = businessPhone business
                          , staffMobile = businessMobile business
                          , staffEmail = userEmail user4
@@ -269,7 +271,7 @@ populateRU = do
     u5 <- insert user5
 
     e5 <- insert $ Staff { staffName = case userFullName user5 of Just name -> name; Nothing -> userName user5
-                         , staffStatus = EmplStatusEmployed
+                         , staffStatus = EmplStatusAvailable
                          , staffPhone = businessPhone business
                          , staffMobile = businessMobile business
                          , staffEmail = userEmail user5
@@ -289,7 +291,7 @@ populateRU = do
                               }
 
     e6 <- insert $ Staff { staffName = "Иванов Алексей Васильевич"
-                         , staffStatus = EmplStatusEmployed
+                         , staffStatus = EmplStatusAvailable
                          , staffPhone = businessPhone business
                          , staffMobile = businessMobile business
                          , staffEmail = Just "ivanovav@mail.ru"
@@ -304,7 +306,7 @@ populateRU = do
                                       }
 
     e7 <- insert $ Staff { staffName = "Сергеева Александра Владимировна"
-                         , staffStatus = EmplStatusEmployed
+                         , staffStatus = EmplStatusAvailable
                          , staffPhone = businessPhone business
                          , staffMobile = businessMobile business
                          , staffEmail = Just "sergeevaav@mail.ru"
@@ -319,7 +321,7 @@ populateRU = do
                                       }
 
     e8 <- insert $ Staff { staffName = "Степанова Татьяна Николаевна"
-                         , staffStatus = EmplStatusEmployed
+                         , staffStatus = EmplStatusAvailable
                          , staffPhone = businessPhone business
                          , staffMobile = businessMobile business
                          , staffEmail = Just "stepanovatn@mail.ru"
@@ -334,7 +336,7 @@ populateRU = do
                                       }
 
     e9 <- insert $ Staff { staffName = "Кузнецов Артем Сергеевич"
-                         , staffStatus = EmplStatusEmployed
+                         , staffStatus = EmplStatusAvailable
                          , staffPhone = businessPhone business
                          , staffMobile = businessMobile business
                          , staffEmail = Just "kuznetsovas@mail.ru"
@@ -349,7 +351,7 @@ populateRU = do
                                       }
 
     e10 <- insert $ Staff { staffName = "Попов Дмитрий Александрович"
-                         , staffStatus = EmplStatusEmployed
+                         , staffStatus = EmplStatusAvailable
                          , staffPhone = businessPhone business
                          , staffMobile = businessMobile business
                          , staffEmail = Just "popovda@mail.ru"
@@ -374,7 +376,7 @@ populateRU = do
     u11 <- insert user11
 
     let empl11 = Staff { staffName = case userFullName user11 of Just name -> name; Nothing -> userName user11
-                       , staffStatus = EmplStatusDismissed
+                       , staffStatus = EmplStatusUnavailable
                        , staffPhone = businessPhone business
                        , staffMobile = businessMobile business
                        , staffEmail = userEmail user11
