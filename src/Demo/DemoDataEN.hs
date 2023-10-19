@@ -5,10 +5,12 @@
 
 module Demo.DemoDataEN (populateEN) where
 
+import Text.Blaze.Html.Renderer.Text (renderHtml)
 import Text.Hamlet (shamlet)
 import Text.Shakespeare.Text (st)
 import qualified Data.ByteString.Base64 as B64 (decode)
 import Data.Text.Encoding (decodeUtf8)
+import Data.Text.Lazy (toStrict)
 import Data.Time.Calendar (addDays)
 import Data.Time.Clock (getCurrentTime, UTCTime (utctDay,utctDayTime), DiffTime)
 import Data.Time.Format (parseTimeM, defaultTimeLocale)
@@ -27,13 +29,19 @@ import Model
       ( Service, serviceName, serviceDescr, serviceGroup, serviceOverview
       , servicePublished, serviceDuration
       )
-    , Thumbnail (Thumbnail, thumbnailService, thumbnailPhoto, thumbnailMime, thumbnailAttribution)
+    , Thumbnail
+      ( Thumbnail, thumbnailService, thumbnailPhoto, thumbnailMime
+      , thumbnailAttribution
+      )
     , Offer
       ( Offer, offerName, offerPrice, offerPrefix
       , offerSuffix, offerDescr, offerService
       )
     , EmplStatus (EmplStatusEmployed, EmplStatusDismissed)
-    , Staff (Staff, staffName, staffStatus, staffPhone, staffMobile, staffEmail, staffUser)
+    , Staff
+      ( Staff, staffName, staffStatus, staffPhone, staffMobile, staffEmail
+      , staffUser
+      )
     , StaffPhoto (StaffPhoto, staffPhotoPhoto, staffPhotoMime, staffPhotoStaff)
     , Role (Role, roleStaff, roleService, roleName, roleRating)
     , Contents (Contents, contentsSection, contentsContent)
@@ -46,7 +54,10 @@ import Model
       ( Business, businessName, businessAddr, businessTzo, businessTz
       , businessPhone, businessMobile, businessEmail
       )
-    , Hist (Hist, histBook, histLogtime, histDay, histTime, histAddr, histTzo, histStatus, histUser, histTz, histRoleName, histStaffName)
+    , Hist
+      ( Hist, histBook, histLogtime, histDay, histTime, histAddr, histTzo
+      , histStatus, histUser, histTz, histRoleName, histStaffName
+      )
     )
 import Data.FileEmbed (embedFile)
 import Demo.DemoPhotos
@@ -71,33 +82,36 @@ populateEN = do
     insert_ business
 
     insert_ $ Contents { contentsSection = "CONTACTS"
-                       , contentsContent = Textarea [st|
+                       , contentsContent = Textarea $ toStrict $ renderHtml [shamlet|
 <section style="margin:0 1rem">
-  <h3 style="color:gray">Call Us</h3>
+  <h3 style="color:gray">Call Us
   <dl>
-    <dt><i>Telephone</i></dt>
-    <dd>020-7736-6600</dd>
-    <dt><i>Mobile</i></dt>
-    <dd>567-274-7469</dd>
-  </dl>
-</section>
+    <dt>
+      <i>Telephone
+    <dd>
+      $maybe phone <- businessPhone business
+        #{phone}
+    <dt>
+      <i>Mobile
+    <dd>
+      $maybe mobile <- businessMobile business
+        #{mobile}
 <section style="margin:0 1rem">
-  <h3 style="color:gray">Email Us</h3>
+  <h3 style="color:gray">Email Us
   <dl>
-    <dt><i>Email</i></dt>
-    <dd>salon@mail.uk</dd>
-  </dl>
-</section>
+    <dt>
+      <i>Email
+    <dd>
+      $maybe email <- businessEmail business
+        #{email}
 <section style="margin:0 1rem">
-  <h3 style="color:gray">Come see us</h3>
+  <h3 style="color:gray">Come see us
   <dl>
-    <dt><i>Address</i><dt>
-    <dd>73 Parsons Green Ln Fulham London SW6 4JA</dd>
-  </dl>
-</section>
-<p>
-  <iframe width="100%" height="400px" loding="lazy" title="Salon" style="border:none" src="https://api.mapbox.com/styles/v1/mapbox/streets-v12.html?title=false&zoomwheel=false&access_token=pk.eyJ1IjoiY2l1a3N0YXIiLCJhIjoiY2o1enNibDNsMGNrNDJ3dDhxeTJuc3luMiJ9.Jgc5GdYUMbYwGq-zRWtzfw#15/51.474680/-0.200540"></iframe>
-</p>
+    <dt>
+      <i>Address
+    <dd>
+      #{businessAddr business}
+  <iframe width="100%" height="400px" loding="lazy" title="Salon" style="border:none" src="https://api.mapbox.com/styles/v1/mapbox/streets-v12.html?title=false&zoomwheel=false&access_token=pk.eyJ1IjoiY2l1a3N0YXIiLCJhIjoiY2o1enNibDNsMGNrNDJ3dDhxeTJuc3luMiJ9.Jgc5GdYUMbYwGq-zRWtzfw#15/51.474680/-0.200540">
 |]
                        }
 
@@ -123,23 +137,25 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ User { userName = "root"
                    , userPassword = decodeUtf8 pass0
                    , userAdmin = True
-                   , userFullName = Just "The Root"
-                   , userEmail = Just "theroot@mail.en"
+                   , userFullName = Just "Adam Smith"
+                   , userEmail = Just "asmith@mail.uk"
                    }
 
     pass1 <- liftIO $ makePassword "johnnysmith" 17
-    u1 <- insert $ User { userName = "johnnysmith"
-                        , userPassword = decodeUtf8 pass1
-                        , userAdmin = False
-                        , userFullName = Just "Johnny Smith"
-                        , userEmail = Just "jsmith@mail.uk"
-                        }
+    let user1 = User { userName = "johnnysmith"
+                     , userPassword = decodeUtf8 pass1
+                     , userAdmin = False
+                     , userFullName = Just "Johnny Smith"
+                     , userEmail = Just "jsmith@mail.uk"
+                     }
+                
+    u1 <- insert user1
 
-    let empl1 = Staff { staffName = "Johnny Smith"
+    let empl1 = Staff { staffName = case userFullName user1 of Just name -> name; Nothing -> userName user1
                       , staffStatus = EmplStatusEmployed
-                      , staffPhone = Just "0491 570 006"
-                      , staffMobile = Just "0491 570 156"
-                      , staffEmail = Just "jsmith@mail.uk"
+                      , staffPhone = businessPhone business
+                      , staffMobile = businessMobile business
+                      , staffEmail = userEmail user1
                       , staffUser = Just u1
                       }
 
@@ -158,18 +174,19 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               }
 
     pass2 <- liftIO $ makePassword "marylopez" 17
-    u2 <- insert $ User { userName = "marylopez"
-                        , userPassword = decodeUtf8 pass2
-                        , userAdmin = False
-                        , userFullName = Just "Mary Lopez"
-                        , userEmail = Just "mlopez@mail.en"
-                        }
+    let user2 = User { userName = "marylopez"
+                     , userPassword = decodeUtf8 pass2
+                     , userAdmin = False
+                     , userFullName = Just "Mary Lopez"
+                     , userEmail = Just "mlopez@mail.uk"
+                     }
+    u2 <- insert user2
 
-    e2 <- insert $ Staff { staffName = "Mary Lopez"
+    e2 <- insert $ Staff { staffName = case userFullName user2 of Just name -> name; Nothing -> userName user2
                          , staffStatus = EmplStatusEmployed
-                         , staffPhone = Just "0491 570 006"
-                         , staffMobile = Just "0491 570 156"
-                         , staffEmail = Just "mlopez@mail.en"
+                         , staffPhone = businessPhone business
+                         , staffMobile = businessMobile business
+                         , staffEmail = userEmail user2
                          , staffUser = Just u2
                          }
 
@@ -186,18 +203,20 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               }
 
     pass3 <- liftIO $ makePassword "johnjohnson" 17
-    u3 <- insert $ User { userName = "johnjohnson"
-                        , userPassword = decodeUtf8 pass3
-                        , userAdmin = False
-                        , userFullName = Just "John Johnson"
-                        , userEmail = Just "jjohnson@mail.en"
-                        }
+    let user3 = User { userName = "johnjohnson"
+                     , userPassword = decodeUtf8 pass3
+                     , userAdmin = False
+                     , userFullName = Just "John Johnson"
+                     , userEmail = Just "jjohnson@mail.uk"
+                     }
+                
+    u3 <- insert user3
 
-    e3 <- insert $ Staff { staffName = "John Johnson"
+    e3 <- insert $ Staff { staffName = case userFullName user3 of Just name -> name; Nothing -> userName user3
                          , staffStatus = EmplStatusEmployed
-                        , staffPhone = Just "0491 570 006"
-                         , staffMobile = Just "0491 570 156"
-                         , staffEmail = Just "jjohnson@mail.en"
+                         , staffPhone = businessPhone business
+                         , staffMobile = businessMobile business
+                         , staffEmail = userEmail user3
                          , staffUser = Just u3
                          }
 
@@ -214,18 +233,20 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               }
 
     pass4 <- liftIO $ makePassword "patriciabrown" 17
-    u4 <- insert $ User { userName = "patriciabrown"
-                        , userPassword = decodeUtf8 pass4
-                        , userAdmin = False
-                        , userFullName = Just "Patricia Brown"
-                        , userEmail = Just "pbrown@mail.en"
-                        }
+    let user4 = User { userName = "patriciabrown"
+                     , userPassword = decodeUtf8 pass4
+                     , userAdmin = False
+                     , userFullName = Just "Patricia Brown"
+                     , userEmail = Just "pbrown@mail.uk"
+                     }
+                
+    u4 <- insert user4
 
-    e4 <- insert $ Staff { staffName = "Patricia Brown"
+    e4 <- insert $ Staff { staffName = case userFullName user4 of Just name -> name; Nothing -> userName user4
                          , staffStatus = EmplStatusEmployed
-                         , staffPhone = Just "0491 570 006"
-                         , staffMobile = Just "0491 570 156"
-                         , staffEmail = Just "pbrown@mail.en"
+                         , staffPhone = businessPhone business
+                         , staffMobile = businessMobile business
+                         , staffEmail = userEmail user4
                          , staffUser = Just u4
                          }
 
@@ -242,18 +263,19 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               }
 
     pass5 <- liftIO $ makePassword "chriswilson" 17
-    u5 <- insert $ User { userName = "chriswilson"
-                        , userPassword = decodeUtf8 pass5
-                        , userAdmin = False
-                        , userFullName = Just "Chris Wilson"
-                        , userEmail = Just "cwilson@mail.uk"
-                        }
+    let user5 = User { userName = "chriswilson"
+                     , userPassword = decodeUtf8 pass5
+                     , userAdmin = False
+                     , userFullName = Just "Chris Wilson"
+                     , userEmail = Just "cwilson@mail.uk"
+                     }
+    u5 <- insert user5
 
-    e5 <- insert $ Staff { staffName = "Chris Wilson"
+    e5 <- insert $ Staff { staffName = case userFullName user5 of Just name -> name; Nothing -> userName user5
                          , staffStatus = EmplStatusEmployed
-                         , staffPhone = Just "0491 570 006"
-                         , staffMobile = Just "0491 570 156"
-                         , staffEmail = Just "cwilson@mail.uk"
+                         , staffPhone = businessPhone business
+                         , staffMobile = businessMobile business
+                         , staffEmail = userEmail user5
                          , staffUser = Just u5
                          }
 
@@ -271,9 +293,9 @@ We will continue to offer the latest treatments, the most innovative techniques 
 
     e6 <- insert $ Staff { staffName = "Philip Davis"
                          , staffStatus = EmplStatusEmployed
-                         , staffPhone = Just "0491 570 006"
-                         , staffMobile = Just "0491 570 156"
-                         , staffEmail = Just "phdavis@mail.en"
+                         , staffPhone = businessPhone business
+                         , staffMobile = businessMobile business
+                         , staffEmail = Just "phdavis@mail.uk"
                          , staffUser = Nothing
                          }
 
@@ -286,9 +308,9 @@ We will continue to offer the latest treatments, the most innovative techniques 
 
     e7 <- insert $ Staff { staffName = "Helen Taylor"
                          , staffStatus = EmplStatusEmployed
-                         , staffPhone = Just "0491 570 006"
-                         , staffMobile = Just "0491 570 156"
-                         , staffEmail = Just "htaylor@mail.en"
+                         , staffPhone = businessPhone business
+                         , staffMobile = businessMobile business
+                         , staffEmail = Just "htaylor@mail.uk"
                          , staffUser = Nothing
                          }
 
@@ -301,9 +323,9 @@ We will continue to offer the latest treatments, the most innovative techniques 
 
     e8 <- insert $ Staff { staffName = "Barbara Young"
                          , staffStatus = EmplStatusEmployed
-                         , staffPhone = Just "0491 570 006"
-                         , staffMobile = Just "0491 570 156"
-                         , staffEmail = Just "byoung@mail.en"
+                         , staffPhone = businessPhone business
+                         , staffMobile = businessMobile business
+                         , staffEmail = Just "byoung@mail.uk"
                          , staffUser = Nothing
                          }
 
@@ -316,9 +338,9 @@ We will continue to offer the latest treatments, the most innovative techniques 
 
     e9 <- insert $ Staff { staffName = "Jorge Walker"
                          , staffStatus = EmplStatusEmployed
-                         , staffPhone = Just "0491 570 006"
-                         , staffMobile = Just "0491 570 156"
-                         , staffEmail = Just "jwalker@mail.en"
+                         , staffPhone = businessPhone business
+                         , staffMobile = businessMobile business
+                         , staffEmail = Just "jwalker@mail.uk"
                          , staffUser = Nothing
                          }
 
@@ -331,9 +353,9 @@ We will continue to offer the latest treatments, the most innovative techniques 
 
     e10 <- insert $ Staff { staffName = "Robert William Evans"
                          , staffStatus = EmplStatusEmployed
-                         , staffPhone = Just "0491 570 006"
-                         , staffMobile = Just "0491 570 156"
-                         , staffEmail = Just "revans@mail.en"
+                         , staffPhone = businessPhone business
+                         , staffMobile = businessMobile business
+                         , staffEmail = Just "revans@mail.uk"
                          , staffUser = Nothing
                          }
 
@@ -344,20 +366,22 @@ We will continue to offer the latest treatments, the most innovative techniques 
                                       , staffPhotoMime = "image/avif"
                                       }
 
-    pass8 <- liftIO $ makePassword "ihughes" 17
-    u8 <- insert $ User { userName = "ihughes"
-                        , userPassword = decodeUtf8 pass8
-                        , userAdmin = False
-                        , userFullName = Just "Isabel Hughes"
-                        , userEmail = Just "ihughes@mail.uk"
-                        }
+    pass11 <- liftIO $ makePassword "ihughes" 17
+    let user11 = User { userName = "ihughes"
+                      , userPassword = decodeUtf8 pass11
+                      , userAdmin = False
+                      , userFullName = Just "Isabel Hughes"
+                      , userEmail = Just "ihughes@mail.uk"
+                      }
+                 
+    u11 <- insert user11
 
-    let empl11 = Staff { staffName = "Isabel Hughes"
+    let empl11 = Staff { staffName = case userFullName user11 of Just name -> name; Nothing -> userName user11
                        , staffStatus = EmplStatusDismissed
-                       , staffPhone = Just "0491 570 006"
-                       , staffMobile = Just "0491 570 156"
-                       , staffEmail = Just "ihughes@mail.uk"
-                       , staffUser = Just u8
+                       , staffPhone = businessPhone business
+                       , staffMobile = businessMobile business
+                       , staffEmail = userEmail user11
+                       , staffUser = Just u11
                        }
 
     e11 <- insert empl11
@@ -369,7 +393,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                                , staffPhotoPhoto = x
                                , staffPhotoMime = "image/avif"
                                }
-          insert_ $ UserPhoto { userPhotoUser = u8
+          insert_ $ UserPhoto { userPhotoUser = u11
                               , userPhotoPhoto = x
                               , userPhotoMime = "image/avif"
                               }
@@ -391,9 +415,9 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
-    s11 <- insert $ Service { serviceName = "Men hair cuts"
+    s11 <- insert $ Service { serviceName = "Men haircuts"
                             , servicePublished = True
-                            , serviceOverview = Just "Hair cuts for men"
+                            , serviceOverview = Just "Haircuts for men"
                             , serviceDescr = Just "Hair cuts for men"
                             , serviceDuration = duration "01:00"
                             , serviceGroup = Just s1
@@ -405,7 +429,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                         , roleRating = Just 5
                         } 
 
-    r111 <- insert $ role111
+    r111 <- insert role111
 
     insert_ $ Role { roleStaff = e2
                    , roleService = s11
@@ -428,10 +452,10 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
-    s12 <- insert $ Service { serviceName = "Women hair cuts (above shoulders)"
+    s12 <- insert $ Service { serviceName = "Women haircuts (above shoulders)"
                             , servicePublished = True
-                            , serviceOverview = Just "Hair cuts above shoulders for women"
-                            , serviceDescr = Just "Hair cuts above shoulders for women"
+                            , serviceOverview = Just "Haircuts above shoulders for women"
+                            , serviceDescr = Just "Haircuts above shoulders for women"
                             , serviceDuration = duration "01:30"
                             , serviceGroup = Just s1
                             }
@@ -469,10 +493,10 @@ We will continue to offer the latest treatments, the most innovative techniques 
                    , roleRating = Just 5
                    }
 
-    s13 <- insert $ Service { serviceName = "Women hair cuts (below shoulders)"
+    s13 <- insert $ Service { serviceName = "Women haircuts (below shoulders)"
                             , servicePublished = True
-                            , serviceOverview = Just "Hair cuts below shoulders for women"
-                            , serviceDescr = Just "Hair cuts below shoulders for women"
+                            , serviceOverview = Just "Haircuts below shoulders for women"
+                            , serviceDescr = Just "Haircuts below shoulders for women"
                             , serviceDuration = duration "01:35"
                             , serviceGroup = Just s1
                             }
@@ -506,10 +530,10 @@ We will continue to offer the latest treatments, the most innovative techniques 
                    , roleRating = Just 4
                    }
 
-    s14 <- insert $ Service { serviceName = "Children hair cuts"
+    s14 <- insert $ Service { serviceName = "Children haircuts"
                             , servicePublished = True
-                            , serviceOverview = Just "Hair cuts for children"
-                            , serviceDescr = Just "Hair cuts for children"
+                            , serviceOverview = Just "Haircuts for children"
+                            , serviceDescr = Just "Haircuts for children"
                             , serviceDuration = duration "01:20"
                             , serviceGroup = Just s1
                             }
@@ -920,7 +944,12 @@ We will continue to offer the latest treatments, the most innovative techniques 
     s2 <- insert $ Service { serviceName = "Facial Treatments"
                            , servicePublished = True
                            , serviceOverview = Just "Facial Treatments"
-                           , serviceDescr = Just "<p>Your face is an expressive canvass that shows experience and emotion. At one of the best salons around, our palette holds nourishing treatments, which enhances, emphasizes beauty, youth and color for your body. Before any facial, our professional esthetician will give you a consolidation and work from there You won’t believe the difference!</p><p>All facial treatments include eyebrow shaping.</p>"
+                           , serviceDescr = Just $ Textarea [st|
+<p>
+Your face is an expressive canvass that shows experience and emotion. At one of the best salons around, our palette holds nourishing treatments, which enhances, emphasizes beauty, youth and color for your body. Before any facial, our professional esthetician will give you a consolidation and work from there You won’t believe the difference!
+</p>
+<p>All facial treatments include eyebrow shaping.</p>
+|]
                            , serviceDuration = duration "01:45"
                            , serviceGroup = Nothing
                            }
@@ -2475,13 +2504,13 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s96
-                   , roleName = "Nail technician"
+                   , roleName = "Esthetician"
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s96
-                   , roleName = "Nail technician"
+                   , roleName = "Esthetician"
                    , roleRating = Just 5
                    }
 

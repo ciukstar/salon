@@ -6,11 +6,11 @@
 module Demo.DemoDataRU (populateRU) where
 
 import Text.Blaze.Html.Renderer.Text (renderHtml)
-import Text.Hamlet (shamlet, hamlet)
+import Text.Hamlet (shamlet)
 import Text.Shakespeare.Text (st)
 import qualified Data.ByteString.Base64 as B64 (decode)
 import Data.Text.Encoding (decodeUtf8)
-import Data.Text.Lazy (fromStrict, toStrict)
+import Data.Text.Lazy (toStrict)
 import Data.Time.Calendar (addDays)
 import Data.Time.Clock (getCurrentTime, UTCTime (utctDay,utctDayTime), DiffTime)
 import Data.Time.Format (parseTimeM, defaultTimeLocale)
@@ -146,7 +146,7 @@ populateRU = do
                      }
     u1 <- insert user1
 
-    let empl1 = Staff { staffName = userName user1
+    let empl1 = Staff { staffName = case userFullName user1 of Just name -> name; Nothing -> userName user1
                       , staffStatus = EmplStatusEmployed
                       , staffPhone = businessPhone business
                       , staffMobile = businessMobile business 
@@ -178,7 +178,7 @@ populateRU = do
                 
     u2 <- insert user2
 
-    e2 <- insert $ Staff { staffName = userName user2
+    e2 <- insert $ Staff { staffName = case userFullName user2 of Just name -> name; Nothing -> userName user2
                          , staffStatus = EmplStatusEmployed
                          , staffPhone = businessPhone business
                          , staffMobile = businessMobile business
@@ -208,7 +208,7 @@ populateRU = do
     
     u3 <- insert user3
 
-    e3 <- insert $ Staff { staffName = userName user3
+    e3 <- insert $ Staff { staffName = case userFullName user3 of Just name -> name; Nothing -> userName user3
                          , staffStatus = EmplStatusEmployed
                          , staffPhone = businessPhone business
                          , staffMobile = businessMobile business
@@ -238,7 +238,7 @@ populateRU = do
                 
     u4 <- insert user4
 
-    e4 <- insert $ Staff { staffName = userName user4
+    e4 <- insert $ Staff { staffName = case userFullName user4 of Just name -> name; Nothing -> userName user4
                          , staffStatus = EmplStatusEmployed
                          , staffPhone = businessPhone business
                          , staffMobile = businessMobile business
@@ -268,7 +268,7 @@ populateRU = do
                 
     u5 <- insert user5
 
-    e5 <- insert $ Staff { staffName = userName user5
+    e5 <- insert $ Staff { staffName = case userFullName user5 of Just name -> name; Nothing -> userName user5
                          , staffStatus = EmplStatusEmployed
                          , staffPhone = businessPhone business
                          , staffMobile = businessMobile business
@@ -373,7 +373,7 @@ populateRU = do
                 
     u11 <- insert user11
 
-    let empl11 = Staff { staffName = userName user11
+    let empl11 = Staff { staffName = case userFullName user11 of Just name -> name; Nothing -> userName user11
                        , staffStatus = EmplStatusDismissed
                        , staffPhone = businessPhone business
                        , staffMobile = businessMobile business
@@ -2608,10 +2608,10 @@ Collagen 90-II — это уважаемое и востребованное а�
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
-    s102 <- insert $ Service { serviceName = "Корректировка лица"
+    s102 <- insert $ Service { serviceName = "Коррекция лица"
                              , servicePublished = True
-                             , serviceOverview = Just "Корректировка лица"
-                             , serviceDescr = Just $ Textarea [st|Корректировка лица|]
+                             , serviceOverview = Just "Коррекция лица"
+                             , serviceDescr = Just $ Textarea [st|Коррекция лица|]
                              , serviceDuration = duration "00:45"
                              , serviceGroup = Just s10
                              }

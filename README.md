@@ -1,3 +1,8 @@
+
+[En français](https://github.com/ciukstar/salon/blob/master/README.fr.md)  
+
+[На русском](https://github.com/ciukstar/salon/blob/master/README.ru.md)
+
 # Salon
 
 The application ["Salon"](https://salon-w3cpovaqka-de.a.run.app) provides the ability to publish and advertise the services of beauty salon owners on the web.
