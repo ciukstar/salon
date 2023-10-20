@@ -9,7 +9,7 @@ import Yesod.Core
     , getUrlRender, preEscapedToMarkup
     )
 import Yesod.Core.Widget (setTitleI)
-import Yesod.Core.Handler (getMessages)
+import Yesod.Core.Handler (getMessages, newIdent)
 import Settings (widgetFile)
 import Database.Persist (Entity (Entity))
 import Yesod.Auth (maybeAuth, Route (LoginR))
@@ -28,7 +28,7 @@ import Foundation
     )
 
 import Model (Services (Services))
-    
+
 import Settings.StaticFiles
     ( img_Salon_ERD_svg, img_Booking_State_Diagram_svg
     , img_Appointment_State_Transition_svg
@@ -45,6 +45,7 @@ getDocsR = do
     user <- maybeAuth
     setUltDestCurrent
     msgs <- getMessages
+    topAppBar <- newIdent
     defaultLayout $ do
         setTitleI MsgDocumentation
         $(widgetFile "resources/docs")

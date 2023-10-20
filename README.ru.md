@@ -1,7 +1,9 @@
 
 [In english](https://github.com/ciukstar/salon/blob/master/README.md)  
 
-[En français](https://github.com/ciukstar/salon/blob/master/README.fr.md)
+[En français](https://github.com/ciukstar/salon/blob/master/README.fr.md)  
+
+[În română](https://github.com/ciukstar/salon/blob/master/README.ro.md)
 
 # Салон
 

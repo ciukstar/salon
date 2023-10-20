@@ -233,6 +233,7 @@ Cancel: Annuler
 Account: Compte
 DoNotHaveAnAccount: Vous n'avez pas de compte ?
 AsAdmin: Comme administrateur
+CreateNewAccount: Créer un nouveau compte 
 CreateAccount: Créer un compte
 SignInToYourAccount: Connectez-vous à votre compte
 SignIn: Connectez-vous

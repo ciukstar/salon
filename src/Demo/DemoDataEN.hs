@@ -2096,10 +2096,10 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
-    s72 <- insert $ Service { serviceName = "Bridal Make-up"
+    s72 <- insert $ Service { serviceName = "Bridal Makeup"
                             , servicePublished = True
-                            , serviceOverview = Just "Bridal Make-up"
-                            , serviceDescr = Just $ Textarea [st|Bridal Make-up (45 min)|]
+                            , serviceOverview = Just "Bridal Makeup (45 min)"
+                            , serviceDescr = Just $ Textarea [st|Bridal Makeup (45 min)|]
                             , serviceDuration = duration "00:45"
                             , serviceGroup = Just s7
                             }
@@ -2131,10 +2131,10 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
-    s73 <- insert $ Service { serviceName = "Evening Make-up"
+    s73 <- insert $ Service { serviceName = "Evening Makeup"
                             , servicePublished = True
-                            , serviceOverview = Just "Evening Make-up"
-                            , serviceDescr = Just $ Textarea [st|Evening Make-up (30 min)|]
+                            , serviceOverview = Just "Evening Makeup (30 min)"
+                            , serviceDescr = Just $ Textarea [st|Evening Makeup (30 min)|]
                             , serviceDuration = duration "00:30"
                             , serviceGroup = Just s7
                             }
@@ -2166,10 +2166,10 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
-    s74 <- insert $ Service { serviceName = "Make-up Lesson"
+    s74 <- insert $ Service { serviceName = "Makeup Lesson"
                             , servicePublished = True
-                            , serviceOverview = Just "Make-up Lesson"
-                            , serviceDescr = Just $ Textarea [st|Make-up Lesson (60 min)|]
+                            , serviceOverview = Just "Makeup Lesson (60 min)"
+                            , serviceDescr = Just $ Textarea [st|Makeup Lesson (60 min)|]
                             , serviceDuration = duration "00:60"
                             , serviceGroup = Just s7
                             }

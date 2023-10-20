@@ -233,6 +233,7 @@ Cancel: Отмена
 Account: Учетная запись
 DoNotHaveAnAccount: Нет учетной записи?
 AsAdmin: Как администратор
+CreateNewAccount: Создать новую учетную запись
 CreateAccount: Создать учётную запись
 SignInToYourAccount: Вход в учетную запись
 SignIn: Вход

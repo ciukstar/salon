@@ -233,6 +233,7 @@ Cancel: Renunță
 Account: Cont
 DoNotHaveAnAccount: Nu aveți cont?
 AsAdmin: Ca administrator
+CreateNewAccount: Creează un cont nou
 CreateAccount: Creează cont
 SignInToYourAccount: Conectați-vă la contul dvs
 SignIn: Conectați-vă

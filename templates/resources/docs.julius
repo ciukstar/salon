@@ -1,6 +1,14 @@
 
 window.mdc.autoInit();
 
+window.onscroll = function (e) {
+  if (document.documentElement.scrollTop > 128) {
+    document.getElementById(#{topAppBar}).classList.remove('mdc-top-app-bar--prominent');
+  } else {
+    document.getElementById(#{topAppBar}).classList.add('mdc-top-app-bar--prominent');
+  }
+};
+
 Array.from(
   document.querySelectorAll('aside.mdc-snackbar')
 ).map(x => x.MDCSnackbar).forEach(function (x) { x.open(); });

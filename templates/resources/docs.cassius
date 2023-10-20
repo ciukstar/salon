@@ -1,4 +1,8 @@
 
+##{topAppBar}
+  div.mdc-top-app-bar__row
+    transition: height 0.3s ease-out
+
 main
   margin: 0 1rem
   #imgErdDiagram, #imgBookingStateDiagram

@@ -233,6 +233,7 @@ Cancel: Cancel
 Account: Account
 DoNotHaveAnAccount: Don't have an account?
 AsAdmin: As admin
+CreateNewAccount: Create new account
 CreateAccount: Create account
 SignInToYourAccount: Sign in to your account
 SignIn: Sign in

@@ -58,7 +58,7 @@
       <a.mdc-button.mdc-button--outlined href=@{AccountR} role=button>
         <span.mdc-button__ripple>
         <span.mdc-button__focus-ring>
-        <span.mdc-button__label>_{MsgCreateAccount}
+        <span.mdc-button__label>_{MsgCreateNewAccount}
 
 <div.mdc-dialog ##{dlgSampleCreds} data-mdc-auto-init=MDCDialog>
   <div.mdc-dialog__container>
