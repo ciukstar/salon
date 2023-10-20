@@ -1,23 +1,1777 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE TypeApplications #-}
 
 module Demo.DemoDataRO (populateRO) where
 
+import Text.Blaze.Html.Renderer.Text (renderHtml)
+import Text.Hamlet (shamlet)
+import Text.Shakespeare.Text (st)
+import qualified Data.ByteString.Base64 as B64 (decode)
 import Data.Text.Encoding (decodeUtf8)
+import Data.Text.Lazy (toStrict)
+import Data.Time.Calendar (addDays)
+import Data.Time.Clock (getCurrentTime, UTCTime (utctDay,utctDayTime), DiffTime)
+import Data.Time.Format (parseTimeM, defaultTimeLocale)
+import Data.Time.LocalTime (timeToTimeOfDay, TimeZone (TimeZone))
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import ClassyPrelude.Yesod (ReaderT)
-import Database.Persist.Sql (SqlBackend)
-import Database.Persist ( PersistStoreWrite(insert_) )
-
-import Model (User(User, userName, userPassword, userAdmin, userEmail, userFullName))
+import Yesod.Form.Fields (Textarea (Textarea))
 import Yesod.Auth.Util.PasswordStore (makePassword)
+import Database.Persist.Sql (SqlBackend)
+import Database.Persist ( PersistStoreWrite(insert_, insert) )
+
+import Model
+    ( User (User, userName, userPassword, userAdmin, userEmail, userFullName)
+    , UserPhoto (UserPhoto, userPhotoUser, userPhotoPhoto, userPhotoMime)
+    , Service
+      ( Service, serviceName, serviceDescr, serviceGroup, serviceOverview
+      , servicePublished, serviceDuration
+      )
+    , Thumbnail
+      ( Thumbnail, thumbnailService, thumbnailPhoto, thumbnailMime
+      , thumbnailAttribution
+      )
+    , Offer
+      ( Offer, offerName, offerPrice, offerPrefix
+      , offerSuffix, offerDescr, offerService
+      )
+    , EmplStatus (EmplStatusAvailable, EmplStatusUnavailable)
+    , Staff
+      ( Staff, staffName, staffStatus, staffPhone, staffMobile, staffEmail
+      , staffUser
+      )
+    , StaffPhoto (StaffPhoto, staffPhotoPhoto, staffPhotoMime, staffPhotoStaff)
+    , Role (Role, roleStaff, roleService, roleName, roleRating)
+    , Contents (Contents, contentsSection, contentsContent)
+    , BookStatus (BookStatusRequest)
+    , Book
+      ( Book, bookCustomer, bookOffer, bookRole, bookDay, bookTime, bookTzo
+      , bookTz, bookStatus, bookAddr
+      )
+    , Business
+      ( Business, businessName, businessFullName, businessAddr, businessTzo, businessTz
+      , businessPhone, businessMobile, businessEmail, businessCurrency
+      )
+    , Hist
+      ( Hist, histBook, histLogtime, histDay, histTime, histAddr, histTzo
+      , histStatus, histUser, histTz, histRoleName, histStaffName
+      )
+    )
+import Data.FileEmbed (embedFile)
+import Demo.DemoPhotos
+    ( man01, man02, man03, man04, man05, man06
+    , woman01, woman02, woman03, woman04, woman05
+    )
 
 populateRO :: MonadIO m => ReaderT SqlBackend m ()
 populateRO = do
+
+    (now,today,time) <- liftIO $ getCurrentTime >>= \x -> return (x ,utctDay x,timeToTimeOfDay (utctDayTime x))
+
+    let business = Business { businessName = "Salon"
+                            , businessFullName = Just "SRL Salon"
+                            , businessCurrency = "RON"
+                            , businessAddr = "Bulevardul Ion C. Brătianu, București, Romania"
+                            , businessTzo = TimeZone 120 False "RO"
+                            , businessTz = "Europe/Bucharest"
+                            , businessPhone = Just "+40768469474"
+                            , businessMobile = Just "+40769859190"
+                            , businessEmail = Just "salon@mail.ro"
+                            }
+
+    insert_ business
+
+    insert_ $ Contents { contentsSection = "CONTACTS"
+                       , contentsContent = Textarea $ toStrict $ renderHtml [shamlet|
+<section style="margin:0 1rem">
+  <h3 style="color:gray">Sunați-ne
+  <dl>
+    <dt>
+      <i>Telefon
+    <dd>
+      $maybe phone <- businessPhone business
+        #{phone}
+    <dt>
+      <i>Mobil
+    <dd>
+      $maybe mobile <- businessMobile business
+        #{mobile}
+<section style="margin:0 1rem">
+  <h3 style="color:gray">Trimiteți-ne un e-mail
+  <dl>
+    <dt>
+      <i>E-mail
+    <dd>
+      $maybe email <- businessEmail business
+        #{email}
+<section style="margin:0 1rem">
+  <h3 style="color:gray">Vino să ne vezi
+  <dl>
+    <dt>
+      <i>Adresa
+    <dd>
+      #{businessAddr business}
+  <iframe width="100%" height="400px" loding="lazy" title="Salon" style="border:none" src="https://api.mapbox.com/styles/v1/mapbox/streets-v12.html?title=false&zoomwheel=false&access_token=pk.eyJ1IjoiY2l1a3N0YXIiLCJhIjoiY2o1enNibDNsMGNrNDJ3dDhxeTJuc3luMiJ9.Jgc5GdYUMbYwGq-zRWtzfw#15/44.4327417/26.1039028">
+|]
+                       }
+
+    insert_ $ Contents { contentsSection = "ABOUT_US"
+                       , contentsContent = Textarea $ toStrict $ renderHtml [shamlet|
+<h2 style="color:gray">Misiunea noastră
+<p>
+  Misiunea noastră este simplă: să oferim un mediu special fiecărei persoane care își intră pe uși, unde se pot răsfăța, se pot îngriji și se pot răsfăța, sporindu-și în același timp imaginea personală și aducând un sentiment de bunăstare în viața lor.
+<h2 style="color:gray">Etosul nostru
+<p>
+  Orice persoană care vine la saloanele noastre este unică. Tratăm fiecare client unic în funcție de nevoile sale personale. Ne mândrim să oferim serviciul pe care clientul se așteaptă și tratamentele de care el/ea are nevoie și le vom reevalua continuu cerințele în funcție de stilul de viață și de corp.
+  Nu vom oferi niciodată tratamente care nu sunt necesare și facem din fiecare client o prioritate. Acesta este exact motivul pentru care putem spune cu mândrie că, de-a lungul anilor, ne-am construit o bază de clienți loiali. Învățăm de la ei pe măsură ce avem grijă de ei și ne străduim să ținem pasul cu cele mai recente tendințe și tratamente disponibile pentru a ne asigura că îndeplinim întotdeauna nevoile clienților noștri valoroși și ale oricăror viitori vizitatori.
+<h2 style="color:gray">Obiectivele noastre
+<p>
+  Vom continua să oferim cele mai noi tratamente, cele mai inovatoare tehnici în timp ce folosim cele mai bune produse de pe piață. Toate acestea în medii elegante, curate și primitoare cu terapeuți pregătiți, profesioniști și prietenoși. Ne vom strădui să divulgăm mesajul nostru că este dreptul fiecăruia de a se simți bine!
+|]
+                       }
+    
     pass <- liftIO $ makePassword "root" 17
     insert_ $ User { userName = "root"
                    , userPassword = decodeUtf8 pass
                    , userAdmin = True
-                   , userFullName = Just "Popa Andrei Marin"
-                   , userEmail = Just "pamarin@mail.ro"
+                   , userFullName = Just "Popescu Ion Andrei"
+                   , userEmail = Just "popescuia@mail.ro"
                    }
+
+    pass1 <- liftIO $ makePassword "popaa" 17
+    let user1 = User { userName = "popaa"
+                     , userPassword = decodeUtf8 pass1
+                     , userAdmin = False
+                     , userFullName = Just "Popa Andrei"
+                     , userEmail = Just "popaa@mail.ro"
+                     }
+                
+    u1 <- insert user1
+
+    let empl1 = Staff { staffName = case userFullName user1 of Just name -> name; Nothing -> userName user1
+                      , staffStatus = EmplStatusAvailable
+                      , staffPhone = businessPhone business
+                      , staffMobile = businessMobile business
+                      , staffEmail = userEmail user1
+                      , staffUser = Just u1
+                      }
+
+    e1 <- insert empl1
+
+    case B64.decode man01 of
+      Left _ -> return ()
+      Right x -> do
+          insert_ $ StaffPhoto { staffPhotoStaff = e1
+                               , staffPhotoPhoto = x
+                               , staffPhotoMime = "image/avif"
+                               }
+          insert_ $ UserPhoto { userPhotoUser = u1
+                              , userPhotoPhoto = x
+                              , userPhotoMime = "image/avif"
+                              }
+
+    pass2 <- liftIO $ makePassword "raduam" 17
+    let user2 = User { userName = "raduam"
+                     , userPassword = decodeUtf8 pass2
+                     , userAdmin = False
+                     , userFullName = Just "Radu Ana-Maria"
+                     , userEmail = Just "raduam@mail.ro"
+                     }
+    u2 <- insert user2
+
+    e2 <- insert $ Staff { staffName = case userFullName user2 of Just name -> name; Nothing -> userName user2
+                         , staffStatus = EmplStatusAvailable
+                         , staffPhone = businessPhone business
+                         , staffMobile = businessMobile business
+                         , staffEmail = userEmail user2
+                         , staffUser = Just u2
+                         }
+
+    case B64.decode woman01 of
+      Left _ -> return ()
+      Right x -> do
+          insert_ $ StaffPhoto { staffPhotoStaff = e2
+                               , staffPhotoPhoto = x
+                               , staffPhotoMime = "image/avif"
+                               }
+          insert_ $ UserPhoto { userPhotoUser = u2
+                              , userPhotoPhoto = x
+                              , userPhotoMime = "image/avif"
+                              }
+
+    pass3 <- liftIO $ makePassword "johnjohnson" 17
+    let user3 = User { userName = "johnjohnson"
+                     , userPassword = decodeUtf8 pass3
+                     , userAdmin = False
+                     , userFullName = Just "Ionescu Alexandru Victor"
+                     , userEmail = Just "ionescuav@mail.ro"
+                     }
+                
+    u3 <- insert user3
+
+    e3 <- insert $ Staff { staffName = case userFullName user3 of Just name -> name; Nothing -> userName user3
+                         , staffStatus = EmplStatusAvailable
+                         , staffPhone = businessPhone business
+                         , staffMobile = businessMobile business
+                         , staffEmail = userEmail user3
+                         , staffUser = Just u3
+                         }
+
+    case B64.decode man02 of
+      Left _ -> return ()
+      Right x -> do
+          insert_ $ StaffPhoto { staffPhotoStaff = e3
+                               , staffPhotoPhoto = x
+                               , staffPhotoMime = "image/avif"
+                               }
+          insert_ $ UserPhoto { userPhotoUser = u3
+                              , userPhotoPhoto = x
+                              , userPhotoMime = "image/avif"
+                              }
+
+    pass4 <- liftIO $ makePassword "stoicama" 17
+    let user4 = User { userName = "stoicama"
+                     , userPassword = decodeUtf8 pass4
+                     , userAdmin = False
+                     , userFullName = Just "Stoica Maria Alexandra"
+                     , userEmail = Just "stoicama@mail.ro"
+                     }
+                
+    u4 <- insert user4
+
+    e4 <- insert $ Staff { staffName = case userFullName user4 of Just name -> name; Nothing -> userName user4
+                         , staffStatus = EmplStatusAvailable
+                         , staffPhone = businessPhone business
+                         , staffMobile = businessMobile business
+                         , staffEmail = userEmail user4
+                         , staffUser = Just u4
+                         }
+
+    case B64.decode woman02 of
+      Left _ -> return ()
+      Right x -> do
+          insert_ $ StaffPhoto { staffPhotoStaff = e4
+                               , staffPhotoPhoto = x
+                               , staffPhotoMime = "image/avif"
+                               }
+          insert_ $ UserPhoto { userPhotoUser = u4
+                              , userPhotoPhoto = x
+                              , userPhotoMime = "image/avif"
+                              }
+
+    pass5 <- liftIO $ makePassword "rususa" 17
+    let user5 = User { userName = "rususa"
+                     , userPassword = decodeUtf8 pass5
+                     , userAdmin = False
+                     , userFullName = Just "Rusu Ştefan Alexandru"
+                     , userEmail = Just "rususa@mail.ro"
+                     }
+    u5 <- insert user5
+
+    e5 <- insert $ Staff { staffName = case userFullName user5 of Just name -> name; Nothing -> userName user5
+                         , staffStatus = EmplStatusAvailable
+                         , staffPhone = businessPhone business
+                         , staffMobile = businessMobile business
+                         , staffEmail = userEmail user5
+                         , staffUser = Just u5
+                         }
+
+    case B64.decode man03 of
+      Left _ -> return ()
+      Right x -> do
+          insert_ $ StaffPhoto { staffPhotoStaff = e5
+                               , staffPhotoPhoto = x
+                               , staffPhotoMime = "image/avif"
+                               }
+          insert_ $ UserPhoto { userPhotoUser = u5
+                              , userPhotoPhoto = x
+                              , userPhotoMime = "image/avif"
+                              }
+
+    e6 <- insert $ Staff { staffName = "Munteanu David"
+                         , staffStatus = EmplStatusAvailable
+                         , staffPhone = businessPhone business
+                         , staffMobile = businessMobile business
+                         , staffEmail = Just "munteanud@mail.ro"
+                         , staffUser = Nothing
+                         }
+
+    case B64.decode man04 of
+      Left _ -> return ()
+      Right x -> insert_ $ StaffPhoto { staffPhotoStaff = e6
+                                      , staffPhotoPhoto = x
+                                      , staffPhotoMime = "image/avif"
+                                      }
+
+    e7 <- insert $ Staff { staffName = "Matei Andreea Alexandra"
+                         , staffStatus = EmplStatusAvailable
+                         , staffPhone = businessPhone business
+                         , staffMobile = businessMobile business
+                         , staffEmail = Just "mateiaa@mail.ro"
+                         , staffUser = Nothing
+                         }
+
+    case B64.decode woman03 of
+      Left _ -> return ()
+      Right x -> insert_ $ StaffPhoto { staffPhotoStaff = e7
+                                      , staffPhotoPhoto = x
+                                      , staffPhotoMime = "image/avif"
+                                      }
+
+    e8 <- insert $ Staff { staffName = "Marin Ioana"
+                         , staffStatus = EmplStatusAvailable
+                         , staffPhone = businessPhone business
+                         , staffMobile = businessMobile business
+                         , staffEmail = Just "marini@mail.ro"
+                         , staffUser = Nothing
+                         }
+
+    case B64.decode woman04 of
+      Left _ -> return ()
+      Right x -> insert_ $ StaffPhoto { staffPhotoStaff = e8
+                                      , staffPhotoPhoto = x
+                                      , staffPhotoMime = "image/avif"
+                                      }
+
+    e9 <- insert $ Staff { staffName = "Lazar Mihai"
+                         , staffStatus = EmplStatusAvailable
+                         , staffPhone = businessPhone business
+                         , staffMobile = businessMobile business
+                         , staffEmail = Just "lazarm@mail.ro"
+                         , staffUser = Nothing
+                         }
+
+    case B64.decode man05 of
+      Left _ -> return ()
+      Right x -> insert_ $ StaffPhoto { staffPhotoStaff = e9
+                                      , staffPhotoPhoto = x
+                                      , staffPhotoMime = "image/avif"
+                                      }
+
+    e10 <- insert $ Staff { staffName = "Ciobanu Ionuţ Ştefan"
+                         , staffStatus = EmplStatusAvailable
+                         , staffPhone = businessPhone business
+                         , staffMobile = businessMobile business
+                         , staffEmail = Just "ciobanuis@mail.ro"
+                         , staffUser = Nothing
+                         }
+
+    case B64.decode man06 of
+      Left _ -> return ()
+      Right x -> insert_ $ StaffPhoto { staffPhotoStaff = e10
+                                      , staffPhotoPhoto = x
+                                      , staffPhotoMime = "image/avif"
+                                      }
+
+    pass11 <- liftIO $ makePassword "floreaim" 17
+    let user11 = User { userName = "floreaim"
+                      , userPassword = decodeUtf8 pass11
+                      , userAdmin = False
+                      , userFullName = Just "Florea Ioana Maria"
+                      , userEmail = Just "floreaim@mail.ro"
+                      }
+                 
+    u11 <- insert user11
+
+    let empl11 = Staff { staffName = case userFullName user11 of Just name -> name; Nothing -> userName user11
+                       , staffStatus = EmplStatusUnavailable
+                       , staffPhone = businessPhone business
+                       , staffMobile = businessMobile business
+                       , staffEmail = userEmail user11
+                       , staffUser = Just u11
+                       }
+
+    e11 <- insert empl11
+
+    case B64.decode woman05 of
+      Left _ -> return ()
+      Right x -> do
+          insert_ $ StaffPhoto { staffPhotoStaff = e11
+                               , staffPhotoPhoto = x
+                               , staffPhotoMime = "image/avif"
+                               }
+          insert_ $ UserPhoto { userPhotoUser = u11
+                              , userPhotoPhoto = x
+                              , userPhotoMime = "image/avif"
+                              }
+
+
+
+    s1 <- insert $ Service { serviceName = "Îngrijirea părului"
+                           , serviceOverview = Just "Servicii de îngrijire a părului"
+                           , servicePublished = True
+                           , serviceDescr = Just "<p>Întotdeauna distincți și niciodată neobișnuiți, experții noștri în îngrijirea părului s-au pregătit intens pentru a oferi servicii de tunsoare și coafare de designer care sunt personalizate pentru nevoile fiecărui client. Ca salon, ne susținem echipa în eforturile lor de a-și perfecționa tehnicile individuale și le oferim stiliștilor noștri libertatea de a-și exprima pe deplin și explora creativitatea. Acest lucru, la rândul său, oferă oaspeților noștri oportunitatea de a se bucura de servicii personalizate de fiecare dată. Indiferent dacă îți place aspectul modern sau o croială clasică vorbește despre stilul tău de semnătură – opțiunile sunt nesfârșite la noi.</p>"
+                           , serviceDuration = duration "01:30"
+                           , serviceGroup = Nothing
+                           }
+
+    insert_ $ Thumbnail { thumbnailService = s1
+                        , thumbnailPhoto = $(embedFile "static/img/hair-care.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s11 <- insert $ Service { serviceName = "Tunsori pentru bărbați"
+                            , servicePublished = True
+                            , serviceOverview = Just "Tunsori pentru bărbați"
+                            , serviceDescr = Just "Tunsori pentru bărbați"
+                            , serviceDuration = duration "01:00"
+                            , serviceGroup = Just s1
+                            }
+
+    let role111 =  Role { roleStaff = e1
+                        , roleService = s11
+                        , roleName = "Frizer"
+                        , roleRating = Just 5
+                        } 
+
+    r111 <- insert role111
+
+    insert_ $ Role { roleStaff = e2
+                   , roleService = s11
+                   , roleName = "Frizer"
+                   , roleRating = Just 5
+                   }
+
+    o111 <- insert $ Offer { offerService = s11
+                           , offerName = "Preț"
+                           , offerPrice = 26
+                           , offerPrefix = Nothing
+                           , offerSuffix = Just "RON"
+                           , offerDescr = Nothing
+                           }
+
+    insert_ $ Thumbnail { thumbnailService = s11
+                        , thumbnailPhoto = $(embedFile "static/img/men-haircuts.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s12 <- insert $ Service { serviceName = "Tunsori pentru femei (peste umeri)"
+                            , servicePublished = True
+                            , serviceOverview = Just "Tunsori deasupra umerilor pentru femei"
+                            , serviceDescr = Just "Tunsori deasupra umerilor pentru femei"
+                            , serviceDuration = duration "01:30"
+                            , serviceGroup = Just s1
+                            }
+
+    insert_ $ Offer { offerService = s12
+                    , offerName = "Preț"
+                    , offerPrice = 28
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Thumbnail { thumbnailService = s12
+                        , thumbnailPhoto = $(embedFile "static/img/women-hair-cuts-above-shoulders.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    insert_ $ Role { roleStaff = e2
+                   , roleService = s12
+                   , roleName = "Coafeză"
+                   , roleRating = Just 3
+                   }
+
+    insert_ $ Role { roleStaff = e3
+                   , roleService = s12
+                   , roleName = "Coafor"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e4
+                   , roleService = s12
+                   , roleName = "Coafeză"
+                   , roleRating = Just 5
+                   }
+
+    s13 <- insert $ Service { serviceName = "Tunsori pentru femei (sub umeri)"
+                            , servicePublished = True
+                            , serviceOverview = Just "Tunsori sub umeri pentru femei"
+                            , serviceDescr = Just "Tunsori sub umeri pentru femei"
+                            , serviceDuration = duration "01:35"
+                            , serviceGroup = Just s1
+                            }
+
+    o131 <- insert $ Offer { offerService = s13
+                           , offerName = "Preț"
+                           , offerPrice = 35
+                           , offerPrefix = Nothing
+                           , offerSuffix = Just "RON"
+                           , offerDescr = Nothing
+                           }
+
+    insert_ $ Thumbnail { thumbnailService = s13
+                        , thumbnailPhoto = $(embedFile "static/img/women-hair-cuts-below-shoulders.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    let role1311 = Role { roleStaff = e11
+                        , roleService = s13
+                        , roleName = "Stilist"
+                        , roleRating = Just 5
+                        }
+
+    r1311 <- insert role1311
+
+    insert_ $ Role { roleStaff = e3
+                   , roleService = s13
+                   , roleName = "Stilist asistent"
+                   , roleRating = Just 4
+                   }
+
+    s14 <- insert $ Service { serviceName = "Tunsori pentru copii"
+                            , servicePublished = True
+                            , serviceOverview = Just "Tunsori pentru copii"
+                            , serviceDescr = Just "Tunsori pentru copii"
+                            , serviceDuration = duration "01:20"
+                            , serviceGroup = Just s1
+                            }
+
+    o141 <- insert $ Offer { offerService = s14
+                           , offerName = "Preț"
+                           , offerPrice = 16
+                           , offerPrefix = Nothing
+                           , offerSuffix = Just "RON-20 RON (în funcție de lungimea părului lor)"
+                           , offerDescr = Nothing
+                           }
+
+    insert_ $ Thumbnail { thumbnailService = s14
+                        , thumbnailPhoto = $(embedFile "static/img/children-hair-cuts.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    insert_ $ Role { roleStaff = e4
+                   , roleService = s14
+                   , roleName = "Stilist junior"
+                   , roleRating = Just 5
+                   }
+
+    s15 <- insert $ Service { serviceName = "Servicii chimice"
+                            , servicePublished = True
+                            , serviceOverview = Just "Servicii chimice"
+                            , serviceDescr = Just "<p>Serviciile noastre chimice se adresează unei game largi de nevoi de îngrijire a părului. Tratamentele noastre de netezire combate încrețirea, cresc manevrabilitate și oferă rezultatele de lungă durată pe care le-ai dorit întotdeauna. Vă puteți bucura de șuvițe netede și mătăsoase cu serviciul nostru de keratina, precum și de a repara deteriorarea părului prin completarea proteinelor pierdute. Dacă valuri adăugate, bucle și volum sunt ceea ce cauți, serviciile noastre profesionale de permanentă vă vor permite să obțineți textura dorită. Folosim produse și tehnici inovatoare pentru a stabili bucle definite pe care sigur le veți iubi.</p>"
+                            , serviceDuration = duration "02:00"
+                            , serviceGroup = Just s1
+                            }
+
+    insert_ $ Thumbnail { thumbnailService = s15
+                        , thumbnailPhoto = $(embedFile "static/img/chemical-services.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s151 <- insert $ Service { serviceName = "Condiţionare"
+                             , servicePublished = True
+                             , serviceOverview = Just "Servicii de condiționare"
+                             , serviceDescr = Just "Servicii de condiționare"
+                             , serviceDuration = duration "01:35"
+                             , serviceGroup = Just s15
+                             }
+
+    insert_ $ Thumbnail { thumbnailService = s151
+                        , thumbnailPhoto = $(embedFile "static/img/conditioning.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s1511 <- insert $ Service { serviceName = "După Balsam Perm"
+                              , servicePublished = True
+                              , serviceOverview = Just "După Balsam Perm"
+                              , serviceDescr = Just "După Balsam Perm"
+                              , serviceDuration = duration "01:25"
+                              , serviceGroup = Just s151
+                              }
+
+    insert_ $ Offer { offerService = s1511
+                    , offerName = "Preț"
+                    , offerPrice = 99
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON și mai mult"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Thumbnail { thumbnailService = s1511
+                        , thumbnailPhoto = $(embedFile "static/img/after-perm-conditioner.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    insert_ $ Role { roleStaff = e3
+                   , roleService = s1511
+                   , roleName = "Stilist"
+                   , roleRating = Just 4
+                   }
+
+    insert_ $ Role { roleStaff = e4
+                   , roleService = s1511
+                   , roleName = "Stilist"
+                   , roleRating = Just 4
+                   }
+
+    insert_ $ Role { roleStaff = e5
+                   , roleService = s1511
+                   , roleName = "Stilist"
+                   , roleRating = Just 4
+                   }
+
+    s1512 <- insert $ Service { serviceName = "Înainte de Balsam Perm"
+                              , servicePublished = True
+                              , serviceOverview = Just "Înainte de Balsam Perm"
+                              , serviceDescr = Just "Înainte de Balsam Perm"
+                              , serviceDuration = duration "01:15"
+                              , serviceGroup = Just s151
+                              }
+
+    insert_ $ Offer { offerService = s1512
+                    , offerName = "Preț"
+                    , offerPrice = 110
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON și mai mult"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e4
+                   , roleService = s1512
+                   , roleName = "Stilist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e5
+                   , roleService = s1512
+                   , roleName = "Stilist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e6
+                   , roleService = s1512
+                   , roleName = "Stilist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s1512
+                        , thumbnailPhoto = $(embedFile "static/img/before-perm-conditioner.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s152 <- insert $ Service { serviceName = "Repere și culoare"
+                             , servicePublished = True
+                             , serviceOverview = Just "Repere și culoare"
+                             , serviceDescr = Just "Repere și culoare"
+                             , serviceDuration = duration "01:10"
+                             , serviceGroup = Just s15
+                             }
+
+    insert_ $ Thumbnail { thumbnailService = s152
+                        , thumbnailPhoto = $(embedFile "static/img/highlights-and-color.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s1521 <- insert $ Service { serviceName = "Complete"
+                              , servicePublished = True
+                              , serviceOverview = Just "Repere și culoare - Complete"
+                              , serviceDescr = Just "Repere și culoare - Complete"
+                              , serviceDuration = duration "01:00"
+                              , serviceGroup = Just s152
+                              }
+
+    insert_ $ Offer { offerService = s1521
+                    , offerName = "Preț"
+                    , offerPrice = 130
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Thumbnail { thumbnailService = s1521
+                        , thumbnailPhoto = $(embedFile "static/img/highlights-and-color-full.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    insert_ $ Role { roleStaff = e8
+                   , roleService = s1521
+                   , roleName = "Colorist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e9
+                   , roleService = s1521
+                   , roleName = "Colorist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e10
+                   , roleService = s1521
+                   , roleName = "Colorist"
+                   , roleRating = Just 5
+                   }
+
+    s1522 <- insert $ Service { serviceName = "Parțial"
+                              , servicePublished = True
+                              , serviceOverview = Just "Relete și culoare - Parțial"
+                              , serviceDescr = Just "Relete și culoare - Parțial"
+                              , serviceDuration = duration "01:15"
+                              , serviceGroup = Just s152
+                              }
+
+    insert_ $ Offer { offerService = s1522
+                    , offerName = "Preț"
+                    , offerPrice = 68
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON si mai mult"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Thumbnail { thumbnailService = s1522
+                        , thumbnailPhoto = $(embedFile "static/img/highlights-and-color-partial.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    insert_ $ Role { roleStaff = e10
+                   , roleService = s1522
+                   , roleName = "Colorist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e11
+                   , roleService = s1522
+                   , roleName = "Colorist"
+                   , roleRating = Just 5
+                   }
+
+    s1523 <- insert $ Service { serviceName = "Culoare permanentă"
+                              , servicePublished = True
+                              , serviceOverview = Just "Culoare permanentă"
+                              , serviceDescr = Just "Culoare permanentă"
+                              , serviceDuration = duration "01:45"
+                              , serviceGroup = Just s152
+                              }
+
+    insert_ $ Offer { offerService = s1523
+                    , offerName = "Preț"
+                    , offerPrice = 68
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON și mai mult"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Thumbnail { thumbnailService = s1523
+                        , thumbnailPhoto = $(embedFile "static/img/highlights-and-color-permanent.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    insert_ $ Role { roleStaff = e9
+                   , roleService = s1523
+                   , roleName = "Colorist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e10
+                   , roleService = s1523
+                   , roleName = "Colorist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e11
+                   , roleService = s1523
+                   , roleName = "Colorist"
+                   , roleRating = Just 5
+                   }
+
+    s153 <- insert $ Service { serviceName = "Perm"
+                             , servicePublished = True
+                             , serviceOverview = Just "Un val permanent"
+                             , serviceDescr = Just "Perm este o modalitate excelentă de a vă oferi un nou aspect"
+                             , serviceDuration = duration "00:45"
+                             , serviceGroup = Just s15
+                             }
+
+    insert_ $ Thumbnail { thumbnailService = s153
+                        , thumbnailPhoto = $(embedFile "static/img/perm.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s1531 <- insert $ Service { serviceName = "Perm complet"
+                              , servicePublished = True
+                              , serviceOverview = Just "Perm complet"
+                              , serviceDescr = Just "Perm complet"
+                              , serviceDuration = duration "00:35"
+                              , serviceGroup = Just s153
+                              }
+
+    insert_ $ Offer { offerService = s1531
+                    , offerName = "Preț"
+                    , offerPrice = 79
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON și mai mult"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Thumbnail { thumbnailService = s1531
+                        , thumbnailPhoto = $(embedFile "static/img/full-perm.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    insert_ $ Role { roleStaff = e1
+                   , roleService = s1531
+                   , roleName = "Stilist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e2
+                   , roleService = s1531
+                   , roleName = "Stilist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e3
+                   , roleService = s1531
+                   , roleName = "Stilist"
+                   , roleRating = Just 5
+                   }
+
+    s1532 <- insert $ Service { serviceName = "Reparare acidă Perm"
+                              , servicePublished = True
+                              , serviceOverview = Just "Reparare acidă Perm"
+                              , serviceDescr = Just "Reparare acidă Perm"
+                              , serviceDuration = duration "01:25"
+                              , serviceGroup = Just s153
+                              }
+
+    insert_ $ Offer { offerService = s1532
+                    , offerName = "Preț"
+                    , offerPrice = 89
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON și mai mult"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Thumbnail { thumbnailService = s1532
+                        , thumbnailPhoto = $(embedFile "static/img/acid-repair-perm.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    insert_ $ Role { roleStaff = e3
+                   , roleService = s1532
+                   , roleName = "Stilist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e4
+                   , roleService = s1532
+                   , roleName = "Stilist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e5
+                   , roleService = s1532
+                   , roleName = "Stilist"
+                   , roleRating = Just 5
+                   }
+
+    s1533 <- insert $ Service { serviceName = "Îndreptare Perm japoneză"
+                              , servicePublished = True
+                              , serviceOverview = Just "Îndreptare Perm japoneză"
+                              , serviceDescr = Just "Îndreptare Perm japoneză"
+                              , serviceDuration = duration "01:25"
+                              , serviceGroup = Just s153
+                              }
+
+    insert_ $ Offer { offerService = s1533
+                    , offerName = "Preț"
+                    , offerPrice = 250
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON și mai mult"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Thumbnail { thumbnailService = s1533
+                        , thumbnailPhoto = $(embedFile "static/img/japanese-straightening-perm.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    insert_ $ Role { roleStaff = e5
+                   , roleService = s1533
+                   , roleName = "Stilist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e6
+                   , roleService = s1533
+                   , roleName = "Stilist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e7
+                   , roleService = s1533
+                   , roleName = "Stilist"
+                   , roleRating = Just 5
+                   }
+
+    s2 <- insert $ Service { serviceName = "Îngrijirea feței"
+                           , servicePublished = True
+                           , serviceOverview = Just "Îngrijirea feței"
+                           , serviceDescr = Just $ Textarea [st|
+<p>
+Fața ta este o pânză expresivă care arată experiența și emoția. Într-unul dintre cele mai bune saloane din lume, paleta noastră oferă tratamente hrănitoare care sporesc și subliniază frumusețea, tinerețea și culoarea corpului tău. Înainte de orice tratament facial, cosmeticianul nostru profesionist vă va oferi o consolidare și lucrați de acolo. Nu o sa crezi diferenta!
+</p>
+<p>Toate tratamentele faciale includ modelarea sprâncenelor.</p>
+|]
+                           , serviceDuration = duration "01:45"
+                           , serviceGroup = Nothing
+                           }
+
+    insert_ $ Thumbnail { thumbnailService = s2
+                        , thumbnailPhoto = $(embedFile "static/img/facial-treatments.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s21 <- insert $ Service { serviceName = "Îngrijire de bază a feței"
+                            , servicePublished = True
+                            , serviceOverview = Just "Îngrijire de bază a feței (60 min)"
+                            , serviceDescr = Just "Curățare profundă, exfoliere cu tratament cu abur, urmată de extracții, apoi modelarea sprâncenelor; un masaj de stres al feței, gâtului și umerilor. O mască personalizată, precum și un tratament regulat pentru ochi, urmat de aplicarea unei creme hidratante/de soare. Acest tratament de curățare relaxant, dar serios, vă va lăsa cu un ten curat, proaspăt și strălucitor."
+                            , serviceDuration = duration "00:60"
+                            , serviceGroup = Just s2
+                            }
+
+    insert_ $ Offer { offerService = s21
+                    , offerName = "Preț"
+                    , offerPrice = 55
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Offer { offerService = s21
+                    , offerName = "Pachet"
+                    , offerPrice = 250
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON/5 sesiuni"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Thumbnail { thumbnailService = s21
+                        , thumbnailPhoto = $(embedFile "static/img/facial-treatments-basic-facial.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    insert_ $ Role { roleStaff = e8
+                   , roleService = s21
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e9
+                   , roleService = s21
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e10
+                   , roleService = s21
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    s22 <- insert $ Service { serviceName = "Tratament facial Deluxe"
+                            , servicePublished = True
+                            , serviceOverview = Just "Tratament facial Deluxe"
+                            , serviceDescr = Just "Acest tratament facial special poate fi personalizat în funcție de situația pielii clientului (adică uscată, grasă, sensibilă etc.). Este creat pentru a netezi și a înmuia tenul în timp ce vă detensionează întregul corp. Fața noastră de lux te va face să te simți și să arăți mai sănătos."
+                            , serviceDuration = duration "01:30"
+                            , serviceGroup = Just s2
+                            }
+
+    insert_ $ Offer { offerService = s22
+                    , offerName = "Preț"
+                    , offerPrice = 75
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Offer { offerService = s22
+                    , offerName = "Pachet"
+                    , offerPrice = 350
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON/5 sesiuni"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Thumbnail { thumbnailService = s22
+                        , thumbnailPhoto = $(embedFile "static/img/facial-treatments-deluxe-facial.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    insert_ $ Role { roleStaff = e6
+                   , roleService = s22
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e7
+                   , roleService = s22
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e8
+                   , roleService = s22
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    s23 <- insert $ Service { serviceName = "Tratament facial COCOON"
+                            , servicePublished = True
+                            , serviceOverview = Just "Tratament facial COCOON (90 min)"
+                            , serviceDescr = Just "Un tratament clinic de hidratare, care creează un efect de răcire asupra pielii pentru a revitaliza, hidrata și calma. Efectul său termo-înviorător asupra pielii îl face un tratament remarcabil de revitalizare, în special pentru reducerea roșeață. ALGOMASK+ oferă strălucire instantanee și hidratare de lungă durată."
+                            , serviceDuration = duration "00:90"
+                            , serviceGroup = Just s2
+                            }
+
+    insert_ $ Offer { offerService = s23
+                    , offerName = "Preț"
+                    , offerPrice = 90
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Offer { offerService = s23
+                    , offerName = "Pachet"
+                    , offerPrice = 400
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON/5 sesiuni"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Thumbnail { thumbnailService = s23
+                        , thumbnailPhoto = $(embedFile "static/img/facial-treatments-pampering-facial.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    insert_ $ Role { roleStaff = e3
+                   , roleService = s23
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e4
+                   , roleService = s23
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e5
+                   , roleService = s23
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e6
+                   , roleService = s23
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    s24 <- insert $ Service { serviceName = "Tratamentul acneei"
+                            , servicePublished = True
+                            , serviceOverview = Just "Tratamentul acneei (120 min)"
+                            , serviceDescr = Just "Aceasta este o modalitate foarte inovatoare și eficientă de a trata afecțiunile acneice care nu au răspuns la alte tratamente și a produs multe rezultate remarcabile. Peroxidul de uree, alfa hidroxiacizii și un element special anti-androgenic sunt încorporate în formula de normalizare Rejuvi."
+                            , serviceDuration = duration "02:00"
+                            , serviceGroup = Just s2
+                            }
+
+    insert_ $ Offer { offerService = s24
+                    , offerName = "Preț"
+                    , offerPrice = 95
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Offer { offerService = s24
+                    , offerName = "Pachet"
+                    , offerPrice = 600
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON/7 sesiuni"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Thumbnail { thumbnailService = s24
+                        , thumbnailPhoto = $(embedFile "static/img/facial-treatments-acne-treatment.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    insert_ $ Role { roleStaff = e1
+                   , roleService = s24
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e2
+                   , roleService = s24
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e3
+                   , roleService = s24
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    s25 <- insert $ Service { serviceName = "Tratament mască cu aur de 24k"
+                            , servicePublished = True
+                            , serviceOverview = Just "Tratament de albire cu aur de 24k"
+                            , serviceDescr = Just "<p>Un tratament facial anti-îmbătrânire de lux. Această formulă activă de hidratare anti-îmbătrânire combină puterea vitaminelor pure, extractelor de plante și aurului de 24 de karate. Aceste ingrediente contribuie eficient la stimularea producției de colagen. Ele formează o barieră de protecție continuă pentru a imita efectele intervenției chirurgicale.</p><p>Masca se potrivește ca o „a doua piele” și se adaptează perfect contururilor feței. Oferă hidratare maximă, întărește bariera naturală de protecție a pielii și întinerește pielea sensibilă pentru a reduce semnele îmbătrânirii.</p>"
+                            , serviceDuration = duration "01:15"
+                            , serviceGroup = Just s2
+                            }
+
+    insert_ $ Offer { offerService = s25
+                    , offerName = "Preț"
+                    , offerPrice = 100
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Offer { offerService = s25
+                    , offerName = "Pachet"
+                    , offerPrice = 460
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON/5 sesiuni"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Thumbnail { thumbnailService = s25
+                        , thumbnailPhoto = $(embedFile "static/img/facial-treatments-24k-gold-whitening-treatment.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    insert_ $ Role { roleStaff = e9
+                   , roleService = s25
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e10
+                   , roleService = s25
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e11
+                   , roleService = s25
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e1
+                   , roleService = s25
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    s3 <- insert $ Service { serviceName = "Tratamente faciale avansate"
+                           , servicePublished = True
+                           , serviceOverview = Just "Tratamente faciale avansate"
+                           , serviceDescr = Just "Tratamente faciale avansate"
+                           , serviceDuration = duration "01:10"
+                           , serviceGroup = Nothing
+                           }
+
+    insert_ $ Thumbnail { thumbnailService = s3
+                        , thumbnailPhoto = $(embedFile "static/img/advanced-facial-treatments.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s31 <- insert $ Service { serviceName = "Peeling facial cu lapte"
+                            , servicePublished = True
+                            , serviceOverview = Just "Peeling facial cu lapte (90 min)"
+                            , serviceDescr = Just $ Textarea [st|
+<p>
+Milk Peel include extract natural de lapte acru (acid lactic), papaina (enzima papaya), acid salicilic (din plante naturale) si un controlor special de penetrare. Milk Peel oferă un proces sigur de exfoliere a pielii, fără efectele secundare pe care le pot provoca peelingurile cu fenol și TCA.
+</p>
+<p>
+Formula Milk Peeling îndeplinește următoarele funcții:
+</p>
+<ul>
+  <li>Generează o exfoliere maximă, dar blândă a pielii.</li>
+  <li>Stimulează proliferarea fibroblastelor pentru a crește colagenul și elastina dermică.</li>
+  <li>Normalizează celulele și țesuturile pielii.</li>
+</ul>
+<p>
+Ca rezultat, peelingul cu lapte este un proces puternic de refacere a pielii cu efecte semnificative asupra pielii. Are mai multe beneficii pentru piele, cum ar fi:
+</p>
+<ol>
+  <li>Elimina ridurile si liniile fine vizibile pe piele.</li>
+  <li>Reducerea urmelor de cosuri sau acnee.</li>
+  <li>Reduce cicatricile.</li>
+  <li>Netezirea golurilor din piele.</li>
+  <li>Reducerea vergeturilor și a vergeturilor din naștere.</li>
+  <li>Lustruiește delicat pielea pentru reînnoirea feței.</li>
+</ol>
+|]
+                            , serviceDuration = duration "01:30"
+                            , serviceGroup = Just s3
+                            }
+
+    insert_ $ Offer { offerService = s31
+                    , offerName = "Preț"
+                    , offerPrice = 330
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e8
+                   , roleService = s31
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e9
+                   , roleService = s31
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s31
+                        , thumbnailPhoto = $(embedFile "static/img/milk-peel.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s32 <- insert $ Service { serviceName = "Derma roller"
+                            , servicePublished = True
+                            , serviceOverview = Just "Ajută-ți pielea să se reînnoiască"
+                            , serviceDescr = Just $ Textarea [st|
+<h4>Beneficii:</h4>
+<ul>
+  <li>Elimină și tratează vergeturile, cicatricile de acnee și ridurile.</li>
+  <li>Anti îmbătrânire.</li>
+  <li>Tratament pentru căderea părului sau refacerea părului.</li>
+  <li>Tratamentul celulitei și reducerea celulitei.</li>
+  <li>Înlocuiți colagenul, vă puteți ajuta pielea să se reînnoiască și să se repare la nivel cosmetic.</li>
+</ul>
+<h4>Deci, ce este un Derma Roller?</h4>
+<p>
+Scientia Derma Roller este un dispozitiv incredibil care crește în mod natural nivelul de colagen și elastină din piele. Vergeturile, ridurile, cicatricile și pielea neuniformă, cu sâmburi, toate sunt cauzate de lipsa de colagen. Deci, folosind un DermaRoller pentru a înlocui colagenul, vă puteți ajuta pielea să se reînnoiască și să se repare la nivel cosmetic.
+</p>
+|]
+                            , serviceDuration = duration "01:30"
+                            , serviceGroup = Just s3
+                            }
+
+    insert_ $ Offer { offerService = s32
+                    , offerName = "Preț"
+                    , offerPrice = 330
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e7
+                   , roleService = s32
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e8
+                   , roleService = s32
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e9
+                   , roleService = s32
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s32
+                        , thumbnailPhoto = $(embedFile "static/img/derma-roller.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s33 <- insert $ Service { serviceName = "Microdermabraziune"
+                            , servicePublished = True
+                            , serviceOverview = Just "Peeling prin microdermabraziune"
+                            , serviceDescr = Just $ Textarea [st|
+<p>
+O procedură nedureroasă, ajută la îndepărtarea cicatricilor de acnee, a porilor dilatați, a liniilor faciale, a ridurilor, a punctelor negre, precum și a daunelor solare etc. Această tehnică ajută, de asemenea, la îngroșarea colagenului, rezultând un ten cu aspect mai tânăr. Colagenul este o proteină care se găsește în pielea ta, care este din abundență atunci când ești copil și oferă pielii un aspect strâns, neted. Producția de colagen scade odată cu vârsta, ceea ce duce la o piele mai laxă și neuniformă.
+</p>
+|]
+                            , serviceDuration = duration "00:45"
+                            , serviceGroup = Just s3
+                            }
+
+    insert_ $ Offer { offerService = s33
+                    , offerName = "Preț"
+                    , offerPrice = 70
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e5
+                   , roleService = s33
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e6
+                   , roleService = s33
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e7
+                   , roleService = s33
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s33
+                        , thumbnailPhoto = $(embedFile "static/img/micro-dermabrasion.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s34 <- insert $ Service { serviceName = "Albirea pistruilor"
+                            , servicePublished = True
+                            , serviceOverview = Just "Albirea pistruilor (120 min)"
+                            , serviceDescr = Just $ Textarea [st|
+<p>Acest tratament realizează un efect sinergic pentru a îmbunătăți tenul, problemele de pigmentare precum și cearcănele.</p>
+|]
+                            , serviceDuration = duration "02:00"
+                            , serviceGroup = Just s3
+                            }
+
+    insert_ $ Offer { offerService = s34
+                    , offerName = "Preț"
+                    , offerPrice = 95
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "ROL"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Offer { offerService = s34
+                    , offerName = "Pachet"
+                    , offerPrice = 600
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON/7 sesiuni"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e3
+                   , roleService = s34
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e4
+                   , roleService = s34
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e5
+                   , roleService = s34
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s34
+                        , thumbnailPhoto = $(embedFile "static/img/freckle-bleaching.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s4 <- insert $ Service { serviceName = "Tratamente anti-îmbătrânire"
+                           , servicePublished = True
+                           , serviceOverview = Just "Tratamente anti-îmbătrânire"
+                           , serviceDescr = Just "Tratamente anti-îmbătrânire"
+                           , serviceDuration = duration "01:30"
+                           , serviceGroup = Nothing
+                           }
+
+    insert_ $ Thumbnail { thumbnailService = s4
+                        , thumbnailPhoto = $(embedFile "static/img/anti-aging-treatments.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s41 <- insert $ Service { serviceName = "Sea C Spa"
+                            , servicePublished = True
+                            , serviceOverview = Just "Sea C Spa (100% vitamina C)"
+                            , serviceDescr = Just $ Textarea [st|
+<p>
+Un tratament anti-îmbătrânire puternic conceput pentru a întârzia semnele vizibile ale îmbătrânirii și pentru a energiza pielea.
+</p>
+<p>
+Formulat cu ingrediente marine și vegetale (concentrat de vitamina C, plasturi de alge Biomatrix și nămol termic organic).
+</p>
+<p>
+Acest tratament este excepțional atât înainte, cât și după expunerea la soare. Ideal pentru persoanele care locuiesc în zonele urbane cu niveluri ridicate de poluare.
+</p>
+<h4>Beneficii:</h4>
+<p>
+Acest tratament reduce aspectul liniilor fine și al ridurilor. Uniformizează tenul și luminează pielea, redându-i astfel aspectul tineresc.
+</p>
+|]
+                            , serviceDuration = duration "00:60"
+                            , serviceGroup = Just s4
+                            }
+
+    insert_ $ Offer { offerService = s41
+                    , offerName = "Preț"
+                    , offerPrice = 95
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Offer { offerService = s41
+                    , offerName = "Pachet"
+                    , offerPrice = 430
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON/5 sesiuni"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e2
+                   , roleService = s41
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e3
+                   , roleService = s41
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s41
+                        , thumbnailPhoto = $(embedFile "static/img/sea-C-spa.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s42 <- insert $ Service { serviceName = "Tratament facial cu Botinol"
+                            , servicePublished = True
+                            , serviceOverview = Just "Tratament facial cu Botinol (150 min)"
+                            , serviceDescr = Just $ Textarea [st|
+<p>
+Un tratament electiv foarte avansat, formulat pentru a hidrata, regenera și reduce aspectul liniilor fine și ridurilor.
+</p>
+<p>
+Această sesiune de tratament relaxantă oferă texturi plăcute și esențe rafinate, oferind o senzație generală de bine. Un tratament ideal pentru persoanele hotărâte să ascundă semnele îmbătrânirii.
+</p>
+<h4>Beneficii:</h4>
+<p>
+După doar un tratament, liniile de expresie par relaxate. Ridurile fine și ridurile sunt vizibil reduse. Pielea pare vizibil mai tânără.
+</p>
+|]
+                            , serviceDuration = duration "02:30"
+                            , serviceGroup = Just s4
+                            }
+
+    insert_ $ Offer { offerService = s42
+                    , offerName = "Preț"
+                    , offerPrice = 170
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Offer { offerService = s42
+                    , offerName = "Pachet"
+                    , offerPrice = 780
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON/5 sesiuni"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e1
+                   , roleService = s42
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e2
+                   , roleService = s42
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s42
+                        , thumbnailPhoto = $(embedFile "static/img/botinol-facial.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s43 <- insert $ Service { serviceName = "Colagen 90-II"
+                            , servicePublished = True
+                            , serviceOverview = Just "Colagen 90-II (150 min)"
+                            , serviceDescr = Just $ Textarea [st|
+<p>
+Această cremă hidratantă anti-îmbătrânire asigură hidratare intensivă, regenerare celulară și reînnoire epidermică. Odată cu vârsta, procesul de reînnoire a celulelor este întârziat. Contururile feței își pierd definiția și pielea pare să se lase.
+</p>
+<p>
+Collagen 90-II este un tratament anti-îmbătrânire exclusiv de la G.M. Collin Skin Care care combină o foaie de colagen nativ pur cu ingrediente selectate, pentru a oferi o hidratare intensă, fermitate pielii și reducerea aspectului de îmbătrânire.
+</p>
+<p>
+Collagen 90-II este un tratament anti-îmbătrânire de reînnoire a pielii foarte respectat și căutat, care hidratează, netezește și tonifică ridurile pentru a combate semnele vizibile ale îmbătrânirii.
+</p>
+<h4>Beneficii:</h4>
+<p>
+Acest tratament îmbunătățește tenul general reducând la minimum aspectul liniilor fine și al ridurilor. Reface hidratarea, lasand pielea bine hidratata si stralucitoare. Recomandat pentru toate tipurile de piele
+</p>
+|]
+                            , serviceDuration = duration "02:30"
+                            , serviceGroup = Just s4
+                            }
+
+    insert_ $ Offer { offerService = s43
+                    , offerName = "Preț"
+                    , offerPrice = 160
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Offer { offerService = s43
+                    , offerName = "Pachet"
+                    , offerPrice = 730
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON/5 sesiuni"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e10
+                   , roleService = s43
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e1
+                   , roleService = s43
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s43
+                        , thumbnailPhoto = $(embedFile "static/img/collagen-90-II.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s44 <- insert $ Service { serviceName = "Ionizare faciala"
+                            , servicePublished = True
+                            , serviceOverview = Just "Electrostimulare facială"
+                            , serviceDescr = Just $ Textarea [st|
+<p>
+Promovează producerea de colagen, strânge și fermește țesuturile pielii, hidratează și întinerește epiderma, tratează acneea și liniile fine. Mai puține riduri în doar 15 minute!
+</p>
+|]
+                            , serviceDuration = duration "00:15"
+                            , serviceGroup = Just s4
+                            }
+
+    insert_ $ Offer { offerService = s44
+                    , offerName = "Preț"
+                    , offerPrice = 180
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e9
+                   , roleService = s44
+                   , roleName = "Cosmetician"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s44
+                        , thumbnailPhoto = $(embedFile "static/img/electro-ionization.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s5 <- insert $ Service { serviceName = "Tratamente pentru ochi"
+                           , servicePublished = True
+                           , serviceOverview = Just "Centru de tratament pentru ochi"
+                           , serviceDescr = Just "Centru de tratament pentru ochi"
+                           , serviceDuration = duration "02:00"
+                           , serviceGroup = Nothing
+                           }
+
+    insert_ $ Thumbnail { thumbnailService = s5
+                        , thumbnailPhoto = $(embedFile "static/img/eye-treatment-center.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s51 <- insert $ Service { serviceName = "Perm. genelor"
+                            , servicePublished = True
+                            , serviceOverview = Just "Perming genelor"
+                            , serviceDescr = Just $ Textarea [st|
+<p>
+Tehnica și soluția noastră de permanentizare a genelor au fost rafinate de peste un deceniu pentru a lucra în mod constant și delicat asupra genelor tale.
+</p>
+<p>
+În ciuda numelui lor, permanentele genelor nu sunt permanente. Rezultatele unei permanente de gene durează de obicei 2 până la 3 luni, care este ciclul natural de creștere a genelor. Când genele permanente cad în mod natural, noile fire de păr ale genelor vor crește drept (la fel cum făceau înainte de permanentă).
+</p>
+<p>
+Înainte de permarea genelor, vi se va cere să vă îndepărtați lentilele de contact și machiajul ochilor (demachiant gratuit, soluție pentru lentile și cupe temporare sunt disponibile pentru utilizarea dvs.). În timpul permanentei genelor, care durează aproximativ 1 oră, puteți să vă întindeți. și relaxați-vă la sunetele muzicii noastre liniștitoare de spa. Vă rugăm să vă păstrați ochii închiși și relaxați pe tot parcursul tratamentului pentru a obține cele mai bune rezultate de permanentă a genelor.
+</p>
+<p>
+Similar cu o permanentă, încercați să evitați să vă umeziți genele timp de 4 ore după permanentă. Vă recomandăm să aplicați zilnic balsam de gene pe gene. Gelul de condiționare a genelor și rimelul sunt disponibile la spa, la telefon și prin magazinul nostru online. Utilizarea regulată a balsamului pentru gene va asigura că genele dumneavoastră rămân sănătoase.
+</p>
+|]
+                            , serviceDuration = duration "00:60"
+                            , serviceGroup = Just s5
+                            }
+
+    insert_ $ Offer { offerService = s51
+                    , offerName = "Preț"
+                    , offerPrice = 45
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e7
+                   , roleService = s51
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e8
+                   , roleService = s51
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e9
+                   , roleService = s51
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s51
+                        , thumbnailPhoto = $(embedFile "static/img/eyelash-perm.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
+
+    s52 <- insert $ Service { serviceName = "Extensii de gene"
+                            , servicePublished = True
+                            , serviceOverview = Just "Extensii de gene"
+                            , serviceDescr = Just $ Textarea [st|
+<h4>Îngrijire la domiciliu pentru extensiile de gene</h4>
+<ol>
+  <li>In primele 2 ore, nu lasa apa sa intre in contact cu genele.</li>
+  <li>În primele 2 ore, nu aburiți fața, nu folosiți o baie de aburi, înotați sau spălați fața cu apă fierbinte.</li>
+  <li>Folosiți doar rimel lavabil și periați ușor vârfurile genelor.</li>
+  <li>Nu utilizați rimel pe zona adezivă a genelor cu dispozitiv de îndepărtare a rimelului.</li>
+  <li>Nu permați genele.</li>
+  <li>Nu folosiți un ondulator de gene deoarece acesta va rupe atât genele, cât și genele naturale.</li>
+  <li>Nu vă frecați ochii sau genele.</li>
+  <li>Când vă spălați fața, uscați întotdeauna genele după ce le curățați.</li>
+</ol>
+|]
+                            , serviceDuration = duration "01:30"
+                            , serviceGroup = Just s5
+                            }
+
+    insert_ $ Offer { offerService = s52
+                    , offerName = "Preț"
+                    , offerPrice = 130
+                    , offerPrefix = Nothing
+                    , offerSuffix = Just "RON și mai mult"
+                    , offerDescr = Nothing
+                    }
+
+    insert_ $ Role { roleStaff = e6
+                   , roleService = s52
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Role { roleStaff = e7
+                   , roleService = s52
+                   , roleName = "Makeup artist"
+                   , roleRating = Just 5
+                   }
+
+    insert_ $ Thumbnail { thumbnailService = s52
+                        , thumbnailPhoto = $(embedFile "static/img/eyelash-extension.avif")
+                        , thumbnailMime = "image/avif"
+                        , thumbnailAttribution = Just [shamlet|
+                              Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
+                        }
     return ()
+  where
+      duration :: String -> Maybe DiffTime
+      duration = parseTimeM True defaultTimeLocale "%H:%M"
