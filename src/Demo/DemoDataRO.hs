@@ -113,7 +113,7 @@ populateRO = do
       <i>Adresa
     <dd>
       #{businessAddr business}
-  <iframe width="100%" height="400px" loding="lazy" title="Salon" style="border:none" src="https://api.mapbox.com/styles/v1/mapbox/streets-v12.html?title=false&zoomwheel=false&access_token=pk.eyJ1IjoiY2l1a3N0YXIiLCJhIjoiY2o1enNibDNsMGNrNDJ3dDhxeTJuc3luMiJ9.Jgc5GdYUMbYwGq-zRWtzfw#15/44.4327417/26.1039028">
+<iframe width="100%" height="400px" loding="lazy" title="Salon" style="border:none" src="https://api.mapbox.com/styles/v1/mapbox/streets-v12.html?title=false&zoomwheel=false&access_token=pk.eyJ1IjoiY2l1a3N0YXIiLCJhIjoiY2o1enNibDNsMGNrNDJ3dDhxeTJuc3luMiJ9.Jgc5GdYUMbYwGq-zRWtzfw#15/44.4327417/26.1039028">
 |]
                        }
 

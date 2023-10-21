@@ -23,25 +23,13 @@ main
       align-items: center
       gap: 0.5rem
       small.hint
-        color: var(--mdc-theme-text-hint-on-light)
+        color: rgba(0,0,0,0.6)
 
 div.mdc-dialog
   div.mdc-dialog__content
-    form
-      display: flex
-      flex-direction: column
-      .mdc-list-item__start
-        .mdc-radio .mdc-radio__native-control:enabled:checked+.mdc-radio__background
-          .mdc-radio__outer-circle, .mdc-radio__inner-circle
-            border-color: var(--theme-accent)
-        label
-          width: 100%
-          display: flex
-          flex-direction: row
-          justify-content: space-between
-          align-items: center
-    form hr
-      width: 100%
-      opacity: 0.6
+    .mdc-list-item__end
+      .mdc-radio .mdc-radio__native-control:enabled:checked+.mdc-radio__background
+        .mdc-radio__outer-circle, .mdc-radio__inner-circle
+          border-color: var(--theme-accent)
   div.mdc-dialog__actions
-    gap: 1rem
+    gap: 0.5rem

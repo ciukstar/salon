@@ -22,7 +22,7 @@ $if null sids
         $else
           _{MsgService}
 
-    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end>
       <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{AdminR AdmServicesSearchR} role=button title=_{MsgSearch}>
         <span.mdc-icon-button__ripple>
         <i.material-symbols-outlined>search

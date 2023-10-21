@@ -41,7 +41,7 @@
   
   <div.mdc-typography--headline4>
     _{MsgAppointmentStateDiagram}
-  <img #imgBookingStateDiagram src=@{StaticR img_Appointment_State_Transition_svg} 
+  <img #imgAppointmentStateDiagram src=@{StaticR img_Appointment_State_Transition_svg} 
     alt=_{MsgAppointmentStateDiagram} loading=lazy>
 
 

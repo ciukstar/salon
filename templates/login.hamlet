@@ -70,17 +70,12 @@
           <ul.mdc-list data-mdc-auto-init=MDCList>
             $forall (Value uid,Value uname,Value staff) <- users
               $with ident <- T.pack $ show $ fromSqlKey uid
-                <li.mdc-list-item.mdc-list-item--with-leading-radio
-                  .mdc-list-item--with-two-lines.mdc-list-item--with-trailing-image>
+                <li.mdc-list-item.mdc-list-item--with-leading-image
+                  .mdc-list-item--with-two-lines.mdc-list-item--with-trailing-radio>
                   <span.mdc-list-item__ripple>
                   <span.mdc-list-item__start>
-                    <div.mdc-radio tabindex=-1 data-mdc-auto-init=MDCRadio>
-                      <input.mdc-radio__native-control type=radio name=uname value=#{uname} #radio#{ident}>
-                      <div.mdc-radio__background>
-                        <div.mdc-radio__outer-circle>
-                        <div.mdc-radio__inner-circle>
-                      <div.mdc-radio__ripple>
-                      <div.mdc-radio__focus-ring>
+                    <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" width=48 height=48 alt=_{MsgPhoto}
+                      onerror="this.src = '@{PhotoPlaceholderR}'">
                   <span.mdc-list-item__content>
                     <div.mdc-list-item__primary-text>#{uname}
                     <div.mdc-list-item__secondary-text style="text-transform:lowercase">
@@ -89,12 +84,17 @@
                       $else
                         _{MsgCustomer}
                   <span.mdc-list-item__end>
-                    <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" width=48 height=48 alt=_{MsgPhoto}
-                      onerror="this.src = '@{PhotoPlaceholderR}'">
+                    <div.mdc-radio tabindex=-1 data-mdc-auto-init=MDCRadio>
+                      <input.mdc-radio__native-control type=radio name=uname value=#{uname} #radio#{ident}>
+                      <div.mdc-radio__background>
+                        <div.mdc-radio__outer-circle>
+                        <div.mdc-radio__inner-circle>
+                      <div.mdc-radio__ripple>
+                      <div.mdc-radio__focus-ring>
               <li.mdc-list-divider role=separator>
             
       <div.mdc-dialog__actions>
-        <button.mdc-button type=button data-mdc-dialog-action=close>
+        <button.mdc-button type=button data-mdc-dialog-action=cancel>
           <span.mdc-button__ripple>
           <span.mdc-button__focus-ring>
           <span.mdc-button__label>_{MsgCancel}

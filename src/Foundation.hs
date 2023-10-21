@@ -110,8 +110,6 @@ instance Yesod App where
         langs <- languages
         let lang = fromMaybe "en" . LS.head $ langs
         pc <- widgetToPageContent $ do
-            addStylesheet $ StaticR material_components_web_min_css
-            addScript     $ StaticR material_components_web_min_js
             $(widgetFile "default-layout")
 
         brand <- runDB $ selectOne $ from $ table @Brand

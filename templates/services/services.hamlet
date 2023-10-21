@@ -8,7 +8,7 @@
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
         _{MsgServices}
 
-    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end>
       <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{ServicesSearchR} role=button title=_{MsgSearch}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>

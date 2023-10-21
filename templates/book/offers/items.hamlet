@@ -1,5 +1,5 @@
  
-<ul.mdc-list ##{theId} role=listbox aria-multiselectable=true tabindex=-1 data-mdc-auto-init=MDCList>
+<ul.mdc-list ##{theId} role=listbox aria-label=_{MsgOffers} aria-multiselectable=true tabindex=-1 data-mdc-auto-init=MDCList>
   $forall e@((Entity sid (Service sname _ _ duration _ _),Entity oid (Offer _ pname price pref suff _)),attrib) <- options
     $with checked <- isChecked vals e
       <li.mdc-list-item tabindex=-1 role=option data-amount=#{show price}
@@ -7,7 +7,13 @@
         :checked:aria-checked=true :not checked:aria-checked=false ##{pack $ show $ fromSqlKey oid}>
         <span.mdc-list-item__ripple>
         <span.mdc-list-item__start>
-          <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail} loading=lazy>
+          $maybe attribution <- attrib
+            <figure style="margin:0;padding:0">
+              <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail} loading=lazy>
+              <figcaption tabindex=0 onclick="event.stopPropagation()" style="position:relative;left:-0.5rem;text-align:start;white-space:nowrap;font-size:0.5rem;line-height:1;pointer-events:all">
+                ^{attribution}
+          $nothing
+            <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail} loading=lazy>
         <span.mdc-list-item__content>
           <div.mdc-list-item__primary-text>
             #{sname}
@@ -30,14 +36,10 @@
         <span.mdc-list-item__end>
           <div.mdc-checkbox :checked:checked tabindex=-1 data-mdc-auto-init=MDCCheckbox>
             <input.mdc-checkbox__native-control type=checkbox name=#{name} value=#{fromSqlKey oid} *{attrs}
-              :checked:checked>
+              :checked:checked aria-label=#{sname}>
             <div.mdc-checkbox__background>
               <svg.mdc-checkbox__checkmark viewBox="0 0 24 24">
                 <path.mdc-checkbox__checkmark-path fill=none d="M1.73,12.91 8.1,19.28 22.79,4.59">
               <div.mdc-checkbox__mixedmark>
-      
-      $maybe attribution <- attrib
-        <div style="position:relative">
-          <div style="position:absolute;bottom:0;left:4px;font-size:0.5rem;line-height:1">
-            ^{attribution}
-      <li.mdc-list-divider role=separator>
+            
+      <li.mdc-list-divider role=none>

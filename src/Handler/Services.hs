@@ -134,6 +134,7 @@ getServiceOffersR (Services sids) = do
         orderBy [asc (s ^. ServiceId), asc (x ^. OfferId)]
         return ((x,s), t ?. ThumbnailAttribution) )
     defaultLayout $ do
+        setTitleI MsgOffers
         $(widgetFile "services/offers")
 
 
@@ -199,6 +200,7 @@ getServiceSearchOffersR (Services sids) = do
         orderBy [asc (s ^. ServiceId), asc (x ^. OfferId)]
         return ((x,s), t ?. ThumbnailAttribution) )
     defaultLayout $ do
+        setTitleI MsgOffer
         $(widgetFile "services/search/offers")
 
 
@@ -384,15 +386,18 @@ buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
             .mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon>
             <span.mdc-list-item__ripple>
             <span.mdc-list-item__start>
-              <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail} loading=lazy>
+              $maybe attribution <- attrib
+                <figure style="margin:0;padding:0">
+                  <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail} loading=lazy>
+                  <figcaption tabindex=0 onclick="event.stopPropagation()" style="position:relative;left:-0.5rem;bottom:0.4rem;text-align:start;white-space:nowrap;font-size:0.5rem;line-height:1;pointer-events:all">
+                    ^{attribution}
+              $nothing
+                <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail} loading=lazy>
             <span.mdc-list-item__content>
               <div.mdc-list-item__primary-text>
               <div.mdc-list-item__primary-text>#{sname}
             <span.mdc-list-item__end>
               <i.material-symbols-outlined #iconExpand#{gid}>expand_more
-            $maybe attribution <- attrib
-              <div style="position:absolute;bottom:0;left:4px;font-size:0.5rem;line-height:1;white-space:nowrap">
-                ^{attribution}
           $maybe overview <- overview
             <a.mdc-list-item href=@{ServiceOffersR (Services (sids ++ [sid]))}
               .mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon
@@ -400,7 +405,7 @@ buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
               onclick="this.href = [new window.URL(this.href)].map(x => {x.searchParams.append('y',window.scrollY); return x.href;})[0]">
               <span.mdc-list-item__ripple>
               <span.mdc-list-item__content>
-                <div.mdc-list-item__secondary-text>
+                <div.mdc-list-item__primary-text>
                   <i>#{overview}
               <span.mdc-list-item__end>
                 <i.material-symbols-outlined #iconExpand#{gid}>arrow_forward_ios

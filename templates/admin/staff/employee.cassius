@@ -36,14 +36,14 @@ main
           color: var(--theme-accent)
       .mdc-list-item__secondary-text
         white-space: nowrap
-	overflow: hidden
-	text-verflow: ellipsis	
-        
-  #touchTargetWrapperAddRole
-    position: fixed
-    right: 1rem
-    bottom: 1rem
-    z-index: 1
+        overflow: hidden
+        text-verflow: ellipsis  
+
+    #touchTargetWrapperAddRole
+      position: fixed
+      right: 1rem
+      bottom: 1rem
+      z-index: 1
 
 div.mdc-dialog
   div.mdc-dialog__actions

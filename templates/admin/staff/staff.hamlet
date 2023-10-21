@@ -26,7 +26,12 @@
           <i.material-symbols-outlined>login
           
 <main.mdc-top-app-bar--fixed-adjust>
-  $if not (null staff)
+  $if null staff
+    <figure style="text-align:center">
+      <div style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
+      <figcaption>
+        _{MsgNoStaffYet}.
+  $else
     <nav.mdc-list data-mdc-auto-init=MDCList>
       $forall (Entity sid (Staff name _ _ _ _ _), role) <- roles
         <a.mdc-list-item href=@?{(AdminR $ AdmEmplR sid,[("sid",pack $ show $ fromSqlKey sid)])}
@@ -53,11 +58,6 @@
           <span.mdc-list-item__end>
             <i.material-symbols-outlined>arrow_forward_ios
         <div.mdc-list-divider role=separator>
-  $else
-    <figure style="text-align:center">
-      <div style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
-      <figcaption>
-        _{MsgNoStaffYet}.
 
   <div.mdc-touch-target-wrapper ##{fabAddStaff}>
     <a.mdc-fab.mdc-fab--touch href=@{AdminR AdmStaffCreateR}>

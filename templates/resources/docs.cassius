@@ -4,7 +4,7 @@
     transition: height 0.3s ease-out
 
 main
-  margin: 0 1rem
-  #imgErdDiagram, #imgBookingStateDiagram
+  margin: 0 1rem 1rem 1rem
+  #imgErdDiagram, #imgBookingStateDiagram, #imgAppointmentStateDiagram
     width: 100%
     
