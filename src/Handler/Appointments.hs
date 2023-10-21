@@ -12,9 +12,11 @@ module Handler.Appointments
   , getAppointmentRescheduleR
   , postAppointmentApproveR
   , resolveBookStatus
+  , getAppointmentsSearchR
   ) where
 
-import Data.Maybe (isJust)
+import Control.Monad (unless)
+import Data.Maybe (isJust, mapMaybe)
 import Data.Text (unpack, intercalate, Text, pack)
 import Data.Time.Format (defaultTimeLocale, formatTime)
 import Data.Time.Clock (getCurrentTime, UTCTime (utctDay))
@@ -24,6 +26,7 @@ import Data.Time
     , utcToLocalTime, minutesToTimeZone
     )
 import Text.Hamlet (Html)
+import Text.Read (readMaybe)
 import Text.Shakespeare.I18N (renderMessage, SomeMessage (SomeMessage))
 
 import Yesod.Auth (maybeAuth, Route (LoginR))
@@ -32,8 +35,9 @@ import Yesod.Core
     , preEscapedToMarkup, redirect, addMessageI, MonadIO (liftIO)
     , whamlet, newIdent
     )
-import Yesod.Core.Handler (setUltDestCurrent)
+import Yesod.Core.Handler (setUltDestCurrent, reqGetParams, getRequest)
 import Yesod.Core.Widget (setTitleI)
+import Yesod.Form.Input (runInputGet, iopt)
 import Yesod.Form.Types
     ( MForm, FormResult (FormSuccess, FormFailure, FormMissing)
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
@@ -41,15 +45,19 @@ import Yesod.Form.Types
     )
 import Yesod.Form.Functions (generateFormPost, runFormPost, mreq, checkM)
 import Yesod.Form.Fields
-    (Textarea, unTextarea, intField, timeField, dayField, textField, textareaField)
+    ( Textarea (Textarea), unTextarea, intField, timeField, dayField, textField
+    , textareaField, searchField
+    )
 import Yesod.Persist
     ( Entity (Entity, entityVal), YesodPersist(runDB), PersistStoreWrite (insert_) )
+import Database.Persist.Sql (fromSqlKey, toSqlKey)
 import Settings (widgetFile)
 
 import Database.Esqueleto.Experimental
-    ( select, selectOne, from, table, innerJoin, on, where_, val
-    , (:&)((:&)), (^.), (==.), (?.), (=.)
-    , orderBy, desc, leftJoin, just, update, set, exists
+    ( select, selectOne, from, table, innerJoin, on, where_, val, like, in_, valList
+    , (:&)((:&)), (^.), (==.), (?.), (=.), (||.), (%), (++.)
+    , orderBy, desc, leftJoin, just, update, set, exists, upper_
+    , justList
     )
 
 import Foundation
@@ -58,7 +66,7 @@ import Foundation
       ( ProfileR, AppointmentsR, AppointmentR, BookOffersR, AuthR
       , PhotoPlaceholderR, AccountPhotoR, ServiceThumbnailR, AdminR
       , AppointmentCancelR, AppointmentHistR, AppointmentRescheduleR
-      , AppointmentApproveR
+      , AppointmentApproveR, AppointmentsSearchR
       )
     , AdminR (AdmStaffPhotoR)
     , AppMessage
@@ -73,7 +81,8 @@ import Foundation
       , MsgStatus, MsgTimeZone, MsgTime, MsgDay, MsgInvalidFormData, MsgSave
       , MsgCancel, MsgApprove, MsgMissingForm, MsgAppointmentTimeIsInThePast
       , MsgAppointmentDayIsInThePast, MsgMinutes, MsgTimeZoneOffset, MsgLocation
-      , MsgNavigationMenu, MsgUserProfile, MsgUnassigned, MsgAssignee
+      , MsgNavigationMenu, MsgUserProfile, MsgUnassigned, MsgAssignee, MsgSearch
+      , MsgSelect, MsgRequest, MsgShowAll, MsgNoAppointmentsFound
       )
     )
 
@@ -89,12 +98,83 @@ import Model
       ( BookOffer, OfferId, BookCustomer, BookId, OfferService, ServiceId
       , BookDay, BookTime, BookRole, RoleId, RoleStaff, StaffId, ThumbnailService
       , ContentsSection, BookStatus, HistBook, HistLogtime, BookTz, HistUser
-      , UserId, BookTzo, BookAddr
+      , UserId, BookTzo, BookAddr, StaffUser, ServiceName, ServiceOverview, ServiceDescr
+      , RoleName, OfferName, OfferPrefix, OfferSuffix, OfferDescr, StaffName, StaffPhone
+      , StaffMobile, StaffEmail, UserName, UserFullName, UserEmail, BookStatus
       )
     )
 
 import Menu (menu)
 import Handler.Contacts (section)
+
+
+getAppointmentsSearchR :: Handler Html
+getAppointmentsSearchR = do
+    user <- maybeAuth
+    setUltDestCurrent
+    msgs <- getMessages
+    case user of
+      Nothing -> defaultLayout $ do
+          setTitleI MsgLogin
+          $(widgetFile "appointments/login")
+      Just (Entity uid _) -> do
+          q <- runInputGet $ iopt (searchField True) "q"
+          stati <- filter ((== "status") . fst) . reqGetParams <$> getRequest
+          let states = mapMaybe (readMaybe . unpack . snd) stati
+          assignees <- filter ((== "assignee") . fst) . reqGetParams <$> getRequest
+          let eids = mapMaybe ( (toSqlKey <$>) . readMaybe . unpack . snd ) assignees
+          
+          employees <- runDB $ select $ do
+              e <- from $ table @Staff
+              where_ $ exists $ do
+                  b :& _ <- from $ table @Book
+                      `innerJoin` table @Role `on` (\(b :& r) -> b ^. BookRole ==. just (r ^. RoleId))
+                  where_ $ b ^. BookCustomer ==. val uid
+              return e
+          
+          appointments <- runDB $ select $ do
+              x :& o :& s :& r :& e :& c <- from $ table @Book
+                  `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
+                  `innerJoin` table @Service `on` (\(_ :& o :& s) -> o ^. OfferService ==. s ^. ServiceId)
+                  `leftJoin` table @Role `on` (\(x :& _ :& _ :& r) -> x ^. BookRole ==. r ?. RoleId)
+                  `leftJoin` table @Staff `on` (\(_ :& _ :& _ :& r :& e) -> r ?. RoleStaff ==. e ?. StaffId)
+                  `leftJoin` table @User `on` (\(_ :& _ :& _ :& _ :& e :& c) -> e ?. StaffUser ==. just (c ?. UserId))
+
+              where_ $ x ^. BookCustomer ==. val uid
+
+              case q of
+                Just query -> where_ $ (upper_ (s ^. ServiceName) `like` ((%) ++. upper_ (val query) ++. (%)))
+                  ||. (upper_ (s ^. ServiceOverview) `like` ((%) ++. upper_ (just (val query)) ++. (%)))
+                  ||. (upper_ (s ^. ServiceDescr) `like` ((%) ++. upper_ (just (val (Textarea query))) ++. (%)))
+                  ||. (upper_ (r ?. RoleName) `like` ((%) ++. upper_ (just (val query)) ++. (%)))
+                  ||. (upper_ (o ^. OfferName) `like` ((%) ++. upper_ (val query) ++. (%)))
+                  ||. (upper_ (o ^. OfferPrefix) `like` ((%) ++. upper_ (just (val query)) ++. (%)))
+                  ||. (upper_ (o ^. OfferSuffix) `like` ((%) ++. upper_ (just (val query)) ++. (%)))
+                  ||. (upper_ (o ^. OfferDescr) `like` ((%) ++. upper_ (just (val (Textarea query))) ++. (%)))
+                  ||. (upper_ (e ?. StaffName) `like` ((%) ++. upper_ (just (val query)) ++. (%)))
+                  ||. (upper_ (e ?. StaffPhone) `like` ((%) ++. upper_ (just (just (val query))) ++. (%)))
+                  ||. (upper_ (e ?. StaffMobile) `like` ((%) ++. upper_ (just (just (val query))) ++. (%)))
+                  ||. (upper_ (e ?. StaffEmail) `like` ((%) ++. upper_ (just (just (val query))) ++. (%)))
+                  ||. (upper_ (c ?. UserName) `like` ((%) ++. upper_ (just (val query)) ++. (%)))
+                  ||. (upper_ (c ?. UserFullName) `like` ((%) ++. upper_ (just (just (val query))) ++. (%)))
+                  ||. (upper_ (c ?. UserEmail) `like` ((%) ++. upper_ (just (just (val query))) ++. (%)))
+                Nothing -> return ()
+
+              case states of
+                [] -> return ()
+                xs -> where_ $ x ^. BookStatus `in_` valList xs
+
+              unless (null eids) $ where_ $ e ?. StaffId `in_` justList ( valList eids )
+
+              orderBy [desc (x ^. BookDay), desc (x ^. BookTime)]
+              return (x,s)
+              
+          formSearch <- newIdent
+          dlgStatusList <- newIdent
+          dlgAssignee <- newIdent
+          defaultLayout $ do
+              setTitleI MsgSearch
+              $(widgetFile "appointments/search/search")
 
 
 postAppointmentApproveR :: BookId -> Handler Html
@@ -360,6 +440,7 @@ formCancel extra = return (FormSuccess (),[whamlet|#{extra}|])
 
 getAppointmentsR :: Handler Html
 getAppointmentsR = do
+    stati <- reqGetParams <$> getRequest
     user <- maybeAuth
     setUltDestCurrent
     msgs <- getMessages
@@ -386,3 +467,11 @@ resolveBookStatus BookStatusAdjusted = ("blue", "reply_all", MsgAdjusted)
 resolveBookStatus BookStatusApproved = ("green", "verified", MsgApproved)
 resolveBookStatus BookStatusCancelled = ("red", "block", MsgCancelled)
 resolveBookStatus BookStatusPaid = ("green", "paid", MsgPaid)
+
+
+statusList :: [(BookStatus, AppMessage)]
+statusList = [ (BookStatusRequest, MsgRequest)
+             , (BookStatusApproved, MsgApproved)
+             , (BookStatusCancelled, MsgCancelled)
+             , (BookStatusPaid, MsgPaid)
+             ]

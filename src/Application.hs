@@ -57,8 +57,8 @@ import Handler.Requests
     )
 
 import Handler.Appointments
-    ( getAppointmentsR, getAppointmentR, postAppointmentR
-    , postAppointmentCancelR, getAppointmentHistR
+    ( getAppointmentsR, getAppointmentsSearchR, getAppointmentR
+    , postAppointmentR, postAppointmentCancelR, getAppointmentHistR
     , getAppointmentRescheduleR, postAppointmentApproveR
     )
     

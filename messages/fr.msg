@@ -1,3 +1,4 @@
+NoAppointmentsFound: Aucun rendez-vous trouvé
 MarkWidth: Largeur de l'image
 MarkHeight: Hauteur de l'image
 Currency: Devise

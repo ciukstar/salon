@@ -1,3 +1,4 @@
+NoAppointmentsFound: Записей не найдено
 MarkWidth: Ширина изображения
 MarkHeight: Высота изображения
 Currency: Валюта

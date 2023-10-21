@@ -1,3 +1,4 @@
+NoAppointmentsFound: No appointments found
 MarkWidth: Mark width
 MarkHeight: Mark height
 Currency: Currency

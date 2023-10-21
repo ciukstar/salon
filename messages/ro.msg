@@ -1,3 +1,4 @@
+NoAppointmentsFound: Nu au fost găsite programări
 MarkWidth: Lățimea imaginii
 MarkHeight: Înălțimea imaginii
 Currency: Valuta

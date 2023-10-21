@@ -73,7 +73,7 @@ populateEN = do
     let business = Business { businessName = "Salon"
                             , businessFullName = Just "Salon Ltd"
                             , businessCurrency = "$"
-                            , businessAddr = "73 Parsons Green Ln Fulham London SW6 4JA"
+                            , businessAddr = "Charing Cross, London WC2N 5DU, United Kingdom"
                             , businessTzo = utc
                             , businessTz = "Europe/London"
                             , businessPhone = Just "020-7736-6600"
@@ -113,7 +113,7 @@ populateEN = do
       <i>Address
     <dd>
       #{businessAddr business}
-  <iframe width="100%" height="400px" loding="lazy" title="Salon" style="border:none" src="https://api.mapbox.com/styles/v1/mapbox/streets-v12.html?title=false&zoomwheel=false&access_token=pk.eyJ1IjoiY2l1a3N0YXIiLCJhIjoiY2o1enNibDNsMGNrNDJ3dDhxeTJuc3luMiJ9.Jgc5GdYUMbYwGq-zRWtzfw#15/51.474680/-0.200540">
+<iframe width="100%" height="400px" loding="lazy" title="Salon" style="border:none" src="https://api.mapbox.com/styles/v1/mapbox/streets-v12.html?title=false&zoomwheel=false&access_token=pk.eyJ1IjoiY2l1a3N0YXIiLCJhIjoiY2o1enNibDNsMGNrNDJ3dDhxeTJuc3luMiJ9.Jgc5GdYUMbYwGq-zRWtzfw#15/51.5073/-0.12755">
 |]
                        }
 

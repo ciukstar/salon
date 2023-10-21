@@ -11,7 +11,7 @@
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
         _{MsgRequests}
 
-    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end>
       <a.mdc-top-app-bar__action-item.mdc-icon-button role=button title=_{MsgSearch}
         href=@?{(RequestsSearchR,stati ++ owners)}>
         <span.mdc-icon-button__ripple>
@@ -92,10 +92,10 @@
         <p>
           _{MsgNoRequestsFound}.
           <div>
-            <small style="color:var(--mdc-theme-text-hint-on-light)">
+            <small style="color:var(--theme-text-small-hint-on-light)">
               _{MsgYouAreNotAnEmployeeOfFacility}.
           <div>
-            <small style="color:var(--mdc-theme-text-hint-on-light)">
+            <small style="color:var(--theme-text-small-hint-on-light)">
               _{MsgOnlyEmployeesMaySeeRequests}.
         <a.mdc-button.mdc-button--outlined role=button href=@{AuthR LoginR}>
           <span.mdc-button__ripple>

@@ -23,7 +23,7 @@ main
       align-items: center
       gap: 0.5rem
       small.hint
-        color: rgba(0,0,0,0.6)
+        color: var(--theme-text-small-hint-on-light)
 
 div.mdc-dialog
   div.mdc-dialog__content

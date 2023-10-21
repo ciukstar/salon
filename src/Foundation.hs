@@ -205,6 +205,7 @@ instance Yesod App where
     isAuthorized BookSearchR _ = return Authorized
 
     isAuthorized AppointmentsR _ = return Authorized
+    isAuthorized AppointmentsSearchR _ = return Authorized
     isAuthorized (AppointmentR _) _ = return Authorized
     isAuthorized (AppointmentCancelR _) _ = return Authorized
     isAuthorized (AppointmentHistR _) _ = return Authorized

@@ -1,0 +1,170 @@
+<form method=get action=@{AppointmentsSearchR} ##{formSearch}>
+
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--no-label data-mdc-auto-init=MDCTextField
+      .mdc-text-field--with-leading-icon.mdc-text-field--with-trailing-icon #labelSearch>
+      <span.mdc-text-field__ripple>
+      <div.mdc-touch-target-wrapper style="align-self:center">
+        <a.mdc-icon-button.mdc-theme--text-primary-on-light role=button tabindex=0 title=_{MsgBack}
+          href=@{AppointmentsR}>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>arrow_back
+          <div.mdc-icon-button__touch>
+      $maybe q <- q
+        <input.mdc-text-field__input type=search name=q form=#{formSearch} value=#{q} placeholder=_{MsgSearch} autofocus>
+      $nothing
+        <input.mdc-text-field__input type=search name=q form=#{formSearch} placeholder=_{MsgSearch} autofocus>
+      <div.mdc-touch-target-wrapper style="align-self:center">
+        <button.mdc-icon-button.mdc-theme--text-primary-on-light type=submit form=#{formSearch} tabindex=0 title=_{MsgSearch}>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>search
+          <div.mdc-icon-button__touch>
+      <div.mdc-line-ripple data-mdc-auto-init=MDCLineRipple>
+      
+<main.mdc-top-app-bar--fixed-adjust>
+
+  <div role=toolbar>
+    <button.mdc-button.mdc-button--outlined.mdc-button--icon-trailing type=button
+      :not (null states):style="color:var(--theme-accent)"
+      onclick="document.getElementById('#{dlgStatusList}').MDCDialog.open()">
+      <span.mdc-button__ripple>
+      <span.mdc-button__focus-ring>
+      <span.mdc-button__label>_{MsgStatus}
+      $if null states
+        <i.mdc-button__icon.material-symbols-outlined>arrow_drop_down
+      $else
+        <i.mdc-button__icon.material-symbols-outlined>counter_#{show (length states)}
+      
+    <button.mdc-button.mdc-button--outlined.mdc-button--icon-trailing type=button
+      :not (null eids):style="color:var(--theme-accent)"
+      onclick="document.getElementById('#{dlgAssignee}').MDCDialog.open()">
+      <span.mdc-button__ripple>
+      <span.mdc-button__focus-ring>
+      <span.mdc-button__label>_{MsgAssignee}
+      $if null eids
+        <i.mdc-button__icon.material-symbols-outlined>arrow_drop_down
+      $else
+        <i.mdc-button__icon.material-symbols-outlined>counter_#{show (length eids)}
+  
+  $if null appointments
+    <figure style="text-align:center">
+      <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
+      <figcaption>
+        <p>_{MsgNoAppointmentsFound}.
+        <a.mdc-button.mdc-button--outlined role=button href=@{AppointmentsSearchR}>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgShowAll}
+  $else
+    <nav.mdc-list data-mdc-auto-init=MDCList>
+      $forall (Entity bid (Book _ _ _ date time _ _ _ status),Entity _ (Service sname _ _ _ _ _)) <- appointments
+        $with (color,icon,msg) <- resolveBookStatus status
+          <a.mdc-list-item href=@{AppointmentR bid}
+            .mdc-list-item--with-leading-icon.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon>
+            <span.mdc-list-item__ripple>
+            <span.mdc-list-item__start>
+              <i.material-symbols-outlined style="color:#{color}" title=_{msg}>#{icon}                
+            <span.mdc-list-item__content>
+              <div.appointment-time.mdc-list-item__primary-text>
+                #{show date} #{show time}
+              <div.mdc-list-item__secondary-text>
+                #{sname}
+              <div.mdc-list-item__secondary-text>
+                _{msg}
+            <span.mdc-list-item__end>
+              <i.material-symbols-outlined>arrow_forward_ios
+          <div.mdc-list-divider role=separator>
+
+$forall (_,msg) <- msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
+    <div.mdc-snackbar__surface>
+      <div.mdc-snackbar__label>#{msg}
+      <div.mdc-snackbar__actions>
+        <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>close
+
+
+<div.mdc-dialog.mdc-dialog--fullscreen ##{dlgStatusList} data-mdc-auto-init=MDCDialog>
+  <div.mdc-dialog__container>
+    <div.mdc-dialog__surface role=dialog aria-modal=true tabindex=-1>
+      <div.mdc-dialog__header>
+        <h4.mdc-dialog__title>_{MsgStatus}
+        <button.mdc-dialog__close.mdc-icon-button data-mdc-dialog-action=close>
+          <span.mdc-icon-button__ripple>
+          <i.material-symbols-outlined>close
+      <div.mdc-dialog__content>
+        $forall (status,label) <- statusList
+          $with ident <- pack $ show status
+            <div.mdc-form-field.mdc-form-field--nowrap>
+              <div.mdc-checkbox data-mdc-auto-init=MDCCheckbox>
+                <input.mdc-checkbox__native-control type=checkbox #checkbox#{ident}
+                 name=status value=#{ident} form=#{formSearch} :elem status states:checked>
+                <div.mdc-checkbox__background>
+                  <svg.mdc-checkbox__checkmark viewBox="0 0 24 24">
+                    <path.mdc-checkbox__checkmark-path fill=none d="M1.73,12.91 8.1,19.28 22.79,4.59">
+                  <div.mdc-checkbox__mixedmark>
+                <div.mdc-checkbox__ripple>
+                <div.mdc-checkbox__focus-ring>
+              <label.mdc-list-item__primary-text for=checkbox#{ident}>
+                _{label}
+              
+      <div.mdc-dialog__actions>
+        <button.mdc-button type=button data-mdc-dialog-action=close>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgCancel}
+        <button.mdc-button.mdc-button--raised type=submit form=#{formSearch}>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgSelect}
+      
+  <div.mdc-dialog__scrim>
+
+
+<div.mdc-dialog.mdc-dialog--fullscreen ##{dlgAssignee} data-mdc-auto-init=MDCDialog>
+  <div.mdc-dialog__container>
+    <div.mdc-dialog__surface role=dialog aria-modal=true tabindex=-1>
+      <div.mdc-dialog__header>
+        <h4.mdc-dialog__title>_{MsgAssignee}
+        <button.mdc-dialog__close.mdc-icon-button data-mdc-dialog-action=close>
+          <span.mdc-icon-button__ripple>
+          <i.material-symbols-outlined>close
+      <div.mdc-dialog__content>
+        <ul.mdc-list role=listbox aria-multiselectable=true data-mdc-auto-init=MDCList>
+          $forall Entity eid (Staff ename _ _ _ _ _) <- employees
+            $with ident <- pack $ show $ fromSqlKey eid
+              <li.mdc-list-item.mdc-list-item--with-one-line role=option tabindex=-1
+                .mdc-list-item--with-leading-image.mdc-list-item--with-trailing-checkbox
+                onclick="this.querySelector('input').checked = !this.querySelector('input').checked">
+                <span.mdc-list-item__ripple>
+                <span.mdc-list-item__start>
+                  <img src=@{AdminR $ AdmStaffPhotoR eid} width=56 height=56 alt=_{MsgPhoto} loading=lazy>
+                <span.mdc-list-item__content>
+                  <div.mdc-list-item__primary-text>#{ename}
+                <span.mdc-list-item__end>
+                  <div.mdc-checkbox tabindex=-1 data-mdc-auto-init=MDCCheckbox>
+                    <input.mdc-checkbox__native-control type=checkbox #checkbox#{ident}
+                      name=assignee value=#{ident} form=#{formSearch} :elem eid eids:checked>
+                    <div.mdc-checkbox__background>
+                      <svg.mdc-checkbox__checkmark viewBox="0 0 24 24">
+                        <path.mdc-checkbox__checkmark-path fill=none d="M1.73,12.91 8.1,19.28 22.79,4.59">
+                      <div.mdc-checkbox__mixedmark>
+                    <div.mdc-checkbox__ripple>
+                    <div.mdc-checkbox__focus-ring>
+              
+      <div.mdc-dialog__actions>
+        <button.mdc-button type=button data-mdc-dialog-action=close>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgCancel}
+        <button.mdc-button.mdc-button--raised type=sumit form=#{formSearch}>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgSelect}
+      
+  <div.mdc-dialog__scrim>

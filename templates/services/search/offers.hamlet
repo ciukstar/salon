@@ -23,7 +23,8 @@
         <div.mdc-card__ripple>
       $maybe overview <- overview
         <div.mdc-card-wrapper__text-section style="padding:1rem">
-          <i style="color:rgba(0,0,0,0.6)">#{overview}
+          <i style="color:var(--theme-text-small-hint-on-light)">
+            #{overview}
       $maybe description <- descr
         <div.mdc-card-wrapper__text-section>
           <details.mdc-list
