@@ -1,3 +1,15 @@
+EndTime: End time
+StartTime: Start time
+WorkingHours: Working hours
+NoScheduleYet: There is no schedule yet
+WorkSchedule: Schedule
+AddWorkingHours: Add working hours
+Workload: Workload
+NumberSign: ##
+Bookings: Bookings
+NoDataToDisplay: No data to display
+PopularOffers: Popular offers
+Analytics: Analytics
 NoAppointmentsFound: No appointments found
 MarkWidth: Mark width
 MarkHeight: Mark height
@@ -180,7 +192,7 @@ RoleAlreadyInTheList: Role already in the list
 Ratings: Ratings
 Rating: Rating
 AddRole: Add role
-NoRolesYes: There are no roles yet
+NoRolesYet: There are no roles yet
 BookAppointment: Book appointment
 EmployeeAlreadyInTheList: Employee already in the list
 Mobile: Mobile

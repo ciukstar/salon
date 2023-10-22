@@ -82,6 +82,10 @@ import Handler.Account (getProfileR, getAccountR, postAccountR, getAccountPhotoR
 import Handler.Home (getHomeR)
 import Handler.Resources (getDocsR)
 
+import Handler.Stats
+    ( getPopOffersR, getWorkloadsR
+    )
+
 import Admin.Business
   ( getBusinessR, postBusinessR
   , getBusinessCreateR
@@ -125,7 +129,9 @@ import Admin.Staff
     , postAdmStaffR, postAdmStaffDeleteR, postAdmRolesR
     , getAdmRoleR, postAdmRoleR, getAdmRoleCreateR, getAdmRoleEditR
     , postAdmRoleDeleteR, getAdmEmplUserR, postAdmEmplUserR
-    , postAdmEmplUnregR, getAdmStaffSearchR
+    , postAdmEmplUnregR, getAdmStaffSearchR, getAdmScheduleCreateR
+    , postAdmScheduleR, getAdmTimeSlotR, postAdmTimeSlotR, getAdmScheduleEditR
+    , postAdmScheduleDeleteR
     )
 import Admin.Services
     ( getAdmServicesR

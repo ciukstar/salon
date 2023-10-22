@@ -73,6 +73,32 @@
           <span.mdc-deprecated-list-item__text>_{MsgContactUs}
       <hr.mdc-deprecated-list-divider role=separator>
       
+      <details :elem curr [Just (StatsR PopOffersR),Just (StatsR WorkloadsR)]:open
+        ontoggle="this.querySelector('i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+        <summary.mdc-deprecated-list>
+          <li.mdc-deprecated-list-item>
+            <span.mdc-deprecated-list-item__ripple>
+            <i.expand.mdc-deprecated-list-item__graphic.material-symbols-outlined>expand_more
+            <span.mdc-deprecated-list-item__text>_{MsgAnalytics}
+            
+        <nav.mdc-deprecated-list>
+          <a.mdc-deprecated-list-item href=@{StatsR PopOffersR}
+            :Just (StatsR PopOffersR) /= curr:tabindex=-1
+            :Just (StatsR PopOffersR) == curr:tabindex=0
+            :Just (StatsR PopOffersR) == curr:.mdc-deprecated-list-item--activated>
+            <span.mdc-deprecated-list-item__ripple>
+            <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>query_stats
+            <span.mdc-deprecated-list-item__text>_{MsgPopularOffers}
+      
+          <a.mdc-deprecated-list-item href=@{StatsR WorkloadsR}
+            :Just (StatsR WorkloadsR) /= curr:tabindex=-1
+            :Just (StatsR WorkloadsR) == curr:tabindex=0
+            :Just (StatsR WorkloadsR) == curr:.mdc-deprecated-list-item--activated>
+            <span.mdc-deprecated-list-item__ripple>
+            <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>query_stats
+            <span.mdc-deprecated-list-item__text>_{MsgWorkload}
+      <hr.mdc-deprecated-list-divider role=separator>
+      
       <details :elem curr [Just (AdminR $ AdmServicesR (Services [])),Just (AdminR AdmStaffR),Just (AdminR AdmAboutR),Just (AdminR AdmContactsR),Just (AdminR UsersR), Just (AdminR BrandR), Just (AdminR BusinessR)]:open
         ontoggle="document.getElementById('iconDataExpand').textContent = this.open ? 'expand_less' : 'expand_more'">
         <summary.mdc-deprecated-list>

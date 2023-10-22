@@ -130,10 +130,14 @@ instance Yesod App where
     isAuthorized FaviconR _ = return Authorized
     isAuthorized RobotsR _ = return Authorized
     isAuthorized PhotoPlaceholderR _ = return Authorized
+
     isAuthorized (StaticR _) _ = return Authorized
+
+    isAuthorized (StatsR PopOffersR) _ = return Authorized
+    isAuthorized (StatsR WorkloadsR) _ = return Authorized
+        
     isAuthorized (AdminR UsersR) _ = return Authorized
     isAuthorized (AdminR UserCreateFormR) _ = return Authorized
-
     isAuthorized (AdminR AdmServicesSearchR) _ = return Authorized
     isAuthorized (AdminR (AdmServicesR _)) _ = return Authorized
     isAuthorized (AdminR (AdmServiceR _)) _ = return Authorized
@@ -147,8 +151,6 @@ instance Yesod App where
     isAuthorized (AdminR (AdmExpertR _ _)) _ = return Authorized
     isAuthorized (AdminR (AdmExpertEditR _ _)) _ = return Authorized
     isAuthorized (AdminR (AdmExpertDeleteR _ _)) _ = return Authorized
-
-
 
     isAuthorized (AdminR (AdmOfferR _)) _ = return Authorized
     isAuthorized (AdminR (AdmPriceR _ _)) _ = return Authorized
@@ -165,6 +167,12 @@ instance Yesod App where
     isAuthorized (AdminR (AdmRoleCreateR _)) _ = return Authorized
     isAuthorized (AdminR (AdmRoleEditR _ _)) _ = return Authorized
     isAuthorized (AdminR (AdmRoleDeleteR _ _)) _ = return Authorized
+    isAuthorized (AdminR (AdmScheduleCreateR _)) _ = return Authorized
+    isAuthorized (AdminR (AdmScheduleR _)) _ = return Authorized
+    isAuthorized (AdminR (AdmTimeSlotR _ _)) _ = return Authorized
+    isAuthorized (AdminR (AdmScheduleEditR _ _)) _ = return Authorized
+    isAuthorized (AdminR (AdmScheduleDeleteR _ _)) _ = return Authorized
+
     isAuthorized (AdminR AdmAboutR) _ = return Authorized
     isAuthorized (AdminR AdmAboutCreateR) _ = return Authorized
     isAuthorized (AdminR (AdmAboutEditR _)) _ = return Authorized

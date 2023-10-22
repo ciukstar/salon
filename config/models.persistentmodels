@@ -28,11 +28,6 @@ Book
   tz Text
   status BookStatus
 
-Schedule
-  role RoleId OnDeleteCascade
-  day Day
-  time TimeOfDay
-
 
 Role
   staff StaffId OnDeleteCascade
@@ -47,6 +42,12 @@ StaffPhoto
   photo ByteString
   mime Text
   UniqueStaffPhoto staff
+
+Schedule
+  staff StaffId OnDeleteCascade
+  workDay Day
+  workStart TimeOfDay
+  workEnd TimeOfDay
 
 Staff
   name Text

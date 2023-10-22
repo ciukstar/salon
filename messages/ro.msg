@@ -1,3 +1,15 @@
+EndTime: Ora de încheiere
+StartTime: Ora de începere
+WorkingHours: Orele de lucru
+NoScheduleYet: Nu există încă un program de lucru
+WorkSchedule: Programul de lucru
+AddWorkingHours: Adaugă orele de lucru
+Workload: Volumul de muncă
+NumberSign: №
+Bookings: Rezervări
+NoDataToDisplay: Nu sunt date de afișat
+PopularOffers: Oferte populare
+Analytics: Analiza
 NoAppointmentsFound: Nu au fost găsite programări
 MarkWidth: Lățimea imaginii
 MarkHeight: Înălțimea imaginii
@@ -180,7 +192,7 @@ RoleAlreadyInTheList: Rolul deja în listă
 Ratings: Evaluări
 Rating: Rating
 AddRole: Adaugă rol
-NoRolesYes: Nu există încă roluri
+NoRolesYet: Nu există încă roluri
 BookAppointment: Rezervă o programare
 EmployeeAlreadyInTheList: Angajatul este deja în listă
 Mobile: Mobil

@@ -11,8 +11,7 @@ main
     table tbody
       tr th
         font-weight: 500
-  ##{detailsRoles}
-    margin-bottom: 4rem
+  ##{detailsRoles}, ##{detailsSchedule}
     summary
       div.label-with-badge
         display: flex
@@ -30,6 +29,8 @@ main
           border-radius: 50%
           background-color: var(--mdc-theme-primary)
           text-align: center
+      .mdc-list-item__priary-text
+        font-weight: 500
     .mdc-list
       .mdc-list-item.mdc-list-item--activated
         .mdc-list-item__primary-text
@@ -37,9 +38,9 @@ main
       .mdc-list-item__secondary-text
         white-space: nowrap
         overflow: hidden
-        text-verflow: ellipsis  
+        text-verflow: ellipsis
 
-    #touchTargetWrapperAddRole
+    #touchTargetWrapperAddRole, #touchTargetWrapperAddSchedule
       position: fixed
       right: 1rem
       bottom: 1rem

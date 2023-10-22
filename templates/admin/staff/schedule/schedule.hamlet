@@ -1,0 +1,52 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
+        href=@?{(AdminR $ AdmEmplR eid,stati)}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgWorkingHours}
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end.mdc-theme--text-primary-on-light>
+      <button.mdc-icon-button type=button title=_{MsgDel}
+        onclick="document.getElementById('#{dlgSlotDelete}').MDCDialog.open()">
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>delete
+      <a.mdc-icon-button href=@?{(AdminR $ AdmScheduleEditR eid wid,stati)} role=button title=_{MsgEdit}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>edit
+
+<div.mdc-dialog ##{dlgSlotDelete} data-mdc-auto-init=MDCDialog>
+  <div.mdc-dialog__container>
+    <div.mdc-dialog__surface role=alertdialog tabindex=-1>
+      <h4.mdc-dialog__title>_{MsgPleaseConfirm}
+      <div.mdc-dialog__content>_{MsgDeleteAreYouSure}
+      <div.mdc-dialog__actions>
+        <button.mdc-button type=button data-mdc-dialog-action=cancel>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgCancel}
+        <form method=post action=@?{(AdminR $ AdmScheduleDeleteR eid wid,[("o","schedule")])}>
+          <button.mdc-button.mdc-button--raised type=submit>
+            <span.mdc-button__ripple>
+            <span.mdc-button__focus-ring>
+            <span.mdc-button__label>_{MsgYesDelete}
+  <div.mdc-dialog__scrim>
+
+<main.mdc-top-app-bar--fixed-adjust>
+  $maybe Entity _ (Schedule _ day start end) <- slot
+    <div.mdc-data-table>
+      <div.mdc-data-table__container>
+        <table.mdc-data-table__table>
+          <tbody.mdc-data-table__content>
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgDay}
+              <td.mdc-data-table__cell>#{show day}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgStartTime}
+              <td.mdc-data-table__cell>#{show start}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgEndTime}
+              <td.mdc-data-table__cell>#{show end}

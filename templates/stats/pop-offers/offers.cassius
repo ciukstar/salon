@@ -1,0 +1,16 @@
+
+
+main
+  div.mdc-data-table
+    margin: 1rem 0
+    width: 100%
+    thead th, tbody th
+      white-space: normal
+
+@media screen and (min-width: 0) and (max-width: 767px)
+  main
+    div.mdc-data-table
+      margin: 0
+      border-radius: 0
+      border-left: 0
+      border-right: 0

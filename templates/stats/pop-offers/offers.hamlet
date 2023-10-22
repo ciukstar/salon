@@ -1,0 +1,47 @@
+^{menu}
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <button.mdc-top-app-bar__navigation-icon.mdc-icon-button #btnMainMenu title=_{MsgNavigationMenu}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>menu
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgPopularOffers}
+
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end>
+      $maybe Entity uid _ <- user
+        <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{ProfileR} role=button title=_{MsgUserProfile}>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" alt=_{MsgPhoto}
+            onerror="this.src = '@{PhotoPlaceholderR}'">
+      $nothing
+        <a.mdc-top-app-bar__action-item.mdc-icon-button role=button href=@{AuthR LoginR} title=_{MsgLogin}>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>login
+
+<main.mdc-top-app-bar--fixed-adjust>
+  $if null offers
+    <figure>
+      <span style="font-size:4rem;line-eight:1;color:var(--mdc-theme-primary)">&varnothing;
+      <figcaption>
+        _{MsgNoDataToDisplay}
+  $else
+    <div.mdc-data-table>
+      <div.mdc-data-table__table-cotainer>
+        <table.mdc-data-table__table>
+          <thead>
+            <tr.mdc-data-table__header-row>
+              <th.mdc-data-table__header-cell role=columnheader scope=col>
+                _{MsgNumberSign}
+              <th.mdc-data-table__header-cell role=columnheader scope=col>
+                _{MsgService}
+              <th.mdc-data-table__header-cell.mdc-data-table__header-cell--numeric role=columnheader scope=col>
+                _{MsgBookings}
+          <tbody.mdc-data-table__cotent>
+            $forall (i,(Entity _ (Service sname _ _ _ _ _),Entity _ (Offer _ _ _ _ _ _),Value n)) <- offers
+              <tr.mdc-data-table__row>
+                <th.mdc-data-table__cell scope=row>#{i}
+                <th.mdc-data-table__cell scope=row>#{sname}
+                <td.mdc-data-table__cell.mdc-data-table__cell--numeric>#{n}

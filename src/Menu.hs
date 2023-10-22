@@ -18,17 +18,19 @@ import Foundation
     , ResourcesR (DocsR)
     , Route
       ( ResourcesR, AdminR, ContactR, AboutUsR, AppointmentsR
-      , BookOffersR, RequestsR, ServicesR, HomeR
+      , BookOffersR, RequestsR, ServicesR, HomeR, StatsR
       )
+    , StatsR (PopOffersR, WorkloadsR)
     , AdminR
       ( BrandR, UsersR, AdmContactsR, AdmAboutR, AdmStaffR, AdmServicesR
       , BusinessR
       )
     , AppMessage
-      ( MsgSourceCode, MsgDocumentation, MsgBrand, MsgContactUs
-      , MsgAboutUs, MsgMyAppointments, MsgServices, MsgBookAppointment
-      , MsgWelcome, MsgSalon, MsgUsers, MsgContact, MsgStaff, MsgData
-      , MsgResources, MsgRequests, MsgCalendar, MsgBusiness, MsgClose
+      ( MsgSourceCode, MsgDocumentation, MsgBrand, MsgContactUs, MsgAboutUs
+      , MsgMyAppointments, MsgServices, MsgBookAppointment, MsgWelcome, MsgSalon
+      , MsgUsers, MsgContact, MsgStaff, MsgData, MsgResources, MsgRequests
+      , MsgCalendar, MsgBusiness, MsgClose, MsgAnalytics, MsgPopularOffers
+      , MsgWorkload
       )
     )
 

@@ -1,3 +1,15 @@
+EndTime: Время окончания
+StartTime: Время начала
+WorkingHours: Время работы
+NoScheduleYet: Графика работы пока нет
+WorkSchedule: График работы
+AddWorkingHours: Добавить рабочее время
+Workload: Рабочая нагрузка
+NumberSign: №
+Bookings: Бронирования
+NoDataToDisplay: Нет данных для отображенияx
+PopularOffers: Популярные предложения
+Analytics: Аналитика
 NoAppointmentsFound: Записей не найдено
 MarkWidth: Ширина изображения
 MarkHeight: Высота изображения
@@ -180,7 +192,7 @@ RoleAlreadyInTheList: Роль уже в списке
 Ratings: Рейтинги
 Rating: Рейтинг
 AddRole: Добавить роль
-NoRolesYes: Ролей пока нет
+NoRolesYet: Ролей пока нет
 BookAppointment: Записаться на приём
 EmployeeAlreadyInTheList: Сотрудник уже в списке
 Mobile: Мобильный

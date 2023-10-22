@@ -23,6 +23,12 @@ module Admin.Staff
   , postAdmEmplUserR
   , postAdmEmplUnregR
   , getAdmStaffSearchR
+  , getAdmScheduleCreateR
+  , postAdmScheduleR
+  , getAdmTimeSlotR
+  , postAdmTimeSlotR
+  , getAdmScheduleEditR
+  , postAdmScheduleDeleteR
   ) where
 
 import Control.Applicative ((<|>))
@@ -53,7 +59,7 @@ import Yesod.Form.Types
 import Yesod.Form.Input (runInputGet, iopt)
 import Yesod.Form.Fields
     ( textField, emailField, passwordField, intField, hiddenField
-    , fileField, checkBoxField
+    , fileField, checkBoxField, dayField, timeField
     )
 import Yesod.Form.Functions
     ( mreq, mopt, generateFormPost, runFormPost, checkM, checkBool )
@@ -78,19 +84,20 @@ import Database.Esqueleto.Experimental
 
 import Foundation
     ( Handler, Widget
+    , Route (AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR, StaticR, ProfileR)
     , AdminR
       ( AdmStaffDeleteR, AdmStaffEditR, AdmEmplR, AdmStaffR, AdmRoleR
       , AdmStaffCreateR, AdmStaffPhotoR, AdmRolesR, AdmRoleCreateR
       , AdmRoleEditR, AdmRoleDeleteR, AdmEmplUserR, AdmEmplUnregR
-      , AdmStaffSearchR
+      , AdmStaffSearchR, AdmScheduleR, AdmTimeSlotR, AdmScheduleCreateR
+      , AdmScheduleEditR, AdmScheduleDeleteR
       )
-    , Route (AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR, StaticR, ProfileR)
     , AppMessage
-      ( MsgStaff, MsgPhoto, MsgCancel, MsgSave, MsgBack
-      , MsgNoStaffYet, MsgEmployee, MsgRecordEdited, MsgName
-      , MsgRole, MsgPhone, MsgMobile, MsgEmail, MsgRecordAdded
+      ( MsgStaff, MsgPhoto, MsgCancel, MsgSave, MsgBack, MsgAddWorkingHours
+      , MsgNoStaffYet, MsgEmployee, MsgRecordEdited, MsgName, MsgWorkSchedule
+      , MsgRole, MsgPhone, MsgMobile, MsgEmail, MsgRecordAdded, MsgNoScheduleYet
       , MsgEmployeeAlreadyInTheList, MsgDeleteAreYouSure, MsgYesDelete
-      , MsgPleaseConfirm, MsgRecordDeleted, MsgRoles, MsgNoRolesYes
+      , MsgPleaseConfirm, MsgRecordDeleted, MsgRoles, MsgNoRolesYet
       , MsgAddRole, MsgService, MsgTheName, MsgRating, MsgRoleAlreadyInTheList
       , MsgRegisterAsUser, MsgUser, MsgRegistration, MsgUsername, MsgPassword
       , MsgFullName, MsgAlreadyExists, MsgUnregisterAreYouSure, MsgSearch
@@ -98,16 +105,18 @@ import Foundation
       , MsgUnavailable, MsgAvailable, MsgAccountStatus, MsgRegistered, MsgDel
       , MsgUnregistered, MsgValueNotInRange, MsgAdministrator, MsgUnregister
       , MsgNavigationMenu, MsgUserProfile, MsgLogin, MsgUnregisterAsUser
+      , MsgWorkingHours, MsgDay, MsgStartTime, MsgEndTime
       )
     )
 
 import Model
-    ( StaffId, Staff(Staff, staffName, staffPhone, staffMobile, staffEmail, staffStatus)
+    ( StaffId, Staff (Staff, staffName, staffPhone, staffMobile, staffEmail, staffStatus)
+    , ScheduleId, Schedule (Schedule, scheduleWorkDay, scheduleWorkStart, scheduleWorkEnd)
     , EntityField
-      ( StaffId, StaffPhotoStaff, StaffPhotoMime, StaffPhotoPhoto
+      ( StaffId, StaffPhotoStaff, StaffPhotoMime, StaffPhotoPhoto, ScheduleStaff
       , StaffName, RoleStaff, RoleId, ServiceId, ServiceGroup
       , RoleService, RoleName, RoleRating, StaffUser, UserId, UserName
-      , StaffPhone, StaffMobile, StaffEmail, StaffStatus
+      , StaffPhone, StaffMobile, StaffEmail, StaffStatus, ScheduleId
       )
     , StaffPhoto (StaffPhoto, staffPhotoPhoto, staffPhotoMime, staffPhotoStaff)
     , Role (Role, roleService, roleName, roleRating), RoleId
@@ -119,6 +128,120 @@ import Model
 import Settings.StaticFiles (img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg)
 
 import Menu (menu)
+
+
+postAdmScheduleDeleteR :: StaffId -> ScheduleId -> Handler Html
+postAdmScheduleDeleteR eid wid = do
+    stati <- reqGetParams <$> getRequest
+    runDB $ delete wid
+    addMessageI "info" MsgRecordDeleted
+    redirect (AdminR $ AdmEmplR eid,stati)
+
+
+postAdmTimeSlotR :: StaffId -> ScheduleId -> Handler Html
+postAdmTimeSlotR eid wid = do
+    stati <- reqGetParams <$> getRequest
+    ((fr,fw),et) <- runFormPost $ formSchedule eid Nothing
+    case fr of
+      FormSuccess r -> do
+          runDB $ replace wid r
+          addMessageI "info" MsgRecordEdited
+          redirect (AdminR $ AdmTimeSlotR eid wid)
+      _ -> defaultLayout $ do
+          setTitleI MsgWorkSchedule
+          $(widgetFile "admin/staff/schedule/edit")
+
+
+getAdmScheduleEditR :: StaffId -> ScheduleId -> Handler Html
+getAdmScheduleEditR eid wid = do
+    stati <- reqGetParams <$> getRequest
+    slot <- runDB $ selectOne $ do
+        x <- from $ table @Schedule
+        where_ $ x ^. ScheduleId ==. val wid
+        return x
+    (fw,et) <- generateFormPost $ formSchedule eid slot
+    defaultLayout $ do
+        setTitleI MsgWorkSchedule
+        $(widgetFile "admin/staff/schedule/edit")
+
+
+getAdmTimeSlotR :: StaffId -> ScheduleId -> Handler Html
+getAdmTimeSlotR eid wid = do
+    stati <- reqGetParams <$> getRequest
+    slot <- runDB $ selectOne $ do
+        x <- from $ table @Schedule
+        where_ $ x ^. ScheduleId ==. val wid
+        return x
+    dlgSlotDelete <- newIdent
+    defaultLayout $ do
+        setTitleI MsgWorkingHours
+        $(widgetFile "admin/staff/schedule/schedule")
+
+
+postAdmScheduleR :: StaffId -> Handler Html
+postAdmScheduleR eid = do
+    stati <- reqGetParams <$> getRequest
+    ((fr,fw),et) <- runFormPost $ formSchedule eid Nothing
+    case fr of
+      FormSuccess r -> do
+          runDB $ insert_ r
+          addMessageI "info" MsgRecordAdded
+          redirect (AdminR $ AdmEmplR eid,stati)
+      _ -> defaultLayout $ do
+        setTitleI MsgWorkSchedule
+        $(widgetFile "admin/staff/schedule/create")
+
+
+getAdmScheduleCreateR :: StaffId -> Handler Html
+getAdmScheduleCreateR eid = do
+    stati <- reqGetParams <$> getRequest
+    (fw,et) <- generateFormPost $ formSchedule eid Nothing
+    defaultLayout $ do
+        setTitleI MsgWorkSchedule
+        $(widgetFile "admin/staff/schedule/create")
+
+
+formSchedule :: StaffId -> Maybe (Entity Schedule)
+             -> Html -> MForm Handler (FormResult Schedule,Widget)
+formSchedule eid schedule extra = do
+    (dayR,dayV) <- mreq dayField FieldSettings
+        { fsLabel = SomeMessage MsgDay
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (scheduleWorkDay . entityVal <$> schedule)
+    (startR,startV) <- mreq timeField FieldSettings
+        { fsLabel = SomeMessage MsgStartTime
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (scheduleWorkStart . entityVal <$> schedule)
+    (endR,endV) <- mreq timeField FieldSettings
+        { fsLabel = SomeMessage MsgEndTime
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (scheduleWorkEnd . entityVal <$> schedule)
+    let r = Schedule eid <$> dayR <*> startR <*> endR
+    let w = [whamlet|
+#{extra}
+$forall (v,icon) <- [(dayV,"event"),(startV,"schedule"),(endV,"schedule")]
+  <div.form-field>
+    <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--with-trailing-icon data-mdc-auto-init=MDCTextField
+      :isJust (fvErrors v):.mdc-text-field--invalid>
+      <span.mdc-text-field__ripple>
+      <span.mdc-floating-label>#{fvLabel v}
+      ^{fvInput v}
+      <button.mdc-icon-button.mdc-text-field__icon.mdc-text-field__icon--trailing.material-symbols-outlined
+        tabindex=0 role=button onclick="document.getElementById('#{fvId v}').showPicker()"
+        style="position:absolute;right:2px;background-color:inherit">
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        #{pack icon}
+      <div.mdc-line-ripple>
+    $maybe errs <- fvErrors v
+      <div.mdc-text-field-helper-line>
+        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+          #{errs}
+|]
+    return (r,w)
 
 
 getAdmStaffSearchR :: Handler Html
@@ -534,28 +657,32 @@ postAdmEmplR sid = do
 
 
 getAdmEmplR :: StaffId -> Handler Html
-getAdmEmplR sid = do
+getAdmEmplR eid = do
     mrid <- runInputGet $ iopt textField "rid"
-    open <- runInputGet $ iopt textField "open"
-    scrollY <- runInputGet $ iopt textField "scrollY"
+    mwid <- runInputGet $ iopt textField "wid"
+    open <- runInputGet $ iopt textField "o"
+    scrollY <- runInputGet $ iopt textField "y"
     state <- reqGetParams <$> getRequest
     empl <- runDB $ selectOne $ do
         x :& u <- from $ table @Staff
             `leftJoin` table @User `on` (\(x :& u) -> x ^. StaffUser ==. u ?. UserId)
-        where_ $ x ^. StaffId ==. val sid
+        where_ $ x ^. StaffId ==. val eid
         return (x,u)
-    roles <- case empl of
-      Just (Entity eid _, _) -> runDB $ select $ do
-          x :& s <- from $ table @Role
-             `innerJoin` table @Service `on` (\(x :& s) -> x ^. RoleService ==. s ^. ServiceId)
-          where_ $ x ^. RoleStaff ==. val eid
-          orderBy [asc (x ^. RoleId)]
-          return (x,s)
-      _ -> return []
+    roles <- runDB $ select $ do
+        x :& s <- from $ table @Role
+            `innerJoin` table @Service `on` (\(x :& s) -> x ^. RoleService ==. s ^. ServiceId)
+        where_ $ x ^. RoleStaff ==. val eid
+        orderBy [asc (x ^. RoleId)]
+        return (x,s)
+    schedule <- runDB $ select $ do
+        x <- from $ table @Schedule
+        where_ $ x ^. ScheduleStaff ==. val eid
+        return x
     msgs <- getMessages
     dlgUnregEmplUser <- newIdent
     dlgEmplDelete <- newIdent
     detailsRoles <- newIdent
+    detailsSchedule <- newIdent
     defaultLayout $ do
         setTitleI MsgEmployee
         $(widgetFile "admin/staff/employee")
@@ -671,7 +798,7 @@ getAdmStaffR :: Handler Html
 getAdmStaffR = do
     user <- maybeAuth
     msid <- (toSqlKey <$>) <$> runInputGet (iopt intField "sid")
-    scrollY <- runInputGet (iopt textField "scrollY")
+    scrollY <- runInputGet (iopt textField "y")
     staff <- runDB $ select $ do
         x <- from $ table @Staff
         orderBy [asc (x ^. StaffId)]

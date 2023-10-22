@@ -1,3 +1,15 @@
+EndTime: Heure de fin
+StartTime: Heure de début
+WorkingHours: Heures de travail
+NoScheduleYet: Il n'y a pas encore d'horaire de travail
+WorkSchedule: Horaire de travail
+AddWorkingHours: Ajouter des heures de travail
+Workload: Charge de travail
+NumberSign: №
+Bookings: Réservations
+NoDataToDisplay: Aucune données à afficher
+PopularOffers: Offres populaires
+Analytics: Analyse
 NoAppointmentsFound: Aucun rendez-vous trouvé
 MarkWidth: Largeur de l'image
 MarkHeight: Hauteur de l'image
@@ -180,7 +192,7 @@ RoleAlreadyInTheList: Rôle déjà dans la liste
 Ratings: Évaluations
 Rating: Notation
 AddRole: Ajouter rôle
-NoRolesYes: Il n'y a pas encore de rôles
+NoRolesYet: Il n'y a pas encore de rôles
 BookAppointment: Prenez rendez-vous
 EmployeeAlreadyInTheList: L'employé déjà dans la liste
 Mobile: Portable
