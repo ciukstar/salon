@@ -1,9 +1,10 @@
+Details: Détails
 EndTime: Heure de fin
 StartTime: Heure de début
 WorkingHours: Heures de travail
 NoScheduleYet: Il n'y a pas encore d'horaire de travail
 WorkSchedule: Horaire de travail
-AddWorkingHours: Ajouter des heures de travail
+AddWorkingHours: Ajouter du temps de travail
 Workload: Charge de travail
 NumberSign: №
 Bookings: Réservations

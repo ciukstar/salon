@@ -33,16 +33,16 @@
         _{MsgNoStaffYet}.
   $else
     <nav.mdc-list data-mdc-auto-init=MDCList>
-      $forall (Entity sid (Staff name _ _ _ _ _), role) <- roles
-        <a.mdc-list-item href=@?{(AdminR $ AdmEmplR sid,[("sid",pack $ show $ fromSqlKey sid)])}
+      $forall (Entity eid (Staff name _ _ _ _ _), role) <- roles
+        <a.mdc-list-item href=@?{(AdminR $ AdmEmplR eid,[("eid",pack $ show $ fromSqlKey eid)])}
           .mdc-list-item--with-leading-image
           .mdc-list-item--with-three-lines
           .mdc-list-item--with-trailing-icon
-          :Just sid == msid:.mdc-list-item--activated
-          onclick="this.href = [new window.URL(this.href)].map(x => {x.searchParams.append('scrollY',window.scrollY);return x;})[0].href">
+          :Just eid == meid:.mdc-list-item--activated
+          onclick="this.href = [new window.URL(this.href)].map(x => {x.searchParams.append('y',window.scrollY);return x.href;})[0]">
           <span.mdc-list-item__ripple>
           <span.mdc-list-item__start>
-            <img src=@{AdminR $ AdmStaffPhotoR sid} width=56 height=56 alt=_{MsgPhoto} loading=lazy>
+            <img src=@{AdminR $ AdmStaffPhotoR eid} width=56 height=56 alt=_{MsgPhoto} loading=lazy>
           <span.mdc-list-item__content>
             <div.mdc-list-item__primary-text>
               #{name}

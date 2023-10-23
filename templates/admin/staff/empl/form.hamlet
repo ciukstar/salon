@@ -30,7 +30,7 @@
   <div.mdc-select.mdc-select--filled.mdc-select--required.mt-1 data-mdc-auto-init=MDCSelect
     :isJust (fvErrors statusV):.mdc-select--invalid>
     ^{fvInput statusV}
-    <div.mdc-select__anchor role=button aria-aspopup=listbox aria-expanded=false aria-required=true>
+    <div.mdc-select__anchor role=button aria-haspopup=listbox aria-expanded=false>
       <span.mdc-select__ripple>
       <span.mdc-floating-label>#{fvLabel statusV}
       <span.mdc-select__selected-text-container>
@@ -42,12 +42,13 @@
       <span.mdc-line-ripple>
 
     <div.mdc-select__menu.mdc-menu.mdc-menu-surface.mdc-menu-surface--fullwidth>
-      <ul.mdc-deprecated-list role=listbox>
-        $forall (v,l) <- ((<$>) (first (pack . show)) [(EmplStatusAvailable,MsgAvailable),(EmplStatusUnavailable,MsgUnavailable)])
-          <li.mdc-deprecated-list-item role=option data-value=#{v} aria-selected=false>
-            <span.mdc-deprecated-list-item__ripple>
-            <span.mdc-deprecated-list-item__text>
-              _{l}
+      $with options <- [(EmplStatusAvailable,MsgAvailable),(EmplStatusUnavailable,MsgUnavailable)]
+        <ul.mdc-deprecated-list role=listbox>
+          $forall (v,l) <- ((<$>) (first (pack . show)) options)
+            <li.mdc-deprecated-list-item role=option data-value=#{v} aria-selected=false>
+              <span.mdc-deprecated-list-item__ripple>
+              <span.mdc-deprecated-list-item__text>
+                _{l}
   $maybe errs <- fvErrors statusV
     <div.mdc-text-field-helper-line>
       <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>

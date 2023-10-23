@@ -1,0 +1,32 @@
+
+$if null roles
+  <figure style="margin-bottom:4rem">
+    <span style="line-height:5rem;font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
+    <figcaption>
+      _{MsgNoRolesYet}.
+$else
+  <nav.mdc-list data-mdc-auto-init=MDCList>
+    $forall (Entity rid (Role _ _ name rating), Entity _ (Service sname _ _ _ _ _)) <- roles
+      <a.mdc-list-item href=@?{(AdminR $ AdmRoleR eid rid,[("rid",pack $ show $ fromSqlKey rid)])}
+        :Just (pack $ show $ fromSqlKey rid) == mrid:.mdc-list-item--activated
+        .mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon
+        onclick="this.href = [new window.URL(this.href)].map(x => {x.searchParams.append('y',window.scrollY);return x.href;})[0]">
+        <span.mdc-list-item__ripple>
+        <span.mdc-list-item__content>
+          <div.mdc-list-item__primary-text>#{name}
+          <div.mdc-list-item__secondary-text>#{sname}
+          <div.mdc-list-item__secondary-text>
+            $maybe rating <- rating
+              _{MsgRating}: #{show rating}
+        <span.mdc-list-item__end>
+          <i.material-symbols-outlined>arrow_forward_ios
+      <div.mdc-list-divider role=separator>
+
+<div.mdc-touch-target-wrapper #touchTargetWrapperAddRole>
+  <a.mdc-fab.mdc-fab--touch.mdc-fab--extended role=button href=@{AdminR $ AdmRoleCreateR eid}
+    onclick="this.href = [new window.URL(this.href)].map(x => {x.searchParams.append('y',window.scrollY); return x.href;})[0]">
+    <span.mdc-fab__ripple>
+    <span.mdc-fab__focus-ring>
+    <i.mdc-fab__icon.material-symbols-outlined>add
+    <span.mdc-fab__label>_{MsgAddRole}
+    <span.mdc-fab__touch>

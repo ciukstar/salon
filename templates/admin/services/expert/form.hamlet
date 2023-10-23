@@ -4,7 +4,7 @@
   <div.mdc-select.mdc-select--filled.mdc-select--required data-mdc-auto-init=MDCSelect
     :isJust (fvErrors emplV):.mdc-select--invalid>
     ^{fvInput emplV}
-    <div.mdc-select__anchor role=button aria-aspopup=listbox aria-expanded=false aria-required=true>
+    <div.mdc-select__anchor role=button aria-haspopup=listbox aria-expanded=false>
       <span.mdc-select__ripple>
       <span.mdc-floating-label>#{fvLabel emplV}
       <span.mdc-select__selected-text-container>

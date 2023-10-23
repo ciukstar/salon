@@ -13,6 +13,7 @@ module Admin.Staff
   , getAdmStaffEditR
   , postAdmStaffR
   , postAdmStaffDeleteR
+  , getAdmRolesR
   , postAdmRolesR
   , getAdmRoleR
   , postAdmRoleR
@@ -24,6 +25,7 @@ module Admin.Staff
   , postAdmEmplUnregR
   , getAdmStaffSearchR
   , getAdmScheduleCreateR
+  , getAdmScheduleR
   , postAdmScheduleR
   , getAdmTimeSlotR
   , postAdmTimeSlotR
@@ -48,13 +50,14 @@ import Yesod.Core
     , MonadTrans (lift), whamlet, getRequest
     , YesodRequest (reqGetParams), newIdent
     )
+import Yesod.Core.Handler (getCurrentRoute)
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Auth (maybeAuth, Route (LoginR))
 
 import Yesod.Form.Types
-    ( MForm, FormResult (FormSuccess), FieldView (fvInput, fvLabel, fvId, fvErrors)
+    ( MForm, FormResult (FormSuccess), Field
+    , FieldView (fvInput, fvLabel, fvId, fvErrors)
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsName, fsAttrs, fsId)
-    , Field
     )
 import Yesod.Form.Input (runInputGet, iopt)
 import Yesod.Form.Fields
@@ -105,7 +108,7 @@ import Foundation
       , MsgUnavailable, MsgAvailable, MsgAccountStatus, MsgRegistered, MsgDel
       , MsgUnregistered, MsgValueNotInRange, MsgAdministrator, MsgUnregister
       , MsgNavigationMenu, MsgUserProfile, MsgLogin, MsgUnregisterAsUser
-      , MsgWorkingHours, MsgDay, MsgStartTime, MsgEndTime
+      , MsgWorkingHours, MsgDay, MsgStartTime, MsgEndTime, MsgDetails
       )
     )
 
@@ -117,6 +120,7 @@ import Model
       , StaffName, RoleStaff, RoleId, ServiceId, ServiceGroup
       , RoleService, RoleName, RoleRating, StaffUser, UserId, UserName
       , StaffPhone, StaffMobile, StaffEmail, StaffStatus, ScheduleId
+      , ScheduleWorkDay, ScheduleWorkStart, ScheduleWorkEnd
       )
     , StaffPhoto (StaffPhoto, staffPhotoPhoto, staffPhotoMime, staffPhotoStaff)
     , Role (Role, roleService, roleName, roleRating), RoleId
@@ -135,7 +139,7 @@ postAdmScheduleDeleteR eid wid = do
     stati <- reqGetParams <$> getRequest
     runDB $ delete wid
     addMessageI "info" MsgRecordDeleted
-    redirect (AdminR $ AdmEmplR eid,stati)
+    redirect (AdminR $ AdmScheduleR eid,stati)
 
 
 postAdmTimeSlotR :: StaffId -> ScheduleId -> Handler Html
@@ -178,6 +182,31 @@ getAdmTimeSlotR eid wid = do
         $(widgetFile "admin/staff/schedule/schedule")
 
 
+getAdmScheduleR :: StaffId -> Handler Html
+getAdmScheduleR eid = do
+    mwid <- runInputGet $ iopt textField "wid"
+    scrollY <- runInputGet $ iopt textField "y"
+    stati <- reqGetParams <$> getRequest
+    empl <- runDB $ selectOne $ do
+        x :& u <- from $ table @Staff
+            `leftJoin` table @User `on` (\(x :& u) -> x ^. StaffUser ==. u ?. UserId)
+        where_ $ x ^. StaffId ==. val eid
+        return (x,u)
+    schedule <- runDB $ select $ do
+        x <- from $ table @Schedule
+        where_ $ x ^. ScheduleStaff ==. val eid
+        orderBy [desc (x ^. ScheduleWorkDay), desc (x ^. ScheduleWorkStart), desc (x ^. ScheduleWorkEnd)]
+        return x
+    curr <- getCurrentRoute
+    msgs <- getMessages
+    dlgUnregEmplUser <- newIdent
+    dlgEmplDelete <- newIdent
+    let tab = $(widgetFile "admin/staff/empl/schedule")
+    defaultLayout $ do
+        setTitleI MsgEmployee
+        $(widgetFile "admin/staff/empl/empl")
+
+
 postAdmScheduleR :: StaffId -> Handler Html
 postAdmScheduleR eid = do
     stati <- reqGetParams <$> getRequest
@@ -186,7 +215,7 @@ postAdmScheduleR eid = do
       FormSuccess r -> do
           runDB $ insert_ r
           addMessageI "info" MsgRecordAdded
-          redirect (AdminR $ AdmEmplR eid,stati)
+          redirect (AdminR $ AdmScheduleR eid,stati)
       _ -> defaultLayout $ do
         setTitleI MsgWorkSchedule
         $(widgetFile "admin/staff/schedule/create")
@@ -450,8 +479,8 @@ postAdmRoleDeleteR :: StaffId -> RoleId -> Handler ()
 postAdmRoleDeleteR eid rid = do
     runDB $ delete rid
     addMessageI "info" MsgRecordDeleted
-    state <- reqGetParams <$> getRequest
-    redirect (AdminR $ AdmEmplR eid,state)
+    stati <- reqGetParams <$> getRequest
+    redirect (AdminR $ AdmRolesR eid,stati)
 
 
 postAdmRoleR :: StaffId -> RoleId -> Handler Html
@@ -461,12 +490,12 @@ postAdmRoleR eid rid = do
         where_ $ x ^. RoleId ==. val rid
         return x
     ((fr,fw),et) <- runFormPost $ formRole eid role
-    state <- reqGetParams <$> getRequest
+    stati <- reqGetParams <$> getRequest
     case fr of
       FormSuccess r -> do
           runDB $ replace rid r
           addMessageI "info" MsgRecordEdited
-          redirect (AdminR $ AdmEmplR eid,state)
+          redirect (AdminR $ AdmRoleR eid rid,stati)
       _ -> defaultLayout $ do
           setTitleI MsgRole
           $(widgetFile "admin/staff/role/edit")
@@ -474,7 +503,7 @@ postAdmRoleR eid rid = do
 
 getAdmRoleEditR :: StaffId -> RoleId -> Handler Html
 getAdmRoleEditR eid rid = do
-    state <- reqGetParams <$> getRequest
+    stati <- reqGetParams <$> getRequest
     role <- runDB $ selectOne $ do
         x <- from $ table @Role
         where_ $ x ^. RoleId ==. val rid
@@ -501,24 +530,50 @@ getAdmRoleR sid rid = do
         $(widgetFile "admin/staff/role/role")
 
 
+getAdmRolesR :: StaffId -> Handler Html
+getAdmRolesR eid = do
+    mrid <- runInputGet $ iopt textField "rid"
+    scrollY <- runInputGet $ iopt textField "y"
+    stati <- reqGetParams <$> getRequest
+    empl <- runDB $ selectOne $ do
+        x :& u <- from $ table @Staff
+            `leftJoin` table @User `on` (\(x :& u) -> x ^. StaffUser ==. u ?. UserId)
+        where_ $ x ^. StaffId ==. val eid
+        return (x,u)
+    roles <- runDB $ select $ do
+        x :& s <- from $ table @Role
+            `innerJoin` table @Service `on` (\(x :& s) -> x ^. RoleService ==. s ^. ServiceId)
+        where_ $ x ^. RoleStaff ==. val eid
+        orderBy [asc (x ^. RoleId)]
+        return (x,s)
+    curr <- getCurrentRoute
+    msgs <- getMessages
+    dlgUnregEmplUser <- newIdent
+    dlgEmplDelete <- newIdent
+    let tab = $(widgetFile "admin/staff/empl/roles")
+    defaultLayout $ do
+        setTitleI MsgEmployee
+        $(widgetFile "admin/staff/empl/empl")
+
+
 postAdmRolesR :: StaffId -> Handler Html
-postAdmRolesR sid = do
-    state <- reqGetParams <$> getRequest
-    ((fr,fw),et) <- runFormPost $ formRole sid Nothing
+postAdmRolesR eid = do
+    stati <- reqGetParams <$> getRequest
+    ((fr,fw),et) <- runFormPost $ formRole eid Nothing
     case fr of
       FormSuccess r -> do
           rid <- runDB $ insert r
           addMessageI "info" MsgRecordAdded
-          redirect (AdminR $ AdmEmplR sid,state ++ [("rid",pack $ show $ fromSqlKey rid)])
+          redirect (AdminR $ AdmRolesR eid,stati ++ [("rid",pack $ show $ fromSqlKey rid)])
       _ -> defaultLayout $ do
           setTitleI MsgRole
           $(widgetFile "admin/staff/role/create")
 
 
 getAdmRoleCreateR :: StaffId -> Handler Html
-getAdmRoleCreateR sid = do
-    state <- reqGetParams <$> getRequest
-    (fw,et) <- generateFormPost $ formRole sid Nothing
+getAdmRoleCreateR eid = do
+    stati <- reqGetParams <$> getRequest
+    (fw,et) <- generateFormPost $ formRole eid Nothing
     defaultLayout $ do
         setTitleI MsgRole
         $(widgetFile "admin/staff/role/create")
@@ -549,7 +604,7 @@ formRole eid role extra = do
   <div.mdc-select.mdc-select--filled.mdc-select--required data-mdc-auto-init=MDCSelect
     :isJust (fvErrors servV):.mdc-select--invalid>
     ^{fvInput servV}
-    <div.mdc-select__anchor role=button aria-aspopup=listbox aria-expanded=false aria-required=true>
+    <div.mdc-select__anchor role=button aria-haspopup=listbox aria-expanded=false>
       <span.mdc-select__ripple>
       <span.mdc-floating-label>#{fvLabel servV}
       <span.mdc-select__selected-text-container>
@@ -653,39 +708,26 @@ postAdmEmplR sid = do
           redirect $ AdminR $ AdmEmplR sid
       _ -> defaultLayout $ do
           setTitleI MsgEmployee
-          $(widgetFile "admin/staff/edit")
+          $(widgetFile "admin/staff/empl/edit")
 
 
 getAdmEmplR :: StaffId -> Handler Html
 getAdmEmplR eid = do
-    mrid <- runInputGet $ iopt textField "rid"
-    mwid <- runInputGet $ iopt textField "wid"
-    open <- runInputGet $ iopt textField "o"
+    stati <- reqGetParams <$> getRequest
     scrollY <- runInputGet $ iopt textField "y"
-    state <- reqGetParams <$> getRequest
     empl <- runDB $ selectOne $ do
         x :& u <- from $ table @Staff
             `leftJoin` table @User `on` (\(x :& u) -> x ^. StaffUser ==. u ?. UserId)
         where_ $ x ^. StaffId ==. val eid
         return (x,u)
-    roles <- runDB $ select $ do
-        x :& s <- from $ table @Role
-            `innerJoin` table @Service `on` (\(x :& s) -> x ^. RoleService ==. s ^. ServiceId)
-        where_ $ x ^. RoleStaff ==. val eid
-        orderBy [asc (x ^. RoleId)]
-        return (x,s)
-    schedule <- runDB $ select $ do
-        x <- from $ table @Schedule
-        where_ $ x ^. ScheduleStaff ==. val eid
-        return x
+    curr <- getCurrentRoute
     msgs <- getMessages
     dlgUnregEmplUser <- newIdent
     dlgEmplDelete <- newIdent
-    detailsRoles <- newIdent
-    detailsSchedule <- newIdent
+    let tab = $(widgetFile "admin/staff/empl/details")
     defaultLayout $ do
         setTitleI MsgEmployee
-        $(widgetFile "admin/staff/employee")
+        $(widgetFile "admin/staff/empl/empl")
 
 
 getAdmStaffEditR :: StaffId -> Handler Html
@@ -697,7 +739,7 @@ getAdmStaffEditR sid = do
     (fw,et) <- generateFormPost $ formEmpl empl
     defaultLayout $ do
         setTitleI MsgStaff
-        $(widgetFile "admin/staff/edit")
+        $(widgetFile "admin/staff/empl/edit")
 
 
 getAdmStaffCreateR :: Handler Html
@@ -705,7 +747,7 @@ getAdmStaffCreateR = do
     (fw,et) <- generateFormPost $ formEmpl Nothing
     defaultLayout $ do
         setTitleI MsgStaff
-        $(widgetFile "admin/staff/create")
+        $(widgetFile "admin/staff/empl/create")
 
 
 formEmpl :: Maybe (Entity Staff) -> Html -> MForm Handler (FormResult (Staff,Maybe FileInfo), Widget)
@@ -751,7 +793,7 @@ formEmpl staff extra = do
                   <*> FormSuccess Nothing
                 )
             <*> photoR
-    let w = $(widgetFile "admin/staff/form")
+    let w = $(widgetFile "admin/staff/empl/form")
     return (r,w)
 
   where
@@ -791,13 +833,13 @@ postAdmStaffR = do
           redirect $ AdminR AdmStaffR
       _ -> defaultLayout $ do
           setTitleI MsgEmployee
-          $(widgetFile "admin/staff/create")
+          $(widgetFile "admin/staff/empl/create")
 
 
 getAdmStaffR :: Handler Html
 getAdmStaffR = do
     user <- maybeAuth
-    msid <- (toSqlKey <$>) <$> runInputGet (iopt intField "sid")
+    meid <- (toSqlKey <$>) <$> runInputGet (iopt intField "eid")
     scrollY <- runInputGet (iopt textField "y")
     staff <- runDB $ select $ do
         x <- from $ table @Staff

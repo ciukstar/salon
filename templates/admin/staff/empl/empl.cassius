@@ -1,0 +1,27 @@
+
+main
+  figure
+    text-align: center
+
+  .mdc-tab-bar
+    position: sticky
+    top: 64px
+    z-index: 1
+    background-color: var(--mdc-theme-background)
+    .mdc-tab.mdc-tab--active
+      .mdc-tab__text-label
+        color: var(--theme-accent)
+      .mdc-tab-indicator.mdc-tab-indicator--active
+        .mdc-tab-indicator__content--underline
+          border-color: var(--theme-accent)
+
+div.mdc-dialog
+  div.mdc-dialog__actions
+    gap: 0.5rem
+
+aside.mdc-snackbar
+  bottom: 5rem
+
+@media (max-width: 599px)
+  main .mdc-tab-bar
+    top: 56px

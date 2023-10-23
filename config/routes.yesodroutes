@@ -100,7 +100,7 @@
     /form/staff/#StaffId/schedule/#ScheduleId   AdmScheduleEditR   GET
     /form/staff/#StaffId/schedule               AdmScheduleCreateR GET
     /staff/#StaffId/schedule/#ScheduleId        AdmTimeSlotR       GET POST
-    /staff/#StaffId/schedule                    AdmScheduleR       POST
+    /staff/#StaffId/schedule                    AdmScheduleR       GET POST
     /search/staff                               AdmStaffSearchR    GET
     /staff/#StaffId/users/#UserId               AdmEmplUnregR      POST
     /staff/#StaffId/user                        AdmEmplUserR       GET POST
@@ -108,7 +108,7 @@
     /form/staff/#StaffId/roles/#RoleId          AdmRoleEditR       GET
     /form/staff/#StaffId/roles                  AdmRoleCreateR     GET
     /staff/#StaffId/roles/#RoleId               AdmRoleR           GET POST
-    /staff/#StaffId/roles                       AdmRolesR          POST
+    /staff/#StaffId/roles                       AdmRolesR          GET POST
     /staff/#StaffId/photo                       AdmStaffPhotoR     GET
     /form/staff/#StaffId                        AdmStaffEditR      GET
     /form/staff                                 AdmStaffCreateR    GET

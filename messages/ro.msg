@@ -1,3 +1,4 @@
+Details: Detalii
 EndTime: Ora de încheiere
 StartTime: Ora de începere
 WorkingHours: Orele de lucru

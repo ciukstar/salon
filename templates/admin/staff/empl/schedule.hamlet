@@ -1,0 +1,39 @@
+
+
+$if null schedule
+  <figure style="margin-bottom:4rem">
+    <span style="line-height:5rem;font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
+    <figcaption>
+      _{MsgNoScheduleYet}.
+$else
+  <nav.mdc-list data-mdc-auto-init=MDCList style="margin-bottom:4rem">
+    $forall Entity wid (Schedule _ day start end) <- schedule
+      <a.mdc-list-item href=@?{(AdminR $ AdmTimeSlotR eid wid,[("wid",pack $ show $ fromSqlKey wid)])}
+        :Just (pack $ show $ fromSqlKey wid) == mwid:.mdc-list-item--activated
+        .mdc-list-item--with-two-lines.mdc-list-item--with-trailing-icon
+        onclick="this.href = [new window.URL(this.href)].map(x => {x.searchParams.append('y',window.scrollY);return x.href;})[0]">
+        <span.mdc-list-item__ripple>
+        <span.mdc-list-item__content>
+          $with (d,s,e) <- (show day,show start,show end)
+            <div.mdc-list-item__primary-text>
+              <time.day datetime=#{d}>
+                #{d}
+            <div.mdc-list-item__secondary-text>
+              <time.time-of-day datetime="#{d}T#{s}">
+                #{s}
+              \ &mdash;
+              <time.time-of-day datetime="#{d}T#{e}">
+                #{e}
+        <span.mdc-list-item__end>
+          <i.material-symbols-outlined>arrow_forward_ios
+      <div.mdc-list-divider role=separator>
+
+
+<div.mdc-touch-target-wrapper #touchTargetWrapperAddSchedule>
+  <a.mdc-fab.mdc-fab--touch.mdc-fab--extended role=button href=@{AdminR $ AdmScheduleCreateR eid}
+    onclick="this.href = [new window.URL(this.href)].map(x => {x.searchParams.append('y',window.scrollY); return x.href;})[0]">
+    <span.mdc-fab__ripple>
+    <span.mdc-fab__focus-ring>
+    <i.mdc-fab__icon.material-symbols-outlined>add
+    <span.mdc-fab__label>_{MsgAddWorkingHours}
+    <span.mdc-fab__touch>

@@ -2,7 +2,7 @@
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
       <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
-        href=@?{(AdminR $ AdmEmplR eid,stati)}>
+        href=@?{(AdminR $ AdmScheduleR eid,stati)}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
@@ -28,7 +28,7 @@
           <span.mdc-button__ripple>
           <span.mdc-button__focus-ring>
           <span.mdc-button__label>_{MsgCancel}
-        <form method=post action=@?{(AdminR $ AdmScheduleDeleteR eid wid,[("o","schedule")])}>
+        <form method=post action=@?{(AdminR $ AdmScheduleDeleteR eid wid,stati)}>
           <button.mdc-button.mdc-button--raised type=submit>
             <span.mdc-button__ripple>
             <span.mdc-button__focus-ring>
@@ -37,16 +37,23 @@
 
 <main.mdc-top-app-bar--fixed-adjust>
   $maybe Entity _ (Schedule _ day start end) <- slot
-    <div.mdc-data-table>
-      <div.mdc-data-table__container>
-        <table.mdc-data-table__table>
-          <tbody.mdc-data-table__content>
-            <tr.mdc-data-table__row>
-              <th.mdc-data-table__cell scope=row>_{MsgDay}
-              <td.mdc-data-table__cell>#{show day}
-            <tr.mdc-data-table__row>
-              <th.mdc-data-table__cell scope=row>_{MsgStartTime}
-              <td.mdc-data-table__cell>#{show start}
-            <tr.mdc-data-table__row>
-              <th.mdc-data-table__cell scope=row>_{MsgEndTime}
-              <td.mdc-data-table__cell>#{show end}
+    $with (d,s,e) <- (show day,show start,show end)
+      <div.mdc-data-table>
+        <div.mdc-data-table__container>
+          <table.mdc-data-table__table>
+            <tbody.mdc-data-table__content>
+              <tr.mdc-data-table__row>
+                <th.mdc-data-table__cell scope=row>_{MsgDay}
+                <td.mdc-data-table__cell>
+                  <time.day datetime=#{d}>
+                    #{d}
+              <tr.mdc-data-table__row>
+                <th.mdc-data-table__cell scope=row>_{MsgStartTime}
+                <td.mdc-data-table__cell>
+                  <time.time-of-day datetime="#{d}T#{s}">
+                    #{s}
+              <tr.mdc-data-table__row>
+                <th.mdc-data-table__cell scope=row>_{MsgEndTime}
+                <td.mdc-data-table__cell>
+                  <time.time-of-day datetime="#{d}T#{e}">
+                    #{e}

@@ -123,10 +123,11 @@ import Admin.About
     ( getAdmAboutR, getAdmAboutCreateR, postAdmAboutR
     , getAdmAboutEditR, postAdmAboutEditR, postAdmAboutDeleteR
     )
+    
 import Admin.Staff
     ( getAdmStaffR, getAdmStaffCreateR, getAdmStaffPhotoR
-    , getAdmEmplR, postAdmEmplR, getAdmStaffEditR
-    , postAdmStaffR, postAdmStaffDeleteR, postAdmRolesR
+    , getAdmEmplR, postAdmEmplR, getAdmStaffEditR, getAdmScheduleR
+    , postAdmStaffR, postAdmStaffDeleteR, postAdmRolesR, getAdmRolesR
     , getAdmRoleR, postAdmRoleR, getAdmRoleCreateR, getAdmRoleEditR
     , postAdmRoleDeleteR, getAdmEmplUserR, postAdmEmplUserR
     , postAdmEmplUnregR, getAdmStaffSearchR, getAdmScheduleCreateR

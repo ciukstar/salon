@@ -1,3 +1,4 @@
+Details: Details
 EndTime: End time
 StartTime: Start time
 WorkingHours: Working hours

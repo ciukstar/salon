@@ -14,7 +14,7 @@ import Data.Text.Lazy (toStrict)
 import Data.Time.Calendar (addDays)
 import Data.Time.Clock (getCurrentTime, UTCTime (utctDay,utctDayTime), DiffTime)
 import Data.Time.Format (parseTimeM, defaultTimeLocale)
-import Data.Time.LocalTime (timeToTimeOfDay, utc)
+import Data.Time.LocalTime (TimeOfDay (TimeOfDay), timeToTimeOfDay, utc)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import ClassyPrelude.Yesod (ReaderT)
 import Yesod.Form.Fields (Textarea (Textarea))
@@ -58,6 +58,8 @@ import Model
       ( Hist, histBook, histLogtime, histDay, histTime, histAddr, histTzo
       , histStatus, histUser, histTz, histRoleName, histStaffName
       )
+    , Schedule
+      ( Schedule, scheduleStaff, scheduleWorkDay, scheduleWorkStart, scheduleWorkEnd)
     )
 import Data.FileEmbed (embedFile)
 import Demo.DemoPhotos
@@ -174,6 +176,24 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               , userPhotoPhoto = x
                               , userPhotoMime = "image/avif"
                               }
+
+    insert_ $ Schedule { scheduleStaff = e1
+                       , scheduleWorkDay = addDays (-1) today
+                       , scheduleWorkStart = TimeOfDay 9 0 0
+                       , scheduleWorkEnd = TimeOfDay 18 0 0
+                       }
+
+    insert_ $ Schedule { scheduleStaff = e1
+                       , scheduleWorkDay = today
+                       , scheduleWorkStart = TimeOfDay 9 0 0
+                       , scheduleWorkEnd = TimeOfDay 18 0 0
+                       }
+
+    insert_ $ Schedule { scheduleStaff = e1
+                       , scheduleWorkDay = addDays 1 today
+                       , scheduleWorkStart = TimeOfDay 9 0 0
+                       , scheduleWorkEnd = TimeOfDay 18 0 0
+                       }
 
     pass2 <- liftIO $ makePassword "marylopez" 17
     let user2 = User { userName = "marylopez"

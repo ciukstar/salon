@@ -1,0 +1,38 @@
+
+$maybe (Entity _ (Staff name status phone mobile email _), user) <- empl
+  <div.mdc-data-table>
+    <div.mdc-data-table__container>
+      <table.mdc-data-table__table>
+        <tbody.mdc-data-table__content>
+          <tr.mdc-data-table__row>
+            <th.mdc-data-table__cell scope=row>_{MsgName}
+            <td.mdc-data-table__cell>#{name}
+          <tr.mdc-data-table__row>
+            <th.mdc-data-table__cell scope=row>_{MsgStatus}
+            <td.mdc-data-table__cell>
+              $case status
+                $of EmplStatusAvailable
+                  _{MsgAvailable}
+                $of EmplStatusUnavailable
+                  _{MsgUnavailable}
+          <tr.mdc-data-table__row>
+            <th.mdc-data-table__cell scope=row>_{MsgPhone}
+            <td.mdc-data-table__cell>
+              $maybe phone <- phone
+                #{phone}
+          <tr.mdc-data-table__row>
+            <th.mdc-data-table__cell scope=row>_{MsgMobile}
+            <td.mdc-data-table__cell>
+              $maybe mobile <- mobile
+                #{mobile}
+          <tr.mdc-data-table__row>
+            <th.mdc-data-table__cell scope=row>_{MsgEmail}
+            <td.mdc-data-table__cell>
+              $maybe email <- email
+                #{email}
+
+          <tr.mdc-data-table__row>
+            <th.mdc-data-table__cell scope=row>_{MsgUser}
+            <td.mdc-data-table__cell>
+              $maybe Entity _ (User uname _ _ _ _ ) <- user
+                #{uname}

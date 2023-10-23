@@ -1,3 +1,4 @@
+Details: Детали
 EndTime: Время окончания
 StartTime: Время начала
 WorkingHours: Время работы
