@@ -112,6 +112,13 @@ Brand
   icoMime Text Maybe
   more Textarea Maybe
 
+BusinessHours
+  business BusinessId OnDeleteCascade
+  day Day
+  open TimeOfDay
+  close TimeOfDay
+  dayType DayType
+
 Business
   name Text
   fullName Textarea Maybe

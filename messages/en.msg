@@ -1,3 +1,10 @@
+Holiday: Holiday
+Weekend: Weekend
+Weekday: Weekday
+DayType: Day type
+BusinessHours: Business hours
+NoBusinessScheduleYet: No business schedule yet
+BusinessDays: Business days
 Details: Details
 EndTime: End time
 StartTime: Start time

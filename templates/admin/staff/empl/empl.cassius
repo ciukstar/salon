@@ -10,10 +10,10 @@ main
     background-color: var(--mdc-theme-background)
     .mdc-tab.mdc-tab--active
       .mdc-tab__text-label
-        color: var(--theme-accent)
+        color: var(--mdc-theme-on-primary)
       .mdc-tab-indicator.mdc-tab-indicator--active
         .mdc-tab-indicator__content--underline
-          border-color: var(--theme-accent)
+          border-color: var(--mdc-theme-on-primary)
 
 div.mdc-dialog
   div.mdc-dialog__actions

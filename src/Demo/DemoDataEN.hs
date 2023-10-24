@@ -60,7 +60,13 @@ import Model
       )
     , Schedule
       ( Schedule, scheduleStaff, scheduleWorkDay, scheduleWorkStart, scheduleWorkEnd)
+    , BusinessHours
+      ( BusinessHours, businessHoursBusiness, businessHoursDay, businessHoursOpen
+      , businessHoursClose, businessHoursDayType
+      )
+    , DayType (Weekday)
     )
+    
 import Data.FileEmbed (embedFile)
 import Demo.DemoPhotos
     ( man01, man02, man03, man04, man05, man06
@@ -83,7 +89,35 @@ populateEN = do
                             , businessEmail = Just "salon@mail.uk"
                             }
 
-    insert_ business
+    b <- insert business
+
+    insert_ $ BusinessHours { businessHoursBusiness = b
+                            , businessHoursDay = addDays (-1) today
+                            , businessHoursOpen = TimeOfDay 9 0 0
+                            , businessHoursClose = TimeOfDay 18 0 0
+                            , businessHoursDayType = Weekday
+                            }
+
+    insert_ $ BusinessHours { businessHoursBusiness = b
+                            , businessHoursDay = today
+                            , businessHoursOpen = TimeOfDay 9 0 0
+                            , businessHoursClose = TimeOfDay 18 0 0
+                            , businessHoursDayType = Weekday
+                            }
+
+    insert_ $ BusinessHours { businessHoursBusiness = b
+                            , businessHoursDay = addDays 1 today
+                            , businessHoursOpen = TimeOfDay 9 0 0
+                            , businessHoursClose = TimeOfDay 18 0 0
+                            , businessHoursDayType = Weekday
+                            }
+
+    insert_ $ BusinessHours { businessHoursBusiness = b
+                            , businessHoursDay = addDays 2 today
+                            , businessHoursOpen = TimeOfDay 9 0 0
+                            , businessHoursClose = TimeOfDay 18 0 0
+                            , businessHoursDayType = Weekday
+                            }
 
     insert_ $ Contents { contentsSection = "CONTACTS"
                        , contentsContent = Textarea $ toStrict $ renderHtml [shamlet|

@@ -1,9 +1,16 @@
+Holiday: Sărbătoare
+Weekend: Zi liberă
+Weekday: Zi de lucru
+DayType: Tipul zilei
+BusinessHours: Orele de lucru
+NoBusinessScheduleYet: Programul de lucru nu există încă 
+BusinessDays: Zile lucrătoare
 Details: Detalii
 EndTime: Ora de încheiere
 StartTime: Ora de începere
 WorkingHours: Orele de lucru
 NoScheduleYet: Nu există încă un program de lucru
-WorkSchedule: Programul de lucru
+WorkSchedule: Program de lucru
 AddWorkingHours: Adaugă orele de lucru
 Workload: Volumul de muncă
 NumberSign: №

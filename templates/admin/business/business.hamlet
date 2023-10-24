@@ -8,7 +8,7 @@
         <i.material-symbols-outlined>menu
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgBusiness}
 
-    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end>
       $maybe Entity bid _ <- business
         <button.mdc-top-app-bar__action-item.mdc-icon-button type=button title=_{MsgDel}
           onclick="document.getElementById('#{dlgBusinessDelete}').MDCDialog.open()">
@@ -46,8 +46,34 @@
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>login
-
+  <div.mdc-top-app-bar__row>
+    <div.mdc-tab-bar role=tablist data-mdc-auto-init=MDCTabBar>
+      <div.mdc-tab-scroller>
+        <div.mdc-tab-scroller__scroll-area>
+          <div.mdc-tab-scroller__scroll-content>
+            <a.mdc-tab href=@{AdminR BusinessR} role=tab tabindex=0
+              :curr == Just (AdminR BusinessR):.mdc-tab--active
+              :curr == Just (AdminR BusinessR):aria-selected=true>
+              <span.mdc-tab__content>
+                <span.mdc-tab__text-label>_{MsgDetails}
+              <span.mdc-tab-indicator :curr == Just (AdminR BusinessR):.mdc-tab-indicator--active>
+                <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
+              <span.mdc-tab__ripple>
+              <span.mdc-tab__focus-ring>
+            $maybe Entity bid _ <- business
+              <a.mdc-tab href=@{AdminR $ BusinessHoursR bid} role=tab tabindex=0
+                :curr == Just (AdminR $ BusinessHoursR bid):.mdc-tab--active
+                :curr == Just (AdminR $ BusinessHoursR bid):aria-selected=true>
+                <span.mdc-tab__content>
+                  <span.mdc-tab__text-label>_{MsgBusinessHours}
+                <span.mdc-tab-indicator :curr == Just (AdminR $ BusinessHoursR bid):.mdc-tab-indicator--active>
+                  <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
+                <span.mdc-tab__ripple>
+                <span.mdc-tab__focus-ring>
+    
+    
 <main.mdc-top-app-bar--fixed-adjust>
+  <div.mdc-top-app-bar--fixed-adjust>
 
   $forall (_,msg) <- filter (((==) "warn" . fst)) msgs
     <div.mdc-banner role=banner data-mdc-auto-init=MDCBanner>

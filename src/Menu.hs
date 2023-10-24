@@ -8,7 +8,7 @@ import Data.Text (pack)
 import Yesod.Core (liftHandler)
 import Yesod.Core.Handler (getCurrentRoute)
 import Yesod.Persist.Core (YesodPersist(runDB))
-import Database.Persist (Entity (Entity))
+import Database.Persist (Entity (Entity), entityKey)
 
 import Database.Esqueleto.Experimental
     ( selectOne, from, table )
@@ -23,7 +23,7 @@ import Foundation
     , StatsR (PopOffersR, WorkloadsR)
     , AdminR
       ( BrandR, UsersR, AdmContactsR, AdmAboutR, AdmStaffR, AdmServicesR
-      , BusinessR
+      , BusinessR, BusinessHoursR
       )
     , AppMessage
       ( MsgSourceCode, MsgDocumentation, MsgBrand, MsgContactUs, MsgAboutUs

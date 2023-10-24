@@ -1,0 +1,115 @@
+^{menu}
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <button.mdc-top-app-bar__navigation-icon.mdc-icon-button #btnMainMenu title=_{MsgNavigationMenu}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>menu
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgBusiness}
+
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end>
+      $maybe Entity uid _ <- user
+        <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{ProfileR} role=button title=_{MsgUserProfile}>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" alt=_{MsgPhoto}
+            onerror="this.src = '@{PhotoPlaceholderR}'">
+      $nothing
+        <a.mdc-top-app-bar__action-item.mdc-icon-button role=button href=@{AuthR LoginR} title=_{MsgLogin}>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>login
+          
+  <div.mdc-top-app-bar__row>
+    <div.mdc-tab-bar role=tablist data-mdc-auto-init=MDCTabBar>
+      <div.mdc-tab-scroller>
+        <div.mdc-tab-scroller__scroll-area>
+          <div.mdc-tab-scroller__scroll-content>
+            <a.mdc-tab href=@{AdminR BusinessR} role=tab tabindex=0
+              :curr == Just (AdminR BusinessR):.mdc-tab--active
+              :curr == Just (AdminR BusinessR):aria-selected=true>
+              <span.mdc-tab__content>
+                <span.mdc-tab__text-label>_{MsgDetails}
+              <span.mdc-tab-indicator :curr == Just (AdminR BusinessR):.mdc-tab-indicator--active>
+                <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
+              <span.mdc-tab__ripple>
+              <span.mdc-tab__focus-ring>
+            <a.mdc-tab href=@{AdminR $ BusinessHoursR bid} role=tab tabindex=0
+              :curr == Just (AdminR $ BusinessHoursR bid):.mdc-tab--active
+              :curr == Just (AdminR $ BusinessHoursR bid):aria-selected=true>
+              <span.mdc-tab__content>
+                <span.mdc-tab__text-label>_{MsgBusinessHours}
+              <span.mdc-tab-indicator :curr == Just (AdminR $ BusinessHoursR bid):.mdc-tab-indicator--active>
+                <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
+              <span.mdc-tab__ripple>
+              <span.mdc-tab__focus-ring>
+    
+    
+<main.mdc-top-app-bar--fixed-adjust>
+  <div.mdc-top-app-bar--fixed-adjust>
+
+  $forall (_,msg) <- filter (((==) "warn" . fst)) msgs
+    <div.mdc-banner role=banner data-mdc-auto-init=MDCBanner>
+      <div.mdc-banner__content role=alertdialog aria-live=assertive>
+        <div.mdc-banner__graphic-text-wrapper>
+          <div.mdc-banner__graphic role=img style="background-color:var(--mdc-theme-error)">
+            <i.mdc-banner__icon.material-symbols-outlined>warning
+          <div.mdc-banner__text>
+            #{msg}
+        <div.mdc-banner__actions>
+          <button.mdc-banner__primary-action.mdc-icon-button type=button>
+            <span.mdc-icon-button__ripple>
+            <i.material-symbols-outlined>close
+
+  $if null slots
+    <figure style="text-align:center">
+      <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
+      <figcaption>
+        _{MsgNoBusinessScheduleYet}.
+
+  $else
+    <nav.mdc-list data-mdc-auto-init=MDCList>
+      $forall Entity sid (BusinessHours _ day open close dtype) <- slots
+        $with (d,o,c) <- (show day,show open,show close)
+          <a.mdc-list-item.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon
+            href=@{AdminR $ BusinessTimeSlotR bid sid}>
+            <span.mdc-list-item__ripple>
+            <span.mdc-list-item__content>
+              <div.mdc-list-item__primary-text>
+                <time.day datetime=#{d}>
+                  #{d}
+              <div.mdc-list-item__secondary-text>
+                <time.time-of-day datetime="#{d}T#{o}">
+                  #{o}
+                \ &mdash;
+                <time.time-of-day datetime="#{d}T#{c}">
+                  #{c}
+              <div.mdc-list-item__secondary-text>
+                $case dtype
+                  $of Weekday
+                    _{MsgWeekday}
+                  $of Weekend
+                    _{MsgWeekend}
+                  $of Holiday
+                    _{MsgHoliday}
+            <span.mdc-list-item__end>
+              <i.material-symbols-outlined>arrow_forward_ios
+          <div.mdc-list-divider role=separator>
+      
+  <div.mdc-touch-target-wrapper ##{fabBusinessHoursCreate}>
+    <a.mdc-fab.mdc-fab--touch href=@{AdminR $ BusinessHoursCreateR bid}>
+      <span.mdc-fab__ripple>
+      <span.mdc-fab__focus-ring>
+      <span.mdc-fab__icon.material-symbols-outlined>add
+      <span.mdc-fab__touch>
+
+$forall (_,msg) <- filter (((==) "info") . fst) msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar style="bottom:5rem">
+    <div.mdc-snackbar__surface>
+      <div.mdc-snackbar__label>#{msg}
+      <div.mdc-snackbar__actions>
+        <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>close

@@ -1,3 +1,10 @@
+Holiday: Jour férié
+Weekend: Jour de congé
+Weekday: Jour de travail
+DayType: Type de jour
+BusinessHours: Heures de travail
+NoBusinessScheduleYet: L'horaire de travail n'existe pas encore
+BusinessDays: Jours ouvrables
 Details: Détails
 EndTime: Heure de fin
 StartTime: Heure de début

@@ -54,10 +54,15 @@
 
 /admin AdminR:
 
-    /business/delete           BusinessDeleteR POST
-    /business/#BusinessId/edit BusinessEditR   GET POST
-    /business/create           BusinessCreateR GET
-    /business                  BusinessR       GET POST
+    /form/business/#BusinessId/#BusinessHoursId         BusinessHoursEditR 	GET
+    /form/business/#BusinessId                   	BusinessHoursCreateR 	GET
+    /delete/business/#BusinessId/hours/#BusinessHoursId BusinessTimeSlotDeleteR POST
+    /business/#BusinessId/hours/#BusinessHoursId 	BusinessTimeSlotR    	GET POST
+    /business/#BusinessId/hours 		 	BusinessHoursR       	GET POST
+    /business/delete            		 	BusinessDeleteR      	POST
+    /business/#BusinessId/edit  		 	BusinessEditR        	GET POST
+    /business/create            		 	BusinessCreateR      	GET
+    /business                   		 	BusinessR            	GET POST
 
     /brand/#BrandId/ico    BrandIcoR    GET
     /brand/#BrandId/mark   BrandMarkR   GET

@@ -87,10 +87,11 @@ import Handler.Stats
     )
 
 import Admin.Business
-  ( getBusinessR, postBusinessR
-  , getBusinessCreateR
-  , getBusinessEditR, postBusinessEditR
-  , postBusinessDeleteR
+  ( getBusinessR, postBusinessR, getBusinessCreateR
+  , getBusinessEditR, postBusinessEditR, postBusinessDeleteR
+  , getBusinessHoursR, postBusinessHoursR, getBusinessHoursCreateR
+  , getBusinessTimeSlotR, postBusinessTimeSlotDeleteR, getBusinessHoursEditR
+  , postBusinessTimeSlotR
   )
 
 import Admin.Brand

@@ -18,10 +18,12 @@ module Model where
 
 import Data.Proxy (Proxy)
 import Data.Time
-    ( Day, TimeOfDay, LocalTime, DiffTime, diffTimeToPicoseconds
+    ( TimeOfDay, LocalTime, DiffTime, diffTimeToPicoseconds
     , picosecondsToDiffTime, localTimeToUTC, utc, utcToLocalTime
     , TimeZone (timeZoneMinutes), minutesToTimeZone
     )
+import Data.Time.Calendar (Year, Day, DayOfWeek)
+import Data.Time.Calendar.Month (Month (MkMonth))
 import Data.Time.Clock (UTCTime)
 import Prelude (Int, fromIntegral)
 import Data.Either (Either (Left, Right))
@@ -31,26 +33,31 @@ import Data.Maybe (Maybe (Just))
 import ClassyPrelude.Yesod
     ( Typeable , Text , ByteString , mkMigrate , mkPersist
     , persistFileWith , share , sqlSettings , Textarea
-    , derivePersistField, PersistValue (PersistUTCTime), SqlType (SqlInt64)
+    , derivePersistField, PersistValue (PersistUTCTime)
     )
-import Database.Persist.Quasi (lowerCaseSettings)
 import Data.Fixed (Centi)
 import Yesod.Auth.HashDB (HashDBUser (userPasswordHash, setPasswordHash))
 import Yesod.Core.Dispatch (PathMultiPiece, toPathMultiPiece, fromPathMultiPiece)
 import Data.Text (pack, unpack)
 import Text.Hamlet (Html)
 import Text.Show (Show, show)
-import Text.Read (Read, readMaybe)
+import Text.Read (Read, readMaybe, read)
 import Data.Eq (Eq)
 import Data.Functor ((<$>))
 import Control.Monad (mapM)
 import Database.Esqueleto.Experimental (SqlString)
 import Database.Persist.Class (PersistField, toPersistValue, fromPersistValue)
+import Database.Persist.Quasi (lowerCaseSettings)
 import Database.Persist.Types
-    ( PersistValue (PersistInt64)
-    , SqlType (SqlDayTime)
+    ( PersistValue (PersistInt64, PersistText)
+    , SqlType (SqlDayTime, SqlInt64, SqlInt32, SqlString)
     )
 import Database.Persist.Sql (fromSqlKey, toSqlKey, PersistFieldSql, sqlType)
+
+
+data DayType = Weekday | Weekend | Holiday
+    deriving (Show, Read, Eq)
+derivePersistField "DayType"
 
 
 data ServiceStatus = ServiceStatusPulished | ServiceStatusUnpublished
@@ -70,6 +77,48 @@ derivePersistField "BookStatus"
 data EmplStatus = EmplStatusAvailable | EmplStatusUnavailable
     deriving (Show, Read, Eq)
 derivePersistField "EmplStatus"
+
+
+instance PersistField DayOfWeek where
+    toPersistValue :: DayOfWeek -> PersistValue
+    toPersistValue x = PersistText (pack $ show x)
+
+    fromPersistValue :: PersistValue -> Either Text DayOfWeek
+    fromPersistValue (PersistText x) = Right (read $ unpack x)
+    fromPersistValue _ = Left "Invalid DayOfWeek"
+
+
+instance PersistFieldSql DayOfWeek where
+    sqlType :: Proxy DayOfWeek -> SqlType
+    sqlType _ = SqlString
+
+
+instance PersistField Month where
+    toPersistValue :: Month -> PersistValue
+    toPersistValue (MkMonth x) = PersistInt64 (fromIntegral x)
+
+    fromPersistValue :: PersistValue -> Either Text Month
+    fromPersistValue (PersistInt64 x) = Right (MkMonth (fromIntegral x))
+    fromPersistValue _ = Left "Invalid Year"
+
+
+instance PersistFieldSql Month where
+    sqlType :: Proxy Month -> SqlType
+    sqlType _ = SqlInt32
+
+
+instance PersistField Year where
+    toPersistValue :: Year -> PersistValue
+    toPersistValue x = PersistInt64 (fromIntegral x)
+
+    fromPersistValue :: PersistValue -> Either Text Year
+    fromPersistValue (PersistInt64 x) = Right (fromIntegral x)
+    fromPersistValue _ = Left "Invalid Year"
+
+
+instance PersistFieldSql Year where
+    sqlType :: Proxy Year -> SqlType
+    sqlType _ = SqlInt32
 
 
 instance PersistField TimeZone where
@@ -132,7 +181,7 @@ instance HashDBUser User where
     userPasswordHash = Just . userPassword
 
     setPasswordHash :: Text -> User -> User
-    setPasswordHash h u = u { userPassword = h } 
+    setPasswordHash h u = u { userPassword = h }
 
 instance SqlString Textarea
 

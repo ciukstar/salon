@@ -1,3 +1,10 @@
+Holiday: Праздник
+Weekend: Выходной
+Weekday: Будний день
+DayType: Тип дня
+BusinessHours: Рабочее время
+NoBusinessScheduleYet: График работы пока не существует
+BusinessDays: Рабочие дни
 Details: Детали
 EndTime: Время окончания
 StartTime: Время начала
