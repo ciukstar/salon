@@ -1,0 +1,62 @@
+
+header
+  .mdc-tab-bar
+    .mdc-tab
+      height: 64px
+    .mdc-tab.mdc-tab--active
+      .mdc-tab__text-label
+        color: var(--mdc-theme-on-primary)
+      .mdc-tab-indicator.mdc-tab-indicator--active
+        .mdc-tab-indicator__content--underline
+          border-color: var(--mdc-theme-on-primary)
+
+@media (max-width: 599px)
+  header .mdc-tab-bar .mdc-tab
+    height: 56px
+
+main
+  div.toolbar
+    margin: 0 0 1rem 1rem
+    a.mdc-segmented-button__segment
+      border-width: 1px
+      border-style: solid
+  div.calendar
+    display: flex
+    flex-direction: column
+    .mdc-data-table
+      table
+        caption > div
+          width: 100%
+          display: flex
+          flex-direction: row
+          justify-content: space-between
+          align-items: center
+          flex-wrap: nowrap
+        .mdc-data-table__header-cell
+          padding: 0
+          text-align: center
+        .mdc-data-table__cell
+          padding: 0 0.5rem
+          text-align: center
+          
+        .mdc-data-table__cell
+          vertical-align: text-top
+          > div.td-content
+            display: flex
+            flex-direction: column
+            time.day-of-month
+              font-weight: 500
+
+  ##{fabBusinessHoursCreate}
+    position: fixed
+    right: 1rem
+    bottom: 1rem
+
+
+@media (max-width: 599px)
+  main
+    div.calendar
+      .mdc-data-table
+        border-right: 0
+        border-left: 0
+        border-radius: 0

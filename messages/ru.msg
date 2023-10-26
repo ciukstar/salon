@@ -1,3 +1,12 @@
+Mon: пн
+Tue: вт 
+Wed: ср
+Thu: чт
+Fri: пт
+Sat: сб
+Sun: вс
+List: Список
+InvalidTimeInterval: Неверный интервал времени
 Holiday: Праздник
 Weekend: Выходной
 Weekday: Будний день

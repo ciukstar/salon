@@ -15,6 +15,11 @@ header
     height: 56px
 
 main
+  div.toolbar
+    margin-left: 1rem
+    a.mdc-segmented-button__segment
+      border-width: 1px
+      border-style: solid
   ##{fabBusinessHoursCreate}
     position: fixed
     right: 1rem

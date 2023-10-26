@@ -58,6 +58,7 @@
     /form/business/#BusinessId                   	BusinessHoursCreateR 	GET
     /delete/business/#BusinessId/hours/#BusinessHoursId BusinessTimeSlotDeleteR POST
     /business/#BusinessId/hours/#BusinessHoursId 	BusinessTimeSlotR    	GET POST
+    /business/#BusinessId/caledar 		 	BusinessCalendarR      	GET
     /business/#BusinessId/hours 		 	BusinessHoursR       	GET POST
     /business/delete            		 	BusinessDeleteR      	POST
     /business/#BusinessId/edit  		 	BusinessEditR        	GET POST

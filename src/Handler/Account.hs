@@ -41,7 +41,7 @@ import Yesod.Auth (Route (LoginR, LogoutR), maybeAuth)
 
 import Foundation
     ( Handler, Widget
-    , Route (AccountPhotoR, HomeR, AccountR, PhotoPlaceholderR, AuthR)
+    , Route (StaticR, AccountPhotoR, HomeR, AccountR, PhotoPlaceholderR, AuthR)
     , AppMessage
       ( MsgAccount, MsgCancel, MsgUsername, MsgPassword
       , MsgPhoto, MsgFullName, MsgEmail, MsgSignUp, MsgBack
@@ -67,6 +67,7 @@ import Database.Esqueleto.Experimental
     , (^.), (==.), val
     )
 
+import Settings.StaticFiles (img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg)
 
 getProfileR :: Handler Html
 getProfileR = do
@@ -166,7 +167,8 @@ document.getElementById(#{fvId photoV}).addEventListener('change',function (e) {
 
 <figure>
   <label for=#{fvId photoV}>
-    <img src=@{PhotoPlaceholderR} #imgPhoto height=64 style="clip-path:circle(50%)" alt=_{MsgPhoto}>
+    <img src=@{StaticR img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg} #imgPhoto alt=_{MsgPhoto}
+      height=64 style="clip-path:circle(50%)">
   <figcaption>_{MsgPhoto}
 ^{fvInput photoV}
 

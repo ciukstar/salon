@@ -5,6 +5,9 @@
 
   --theme-accent: #6200ee
   --theme-on-accent: #FFFFFF
+  
+  --theme-warn: #ffa500
+  --theme-on-warn: #FFFFFF
 
   --theme-text-small-hint-on-light: rgba(0,0,0,0.6)
 

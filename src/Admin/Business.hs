@@ -17,27 +17,40 @@ module Admin.Business
   , postBusinessTimeSlotDeleteR
   , getBusinessHoursEditR
   , postBusinessTimeSlotR
+  , getBusinessCalendarR
   ) where
 
 import Control.Applicative ((<|>))
 import Control.Monad (void)
+import Control.Monad.IO.Class (liftIO)
 import Data.Bifunctor (first)
 import Data.Maybe (isNothing, isJust)
-import Data.Text (Text, pack, unpack)
-import Data.Time.LocalTime (TimeZone(timeZoneMinutes), minutesToTimeZone)
+import Data.Text (Text, pack, unpack, intercalate)
+import Text.Shakespeare.I18N (renderMessage)
+import Data.Time.Clock (getCurrentTime, utctDay, nominalDiffTimeToSeconds)
+import Data.Time.Calendar
+    ( toGregorian, fromGregorian, weekFirstDay, addDays
+    , DayOfWeek (Monday)
+    )
+import Data.Time.LocalTime
+    ( TimeZone(timeZoneMinutes), minutesToTimeZone, TimeOfDay
+    , diffLocalTime, LocalTime (LocalTime)
+    )
+import Data.Time.Format (formatTime, defaultTimeLocale)
 import Text.Hamlet (Html)
 import Yesod.Auth (maybeAuth, Route (LoginR))
 import Yesod.Core
     ( Yesod(defaultLayout), getMessages, SomeMessage (SomeMessage)
     , redirect, addMessageI, newIdent
     )
-import Yesod.Core.Handler (setUltDestCurrent, getCurrentRoute)
-import Yesod.Core.Widget (setTitleI, whamlet)
+import Yesod.Core.Handler (setUltDestCurrent, getCurrentRoute, getYesod, languages)
+import Yesod.Core.Widget (setTitleI)
 import Yesod.Form.Fields
     ( textField, emailField, textareaField, intField, dayField, timeField
     , hiddenField
     )
-import Yesod.Form.Functions (generateFormPost, mreq, mopt, runFormPost, checkM)
+import Yesod.Form.Functions
+    ( generateFormPost, mreq, mopt, runFormPost, checkM, check )
 import Yesod.Form.Types
     ( MForm, FormResult (FormSuccess)
     , FieldView (fvLabel, fvInput, fvErrors, fvId)
@@ -61,7 +74,7 @@ import Foundation
     , AdminR
       ( BusinessR, BusinessCreateR, BusinessEditR, BusinessDeleteR
       , BusinessHoursR, BusinessHoursCreateR, BusinessTimeSlotR
-      , BusinessTimeSlotDeleteR, BusinessHoursEditR
+      , BusinessTimeSlotDeleteR, BusinessHoursEditR, BusinessCalendarR
       )
     , AppMessage
       ( MsgBusiness, MsgPhoto, MsgNoBusinessYet, MsgTheName, MsgAddress
@@ -71,7 +84,9 @@ import Foundation
       , MsgMinutes, MsgLogin, MsgUserProfile, MsgNavigationMenu, MsgDel, MsgEdit
       , MsgBack, MsgTheFullName, MsgCurrency, MsgBusinessDays, MsgDetails, MsgDay
       , MsgNoBusinessScheduleYet, MsgBusinessHours, MsgStartTime, MsgEndTime
-      , MsgDayType, MsgWeekday, MsgWeekend, MsgHoliday
+      , MsgDayType, MsgWeekday, MsgWeekend, MsgHoliday, MsgInvalidTimeInterval
+      , MsgList, MsgCalendar, MsgMon, MsgTue, MsgWed, MsgThu, MsgFri, MsgSat, MsgSun
+      , MsgSymbolHour, MsgSymbolMinute
       )
     )
 
@@ -96,6 +111,30 @@ import Model
 
 import Settings (widgetFile)
 import Menu (menu)
+
+
+getBusinessCalendarR :: BusinessId -> Handler Html
+getBusinessCalendarR bid = do
+    slots <- runDB $ select $ do
+        x <- from $ table @BusinessHours
+        orderBy [desc (x ^. BusinessHoursDay), asc (x ^. BusinessHoursOpen)]
+        return x
+    app <- getYesod
+    langs <- languages
+    user <- maybeAuth
+    curr <- getCurrentRoute
+    msgs <- getMessages
+    fabBusinessHoursCreate <- newIdent
+    
+    today <- utctDay <$> liftIO getCurrentTime
+    let (y,m,_) = toGregorian today
+    let start = weekFirstDay Monday (fromGregorian y m 1)
+    let end = addDays 41 start
+    let cal = [start .. end]
+
+    defaultLayout $ do
+        setTitleI MsgBusinessDays
+        $(widgetFile "/admin/business/calendar/calendar")
 
 
 postBusinessTimeSlotR :: BusinessId -> BusinessHoursId -> Handler Html
@@ -128,7 +167,7 @@ postBusinessTimeSlotDeleteR bid sid = do
     runDB $ P.delete sid
     addMessageI "info" MsgRecordDeleted
     redirect (AdminR $ BusinessHoursR bid)
-    
+
 
 getBusinessTimeSlotR :: BusinessId -> BusinessHoursId -> Handler Html
 getBusinessTimeSlotR bid sid = do
@@ -163,66 +202,30 @@ formHours bid slot extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (businessHoursOpen . entityVal <$> slot)
-    (endR,endV) <- mreq timeField FieldSettings
+
+    (endR,endV) <- mreq (afterTimeField startR) FieldSettings
         { fsLabel = SomeMessage MsgEndTime
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (businessHoursClose . entityVal <$> slot)
+
     (typeR,typeV) <- first (read . unpack <$>) <$> mreq hiddenField FieldSettings
         { fsLabel = SomeMessage MsgDayType
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
         } (pack . show <$> ((businessHoursDayType . entityVal <$> slot) <|> pure Weekday))
     let r = BusinessHours bid <$> dayR <*> startR <*> endR <*> typeR
-    let w = [whamlet|
-#{extra}
-$forall (v,icon) <- [(dayV,"event"),(startV,"schedule"),(endV,"schedule")]
-  <div.form-field>
-    <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--with-trailing-icon data-mdc-auto-init=MDCTextField
-      :isJust (fvErrors v):.mdc-text-field--invalid>
-      <span.mdc-text-field__ripple>
-      <span.mdc-floating-label>#{fvLabel v}
-      ^{fvInput v}
-      <button.mdc-icon-button.mdc-text-field__icon.mdc-text-field__icon--trailing.material-symbols-outlined
-        tabindex=0 role=button onclick="document.getElementById('#{fvId v}').showPicker()"
-        style="position:absolute;right:2px;background-color:inherit">
-        <span.mdc-icon-button__ripple>
-        <span.mdc-icon-button__focus-ring>
-        #{pack icon}
-      <div.mdc-line-ripple>
-    $maybe errs <- fvErrors v
-      <div.mdc-text-field-helper-line>
-        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
-          #{errs}
-
-<div.form-field>
-  <div.mdc-select.mdc-select--filled.mdc-select--required.mt-1 data-mdc-auto-init=MDCSelect
-    :isJust (fvErrors typeV):.mdc-select--invalid>
-    ^{fvInput typeV}
-    <div.mdc-select__anchor role=button aria-haspopup=listbox aria-expanded=false>
-      <span.mdc-select__ripple>
-      <span.mdc-floating-label>#{fvLabel typeV}
-      <span.mdc-select__selected-text-container>
-        <span.mdc-select__selected-text>
-      <span.mdc-select__dropdown-icon>
-        <svg.mdc-select__dropdown-icon-graphic viewBox="7 10 10 5" focusable=false>
-          <polygon.mdc-select__dropdown-icon-inactive stroke=none fill-rule=evenodd points="7 10 12 15 17 10">
-          <polygon.mdc-select__dropdown-icon-active stroke=none fill-rule=evenodd points="7 15 12 10 17 15">
-      <span.mdc-line-ripple>
-
-    <div.mdc-select__menu.mdc-menu.mdc-menu-surface.mdc-menu-surface--fullwidth>
-      $with options <- [(Weekday,MsgWeekday),(Weekend,MsgWeekend),(Holiday,MsgHoliday)]
-        <ul.mdc-deprecated-list role=listbox>
-          $forall (v,l) <- ((<$>) (first (pack . show)) options)
-            <li.mdc-deprecated-list-item role=option data-value=#{v} aria-selected=false>
-              <span.mdc-deprecated-list-item__ripple>
-              <span.mdc-deprecated-list-item__text>
-                _{l}
-  $maybe errs <- fvErrors typeV
-    <div.mdc-text-field-helper-line>
-      <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
-        #{errs}
-|]
+    let w = $(widgetFile "admin/business/hours/form")
     return (r,w)
+  where
+
+      afterTimeField :: FormResult TimeOfDay -> Field Handler TimeOfDay
+      afterTimeField startR = check (afterTime startR) timeField
+
+      afterTime :: FormResult TimeOfDay -> TimeOfDay -> Either AppMessage TimeOfDay
+      afterTime startR x = case startR of
+          FormSuccess s | x > s -> Right x
+                        | otherwise -> Left MsgInvalidTimeInterval
+          _ -> Right x
 
 
 postBusinessHoursR :: BusinessId -> Handler Html
@@ -237,7 +240,7 @@ postBusinessHoursR bid = do
           setTitleI MsgBusinessHours
           $(widgetFile "admin/business/hours/create")
 
-    
+
 getBusinessHoursR :: BusinessId -> Handler Html
 getBusinessHoursR bid = do
     slots <- runDB $ select $ do
@@ -252,7 +255,7 @@ getBusinessHoursR bid = do
         setTitleI MsgBusinessDays
         $(widgetFile "/admin/business/hours/hours")
 
-        
+
 postBusinessDeleteR :: Handler Html
 postBusinessDeleteR = do
     runDB $ delete $ void $ from (table @Business)
@@ -404,3 +407,7 @@ formBusiness business extra = do
               Nothing -> Left MsgBusinessAlreadyExists
               Just (Entity eid' _) | eid == eid' -> Right name
                                    | otherwise -> Left MsgBusinessAlreadyExists
+
+
+zero :: Integer
+zero = 0

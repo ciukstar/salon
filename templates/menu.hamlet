@@ -8,7 +8,7 @@
             #{name}
           $nothing
             _{MsgSalon}
-        <div #drawerTitleEnd title=_{MsgClose}>
+        <div #drawerTitleEnd title=_{MsgClose} tabindex=0>
           &#x2715;
   <div.mdc-drawer__content>
     <div.mdc-deprecated-list-group>

@@ -1,3 +1,12 @@
+Mon: Mon
+Tue: Tue 
+Wed: Wed
+Thu: Thu
+Fri: Fri
+Sat: Sat
+Sun: Sun
+List: List
+InvalidTimeInterval: Invalid time interval
 Holiday: Holiday
 Weekend: Weekend
 Weekday: Weekday

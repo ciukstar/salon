@@ -91,7 +91,7 @@ import Admin.Business
   , getBusinessEditR, postBusinessEditR, postBusinessDeleteR
   , getBusinessHoursR, postBusinessHoursR, getBusinessHoursCreateR
   , getBusinessTimeSlotR, postBusinessTimeSlotDeleteR, getBusinessHoursEditR
-  , postBusinessTimeSlotR
+  , postBusinessTimeSlotR, getBusinessCalendarR
   )
 
 import Admin.Brand

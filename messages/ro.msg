@@ -1,3 +1,12 @@
+Mon: lun.
+Tue: mar.
+Wed: mie.
+Thu: joi
+Fri: vin.
+Sat: sâm.
+Sun: dum.
+List: Listă
+InvalidTimeInterval: Interval de timp nevalid
 Holiday: Sărbătoare
 Weekend: Zi liberă
 Weekday: Zi de lucru

@@ -1,3 +1,12 @@
+Mon: lun.
+Tue: mar. 
+Wed: mer.
+Thu: jeu.
+Fri: ven.
+Sat: sam.
+Sun: dim.
+List: Liste
+InvalidTimeInterval: Intervalle de temps invalide
 Holiday: Jour férié
 Weekend: Jour de congé
 Weekday: Jour de travail

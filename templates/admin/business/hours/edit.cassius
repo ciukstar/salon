@@ -4,12 +4,6 @@ main
     margin: 0 1rem
     display: flex
     flex-direction: column
-    div.form-field
-      display: flex
-      flex-direction: column
-      margin-bottom: 1rem
-      .mdc-text-field .mdc-text-field__input
-        caret-color: var(--theme-accent)
     div.form-actions
       display: flex
       flex-direction: row

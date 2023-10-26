@@ -38,6 +38,7 @@ import Data.Bifunctor (Bifunctor(first))
 import Data.Text (Text, pack, unpack)
 import qualified Data.Text as T (toLower, words, concat)
 import Data.Text.Encoding (encodeUtf8)
+import Data.Time.LocalTime (TimeOfDay)
 import Text.Hamlet (Html)
 import Data.FileEmbed (embedFile)
 import Data.Maybe (isJust, fromMaybe)
@@ -65,7 +66,7 @@ import Yesod.Form.Fields
     , fileField, checkBoxField, dayField, timeField
     )
 import Yesod.Form.Functions
-    ( mreq, mopt, generateFormPost, runFormPost, checkM, checkBool )
+    ( mreq, mopt, generateFormPost, runFormPost, check, checkM, checkBool )
 import Settings (widgetFile)
 
 import Database.Persist
@@ -109,6 +110,7 @@ import Foundation
       , MsgUnregistered, MsgValueNotInRange, MsgAdministrator, MsgUnregister
       , MsgNavigationMenu, MsgUserProfile, MsgLogin, MsgUnregisterAsUser
       , MsgWorkingHours, MsgDay, MsgStartTime, MsgEndTime, MsgDetails
+      , MsgInvalidTimeInterval
       )
     )
 
@@ -243,7 +245,7 @@ formSchedule eid schedule extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (scheduleWorkStart . entityVal <$> schedule)
-    (endR,endV) <- mreq timeField FieldSettings
+    (endR,endV) <- mreq (afterTimeField startR) FieldSettings
         { fsLabel = SomeMessage MsgEndTime
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
@@ -271,6 +273,16 @@ $forall (v,icon) <- [(dayV,"event"),(startV,"schedule"),(endV,"schedule")]
           #{errs}
 |]
     return (r,w)
+  where
+
+      afterTimeField :: FormResult TimeOfDay -> Field Handler TimeOfDay
+      afterTimeField startR = check (afterTime startR) timeField
+
+      afterTime :: FormResult TimeOfDay -> TimeOfDay -> Either AppMessage TimeOfDay
+      afterTime startR x = case startR of
+          FormSuccess s | x > s -> Right x
+                        | otherwise -> Left MsgInvalidTimeInterval
+          _ -> Right x
 
 
 getAdmStaffSearchR :: Handler Html
