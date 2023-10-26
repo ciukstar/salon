@@ -207,6 +207,12 @@ instance Yesod App where
     isAuthorized (AdminR (BusinessTimeSlotR _ _)) _ = return Authorized
     isAuthorized (AdminR (BusinessTimeSlotDeleteR _ _)) _ = return Authorized
     isAuthorized (AdminR (BusinessHoursEditR _ _)) _ = return Authorized
+    isAuthorized (AdminR (BusinessCalendarSlotR _ _)) _ = return Authorized
+    isAuthorized (AdminR (BusinessCalendarSlotCreateR _ _)) _ = return Authorized
+    isAuthorized (AdminR (BusinessCalendarSlotEditR _ _ _)) _ = return Authorized
+    isAuthorized (AdminR (BusinessCalendarSlotDeleteR _ _)) _ = return Authorized
+            
+    
     
     isAuthorized ContactR _ = return Authorized
 

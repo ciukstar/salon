@@ -1,0 +1,70 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
+        href=@{AdminR $ BusinessCalendarR bid}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgBusinessHours}
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end.mdc-theme--text-primary-on-light>
+      <button.mdc-icon-button type=button title=_{MsgDel}
+        onclick="document.getElementById('#{dlgSlotDelete}').MDCDialog.open()">
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>delete
+      $maybe Entity _ (BusinessHours _ day _ _ _) <- slot
+        <a.mdc-icon-button href=@{AdminR $ BusinessCalendarSlotEditR bid day sid} role=button title=_{MsgEdit}>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>edit
+
+<div.mdc-dialog ##{dlgSlotDelete} data-mdc-auto-init=MDCDialog>
+  <div.mdc-dialog__container>
+    <div.mdc-dialog__surface role=alertdialog tabindex=-1>
+      <h4.mdc-dialog__title>_{MsgPleaseConfirm}
+      <div.mdc-dialog__content>_{MsgDeleteAreYouSure}
+      <div.mdc-dialog__actions>
+        <button.mdc-button type=button data-mdc-dialog-action=cancel>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgCancel}
+        <form method=post action=@{AdminR $ BusinessCalendarSlotDeleteR bid sid}>
+          <button.mdc-button.mdc-button--raised type=submit>
+            <span.mdc-button__ripple>
+            <span.mdc-button__focus-ring>
+            <span.mdc-button__label>_{MsgYesDelete}
+  <div.mdc-dialog__scrim>
+
+<main.mdc-top-app-bar--fixed-adjust>
+  $maybe Entity _ (BusinessHours _ day open close dtype) <- slot
+    $with (d,o,c) <- (show day,show open,show close)
+      <div.mdc-data-table>
+        <div.mdc-data-table__container>
+          <table.mdc-data-table__table>
+            <tbody.mdc-data-table__content>
+              <tr.mdc-data-table__row>
+                <th.mdc-data-table__cell scope=row>_{MsgDay}
+                <td.mdc-data-table__cell>
+                  <time.day datetime=#{d}>
+                    #{d}
+              <tr.mdc-data-table__row>
+                <th.mdc-data-table__cell scope=row>_{MsgStartTime}
+                <td.mdc-data-table__cell>
+                  <time.time-of-day datetime="#{d}T#{o}">
+                    #{o}
+              <tr.mdc-data-table__row>
+                <th.mdc-data-table__cell scope=row>_{MsgEndTime}
+                <td.mdc-data-table__cell>
+                  <time.time-of-day datetime="#{d}T#{c}">
+                    #{c}
+              <tr.mdc-data-table__row>
+                <th.mdc-data-table__cell scope=row>_{MsgDayType}
+                <td.mdc-data-table__cell>
+                  $case dtype
+                    $of Weekday
+                      _{MsgWeekday}
+                    $of Weekend
+                      _{MsgWeekend}
+                    $of Holiday
+                      _{MsgHoliday}

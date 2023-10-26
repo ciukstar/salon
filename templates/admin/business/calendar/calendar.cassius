@@ -20,43 +20,36 @@ main
     a.mdc-segmented-button__segment
       border-width: 1px
       border-style: solid
+
+  hr
+    background-color: var(--mdc-theme-text-hint-on-light)
+    height: 1px
+    border: 0
+
   div.calendar
-    display: flex
-    flex-direction: column
-    .mdc-data-table
-      table
-        caption > div
-          width: 100%
-          display: flex
-          flex-direction: row
-          justify-content: space-between
-          align-items: center
-          flex-wrap: nowrap
-        .mdc-data-table__header-cell
-          padding: 0
-          text-align: center
-        .mdc-data-table__cell
-          padding: 0 0.5rem
-          text-align: center
-          
-        .mdc-data-table__cell
-          vertical-align: text-top
-          > div.td-content
-            display: flex
-            flex-direction: column
-            time.day-of-month
-              font-weight: 500
-
-  ##{fabBusinessHoursCreate}
-    position: fixed
-    right: 1rem
-    bottom: 1rem
-
-
-@media (max-width: 599px)
-  main
-    div.calendar
-      .mdc-data-table
-        border-right: 0
-        border-left: 0
-        border-radius: 0
+    display: grid
+    gap: 0.5rem
+    padding: 0 0.5rem
+    grid-template-columns: repeat(7,1fr)
+    grid-template-rows: repeat(7,1fr)
+    grid-template-areas: "head head head head head head head"
+    div.header
+      grid-area: head
+      display: flex
+      flex-direction: row
+      justify-content: space-between
+      align-items: center
+    div.col-header
+      text-align: center
+      font-weight: 500
+    div.cell
+      text-align: center
+      vertical-align: text-top
+      > a
+        height: 100%
+        display: flex
+        flex-direction: column
+        justify-content: space-between
+        text-decoration: none
+        time.day-of-month
+          font-weight: 500

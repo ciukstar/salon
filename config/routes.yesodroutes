@@ -54,16 +54,20 @@
 
 /admin AdminR:
 
-    /form/business/#BusinessId/#BusinessHoursId         BusinessHoursEditR 	GET
-    /form/business/#BusinessId                   	BusinessHoursCreateR 	GET
-    /delete/business/#BusinessId/hours/#BusinessHoursId BusinessTimeSlotDeleteR POST
-    /business/#BusinessId/hours/#BusinessHoursId 	BusinessTimeSlotR    	GET POST
-    /business/#BusinessId/caledar 		 	BusinessCalendarR      	GET
-    /business/#BusinessId/hours 		 	BusinessHoursR       	GET POST
-    /business/delete            		 	BusinessDeleteR      	POST
-    /business/#BusinessId/edit  		 	BusinessEditR        	GET POST
-    /business/create            		 	BusinessCreateR      	GET
-    /business                   		 	BusinessR            	GET POST
+    /form/business/#BusinessId/calendar/slot/#Day/#BusinessHoursId BusinessCalendarSlotEditR   GET POST
+    /form/business/#BusinessId/calendar/slot/#Day             	   BusinessCalendarSlotCreateR GET POST
+    /delete/business/#BusinessId/caledar/#BusinessHoursId 	   BusinessCalendarSlotDeleteR POST
+    /business/#BusinessId/caledar/#BusinessHoursId 	      	   BusinessCalendarSlotR       GET
+    /form/business/#BusinessId/#BusinessHoursId               	   BusinessHoursEditR 	       GET
+    /form/business/#BusinessId                   	      	   BusinessHoursCreateR        GET
+    /delete/business/#BusinessId/hours/#BusinessHoursId       	   BusinessTimeSlotDeleteR     POST
+    /business/#BusinessId/hours/#BusinessHoursId 	      	   BusinessTimeSlotR           GET POST
+    /business/#BusinessId/caledar 		 	      	   BusinessCalendarR           GET
+    /business/#BusinessId/hours 		 	      	   BusinessHoursR              GET POST
+    /business/delete            		 	      	   BusinessDeleteR             POST
+    /business/#BusinessId/edit  		 	      	   BusinessEditR               GET POST
+    /business/create            		 	      	   BusinessCreateR             GET
+    /business                   		 	      	   BusinessR                   GET POST
 
     /brand/#BrandId/ico    BrandIcoR    GET
     /brand/#BrandId/mark   BrandMarkR   GET

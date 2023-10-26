@@ -46,6 +46,7 @@
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>login
+          
   <div.mdc-top-app-bar__row>
     <div.mdc-tab-bar role=tablist data-mdc-auto-init=MDCTabBar>
       <div.mdc-tab-scroller>
@@ -61,9 +62,9 @@
               <span.mdc-tab__ripple>
               <span.mdc-tab__focus-ring>
             $maybe Entity bid _ <- business
-              <a.mdc-tab href=@{AdminR $ BusinessHoursR bid} role=tab tabindex=0
-                :curr == Just (AdminR $ BusinessHoursR bid):.mdc-tab--active
-                :curr == Just (AdminR $ BusinessHoursR bid):aria-selected=true>
+              <a.mdc-tab href=@{AdminR $ BusinessCalendarR bid} role=tab tabindex=0
+                :curr == Just (AdminR $ BusinessCalendarR bid):.mdc-tab--active
+                :curr == Just (AdminR $ BusinessCalendarR bid):aria-selected=true>
                 <span.mdc-tab__content>
                   <span.mdc-tab__text-label>_{MsgBusinessHours}
                 <span.mdc-tab-indicator :curr == Just (AdminR $ BusinessHoursR bid):.mdc-tab-indicator--active>

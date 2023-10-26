@@ -9,6 +9,7 @@
   --theme-warn: #ffa500
   --theme-on-warn: #FFFFFF
 
+  --theme-text-hint-on-light: rgba(0,0,0,0.6)
   --theme-text-small-hint-on-light: rgba(0,0,0,0.6)
 
   --mdc-theme-primary: #FEDBD0

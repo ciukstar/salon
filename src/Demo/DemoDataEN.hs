@@ -64,7 +64,7 @@ import Model
       ( BusinessHours, businessHoursBusiness, businessHoursDay, businessHoursOpen
       , businessHoursClose, businessHoursDayType
       )
-    , DayType (Weekday)
+    , DayType (Weekday, Holiday)
     )
     
 import Data.FileEmbed (embedFile)
@@ -94,8 +94,8 @@ populateEN = do
     insert_ $ BusinessHours { businessHoursBusiness = b
                             , businessHoursDay = addDays (-1) today
                             , businessHoursOpen = TimeOfDay 9 0 0
-                            , businessHoursClose = TimeOfDay 18 0 0
-                            , businessHoursDayType = Weekday
+                            , businessHoursClose = TimeOfDay 17 45 0
+                            , businessHoursDayType = Holiday
                             }
 
     insert_ $ BusinessHours { businessHoursBusiness = b

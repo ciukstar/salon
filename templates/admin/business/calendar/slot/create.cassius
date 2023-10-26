@@ -1,0 +1,15 @@
+
+main
+  ##{timeDay}
+    display: block
+    margin: 1rem 0 1rem 2rem
+    color: var(--theme-text-hint-on-light)
+  form
+    margin: 0 1rem
+    display: flex
+    flex-direction: column
+    div.form-actions
+      display: flex
+      flex-direction: row
+      justify-content: flex-end
+      gap: 0.5rem

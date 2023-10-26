@@ -18,19 +18,26 @@ module Admin.Business
   , getBusinessHoursEditR
   , postBusinessTimeSlotR
   , getBusinessCalendarR
+  , getBusinessCalendarSlotR
+  , getBusinessCalendarSlotCreateR
+  , postBusinessCalendarSlotCreateR
+  , getBusinessCalendarSlotEditR
+  , postBusinessCalendarSlotEditR
+  , postBusinessCalendarSlotDeleteR
   ) where
 
 import Control.Applicative ((<|>))
 import Control.Monad (void)
 import Control.Monad.IO.Class (liftIO)
 import Data.Bifunctor (first)
+import Data.Fixed (mod') 
+import Data.List (find)
 import Data.Maybe (isNothing, isJust)
 import Data.Text (Text, pack, unpack, intercalate)
 import Text.Shakespeare.I18N (renderMessage)
-import Data.Time.Clock (getCurrentTime, utctDay, nominalDiffTimeToSeconds)
+import Data.Time.Clock (NominalDiffTime, getCurrentTime, utctDay, secondsToNominalDiffTime)
 import Data.Time.Calendar
-    ( toGregorian, fromGregorian, weekFirstDay, addDays
-    , DayOfWeek (Monday)
+    ( Day, DayOfWeek (Monday), toGregorian, fromGregorian, weekFirstDay, addDays
     )
 import Data.Time.LocalTime
     ( TimeZone(timeZoneMinutes), minutesToTimeZone, TimeOfDay
@@ -75,6 +82,9 @@ import Foundation
       ( BusinessR, BusinessCreateR, BusinessEditR, BusinessDeleteR
       , BusinessHoursR, BusinessHoursCreateR, BusinessTimeSlotR
       , BusinessTimeSlotDeleteR, BusinessHoursEditR, BusinessCalendarR
+      , BusinessCalendarSlotR, BusinessCalendarSlotCreateR
+      , BusinessCalendarSlotCreateR, BusinessCalendarSlotEditR
+      , BusinessCalendarSlotDeleteR
       )
     , AppMessage
       ( MsgBusiness, MsgPhoto, MsgNoBusinessYet, MsgTheName, MsgAddress
@@ -113,6 +123,112 @@ import Settings (widgetFile)
 import Menu (menu)
 
 
+postBusinessCalendarSlotDeleteR :: BusinessId -> BusinessHoursId -> Handler Html
+postBusinessCalendarSlotDeleteR bid sid = do
+    runDB $ P.delete sid
+    addMessageI "info" MsgRecordDeleted
+    redirect (AdminR $ BusinessCalendarR bid)
+    
+
+
+postBusinessCalendarSlotEditR :: BusinessId -> Day -> BusinessHoursId -> Handler Html
+postBusinessCalendarSlotEditR bid day sid = do
+    ((fr,fw),et) <- runFormPost $ formSlot bid day Nothing
+    case fr of
+      FormSuccess r -> do
+          runDB $ replace sid r
+          addMessageI "info" MsgRecordEdited
+          redirect (AdminR $ BusinessCalendarSlotR bid sid)
+      _ -> do
+          timeDay <- newIdent
+          defaultLayout $ do
+              setTitleI MsgBusinessHours
+              $(widgetFile "admin/business/calendar/slot/edit")
+
+
+getBusinessCalendarSlotEditR :: BusinessId -> Day -> BusinessHoursId -> Handler Html
+getBusinessCalendarSlotEditR bid day sid = do
+    slot <- runDB $ selectOne $ do
+        x <- from $ table @BusinessHours
+        where_ $ x ^. BusinessHoursId ==. val sid
+        return x
+    (fw,et) <- generateFormPost $ formSlot bid day slot
+    timeDay <- newIdent
+    defaultLayout $ do
+        setTitleI MsgBusinessHours
+        $(widgetFile "admin/business/calendar/slot/edit")
+
+
+postBusinessCalendarSlotCreateR :: BusinessId -> Day -> Handler Html
+postBusinessCalendarSlotCreateR bid day = do
+    ((fr,fw),et) <- runFormPost $ formSlot bid day Nothing
+    case fr of
+      FormSuccess r -> do
+          runDB $ insert_ r
+          addMessageI "info" MsgRecordAdded
+          redirect (AdminR $ BusinessCalendarR bid)
+      _ -> do
+          timeDay <- newIdent
+          defaultLayout $ do
+              setTitleI MsgBusinessHours
+              $(widgetFile "admin/business/calendar/slot/create")
+
+
+getBusinessCalendarSlotCreateR :: BusinessId -> Day -> Handler Html
+getBusinessCalendarSlotCreateR bid day = do
+    (fw,et) <- generateFormPost $ formSlot bid day Nothing
+    timeDay <- newIdent
+    defaultLayout $ do
+        setTitleI MsgBusinessHours
+        $(widgetFile "admin/business/calendar/slot/create")
+
+
+formSlot :: BusinessId -> Day -> Maybe (Entity BusinessHours)
+          -> Html -> MForm Handler (FormResult BusinessHours,Widget)
+formSlot bid day slot extra = do
+    (startR,startV) <- mreq timeField FieldSettings
+        { fsLabel = SomeMessage MsgStartTime
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (businessHoursOpen . entityVal <$> slot)
+
+    (endR,endV) <- mreq (afterTimeField startR) FieldSettings
+        { fsLabel = SomeMessage MsgEndTime
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (businessHoursClose . entityVal <$> slot)
+
+    (typeR,typeV) <- first (read . unpack <$>) <$> mreq hiddenField FieldSettings
+        { fsLabel = SomeMessage MsgDayType
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
+        } (pack . show <$> ((businessHoursDayType . entityVal <$> slot) <|> pure Weekday))
+    let r = BusinessHours bid day <$> startR <*> endR <*> typeR
+    let w = $(widgetFile "admin/business/calendar/slot/form")
+    return (r,w)
+  where
+
+      afterTimeField :: FormResult TimeOfDay -> Field Handler TimeOfDay
+      afterTimeField startR = check (afterTime startR) timeField
+
+      afterTime :: FormResult TimeOfDay -> TimeOfDay -> Either AppMessage TimeOfDay
+      afterTime startR x = case startR of
+          FormSuccess s | x > s -> Right x
+                        | otherwise -> Left MsgInvalidTimeInterval
+          _ -> Right x
+
+
+getBusinessCalendarSlotR :: BusinessId -> BusinessHoursId -> Handler Html
+getBusinessCalendarSlotR bid sid = do
+    slot <- runDB $ selectOne $ do
+        x <- from $ table @BusinessHours
+        where_ $ x ^. BusinessHoursId ==. val sid
+        return x
+    dlgSlotDelete <- newIdent
+    defaultLayout $ do
+        setTitleI MsgBusinessHours
+        $(widgetFile "admin/business/calendar/slot/slot")
+
+
 getBusinessCalendarR :: BusinessId -> Handler Html
 getBusinessCalendarR bid = do
     slots <- runDB $ select $ do
@@ -124,10 +240,9 @@ getBusinessCalendarR bid = do
     user <- maybeAuth
     curr <- getCurrentRoute
     msgs <- getMessages
-    fabBusinessHoursCreate <- newIdent
-    
-    today <- utctDay <$> liftIO getCurrentTime
-    let (y,m,_) = toGregorian today
+
+    pivot <- utctDay <$> liftIO getCurrentTime
+    let (y,m,_) = toGregorian pivot
     let start = weekFirstDay Monday (fromGregorian y m 1)
     let end = addDays 41 start
     let cal = [start .. end]
@@ -409,5 +524,6 @@ formBusiness business extra = do
                                    | otherwise -> Left MsgBusinessAlreadyExists
 
 
-zero :: Integer
-zero = 0
+fullHours :: NominalDiffTime -> NominalDiffTime -> Bool
+fullHours x y = mod' x y == 0
+
