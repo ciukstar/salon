@@ -13,7 +13,7 @@
         <div style="white-space:inherit;overflow:inherit;text-overflow:inherit;line-height:inherit">
           _{MsgChooseServicesToBook}
 
-    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end>
       <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{BookSearchR} role=button title=_{MsgSearch}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>

@@ -13,7 +13,7 @@
         <div style="white-space:inherit;overflow:inherit;text-overflow:inherit;line-height:inherit">
           _{MsgCustomerInformation}
 
-    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end role=toolbar>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end>
       $maybe Entity uid _ <- user
         <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{ProfileR} role=button>
           <span.mdc-icon-button__ripple>
@@ -60,7 +60,7 @@
             $maybe fname <- fname
               #{fname}
 
-      <div.hint style="margin:1rem;text-align:end;font-size:small;color:var(--mdc-theme-text-hint-on-background)">
+      <div.hint style="margin:1rem;text-align:end;font-size:small;color:var(--theme-text-small-hint-on-light)">
         <span>_{MsgNotYourAccount}?
         <a href=@{AuthR LoginR}>_{MsgLogin}
   $nothing
@@ -71,7 +71,8 @@
         <span.mdc-button__label>_{MsgSignUp}
       <div style="display:inherit;flex-direction:inherit">
         <div style="text-align:center;margin-bottom:0.3rem">
-          <small.hint style="color:var(--mdc-theme-text-hint-on-background)">_{MsgAlreadyHaveAnAccount}?
+          <small.hint style="color:var(--theme-text-small-hint-on-light)">
+            _{MsgAlreadyHaveAnAccount}?
         <a.mdc-button.mdc-button--outlined href=@{AuthR LoginR} role=button>
           <span.mdc-button__ripple>
           <span.mdc-button__focus-ring>

@@ -15,13 +15,14 @@ import qualified Control.Exception as Exception
 import Data.Aeson                  (Result (..), fromJSON, withObject, (.!=),
                                     (.:?))
 import Data.FileEmbed              (embedFile)
+import Data.Time.Clock (NominalDiffTime)
 import Data.Yaml                   (decodeEither')
 import Database.Persist.Sqlite     (SqliteConf)
 import Language.Haskell.TH.Syntax  (Exp, Name, Q)
 import Network.Wai.Handler.Warp    (HostPreference)
 import Yesod.Default.Config2       (applyEnvValue, configSettingsYml)
-import Yesod.Default.Util          (WidgetFileSettings, widgetFileNoReload,
-                                    widgetFileReload)
+import Yesod.Default.Util
+    ( WidgetFileSettings, widgetFileNoReload, widgetFileReload )
 
 -- | Runtime settings to configure this application. These settings can be
 -- loaded from various sources: defaults, environment variables, config files,
@@ -30,6 +31,7 @@ data AppSettings = AppSettings
     { appStaticDir              :: String
     -- ^ Directory from which to serve static files.
     , appDatabaseConf           :: SqliteConf
+    , appIdleTimeout            :: NominalDiffTime
     -- ^ Configuration settings for accessing the database.
     , appRoot                   :: Maybe Text
     -- ^ Base for all generated URLs. If @Nothing@, determined
@@ -73,6 +75,7 @@ instance FromJSON AppSettings where
 #endif
         appStaticDir              <- o .: "static-dir"
         appDatabaseConf           <- o .: "database"
+        appIdleTimeout            <- o .: "idle-timeout"
         appRoot                   <- o .:? "approot"
         appHost                   <- fromString <$> o .: "host"
         appPort                   <- o .: "port"

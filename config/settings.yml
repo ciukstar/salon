@@ -35,6 +35,7 @@ database:
   # See config/test-settings.yml for an override during tests
   database: "_env:YESOD_SQLITE_DATABASE:':memory:'"
   poolsize: "_env:YESOD_SQLITE_POOLSIZE:1"
+idle-timeout: "_env:YESOD_SQLITE_IDLETIMEOUT:1200"
 
 copyright: Insert copyright statement here
 #analytics: UA-YOURCODE

@@ -239,6 +239,7 @@ getBusinessCalendarR bid = do
     langs <- languages
     user <- maybeAuth
     curr <- getCurrentRoute
+    setUltDestCurrent
     msgs <- getMessages
 
     pivot <- utctDay <$> liftIO getCurrentTime
@@ -364,6 +365,7 @@ getBusinessHoursR bid = do
         return x
     user <- maybeAuth
     curr <- getCurrentRoute
+    setUltDestCurrent
     msgs <- getMessages
     fabBusinessHoursCreate <- newIdent
     defaultLayout $ do

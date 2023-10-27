@@ -21,30 +21,39 @@ module Application
     , db
     ) where
 
-import Control.Monad.Logger                 (liftLoc, runLoggingT)
-import Database.Persist.Sqlite              (createSqlitePool, runSqlPool,
-                                             sqlDatabase, sqlPoolSize)
+
 import Import
-import Language.Haskell.TH.Syntax           (qLocation)
-import Network.HTTP.Client.TLS              (getGlobalManager)
+import Control.Monad.Logger (liftLoc, runLoggingT)
+import Database.Persist.Sql
+    ( ConnectionPoolConfig
+      ( ConnectionPoolConfig, connectionPoolConfigStripes
+      , connectionPoolConfigIdleTimeout, connectionPoolConfigSize
+      )
+    )
+import Database.Persist.Sqlite
+    ( createSqlitePoolWithConfig, runSqlPool, sqlDatabase, sqlPoolSize )
+import Language.Haskell.TH.Syntax (qLocation)
+import Network.HTTP.Client.TLS (getGlobalManager)
 import Network.Wai (Middleware)
-import Network.Wai.Handler.Warp             (Settings, defaultSettings,
-                                             defaultShouldDisplayException,
-                                             runSettings, setHost,
-                                             setOnException, setPort, getPort)
-import Network.Wai.Middleware.RequestLogger (Destination (Logger),
-                                             IPAddrSource (..),
-                                             OutputFormat (..), destination,
-                                             mkRequestLogger, outputFormat)
-import Network.Wai.Middleware.Gzip (gzip, GzipSettings (gzipFiles), GzipFiles (GzipCompress))
-import System.Log.FastLogger                (defaultBufSize, newStdoutLoggerSet,
-                                             toLogStr)
+import Network.Wai.Handler.Warp
+    ( Settings, defaultSettings, defaultShouldDisplayException,runSettings
+    , setHost, setOnException, setPort, getPort
+    )
+import Network.Wai.Middleware.RequestLogger
+    ( Destination (Logger), IPAddrSource (..), OutputFormat (..), destination
+    , mkRequestLogger, outputFormat
+    )
+import Network.Wai.Middleware.Gzip
+    ( gzip, GzipSettings (gzipFiles), GzipFiles (GzipCompress) )
+import System.Environment.Blank (getEnv)
+import System.Log.FastLogger (defaultBufSize, newStdoutLoggerSet, toLogStr)
+
+
 
 import Demo.DemoDataFR (populateFR)
 import Demo.DemoDataRO (populateRO)
 import Demo.DemoDataRU (populateRU)
 import Demo.DemoDataEN (populateEN)
-import System.Environment.Blank (getEnv)
 
 -- Import all relevant handler modules here.
 -- Don't forget to add new modules to your cabal file!
@@ -61,7 +70,7 @@ import Handler.Appointments
     , postAppointmentR, postAppointmentCancelR, getAppointmentHistR
     , getAppointmentRescheduleR, postAppointmentApproveR
     )
-    
+
 import Handler.Contacts (getContactR)
 import Handler.Book
     ( getBookOffersR, postBookOffersR
@@ -122,12 +131,12 @@ import Admin.Contacts
     , postAdmContactsEditR
     , postAdmContactsDeleteR
     )
-    
+
 import Admin.About
     ( getAdmAboutR, getAdmAboutCreateR, postAdmAboutR
     , getAdmAboutEditR, postAdmAboutEditR, postAdmAboutDeleteR
     )
-    
+
 import Admin.Staff
     ( getAdmStaffR, getAdmStaffCreateR, getAdmStaffPhotoR
     , getAdmEmplR, postAdmEmplR, getAdmStaffEditR, getAdmScheduleR
@@ -164,6 +173,7 @@ import Handler.Common
     ( getFaviconR, getRobotsR, getPhotoPlaceholderR
     )
 
+
 -- This line actually creates our YesodDispatch instance. It is the second half
 -- of the call to mkYesodData which occurs in Foundation.hs. Please see the
 -- comments there for more details.
@@ -196,9 +206,12 @@ makeFoundation appSettings = do
         logFunc = messageLoggerSource tempFoundation appLogger
 
     -- Create the database connection pool
-    pool <- flip runLoggingT logFunc $ createSqlitePool
+    pool <- flip runLoggingT logFunc $ createSqlitePoolWithConfig
         (sqlDatabase $ appDatabaseConf appSettings)
-        (sqlPoolSize $ appDatabaseConf appSettings)
+        ConnectionPoolConfig { connectionPoolConfigStripes = 1
+                             , connectionPoolConfigIdleTimeout = appIdleTimeout appSettings
+                             , connectionPoolConfigSize = sqlPoolSize $ appDatabaseConf appSettings
+                             }
 
     -- Perform database migration using our application's logging settings.
     flip runLoggingT logFunc $ flip runSqlPool pool $ do
