@@ -1,32 +1,94 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
+        href=@?{(AdminR AdmStaffR,stati)}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgEmployee}
 
-$if null roles
-  <figure style="margin-bottom:4rem">
-    <span style="line-height:5rem;font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
-    <figcaption>
-      _{MsgNoRolesYet}.
-$else
-  <nav.mdc-list data-mdc-auto-init=MDCList>
-    $forall (Entity rid (Role _ _ name rating), Entity _ (Service sname _ _ _ _ _)) <- roles
-      <a.mdc-list-item href=@?{(AdminR $ AdmRoleR eid rid,[("rid",pack $ show $ fromSqlKey rid)])}
-        :Just (pack $ show $ fromSqlKey rid) == mrid:.mdc-list-item--activated
-        .mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon
-        onclick="this.href = [new window.URL(this.href)].map(x => {x.searchParams.append('y',window.scrollY);return x.href;})[0]">
-        <span.mdc-list-item__ripple>
-        <span.mdc-list-item__content>
-          <div.mdc-list-item__primary-text>#{name}
-          <div.mdc-list-item__secondary-text>#{sname}
-          <div.mdc-list-item__secondary-text>
-            $maybe rating <- rating
-              _{MsgRating}: #{show rating}
-        <span.mdc-list-item__end>
-          <i.material-symbols-outlined>arrow_forward_ios
-      <div.mdc-list-divider role=separator>
+<main.mdc-top-app-bar--fixed-adjust>
+  $maybe (Entity eid _, _) <- empl
+    <figure>
+      <img src=@{AdminR $ AdmStaffPhotoR eid} width=56 height=56 alt=_{MsgPhoto} loading=lazy>
 
-<div.mdc-touch-target-wrapper #touchTargetWrapperAddRole>
-  <a.mdc-fab.mdc-fab--touch.mdc-fab--extended role=button href=@{AdminR $ AdmRoleCreateR eid}
-    onclick="this.href = [new window.URL(this.href)].map(x => {x.searchParams.append('y',window.scrollY); return x.href;})[0]">
-    <span.mdc-fab__ripple>
-    <span.mdc-fab__focus-ring>
-    <i.mdc-fab__icon.material-symbols-outlined>add
-    <span.mdc-fab__label>_{MsgAddRole}
-    <span.mdc-fab__touch>
+    <div.mdc-tab-bar role=tablist data-mdc-auto-init=MDCTabBar>
+      <div.mdc-tab-scroller>
+        <div.mdc-tab-scroller__scroll-area>
+          <div.mdc-tab-scroller__scroll-content>
+            <a.mdc-tab href=@?{(AdminR $ AdmEmplR eid,stati)} role=tab tabindex=0
+              :curr == Just (AdminR $ AdmEmplR eid):.mdc-tab--active
+              :curr == Just (AdminR $ AdmEmplR eid):aria-selected=true>
+              <span.mdc-tab__content>
+                <span.mdc-tab__text-label>_{MsgDetails}
+              <span.mdc-tab-indicator
+                :curr == Just (AdminR $ AdmEmplR eid):.mdc-tab-indicator--active>
+                <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
+              <span.mdc-tab__ripple>
+              <span.mdc-tab__focus-ring>
+            <a.mdc-tab href=@?{(AdminR $ AdmRolesR eid,stati)} role=tab tabindex=0
+              :curr == Just (AdminR $ AdmRolesR eid):.mdc-tab--active
+              :curr == Just (AdminR $ AdmRolesR eid):aria-selected=true>
+              <span.mdc-tab__content>
+                <span.mdc-tab__text-label>_{MsgRoles}
+              <span.mdc-tab-indicator
+                :curr == Just (AdminR $ AdmRolesR eid):.mdc-tab-indicator--active>
+                <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
+              <span.mdc-tab__ripple>
+              <span.mdc-tab__focus-ring>
+            <a.mdc-tab href=@?{(AdminR $ AdmScheduleR eid,stati)} role=tab tabindex=0
+              :curr == Just (AdminR $ AdmScheduleR eid):.mdc-tab--active
+              :curr == Just (AdminR $ AdmScheduleR eid):aria-selected=true>
+              <span.mdc-tab__content>
+                <span.mdc-tab__text-label>_{MsgWorkSchedule}
+              <span.mdc-tab-indicator
+                :curr == Just (AdminR $ AdmScheduleR eid):.mdc-tab-indicator--active>
+                <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
+              <span.mdc-tab__ripple>
+              <span.mdc-tab__focus-ring>
+
+    
+    $if null roles
+      <figure style="margin-bottom:4rem">
+        <span style="line-height:5rem;font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
+        <figcaption>
+          _{MsgNoRolesYet}.
+    $else
+      <nav.mdc-list data-mdc-auto-init=MDCList>
+        $forall (Entity rid (Role _ _ name rating), Entity _ (Service sname _ _ _ _ _)) <- roles
+          <a.mdc-list-item href=@?{(AdminR $ AdmRoleR eid rid,[("rid",pack $ show $ fromSqlKey rid)])}
+            :Just (pack $ show $ fromSqlKey rid) == mrid:.mdc-list-item--activated
+            .mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon
+            onclick="this.href = [new window.URL(this.href)].map(x => {x.searchParams.append('y',window.scrollY);return x.href;})[0]">
+            <span.mdc-list-item__ripple>
+            <span.mdc-list-item__content>
+              <div.mdc-list-item__primary-text>#{name}
+              <div.mdc-list-item__secondary-text>#{sname}
+              <div.mdc-list-item__secondary-text>
+                $maybe rating <- rating
+                  _{MsgRating}: #{show rating}
+            <span.mdc-list-item__end>
+              <i.material-symbols-outlined>arrow_forward_ios
+          <div.mdc-list-divider role=separator>
+
+    <div.mdc-touch-target-wrapper ##{touchTargetWrapperAddRole}>
+      <a.mdc-fab.mdc-fab--touch.mdc-fab--extended role=button href=@{AdminR $ AdmRoleCreateR eid}
+        onclick="this.href = [new window.URL(this.href)].map(x => {x.searchParams.append('y',window.scrollY); return x.href;})[0]">
+        <span.mdc-fab__ripple>
+        <span.mdc-fab__focus-ring>
+        <i.mdc-fab__icon.material-symbols-outlined>add
+        <span.mdc-fab__label>_{MsgAddRole}
+        <span.mdc-fab__touch>
+
+
+$forall (_,msg) <- msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
+    <div.mdc-snackbar__surface role=status aria-relevant=additions>
+      <div.mdc-snackbar__label aria-atomic=false>
+        #{msg}
+      <div.mdc-snackbar__actions aria-atomic=true>
+        <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>close

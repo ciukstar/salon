@@ -1,9 +1,35 @@
 
-div.mdc-data-table
-  width: 100%
-  border-radius: 0
-  border-right: none
-  border-left: none
-  table tbody
-    tr th
-      font-weight: 500
+main
+  figure
+    text-align: center
+
+  .mdc-tab-bar
+    position: sticky
+    top: 64px
+    z-index: 1
+    background-color: var(--mdc-theme-background)
+    .mdc-tab.mdc-tab--active
+      .mdc-tab__text-label
+        color: var(--mdc-theme-on-primary)
+      .mdc-tab-indicator.mdc-tab-indicator--active
+        .mdc-tab-indicator__content--underline
+          border-color: var(--mdc-theme-on-primary)
+  div.mdc-data-table
+    width: 100%
+    border-radius: 0
+    border-right: none
+    border-left: none
+    table tbody
+      tr th
+        font-weight: 500
+
+div.mdc-dialog
+  div.mdc-dialog__actions
+    gap: 0.5rem
+
+aside.mdc-snackbar
+  bottom: 5rem
+
+@media (max-width: 599px)
+  main .mdc-tab-bar
+    top: 56px

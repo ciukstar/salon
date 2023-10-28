@@ -1,3 +1,4 @@
+Today: Astăzi
 Mon: lun.
 Tue: mar.
 Wed: mie.

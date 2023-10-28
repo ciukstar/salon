@@ -145,7 +145,9 @@ import Admin.Staff
     , postAdmRoleDeleteR, getAdmEmplUserR, postAdmEmplUserR
     , postAdmEmplUnregR, getAdmStaffSearchR, getAdmScheduleCreateR
     , postAdmScheduleR, getAdmTimeSlotR, postAdmTimeSlotR, getAdmScheduleEditR
-    , postAdmScheduleDeleteR
+    , postAdmScheduleDeleteR, getAdmEmplCalendarR, getEmplCalendarSlotR
+    , getEmplCalendarSlotEditR, postEmplCalendarSlotDeleteR
+    , getEmplCalendarSlotCreateR, postAdmEmplCalendarR, postEmplCalendarSlotR
     )
 import Admin.Services
     ( getAdmServicesR

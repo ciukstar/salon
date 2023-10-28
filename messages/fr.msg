@@ -1,3 +1,4 @@
+Today: Aujourd'hui
 Mon: lun.
 Tue: mar. 
 Wed: mer.

@@ -1,4 +1,6 @@
 
+window.scroll(0,#{fromMaybe "0" scrollY});
+
 Array.from(
   document.querySelectorAll('time.day[datetime]')
 ).forEach(function (x) {
@@ -22,3 +24,9 @@ Array.from(
     }
   );
 });
+
+window.mdc.autoInit();
+
+Array.from(
+  document.querySelectorAll('aside.mdc-snackbar')
+).map(x => x.MDCSnackbar).forEach(function (x) { x.open(); });

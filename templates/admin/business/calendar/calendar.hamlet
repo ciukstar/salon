@@ -35,12 +35,12 @@
                 <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
               <span.mdc-tab__ripple>
               <span.mdc-tab__focus-ring>
-            <a.mdc-tab href=@{AdminR $ BusinessCalendarR bid} role=tab tabindex=0
-              :curr == Just (AdminR $ BusinessCalendarR bid):.mdc-tab--active
-              :curr == Just (AdminR $ BusinessCalendarR bid):aria-selected=true>
+            <a.mdc-tab href=@{AdminR $ BusinessCalendarR bid pivot} role=tab tabindex=0
+              :curr == Just (AdminR $ BusinessCalendarR bid pivot):.mdc-tab--active
+              :curr == Just (AdminR $ BusinessCalendarR bid pivot):aria-selected=true>
               <span.mdc-tab__content>
                 <span.mdc-tab__text-label>_{MsgBusinessHours}
-              <span.mdc-tab-indicator :curr == Just (AdminR $ BusinessCalendarR bid):.mdc-tab-indicator--active>
+              <span.mdc-tab-indicator :curr == Just (AdminR $ BusinessCalendarR bid pivot):.mdc-tab-indicator--active>
                 <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
               <span.mdc-tab__ripple>
               <span.mdc-tab__focus-ring>
@@ -64,10 +64,10 @@
 
   <div.toolbar role=toolbar>
     <div.mdc-segmented-button.mdc-segmented-button--single-select role=radiogroup data-mdc-auto-init=MDCSegmentedButton>
-      <a.mdc-segmented-button__segment href=@{AdminR $ BusinessCalendarR bid} role=radio
-        :curr == Just (AdminR $ BusinessCalendarR bid):.mdc-segmented-button__segment--selected
-        :curr == Just (AdminR $ BusinessCalendarR bid):aria-checked=true
-        :curr /= Just (AdminR $ BusinessCalendarR bid):aria-checked=false>
+      <a.mdc-segmented-button__segment href=@{AdminR $ BusinessCalendarR bid pivot} role=radio
+        :curr == Just (AdminR $ BusinessCalendarR bid pivot):.mdc-segmented-button__segment--selected
+        :curr == Just (AdminR $ BusinessCalendarR bid pivot):aria-checked=true
+        :curr /= Just (AdminR $ BusinessCalendarR bid pivot):aria-checked=false>
         <div.mdc-segmented-button__ripple>
         <i.mdc-segmented-button__icon.material-symbols-outlined>calendar_month
         <div.mdc-segmented-button__label>_{MsgCalendar}
@@ -79,6 +79,11 @@
         <i.mdc-segmented-button__icon.material-symbols-outlined>list
         <div.mdc-segmented-button__label>_{MsgList}
 
+    <a.mdc-icon-button href=@{AdminR $ BusinessCalendarR bid today} role=button title=_{MsgToday}>
+      <span.mdc-icon-button__ripple>
+      <span.mdc-icon-button__focus-ring>
+      <i.material-symbols-outlined>today
+
   $if null slots
     <figure style="text-align:center">
       <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
@@ -89,14 +94,14 @@
     <hr>
     <div.calendar>
       <div.header>
-        <button.mdc-icon-button type=button>
+        <a.mdc-icon-button href=@{AdminR $ BusinessCalendarR bid prev} role=button>
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>arrow_back
         $with day <- show pivot
           <time.month-of-year datetime=#{day}>
             #{day}
-        <button.mdc-icon-button type=button>
+        <a.mdc-icon-button href=@{AdminR $ BusinessCalendarR bid next} role=button>
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>arrow_forward

@@ -1,0 +1,7 @@
+
+window.scroll(0,#{fromMaybe "0" scrollY});
+window.mdc.autoInit();
+
+Array.from(
+  document.querySelectorAll('aside.mdc-snackbar')
+).map(x => x.MDCSnackbar).forEach(function (x) { x.open(); });

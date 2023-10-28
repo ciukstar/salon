@@ -48,6 +48,7 @@ Schedule
   workDay Day
   workStart TimeOfDay
   workEnd TimeOfDay
+  
 
 Staff
   name Text

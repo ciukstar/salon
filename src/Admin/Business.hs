@@ -38,6 +38,7 @@ import Text.Shakespeare.I18N (renderMessage)
 import Data.Time.Clock (NominalDiffTime, getCurrentTime, utctDay, secondsToNominalDiffTime)
 import Data.Time.Calendar
     ( Day, DayOfWeek (Monday), toGregorian, fromGregorian, weekFirstDay, addDays
+    , addGregorianMonthsClip
     )
 import Data.Time.LocalTime
     ( TimeZone(timeZoneMinutes), minutesToTimeZone, TimeOfDay
@@ -96,7 +97,7 @@ import Foundation
       , MsgNoBusinessScheduleYet, MsgBusinessHours, MsgStartTime, MsgEndTime
       , MsgDayType, MsgWeekday, MsgWeekend, MsgHoliday, MsgInvalidTimeInterval
       , MsgList, MsgCalendar, MsgMon, MsgTue, MsgWed, MsgThu, MsgFri, MsgSat, MsgSun
-      , MsgSymbolHour, MsgSymbolMinute
+      , MsgSymbolHour, MsgSymbolMinute, MsgToday
       )
     )
 
@@ -123,11 +124,11 @@ import Settings (widgetFile)
 import Menu (menu)
 
 
-postBusinessCalendarSlotDeleteR :: BusinessId -> BusinessHoursId -> Handler Html
-postBusinessCalendarSlotDeleteR bid sid = do
+postBusinessCalendarSlotDeleteR :: BusinessId -> BusinessHoursId -> Day -> Handler Html
+postBusinessCalendarSlotDeleteR bid sid day = do
     runDB $ P.delete sid
     addMessageI "info" MsgRecordDeleted
-    redirect (AdminR $ BusinessCalendarR bid)
+    redirect (AdminR $ BusinessCalendarR bid day)
     
 
 
@@ -166,7 +167,7 @@ postBusinessCalendarSlotCreateR bid day = do
       FormSuccess r -> do
           runDB $ insert_ r
           addMessageI "info" MsgRecordAdded
-          redirect (AdminR $ BusinessCalendarR bid)
+          redirect (AdminR $ BusinessCalendarR bid day)
       _ -> do
           timeDay <- newIdent
           defaultLayout $ do
@@ -229,8 +230,8 @@ getBusinessCalendarSlotR bid sid = do
         $(widgetFile "admin/business/calendar/slot/slot")
 
 
-getBusinessCalendarR :: BusinessId -> Handler Html
-getBusinessCalendarR bid = do
+getBusinessCalendarR :: BusinessId -> Day -> Handler Html
+getBusinessCalendarR bid pivot = do
     slots <- runDB $ select $ do
         x <- from $ table @BusinessHours
         orderBy [desc (x ^. BusinessHoursDay), asc (x ^. BusinessHoursOpen)]
@@ -242,12 +243,13 @@ getBusinessCalendarR bid = do
     setUltDestCurrent
     msgs <- getMessages
 
-    pivot <- utctDay <$> liftIO getCurrentTime
     let (y,m,_) = toGregorian pivot
     let start = weekFirstDay Monday (fromGregorian y m 1)
     let end = addDays 41 start
     let cal = [start .. end]
-
+    let next = addGregorianMonthsClip 1 pivot
+    let prev = addGregorianMonthsClip (-1) pivot
+    today <- utctDay <$> liftIO getCurrentTime
     defaultLayout $ do
         setTitleI MsgBusinessDays
         $(widgetFile "/admin/business/calendar/calendar")
@@ -365,6 +367,7 @@ getBusinessHoursR bid = do
         return x
     user <- maybeAuth
     curr <- getCurrentRoute
+    today <- utctDay <$> liftIO getCurrentTime
     setUltDestCurrent
     msgs <- getMessages
     fabBusinessHoursCreate <- newIdent
@@ -445,6 +448,7 @@ postBusinessR = do
 getBusinessR :: Handler Html
 getBusinessR = do
     user <- maybeAuth
+    today <- utctDay <$> liftIO getCurrentTime
     business <- runDB $ selectOne $ from $ table @Business
     curr <- getCurrentRoute
     setUltDestCurrent

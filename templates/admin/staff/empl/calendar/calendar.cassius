@@ -1,20 +1,19 @@
 
-header
+main
+  figure
+    text-align: center
+
   .mdc-tab-bar
-    .mdc-tab
-      height: 64px
+    position: sticky
+    top: 64px
+    z-index: 1
+    background-color: var(--mdc-theme-background)
     .mdc-tab.mdc-tab--active
       .mdc-tab__text-label
         color: var(--mdc-theme-on-primary)
       .mdc-tab-indicator.mdc-tab-indicator--active
         .mdc-tab-indicator__content--underline
           border-color: var(--mdc-theme-on-primary)
-
-@media (max-width: 599px)
-  header .mdc-tab-bar .mdc-tab
-    height: 56px
-
-main
   div.toolbar
     padding: 1rem 1rem 0.5rem 1rem
     display: flex

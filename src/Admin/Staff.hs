@@ -31,14 +31,32 @@ module Admin.Staff
   , postAdmTimeSlotR
   , getAdmScheduleEditR
   , postAdmScheduleDeleteR
+  , getAdmEmplCalendarR
+  , getEmplCalendarSlotR
+  , getEmplCalendarSlotEditR
+  , postEmplCalendarSlotDeleteR
+  , getEmplCalendarSlotCreateR
+  , postAdmEmplCalendarR
+  , postEmplCalendarSlotR
   ) where
 
 import Control.Applicative ((<|>))
+import Control.Monad.IO.Class (liftIO)
 import Data.Bifunctor (Bifunctor(first))
-import Data.Text (Text, pack, unpack)
+import Data.Fixed (mod')
+import Data.Foldable (find)
+import Data.Text (Text, pack, unpack, intercalate)
 import qualified Data.Text as T (toLower, words, concat)
+import Text.Shakespeare.I18N (renderMessage)
 import Data.Text.Encoding (encodeUtf8)
-import Data.Time.LocalTime (TimeOfDay)
+import Data.Time.Calendar
+    ( Day, toGregorian, fromGregorian, weekFirstDay, addDays
+    , DayOfWeek (Monday), addGregorianMonthsClip
+    )
+import Data.Time.Clock
+    ( utctDay, getCurrentTime, secondsToNominalDiffTime, NominalDiffTime )
+import Data.Time.Format (formatTime, defaultTimeLocale)
+import Data.Time.LocalTime (TimeOfDay, LocalTime (LocalTime), diffLocalTime)
 import Text.Hamlet (Html)
 import Data.FileEmbed (embedFile)
 import Data.Maybe (isJust, fromMaybe)
@@ -51,7 +69,7 @@ import Yesod.Core
     , MonadTrans (lift), whamlet, getRequest
     , YesodRequest (reqGetParams), newIdent
     )
-import Yesod.Core.Handler (getCurrentRoute)
+import Yesod.Core.Handler (getCurrentRoute, getYesod, languages)
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Auth (maybeAuth, Route (LoginR))
 
@@ -88,20 +106,24 @@ import Database.Esqueleto.Experimental
 
 import Foundation
     ( Handler, Widget
-    , Route (AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR, StaticR, ProfileR)
+    , Route
+      ( AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR, StaticR, ProfileR
+      )
     , AdminR
       ( AdmStaffDeleteR, AdmStaffEditR, AdmEmplR, AdmStaffR, AdmRoleR
       , AdmStaffCreateR, AdmStaffPhotoR, AdmRolesR, AdmRoleCreateR
       , AdmRoleEditR, AdmRoleDeleteR, AdmEmplUserR, AdmEmplUnregR
       , AdmStaffSearchR, AdmScheduleR, AdmTimeSlotR, AdmScheduleCreateR
-      , AdmScheduleEditR, AdmScheduleDeleteR
+      , AdmScheduleEditR, AdmScheduleDeleteR, AdmEmplCalendarR
+      , EmplCalendarSlotR, EmplCalendarSlotEditR, EmplCalendarSlotDeleteR
+      , EmplCalendarSlotCreateR, AdmEmplCalendarR
       )
     , AppMessage
       ( MsgStaff, MsgPhoto, MsgCancel, MsgSave, MsgBack, MsgAddWorkingHours
       , MsgNoStaffYet, MsgEmployee, MsgRecordEdited, MsgName, MsgWorkSchedule
       , MsgRole, MsgPhone, MsgMobile, MsgEmail, MsgRecordAdded, MsgNoScheduleYet
-      , MsgEmployeeAlreadyInTheList, MsgDeleteAreYouSure, MsgYesDelete
-      , MsgPleaseConfirm, MsgRecordDeleted, MsgRoles, MsgNoRolesYet
+      , MsgEmployeeAlreadyInTheList, MsgDeleteAreYouSure, MsgYesDelete, MsgList
+      , MsgPleaseConfirm, MsgRecordDeleted, MsgRoles, MsgNoRolesYet, MsgCalendar
       , MsgAddRole, MsgService, MsgTheName, MsgRating, MsgRoleAlreadyInTheList
       , MsgRegisterAsUser, MsgUser, MsgRegistration, MsgUsername, MsgPassword
       , MsgFullName, MsgAlreadyExists, MsgUnregisterAreYouSure, MsgSearch
@@ -109,8 +131,9 @@ import Foundation
       , MsgUnavailable, MsgAvailable, MsgAccountStatus, MsgRegistered, MsgDel
       , MsgUnregistered, MsgValueNotInRange, MsgAdministrator, MsgUnregister
       , MsgNavigationMenu, MsgUserProfile, MsgLogin, MsgUnregisterAsUser
-      , MsgWorkingHours, MsgDay, MsgStartTime, MsgEndTime, MsgDetails
-      , MsgInvalidTimeInterval
+      , MsgWorkingHours, MsgDay, MsgStartTime, MsgEndTime, MsgDetails, MsgToday
+      , MsgInvalidTimeInterval, MsgMon, MsgTue, MsgWed, MsgThu, MsgFri, MsgSat
+      , MsgSun, MsgSymbolHour, MsgSymbolMinute, MsgInvalidFormData
       )
     )
 
@@ -132,16 +155,152 @@ import Model
     )
 
 import Settings.StaticFiles (img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg)
-
 import Menu (menu)
+
+
+postEmplCalendarSlotDeleteR :: StaffId -> ScheduleId -> Day -> Handler Html
+postEmplCalendarSlotDeleteR eid wid day = do
+    ((fr,_),_) <- runFormPost formSlotDelete
+    case fr of
+      FormSuccess () -> do
+          runDB $ delete wid
+          addMessageI "info" MsgRecordDeleted
+          redirect $ AdminR $ AdmEmplCalendarR eid day
+      _ -> do
+          addMessageI "warn" MsgInvalidFormData
+          redirect $ AdminR $ EmplCalendarSlotR eid wid day
+
+
+postEmplCalendarSlotR :: StaffId -> ScheduleId -> Day -> Handler Html
+postEmplCalendarSlotR eid wid day = do
+    ((fr,fw),et) <- runFormPost $ formSlot eid day Nothing
+    case fr of
+      FormSuccess r -> do
+          runDB $ replace wid r
+          addMessageI "info" MsgRecordEdited
+          redirect $ AdminR $ EmplCalendarSlotR eid wid day
+      _ -> defaultLayout $ do
+          timeDay <- newIdent
+          setTitleI MsgWorkingHours
+          $(widgetFile "admin/staff/empl/calendar/slot/edit")
+
+
+getEmplCalendarSlotEditR :: StaffId -> ScheduleId -> Day -> Handler Html
+getEmplCalendarSlotEditR eid wid day = do
+    slot <- runDB $ selectOne $ do
+        x <- from $ table @Schedule
+        where_ $ x ^. ScheduleId ==. val wid
+        return x
+    (fw,et) <- generateFormPost $ formSlot eid day slot
+    defaultLayout $ do
+        timeDay <- newIdent
+        setTitleI MsgWorkingHours
+        $(widgetFile "admin/staff/empl/calendar/slot/edit")
+
+
+postAdmEmplCalendarR :: StaffId -> Day -> Handler Html
+postAdmEmplCalendarR eid day = do
+    ((fr,fw),et) <- runFormPost $ formSlot eid day Nothing
+    case fr of
+      FormSuccess r -> do
+          runDB $ insert_ r
+          addMessageI "info" MsgRecordAdded
+          redirect $ AdminR $ AdmEmplCalendarR eid day
+      _ -> defaultLayout $ do
+          timeDay <- newIdent
+          setTitleI MsgWorkingHours
+          $(widgetFile "admin/staff/empl/calendar/slot/create")
+
+
+getEmplCalendarSlotCreateR :: StaffId -> Day -> Handler Html
+getEmplCalendarSlotCreateR eid day = do
+    (fw,et) <- generateFormPost $ formSlot eid day Nothing
+    defaultLayout $ do
+        timeDay <- newIdent
+        setTitleI MsgWorkingHours
+        $(widgetFile "admin/staff/empl/calendar/slot/create")
+
+
+formSlot :: StaffId -> Day -> Maybe (Entity Schedule)
+         -> Html -> MForm Handler (FormResult Schedule,Widget)
+formSlot eid day slot extra = do
+    (startR,startV) <- mreq timeField FieldSettings
+        { fsLabel = SomeMessage MsgStartTime
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (scheduleWorkStart . entityVal <$> slot)
+    (endR,endV) <- mreq (afterTimeField startR) FieldSettings
+        { fsLabel = SomeMessage MsgEndTime
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (scheduleWorkEnd . entityVal <$> slot)
+    let r = Schedule eid day <$> startR <*> endR
+    let w = [whamlet|
+#{extra}
+$forall (v,icon) <- [(startV,"schedule"),(endV,"schedule")]
+  <div.form-field>
+    <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--with-trailing-icon data-mdc-auto-init=MDCTextField
+      :isJust (fvErrors v):.mdc-text-field--invalid>
+      <span.mdc-text-field__ripple>
+      <span.mdc-floating-label>#{fvLabel v}
+      ^{fvInput v}
+      <button.mdc-icon-button.mdc-text-field__icon.mdc-text-field__icon--trailing.material-symbols-outlined
+        tabindex=0 role=button onclick="document.getElementById('#{fvId v}').showPicker()"
+        style="position:absolute;right:2px;background-color:inherit">
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        #{pack icon}
+      <div.mdc-line-ripple>
+    $maybe errs <- fvErrors v
+      <div.mdc-text-field-helper-line>
+        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+          #{errs}
+|]
+    return (r,w)
+  where
+
+      afterTimeField :: FormResult TimeOfDay -> Field Handler TimeOfDay
+      afterTimeField startR = check (afterTime startR) timeField
+
+      afterTime :: FormResult TimeOfDay -> TimeOfDay -> Either AppMessage TimeOfDay
+      afterTime startR x = case startR of
+          FormSuccess s | x > s -> Right x
+                        | otherwise -> Left MsgInvalidTimeInterval
+          _ -> Right x
+
+
+
+getEmplCalendarSlotR :: StaffId -> ScheduleId -> Day -> Handler Html
+getEmplCalendarSlotR eid wid day = do
+    slot <- runDB $ selectOne $ do
+        x <- from $ table @Schedule
+        where_ $ x ^. ScheduleId ==. val wid
+        return x
+    msgs <- getMessages
+    dlgSlotDelete <- newIdent
+    (fw,et) <- generateFormPost formSlotDelete
+    defaultLayout $ do
+        setTitleI MsgWorkingHours
+        $(widgetFile "admin/staff/empl/calendar/slot/slot")
+
+
+formSlotDelete :: Html -> MForm Handler (FormResult (),Widget)
+formSlotDelete extra = return (FormSuccess (),[whamlet|#{extra}|])
 
 
 postAdmScheduleDeleteR :: StaffId -> ScheduleId -> Handler Html
 postAdmScheduleDeleteR eid wid = do
     stati <- reqGetParams <$> getRequest
-    runDB $ delete wid
-    addMessageI "info" MsgRecordDeleted
-    redirect (AdminR $ AdmScheduleR eid,stati)
+    ((fr,_),_) <- runFormPost formSlotDelete
+    case fr of
+      FormSuccess () -> do
+          runDB $ delete wid
+          addMessageI "info" MsgRecordDeleted
+          redirect (AdminR $ AdmScheduleR eid,stati)
+      _ -> do
+          addMessageI "info" MsgInvalidFormData
+          redirect (AdminR $ AdmTimeSlotR eid wid)
+          
 
 
 postAdmTimeSlotR :: StaffId -> ScheduleId -> Handler Html
@@ -179,9 +338,42 @@ getAdmTimeSlotR eid wid = do
         where_ $ x ^. ScheduleId ==. val wid
         return x
     dlgSlotDelete <- newIdent
+    (fw,et) <- generateFormPost formSlotDelete
+    msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgWorkingHours
         $(widgetFile "admin/staff/schedule/schedule")
+
+
+getAdmEmplCalendarR :: StaffId -> Day -> Handler Html
+getAdmEmplCalendarR eid pivot = do
+    stati <- reqGetParams <$> getRequest
+    empl <- runDB $ selectOne $ do
+        x :& u <- from $ table @Staff
+            `leftJoin` table @User `on` (\(x :& u) -> x ^. StaffUser ==. u ?. UserId)
+        where_ $ x ^. StaffId ==. val eid
+        return (x,u)
+    slots <- runDB $ select $ do
+        x <- from $ table @Schedule
+        where_ $ x ^. ScheduleStaff ==. val eid
+        orderBy [desc (x ^. ScheduleWorkDay), desc (x ^. ScheduleWorkStart), desc (x ^. ScheduleWorkEnd)]
+        return x
+
+    app <- getYesod
+    langs <- languages
+    curr <- getCurrentRoute
+    msgs <- getMessages
+
+    let (y,m,_) = toGregorian pivot
+    let start = weekFirstDay Monday (fromGregorian y m 1)
+    let end = addDays 41 start
+    let cal = [start .. end]
+    let next = addGregorianMonthsClip 1 pivot
+    let prev = addGregorianMonthsClip (-1) pivot
+    today <- utctDay <$> liftIO getCurrentTime
+    defaultLayout $ do
+        setTitleI MsgEmployee
+        $(widgetFile "admin/staff/empl/calendar/calendar")
 
 
 getAdmScheduleR :: StaffId -> Handler Html
@@ -201,12 +393,11 @@ getAdmScheduleR eid = do
         return x
     curr <- getCurrentRoute
     msgs <- getMessages
-    dlgUnregEmplUser <- newIdent
-    dlgEmplDelete <- newIdent
-    let tab = $(widgetFile "admin/staff/empl/schedule")
+    touchTargetWrapperAddSchedule <- newIdent
+    today <- utctDay <$> liftIO getCurrentTime
     defaultLayout $ do
         setTitleI MsgEmployee
-        $(widgetFile "admin/staff/empl/empl")
+        $(widgetFile "admin/staff/empl/schedule")
 
 
 postAdmScheduleR :: StaffId -> Handler Html
@@ -560,12 +751,10 @@ getAdmRolesR eid = do
         return (x,s)
     curr <- getCurrentRoute
     msgs <- getMessages
-    dlgUnregEmplUser <- newIdent
-    dlgEmplDelete <- newIdent
-    let tab = $(widgetFile "admin/staff/empl/roles")
+    touchTargetWrapperAddRole <- newIdent
     defaultLayout $ do
         setTitleI MsgEmployee
-        $(widgetFile "admin/staff/empl/empl")
+        $(widgetFile "admin/staff/empl/roles")
 
 
 postAdmRolesR :: StaffId -> Handler Html
@@ -736,10 +925,9 @@ getAdmEmplR eid = do
     msgs <- getMessages
     dlgUnregEmplUser <- newIdent
     dlgEmplDelete <- newIdent
-    let tab = $(widgetFile "admin/staff/empl/details")
     defaultLayout $ do
         setTitleI MsgEmployee
-        $(widgetFile "admin/staff/empl/empl")
+        $(widgetFile "admin/staff/empl/details")
 
 
 getAdmStaffEditR :: StaffId -> Handler Html
@@ -883,3 +1071,7 @@ getAdmStaffPhotoR sid = do
 
 range :: Enum a => a -> a -> [a]
 range a b = [a..b]
+
+
+fullHours :: NominalDiffTime -> NominalDiffTime -> Bool
+fullHours x y = mod' x y == 0

@@ -37,13 +37,13 @@
                 <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
               <span.mdc-tab__ripple>
               <span.mdc-tab__focus-ring>
-            <a.mdc-tab href=@?{(AdminR $ AdmScheduleR eid,stati)} role=tab tabindex=0
-              :curr == Just (AdminR $ AdmScheduleR eid):.mdc-tab--active
-              :curr == Just (AdminR $ AdmScheduleR eid):aria-selected=true>
+            <a.mdc-tab href=@?{(AdminR $ AdmEmplCalendarR eid pivot,stati)} role=tab tabindex=0
+              :curr == Just (AdminR $ AdmEmplCalendarR eid pivot):.mdc-tab--active
+              :curr == Just (AdminR $ AdmEmplCalendarR eid pivot):aria-selected=true>
               <span.mdc-tab__content>
                 <span.mdc-tab__text-label>_{MsgWorkSchedule}
               <span.mdc-tab-indicator
-                :curr == Just (AdminR $ AdmScheduleR eid):.mdc-tab-indicator--active>
+                :curr == Just (AdminR $ AdmEmplCalendarR eid pivot):.mdc-tab-indicator--active>
                 <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
               <span.mdc-tab__ripple>
               <span.mdc-tab__focus-ring>
@@ -51,13 +51,15 @@
     
     <div.toolbar role=toolbar>
       <div.mdc-segmented-button.mdc-segmented-button--single-select role=radiogroup data-mdc-auto-init=MDCSegmentedButton>
-        <a.mdc-segmented-button__segment href=@{AdminR $ AdmEmplCalendarR eid today} role=radio
-          :curr == Just (AdminR $ AdmEmplCalendarR eid today):.mdc-segmented-button__segment--selected
-          :curr == Just (AdminR $ AdmEmplCalendarR eid today):aria-checked=true
-          :curr /= Just (AdminR $ AdmEmplCalendarR eid today):aria-checked=false>
+      
+        <a.mdc-segmented-button__segment href=@{AdminR $ AdmEmplCalendarR eid pivot} role=radio
+          :curr == Just (AdminR $ AdmEmplCalendarR eid pivot):.mdc-segmented-button__segment--selected
+          :curr == Just (AdminR $ AdmEmplCalendarR eid pivot):aria-checked=true
+          :curr /= Just (AdminR $ AdmEmplCalendarR eid pivot):aria-checked=false>
           <div.mdc-segmented-button__ripple>
           <i.mdc-segmented-button__icon.material-symbols-outlined>calendar_month
           <div.mdc-segmented-button__label>_{MsgCalendar}
+          
         <a.mdc-segmented-button__segment href=@{AdminR $ AdmScheduleR eid} role=radio
           :curr == Just (AdminR $ AdmScheduleR eid):.mdc-segmented-button__segment--selected
           :curr == Just (AdminR $ AdmScheduleR eid):aria-checked=true
@@ -66,44 +68,57 @@
           <i.mdc-segmented-button__icon.material-symbols-outlined>list
           <div.mdc-segmented-button__label>_{MsgList}
 
+      <a.mdc-icon-button href=@{AdminR $ AdmEmplCalendarR eid today} role=button title=_{MsgToday}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>today
 
-    $if null schedule
-      <figure style="margin-bottom:4rem">
-        <span style="line-height:5rem;font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
-        <figcaption>
-          _{MsgNoScheduleYet}.
-    $else
-      <nav.mdc-list data-mdc-auto-init=MDCList style="margin-bottom:4rem">
-        $forall Entity wid (Schedule _ day start end) <- schedule
-          <a.mdc-list-item href=@?{(AdminR $ AdmTimeSlotR eid wid,[("wid",pack $ show $ fromSqlKey wid)])}
-            :Just (pack $ show $ fromSqlKey wid) == mwid:.mdc-list-item--activated
-            .mdc-list-item--with-two-lines.mdc-list-item--with-trailing-icon
-            onclick="this.href = [new window.URL(this.href)].map(x => {x.searchParams.append('y',window.scrollY);return x.href;})[0]">
-            <span.mdc-list-item__ripple>
-            <span.mdc-list-item__content>
-              $with (d,s,e) <- (show day,show start,show end)
-                <div.mdc-list-item__primary-text>
-                  <time.day datetime=#{d}>
-                    #{d}
-                <div.mdc-list-item__secondary-text>
-                  <time.time-of-day datetime="#{d}T#{s}">
-                    #{s}
-                  \ &mdash;
-                  <time.time-of-day datetime="#{d}T#{e}">
-                    #{e}
-            <span.mdc-list-item__end>
-              <i.material-symbols-outlined>arrow_forward_ios
-          <div.mdc-list-divider role=separator>
-
-
-    <div.mdc-touch-target-wrapper ##{touchTargetWrapperAddSchedule}>
-      <a.mdc-fab.mdc-fab--touch.mdc-fab--extended role=button href=@{AdminR $ AdmScheduleCreateR eid}
-        onclick="this.href = [new window.URL(this.href)].map(x => {x.searchParams.append('y',window.scrollY); return x.href;})[0]">
-        <span.mdc-fab__ripple>
-        <span.mdc-fab__focus-ring>
-        <i.mdc-fab__icon.material-symbols-outlined>add
-        <span.mdc-fab__label>_{MsgAddWorkingHours}
-        <span.mdc-fab__touch>
+    
+    <hr>
+    <div.calendar>
+      <div.header>
+        <a.mdc-icon-button href=@{AdminR $ AdmEmplCalendarR eid prev} role=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>arrow_back
+        $with day <- show pivot
+          <time.month-of-year datetime=#{day}>
+            #{day}
+        <a.mdc-icon-button href=@{AdminR $ AdmEmplCalendarR eid next} role=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>arrow_forward
+      $forall wd <- [MsgMon,MsgTue,MsgWed,MsgThu,MsgFri,MsgSat,MsgSun]
+        <div.col-header>
+          _{wd}
+      $with (rmsg,(py,pm,_),hour) <- (renderMessage app langs,toGregorian pivot,secondsToNominalDiffTime 3600)
+        $with pat1 <- intercalate "" ["%H",rmsg MsgSymbolHour]
+          $with pat2 <- intercalate "" ["%H",rmsg MsgSymbolHour," %M",rmsg MsgSymbolMinute]
+            $forall i <- [0,1,2,4,5]
+              $forall day <- take 7 (drop (i * 7) cal)
+                <div.cell>
+                  $with (y,m,d) <- toGregorian day
+                    $if (==) (y,m) (py,pm)
+                      $with slot <- find ((((==) day) . scheduleWorkDay) . entityVal) slots
+                        $maybe Entity sid (Schedule _ sday start end) <- slot
+                          <a href=@{AdminR $ EmplCalendarSlotR eid sid day}>
+                            <time.day-of-month datetime=#{show day}>
+                              <small>#{d}
+                            $with dur <- diffLocalTime (LocalTime sday end) (LocalTime sday start)
+                              <small>
+                                $if fullHours dur hour
+                                  #{formatTime defaultTimeLocale (unpack pat1) dur}
+                                $else
+                                  #{formatTime defaultTimeLocale (unpack pat2) dur}
+                            <div style="border:2px solid var(--theme-accent)">
+                        $nothing
+                          <a href=@{AdminR $ EmplCalendarSlotCreateR eid day}>
+                            <time.day-of-month datetime=#{show day}>
+                              <small>#{d}
+                    $else
+                      <time.day-of-month datetime=#{show day} style="color:var(--theme-text-hint-on-light)">
+                        <small>#{d}
+    <hr>
 
 
 $forall (_,msg) <- msgs

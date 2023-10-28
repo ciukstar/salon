@@ -4,7 +4,9 @@
 
 module Menu (menu) where
 
+import Control.Monad.IO.Class (liftIO)
 import Data.Text (pack)
+import Data.Time.Clock (utctDay, getCurrentTime)
 import Yesod.Core (liftHandler)
 import Yesod.Core.Handler (getCurrentRoute)
 import Yesod.Persist.Core (YesodPersist(runDB))
@@ -44,5 +46,6 @@ import Settings (widgetFile)
 menu :: Widget
 menu = do
     business <- liftHandler $ runDB $ selectOne $ from $ table @Business
+    today <- utctDay <$> liftIO getCurrentTime
     curr <- getCurrentRoute
     $(widgetFile "menu")

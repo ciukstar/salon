@@ -2,19 +2,19 @@
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
       <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
-        href=@{AdminR $ BusinessCalendarR bid day}>
+        href=@{AdminR $ AdmEmplCalendarR eid day}>
         <span.mdc-button__ripple>
         <span.mdc-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
-      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgBusinessHours}
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgWorkingHours}
     
 <main.mdc-top-app-bar--fixed-adjust>
   $with d <- show day
-    <time datetime=#{d} ##{timeDay}>#{d}
-  <form method=post action=@{AdminR $ BusinessCalendarSlotCreateR bid day} enctype=#{et} novalidate>
+    <time ##{timeDay} datetime=#{d}>#{d}
+  <form method=post action=@{AdminR $ AdmEmplCalendarR eid day} enctype=#{et} novalidate>
     ^{fw}
     <div.form-actions>
-      <a.mdc-button href=@{AdminR $ BusinessCalendarR bid day} role=button>
+      <a.mdc-button href=@{AdminR $ AdmEmplCalendarR eid day} role=button>
         <span.mdc-button__ripple>
         <span.mdc-button__focus-ring>
         <span.mdc-button__label>_{MsgCancel}

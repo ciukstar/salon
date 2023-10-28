@@ -1,3 +1,4 @@
+Today: Сегодня
 Mon: пн
 Tue: вт 
 Wed: ср

@@ -2,7 +2,7 @@
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
       <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
-        href=@?{(AdminR $ AdmScheduleR eid,stati)}>
+        href=@{AdminR $ AdmEmplCalendarR eid day}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
@@ -13,7 +13,7 @@
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>delete
-      <a.mdc-icon-button href=@?{(AdminR $ AdmScheduleEditR eid wid,stati)} role=button title=_{MsgEdit}>
+      <a.mdc-icon-button href=@{AdminR $ EmplCalendarSlotEditR eid wid day} role=button title=_{MsgEdit}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>edit
@@ -28,7 +28,7 @@
           <span.mdc-button__ripple>
           <span.mdc-button__focus-ring>
           <span.mdc-button__label>_{MsgCancel}
-        <form method=post action=@?{(AdminR $ AdmScheduleDeleteR eid wid,stati)} enctype=#{et}>
+        <form method=post action=@{AdminR $ EmplCalendarSlotDeleteR eid wid day} enctype=#{et} novalidate>
           ^{fw}
           <button.mdc-button.mdc-button--raised type=submit>
             <span.mdc-button__ripple>
