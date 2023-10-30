@@ -54,8 +54,10 @@ import Data.Time.Calendar
     , DayOfWeek (Monday), addGregorianMonthsClip
     )
 import Data.Time.Clock
-    ( utctDay, getCurrentTime, secondsToNominalDiffTime, NominalDiffTime )
-import Data.Time.Format (formatTime, defaultTimeLocale)
+    ( utctDay, getCurrentTime, secondsToNominalDiffTime, NominalDiffTime
+    , DiffTime
+    )
+import Data.Time.Format (formatTime, defaultTimeLocale, parseTimeM)
 import Data.Time.LocalTime (TimeOfDay, LocalTime (LocalTime), diffLocalTime)
 import Text.Hamlet (Html)
 import Data.FileEmbed (embedFile)
@@ -77,14 +79,17 @@ import Yesod.Form.Types
     ( MForm, FormResult (FormSuccess), Field
     , FieldView (fvInput, fvLabel, fvId, fvErrors)
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsName, fsAttrs, fsId)
+    , Field (Field, fieldParse, fieldView, fieldEnctype), Enctype (UrlEncoded) 
     )
 import Yesod.Form.Input (runInputGet, iopt)
 import Yesod.Form.Fields
     ( textField, emailField, passwordField, intField, hiddenField
-    , fileField, checkBoxField, dayField, timeField
+    , fileField, checkBoxField, dayField, timeField, FormMessage (MsgInvalidEntry)
     )
 import Yesod.Form.Functions
-    ( mreq, mopt, generateFormPost, runFormPost, check, checkM, checkBool )
+    ( mreq, mopt, generateFormPost, runFormPost, check, checkM, checkBool
+    , parseHelper
+    )
 import Settings (widgetFile)
 
 import Database.Persist
@@ -134,6 +139,7 @@ import Foundation
       , MsgWorkingHours, MsgDay, MsgStartTime, MsgEndTime, MsgDetails, MsgToday
       , MsgInvalidTimeInterval, MsgMon, MsgTue, MsgWed, MsgThu, MsgFri, MsgSat
       , MsgSun, MsgSymbolHour, MsgSymbolMinute, MsgInvalidFormData
+      , MsgCompletionTime
       )
     )
 
@@ -148,7 +154,7 @@ import Model
       , ScheduleWorkDay, ScheduleWorkStart, ScheduleWorkEnd
       )
     , StaffPhoto (StaffPhoto, staffPhotoPhoto, staffPhotoMime, staffPhotoStaff)
-    , Role (Role, roleService, roleName, roleRating), RoleId
+    , Role (Role, roleService, roleName, roleDuration, roleRating), RoleId
     , ServiceId, Service (Service)
     , UserId,  User (User), UserPhoto (UserPhoto)
     , EmplStatus (EmplStatusUnavailable, EmplStatusAvailable)
@@ -367,7 +373,7 @@ getAdmEmplCalendarR eid pivot = do
     let (y,m,_) = toGregorian pivot
     let start = weekFirstDay Monday (fromGregorian y m 1)
     let end = addDays 41 start
-    let cal = [start .. end]
+    let page = [start .. end]
     let next = addGregorianMonthsClip 1 pivot
     let prev = addGregorianMonthsClip (-1) pivot
     today <- utctDay <$> liftIO getCurrentTime
@@ -727,6 +733,8 @@ getAdmRoleR sid rid = do
             `innerJoin` table @Service `on` (\(x :& _ :& s) -> x ^. RoleService ==. s ^. ServiceId)
         where_ $ x ^. RoleId ==. val rid
         return (x,e,s)
+    app <- getYesod
+    langs <- languages
     dlgRoleDelete <- newIdent
     defaultLayout $ do
         setTitleI MsgRole
@@ -793,12 +801,17 @@ formRole eid role extra = do
         , fsTooltip = Nothing , fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (roleName . entityVal <$> role)
+    (durationR,durationV) <- mreq hmField FieldSettings
+        { fsLabel = SomeMessage MsgCompletionTime
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (roleDuration . entityVal <$> role)
     (ratingR,ratingV) <- mopt ratingField FieldSettings
         { fsLabel = SomeMessage MsgRating
         , fsTooltip = Nothing , fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input"),("min","0"),("max","5")]
         } (roleRating . entityVal <$> role)
-    let r = Role eid <$> servR <*> nameR <*> ratingR
+    let r = Role eid <$> servR <*> nameR <*> durationR <*> ratingR
     let w = [whamlet|
 #{extra}
 <div.form-field>
@@ -828,7 +841,7 @@ formRole eid role extra = do
     <div.mdc-select-helper-text.mdc-select-helper-text--validation-msg>
       #{errs}
 
-$forall v <- [nameV,ratingV]
+$forall v <- [nameV,durationV,ratingV]
   <div.form-field>
     <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
       :isJust (fvErrors v):.mdc-text-field--invalid
@@ -846,6 +859,20 @@ $forall v <- [nameV,ratingV]
 |]
     return (r,w)
   where
+
+      hmField :: Field Handler DiffTime
+      hmField = Field
+          { fieldParse = parseHelper $ \s -> case parseTimeM True defaultTimeLocale "%H:%M" . unpack $ s of
+              Just x -> Right x
+              Nothing -> Left $ MsgInvalidEntry s
+          , fieldView = \theId name attrs v isReq -> [whamlet|
+$newline never
+<input type=text ##{theId} name=#{name} value=#{showVal v} *{attrs} :isReq:required>
+|]
+          , fieldEnctype = UrlEncoded
+          }
+
+      showVal = either id (pack . formatTime defaultTimeLocale "%H:%M")
 
       ratingField = checkBool (\x -> x >= 1 && x <= 5) (MsgValueNotInRange 1 5) intField
 

@@ -1,3 +1,4 @@
+CompletionTime: Время выполнения
 Today: Сегодня
 Mon: пн
 Tue: вт 

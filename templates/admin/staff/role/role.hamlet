@@ -36,7 +36,7 @@
   <div.mdc-dialog__scrim>
 
 <main.mdc-top-app-bar--fixed-adjust>
-  $maybe (Entity _ (Role _ _ name rating),Entity _ (Staff ename _ _ _ _ _),Entity _ (Service sname _ _ _ _ _)) <- role
+  $maybe (Entity _ (Role _ _ name dur rating),Entity _ (Staff ename _ _ _ _ _),Entity _ (Service sname _ _ _ _ _)) <- role
     <div.mdc-data-table>
       <div.mdc-data-table__container>
         <table.mdc-data-table__table>
@@ -50,6 +50,14 @@
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgService}
               <td.mdc-data-table__cell>#{sname}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgCompletionTime}
+              <td.mdc-data-table__cell>
+                $with h <- renderMessage app langs MsgSymbolHour
+                  $with m <- renderMessage app langs MsgSymbolMinute
+                    $with pat <- intercalate "" ["%H",h," %M",m]
+                      $with duration <- formatTime defaultTimeLocale (unpack pat) dur
+                        #{duration}
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgRating}
               <td.mdc-data-table__cell>

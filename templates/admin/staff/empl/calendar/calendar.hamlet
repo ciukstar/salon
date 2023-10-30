@@ -74,7 +74,6 @@
         <i.material-symbols-outlined>today
 
     
-    <hr>
     <div.calendar>
       <div.header>
         <a.mdc-icon-button href=@{AdminR $ AdmEmplCalendarR eid prev} role=button>
@@ -94,8 +93,8 @@
       $with (rmsg,(py,pm,_),hour) <- (renderMessage app langs,toGregorian pivot,secondsToNominalDiffTime 3600)
         $with pat1 <- intercalate "" ["%H",rmsg MsgSymbolHour]
           $with pat2 <- intercalate "" ["%H",rmsg MsgSymbolHour," %M",rmsg MsgSymbolMinute]
-            $forall i <- [0,1,2,4,5]
-              $forall day <- take 7 (drop (i * 7) cal)
+            $forall i <- [0,1,2,3,4,5]
+              $forall day <- take 7 (drop (i * 7) page)
                 <div.cell>
                   $with (y,m,d) <- toGregorian day
                     $if (==) (y,m) (py,pm)
@@ -118,7 +117,6 @@
                     $else
                       <time.day-of-month datetime=#{show day} style="color:var(--theme-text-hint-on-light)">
                         <small>#{d}
-    <hr>
 
 
 $forall (_,msg) <- msgs

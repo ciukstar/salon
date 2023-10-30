@@ -134,7 +134,7 @@
                   <img src=@{AdminR $ AdmStaffPhotoR eid} width=56 height=56 alt=_{MsgPhoto} loading=lazy>
                   <figcaption>
                     <small>#{ename}
-                    $maybe Entity _ (Role _ _ rname _) <- role
+                    $maybe Entity _ (Role _ _ rname _ _) <- role
                       <div>
                         <small>(#{rname})
               $nothing

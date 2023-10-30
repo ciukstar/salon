@@ -200,7 +200,7 @@ $if null sids
             _{MsgNoExpertsYet}.
       $else
         <nav.mdc-list data-mdc-auto-init=MDCList>
-          $forall (Entity rid (Role _ _ rname rating),Entity eid (Staff ename _ _ _ _ _)) <- experts
+          $forall (Entity rid (Role _ _ rname _ rating),Entity eid (Staff ename _ _ _ _ _)) <- experts
             <a.mdc-list-item.mdc-list-item--with-leading-image 
               href=@?{(AdminR $ AdmExpertR rid (Services sids),[("o","experts")])}
               .mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon

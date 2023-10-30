@@ -1,3 +1,4 @@
+CompletionTime: Délai de réalisation
 Today: Aujourd'hui
 Mon: lun.
 Tue: mar. 

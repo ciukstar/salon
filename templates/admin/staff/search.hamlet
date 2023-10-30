@@ -67,7 +67,7 @@
           <span.mdc-list-item__content>
             <div.mdc-list-item__primary-text>
               #{name}
-            $maybe Entity _ (Role _ _ name rating) <- role
+            $maybe Entity _ (Role _ _ name _ rating) <- role
               <div.mdc-list-item__secondary-text>
                 #{name}
               <div.mdc-list-item__secondary-text>

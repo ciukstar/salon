@@ -29,7 +29,7 @@
     <div.mdc-select-helper-text.mdc-select-helper-text--validation-msg>
       #{errs}
 
-$forall v <- [nameV,ratingV]
+$forall v <- [nameV,durationV,ratingV]
   <div.form-field>
     <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
       :isJust (fvErrors v):.mdc-text-field--invalid

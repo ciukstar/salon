@@ -5,6 +5,7 @@
 
 module Demo.DemoDataEN (populateEN) where
 
+import Data.Maybe (fromMaybe)
 import Text.Blaze.Html.Renderer.Text (renderHtml)
 import Text.Hamlet (shamlet)
 import Text.Shakespeare.Text (st)
@@ -43,7 +44,7 @@ import Model
       , staffUser
       )
     , StaffPhoto (StaffPhoto, staffPhotoPhoto, staffPhotoMime, staffPhotoStaff)
-    , Role (Role, roleStaff, roleService, roleName, roleRating)
+    , Role (Role, roleStaff, roleService, roleName, roleDuration, roleRating)
     , Contents (Contents, contentsSection, contentsContent)
     , BookStatus (BookStatusRequest)
     , Book
@@ -471,7 +472,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
-    s11 <- insert $ Service { serviceName = "Men haircuts"
+    let service11 = Service { serviceName = "Men haircuts"
                             , servicePublished = True
                             , serviceOverview = Just "Haircuts for men"
                             , serviceDescr = Just "Hair cuts for men"
@@ -479,9 +480,12 @@ We will continue to offer the latest treatments, the most innovative techniques 
                             , serviceGroup = Just s1
                             }
 
+    s11 <- insert service11
+
     let role111 =  Role { roleStaff = e1
                         , roleService = s11
                         , roleName = "Barber"
+                        , roleDuration = 3600
                         , roleRating = Just 5
                         } 
 
@@ -490,6 +494,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Role { roleStaff = e2
                    , roleService = s11
                    , roleName = "Barber"
+                   , roleDuration = 3600
                    , roleRating = Just 5
                    }
 
@@ -534,18 +539,21 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Role { roleStaff = e2
                    , roleService = s12
                    , roleName = "Hairdresser"
+                   , roleDuration = 5400
                    , roleRating = Just 3
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s12
                    , roleName = "Hairdresser"
+                   , roleDuration = 5400
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s12
                    , roleName = "Hairdresser"
+                   , roleDuration = 5400
                    , roleRating = Just 5
                    }
 
@@ -575,6 +583,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     let role1311 = Role { roleStaff = e11
                         , roleService = s13
                         , roleName = "Stylist"
+                        , roleDuration = 5580
                         , roleRating = Just 5
                         }
 
@@ -583,6 +592,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Role { roleStaff = e3
                    , roleService = s13
                    , roleName = "Assistant stylist"
+                   , roleDuration = 5580
                    , roleRating = Just 4
                    }
 
@@ -612,6 +622,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Role { roleStaff = e4
                    , roleService = s14
                    , roleName = "Junior stylist"
+                   , roleDuration = 4800
                    , roleRating = Just 5
                    }
 
@@ -671,18 +682,21 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Role { roleStaff = e3
                    , roleService = s1511
                    , roleName = "Stylist"
+                   , roleDuration = 5100
                    , roleRating = Just 4
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s1511
                    , roleName = "Stylist"
+                   , roleDuration = 5100
                    , roleRating = Just 4
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s1511
                    , roleName = "Stylist"
+                   , roleDuration = 5100
                    , roleRating = Just 4
                    }
 
@@ -705,18 +719,21 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Role { roleStaff = e4
                    , roleService = s1512
                    , roleName = "Stylist"
+                   , roleDuration = 4500
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s1512
                    , roleName = "Stylist"
+                   , roleDuration = 4500
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s1512
                    , roleName = "Stylist"
+                   , roleDuration = 4500
                    , roleRating = Just 5
                    }
 
@@ -768,18 +785,21 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Role { roleStaff = e8
                    , roleService = s1521
                    , roleName = "Colourist"
+                   , roleDuration = 3600
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s1521
                    , roleName = "Colourist"
+                   , roleDuration = 3600
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e10
                    , roleService = s1521
                    , roleName = "Colourist"
+                   , roleDuration = 3600
                    , roleRating = Just 5
                    }
 
@@ -809,12 +829,14 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Role { roleStaff = e10
                    , roleService = s1522
                    , roleName = "Colourist"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e11
                    , roleService = s1522
                    , roleName = "Colourist"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
@@ -844,18 +866,21 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Role { roleStaff = e9
                    , roleService = s1523
                    , roleName = "Colourist"
+                   , roleDuration = 60 * (1 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e10
                    , roleService = s1523
                    , roleName = "Colourist"
+                   , roleDuration = 60 * (1 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e11
                    , roleService = s1523
                    , roleName = "Colourist"
+                   , roleDuration = 60 * (1 * 60 + 45)
                    , roleRating = Just 5
                    }
 
@@ -900,18 +925,21 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Role { roleStaff = e1
                    , roleService = s1531
                    , roleName = "Stylist"
+                   , roleDuration = 60 * (0 * 60 + 35)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e2
                    , roleService = s1531
                    , roleName = "Stylist"
+                   , roleDuration = 60 * (0 * 60 + 35) 
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s1531
                    , roleName = "Stylist"
+                   , roleDuration = 60 * (0 * 60 + 35)
                    , roleRating = Just 5
                    }
 
@@ -941,18 +969,21 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Role { roleStaff = e3
                    , roleService = s1532
                    , roleName = "Stylist"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s1532
                    , roleName = "Stylist"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s1532
                    , roleName = "Stylist"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 5
                    }
 
@@ -982,18 +1013,21 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Role { roleStaff = e5
                    , roleService = s1533
                    , roleName = "Stylist"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s1533
                    , roleName = "Stylist"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s1533
                    , roleName = "Stylist"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 5
                    }
 
@@ -1051,18 +1085,21 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
     insert_ $ Role { roleStaff = e8
                    , roleService = s21
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s21
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e10
                    , roleService = s21
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
@@ -1100,18 +1137,21 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
     insert_ $ Role { roleStaff = e6
                    , roleService = s22
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s22
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e8
                    , roleService = s22
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1149,24 +1189,28 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
     insert_ $ Role { roleStaff = e3
                    , roleService = s23
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (0 * 60 + 90)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s23
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (0 * 60 + 90)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s23
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (0 * 60 + 90)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s23
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (0 * 60 + 90)
                    , roleRating = Just 5
                    }
 
@@ -1204,18 +1248,21 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
     insert_ $ Role { roleStaff = e1
                    , roleService = s24
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (2 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e2
                    , roleService = s24
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (2 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s24
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (2 * 60 + 0)
                    , roleRating = Just 5
                    }
 
@@ -1253,24 +1300,28 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
     insert_ $ Role { roleStaff = e9
                    , roleService = s25
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e10
                    , roleService = s25
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e11
                    , roleService = s25
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e1
                    , roleService = s25
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
@@ -1331,12 +1382,14 @@ As a result, the milk peel is a powerful skin resurfacing process with substanti
     insert_ $ Role { roleStaff = e8
                    , roleService = s31
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s31
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1379,18 +1432,21 @@ The Scientia Derma Roller is an incredible device which naturally increases the 
     insert_ $ Role { roleStaff = e7
                    , roleService = s32
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e8
                    , roleService = s32
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s32
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1424,18 +1480,21 @@ A painless procedure, it helps to remove acne scars, enlarged pores, facial line
     insert_ $ Role { roleStaff = e5
                    , roleService = s33
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s33
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s33
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 
@@ -1475,18 +1534,21 @@ A painless procedure, it helps to remove acne scars, enlarged pores, facial line
     insert_ $ Role { roleStaff = e3
                    , roleService = s34
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (2 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s34
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (2 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s34
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (2 * 60 + 0)
                    , roleRating = Just 5
                    }
 
@@ -1553,12 +1615,14 @@ This treatment reduces the appearance of lines and wrinkles Evens out skin tone 
     insert_ $ Role { roleStaff = e2
                    , roleService = s41
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s41
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
@@ -1607,12 +1671,14 @@ After just one treatment, expression lines appear relaxed Lines and wrinkles are
     insert_ $ Role { roleStaff = e1
                    , roleService = s42
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (2 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e2
                    , roleService = s42
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (2 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1664,12 +1730,14 @@ This treatment improves the overall complexion by minimizing the appearance of f
     insert_ $ Role { roleStaff = e10
                    , roleService = s43
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (2 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e1
                    , roleService = s43
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (2 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1703,6 +1771,7 @@ It promotes collagen production, tightens and firms skin tissues, hydrates & rej
     insert_ $ Role { roleStaff = e9
                    , roleService = s44
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (0 * 60 + 15)
                    , roleRating = Just 5
                    }
 
@@ -1760,18 +1829,21 @@ Similar to a regular hair perm, try to avoid wetting your eyelashes for 4 hours 
     insert_ $ Role { roleStaff = e7
                    , roleService = s51
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e8
                    , roleService = s51
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s51
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
@@ -1813,12 +1885,14 @@ Similar to a regular hair perm, try to avoid wetting your eyelashes for 4 hours 
     insert_ $ Role { roleStaff = e6
                    , roleService = s52
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s52
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1848,18 +1922,21 @@ Similar to a regular hair perm, try to avoid wetting your eyelashes for 4 hours 
     insert_ $ Role { roleStaff = e4
                    , roleService = s53
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s53
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s53
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1896,12 +1973,14 @@ Treatments can be performed every week or every other week, depending upon skin 
     insert_ $ Role { roleStaff = e3
                    , roleService = s54
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s54
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1931,12 +2010,14 @@ Treatments can be performed every week or every other week, depending upon skin 
     insert_ $ Role { roleStaff = e2
                    , roleService = s55
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (1 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s55
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (1 * 60 + 45)
                    , roleRating = Just 5
                    }
 
@@ -1985,18 +2066,21 @@ Swedish massage therapy is the modality that comes to mind when most people thin
     insert_ $ Role { roleStaff = e9
                    , roleService = s61
                    , roleName = "Massage therapist"
+                   , roleDuration = 60 * (1 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e1
                    , roleService = s61
                    , roleName = "Massage therapist"
+                   , roleDuration = 60 * (1 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e2
                    , roleService = s61
                    , roleName = "Massage therapist"
+                   , roleDuration = 60 * (1 * 60 + 0)
                    , roleRating = Just 5
                    }
 
@@ -2030,6 +2114,7 @@ Chair massage is a 15-20 minute massage focused on the back, shoulders, neck, ar
     insert_ $ Role { roleStaff = e10
                    , roleService = s62
                    , roleName = "Massage therapist"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
@@ -2074,12 +2159,14 @@ During a foot massage, various techniques may be used, including kneading, strok
     insert_ $ Role { roleStaff = e1
                    , roleService = s63
                    , roleName = "Massage therapist"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e11
                    , roleService = s63
                    , roleName = "Massage therapist"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -2128,18 +2215,21 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
     insert_ $ Role { roleStaff = e3
                    , roleService = s71
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (3 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e2
                    , roleService = s71
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (3 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e1
                    , roleService = s71
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (3 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -2169,12 +2259,14 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
     insert_ $ Role { roleStaff = e4
                    , roleService = s72
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s72
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 
@@ -2204,12 +2296,14 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
     insert_ $ Role { roleStaff = e5
                    , roleService = s73
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s73
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -2239,12 +2333,14 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
     insert_ $ Role { roleStaff = e6
                    , roleService = s74
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s74
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
@@ -2289,18 +2385,21 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
     insert_ $ Role { roleStaff = e8
                    , roleService = s81
                    , roleName = "Waxing specialist"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s81
                    , roleName = "Waxing specialist"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s81
                    , roleName = "Waxing specialist"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -2330,12 +2429,14 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
     insert_ $ Role { roleStaff = e9
                    , roleService = s82
                    , roleName = "Waxing specialist"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e8
                    , roleService = s82
                    , roleName = "Waxing specialist"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
@@ -2380,18 +2481,21 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
     insert_ $ Role { roleStaff = e9
                    , roleService = s91
                    , roleName = "Nail technician"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e8
                    , roleService = s91
                    , roleName = "Nail technician"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s91
                    , roleName = "Nail technician"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
@@ -2421,12 +2525,14 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
     insert_ $ Role { roleStaff = e10
                    , roleService = s92
                    , roleName = "Nail technician"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s92
                    , roleName = "Nail technician"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -2456,12 +2562,14 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
     insert_ $ Role { roleStaff = e1
                    , roleService = s93
                    , roleName = "Nail technician"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e11
                    , roleService = s93
                    , roleName = "Nail technician"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -2491,12 +2599,14 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
     insert_ $ Role { roleStaff = e2
                    , roleService = s94
                    , roleName = "Nail technician"
+                   , roleDuration = 60 * (0 * 60 + 40)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e1
                    , roleService = s94
                    , roleName = "Nail technician"
+                   , roleDuration = 60 * (0 * 60 + 40)
                    , roleRating = Just 5
                    }
 
@@ -2526,12 +2636,14 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
     insert_ $ Role { roleStaff = e3
                    , roleService = s95
                    , roleName = "Nail technician"
+                   , roleDuration = 60 * (0 * 60 + 25)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e2
                    , roleService = s95
                    , roleName = "Nail technician"
+                   , roleDuration = 60 * (0 * 60 + 25)
                    , roleRating = Just 5
                    }
 
@@ -2561,12 +2673,14 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
     insert_ $ Role { roleStaff = e4
                    , roleService = s96
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s96
                    , roleName = "Esthetician"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
@@ -2596,12 +2710,14 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
     insert_ $ Role { roleStaff = e6
                    , roleService = s97
                    , roleName = "Nail technician"
+                   , roleDuration = 60 * (0 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s97
                    , roleName = "Nail technician"
+                   , roleDuration = 60 * (0 * 60 + 15)
                    , roleRating = Just 5
                    }
 
@@ -2650,12 +2766,14 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
     insert_ $ Role { roleStaff = e7
                    , roleService = s101
                    , roleName = "Aesthetician"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s101
                    , roleName = "Aesthetician"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
@@ -2685,12 +2803,14 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
     insert_ $ Role { roleStaff = e8
                    , roleService = s102
                    , roleName = "Aesthetician"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s102
                    , roleName = "Aesthetician"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 

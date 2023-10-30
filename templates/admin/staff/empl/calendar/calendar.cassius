@@ -24,17 +24,12 @@ main
       border-width: 1px
       border-style: solid
 
-  hr
-    background-color: var(--mdc-theme-text-hint-on-light)
-    height: 1px
-    border: 0
-
   div.calendar
     display: grid
     gap: 0.5rem
     padding: 0 0.5rem
     grid-template-columns: repeat(7,1fr)
-    grid-template-rows: repeat(7,1fr)
+    grid-template-rows: auto auto repeat(6,1fr)
     grid-template-areas: "head head head head head head head"
     div.header
       grid-area: head

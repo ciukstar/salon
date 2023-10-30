@@ -20,22 +20,24 @@ import Data.Proxy (Proxy)
 import Data.Time
     ( TimeOfDay, LocalTime, DiffTime, diffTimeToPicoseconds
     , picosecondsToDiffTime, localTimeToUTC, utc, utcToLocalTime
-    , TimeZone (timeZoneMinutes), minutesToTimeZone
+    , TimeZone (timeZoneMinutes), minutesToTimeZone, nominalDiffTimeToSeconds
+    , secondsToNominalDiffTime
     )
 import Data.Time.Calendar (Year, Day, DayOfWeek)
 import Data.Time.Calendar.Month (Month (MkMonth))
-import Data.Time.Clock (UTCTime)
+import Data.Time.Clock (UTCTime, NominalDiffTime)
 import Prelude (Int, fromIntegral)
 import Data.Either (Either (Left, Right))
 import Data.Bool (Bool)
+import Data.Fixed ( Centi ) 
 import Data.Function ((.),($))
 import Data.Maybe (Maybe (Just))
 import ClassyPrelude.Yesod
     ( Typeable , Text , ByteString , mkMigrate , mkPersist
     , persistFileWith , share , sqlSettings , Textarea
     , derivePersistField, PersistValue (PersistUTCTime)
+    , truncate
     )
-import Data.Fixed (Centi)
 import Yesod.Auth.HashDB (HashDBUser (userPasswordHash, setPasswordHash))
 import Yesod.Core.Dispatch (PathMultiPiece, toPathMultiPiece, fromPathMultiPiece)
 import Data.Text (pack, unpack)
@@ -145,6 +147,20 @@ instance PersistField LocalTime where
 instance PersistFieldSql LocalTime where
     sqlType :: Proxy LocalTime -> SqlType
     sqlType _ = SqlDayTime
+
+
+instance PersistField NominalDiffTime where
+    toPersistValue :: NominalDiffTime -> PersistValue
+    toPersistValue x = PersistInt64 (truncate (nominalDiffTimeToSeconds x))
+
+    fromPersistValue :: PersistValue -> Either Text NominalDiffTime
+    fromPersistValue (PersistInt64 x) = Right (secondsToNominalDiffTime (fromIntegral x))
+    fromPersistValue _ = Left "Invalid NominalDiffTime"
+
+
+instance PersistFieldSql NominalDiffTime where
+    sqlType :: Proxy NominalDiffTime -> SqlType
+    sqlType _ = SqlInt64
 
 
 instance PersistField DiffTime where

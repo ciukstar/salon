@@ -246,7 +246,7 @@ getBusinessCalendarR bid pivot = do
     let (y,m,_) = toGregorian pivot
     let start = weekFirstDay Monday (fromGregorian y m 1)
     let end = addDays 41 start
-    let cal = [start .. end]
+    let calendar = [start .. end]
     let next = addGregorianMonthsClip 1 pivot
     let prev = addGregorianMonthsClip (-1) pivot
     today <- utctDay <$> liftIO getCurrentTime

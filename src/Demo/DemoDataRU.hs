@@ -37,7 +37,7 @@ import Model
     , EmplStatus (EmplStatusAvailable, EmplStatusUnavailable)
     , Staff (Staff, staffName, staffStatus, staffPhone, staffMobile, staffEmail, staffUser)
     , StaffPhoto (StaffPhoto, staffPhotoPhoto, staffPhotoMime, staffPhotoStaff)
-    , Role (Role, roleStaff, roleService, roleName, roleRating)
+    , Role (Role, roleStaff, roleService, roleName, roleDuration, roleRating)
     , Contents (Contents, contentsSection, contentsContent)
     , BookStatus (BookStatusRequest)
     , Book
@@ -427,6 +427,7 @@ populateRU = do
     let role111 =  Role { roleStaff = e1
                         , roleService = s11
                         , roleName = "Парикмахер"
+                        , roleDuration = 60 * (1 * 60 + 0)
                         , roleRating = Just 5
                         }
 
@@ -435,6 +436,7 @@ populateRU = do
     insert_ $ Role { roleStaff = e2
                    , roleService = s11
                    , roleName = "Парикмахер"
+                   , roleDuration = 60 * (1 * 60 + 0)
                    , roleRating = Just 5
                    }
 
@@ -479,18 +481,21 @@ populateRU = do
     insert_ $ Role { roleStaff = e2
                    , roleService = s12
                    , roleName = "Парикмахер"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 3
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s12
                    , roleName = "Парикмахер"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s12
                    , roleName = "Парикмахер"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -520,6 +525,7 @@ populateRU = do
     let role1311 = Role { roleStaff = e11
                         , roleService = s13
                         , roleName = "Стилист"
+                        , roleDuration = 60 * (1 * 60 + 35)
                         , roleRating = Just 5
                         }
 
@@ -528,6 +534,7 @@ populateRU = do
     insert_ $ Role { roleStaff = e3
                    , roleService = s13
                    , roleName = "Ассистент стилиста"
+                   , roleDuration = 60 * (1 * 60 + 35)
                    , roleRating = Just 4
                    }
 
@@ -557,6 +564,7 @@ populateRU = do
     insert_ $ Role { roleStaff = e4
                    , roleService = s14
                    , roleName = "Младший стилист"
+                   , roleDuration = 60 * (1 * 60 + 20)
                    , roleRating = Just 5
                    }
 
@@ -616,18 +624,21 @@ populateRU = do
     insert_ $ Role { roleStaff = e3
                    , roleService = s1511
                    , roleName = "Стилист"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 4
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s1511
                    , roleName = "Стилист"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 4
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s1511
                    , roleName = "Стилист"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 4
                    }
 
@@ -650,18 +661,21 @@ populateRU = do
     insert_ $ Role { roleStaff = e4
                    , roleService = s1512
                    , roleName = "Стилист"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s1512
                    , roleName = "Стилист"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s1512
                    , roleName = "Стилист"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
@@ -713,18 +727,21 @@ populateRU = do
     insert_ $ Role { roleStaff = e8
                    , roleService = s1521
                    , roleName = "Колорист"
+                   , roleDuration = 60 * (1 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s1521
                    , roleName = "Колорист"
+                   , roleDuration = 60 * (1 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e10
                    , roleService = s1521
                    , roleName = "Колорист"
+                   , roleDuration = 60 * (1 * 60 + 0)
                    , roleRating = Just 5
                    }
 
@@ -754,12 +771,14 @@ populateRU = do
     insert_ $ Role { roleStaff = e10
                    , roleService = s1522
                    , roleName = "Колорист"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e11
                    , roleService = s1522
                    , roleName = "Колорист"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
@@ -789,18 +808,21 @@ populateRU = do
     insert_ $ Role { roleStaff = e9
                    , roleService = s1523
                    , roleName = "Колорист"
+                   , roleDuration = 60 * (1 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e10
                    , roleService = s1523
                    , roleName = "Колорист"
+                   , roleDuration = 60 * (1 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e11
                    , roleService = s1523
                    , roleName = "Колорист"
+                   , roleDuration = 60 * (1 * 60 + 45)
                    , roleRating = Just 5
                    }
 
@@ -845,18 +867,21 @@ populateRU = do
     insert_ $ Role { roleStaff = e1
                    , roleService = s1531
                    , roleName = "Стилист"
+                   , roleDuration = 60 * (0 * 60 + 35)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e2
                    , roleService = s1531
                    , roleName = "Стилист"
+                   , roleDuration = 60 * (0 * 60 + 35)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s1531
                    , roleName = "Стилист"
+                   , roleDuration = 60 * (0 * 60 + 35)
                    , roleRating = Just 5
                    }
 
@@ -886,18 +911,21 @@ populateRU = do
     insert_ $ Role { roleStaff = e3
                    , roleService = s1532
                    , roleName = "Стилист"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s1532
                    , roleName = "Стилист"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s1532
                    , roleName = "Стилист"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 5
                    }
 
@@ -927,18 +955,21 @@ populateRU = do
     insert_ $ Role { roleStaff = e5
                    , roleService = s1533
                    , roleName = "Стилист"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s1533
                    , roleName = "Стилист"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s1533
                    , roleName = "Стилист"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 5
                    }
 
@@ -998,18 +1029,21 @@ populateRU = do
     insert_ $ Role { roleStaff = e8
                    , roleService = s21
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s21
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e10
                    , roleService = s21
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
@@ -1047,18 +1081,21 @@ populateRU = do
     insert_ $ Role { roleStaff = e6
                    , roleService = s22
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s22
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e8
                    , roleService = s22
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1096,24 +1133,28 @@ populateRU = do
     insert_ $ Role { roleStaff = e3
                    , roleService = s23
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (0 * 60 + 90)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s23
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (0 * 60 + 90)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s23
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (0 * 60 + 90)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s23
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (0 * 60 + 90)
                    , roleRating = Just 5
                    }
 
@@ -1151,18 +1192,21 @@ populateRU = do
     insert_ $ Role { roleStaff = e1
                    , roleService = s24
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (2 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e2
                    , roleService = s24
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (2 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s24
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (2 * 60 + 0)
                    , roleRating = Just 5
                    }
 
@@ -1200,24 +1244,28 @@ populateRU = do
     insert_ $ Role { roleStaff = e9
                    , roleService = s25
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e10
                    , roleService = s25
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e11
                    , roleService = s25
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e1
                    , roleService = s25
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
     s3 <- insert $ Service { serviceName = "Передовые процедуры для лица"
@@ -1277,12 +1325,14 @@ Milk Peel включает в себя натуральный экстракт �
     insert_ $ Role { roleStaff = e8
                    , roleService = s31
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s31
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1325,18 +1375,21 @@ Milk Peel включает в себя натуральный экстракт �
     insert_ $ Role { roleStaff = e7
                    , roleService = s32
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e8
                    , roleService = s32
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s32
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1370,18 +1423,21 @@ Milk Peel включает в себя натуральный экстракт �
     insert_ $ Role { roleStaff = e5
                    , roleService = s33
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s33
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s33
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 
@@ -1423,18 +1479,21 @@ Milk Peel включает в себя натуральный экстракт �
     insert_ $ Role { roleStaff = e3
                    , roleService = s34
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (2 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s34
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (2 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s34
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (2 * 60 + 0)
                    , roleRating = Just 5
                    }
 
@@ -1501,12 +1560,14 @@ Milk Peel включает в себя натуральный экстракт �
     insert_ $ Role { roleStaff = e2
                    , roleService = s41
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s41
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
@@ -1555,12 +1616,14 @@ Milk Peel включает в себя натуральный экстракт �
     insert_ $ Role { roleStaff = e1
                    , roleService = s42
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (2 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e2
                    , roleService = s42
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (2 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1612,12 +1675,14 @@ Collagen 90-II — это уважаемое и востребованное а�
     insert_ $ Role { roleStaff = e10
                    , roleService = s43
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (2 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e1
                    , roleService = s43
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (2 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1651,6 +1716,7 @@ Collagen 90-II — это уважаемое и востребованное а�
     insert_ $ Role { roleStaff = e9
                    , roleService = s44
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (0 * 60 + 15)
                    , roleRating = Just 5
                    }
 
@@ -1708,18 +1774,21 @@ Collagen 90-II — это уважаемое и востребованное а�
     insert_ $ Role { roleStaff = e7
                    , roleService = s51
                    , roleName = "Визажист"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e8
                    , roleService = s51
                    , roleName = "Визажист"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s51
                    , roleName = "Визажист"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
@@ -1761,12 +1830,14 @@ Collagen 90-II — это уважаемое и востребованное а�
     insert_ $ Role { roleStaff = e6
                    , roleService = s52
                    , roleName = "Визажист"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s52
                    , roleName = "Визажист"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1796,18 +1867,21 @@ Collagen 90-II — это уважаемое и востребованное а�
     insert_ $ Role { roleStaff = e4
                    , roleService = s53
                    , roleName = "Визажист"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s53
                    , roleName = "Визажист"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s53
                    , roleName = "Визажист"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1844,12 +1918,14 @@ Collagen 90-II — это уважаемое и востребованное а�
     insert_ $ Role { roleStaff = e3
                    , roleService = s54
                    , roleName = "Визажист"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s54
                    , roleName = "Визажист"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1879,12 +1955,14 @@ Collagen 90-II — это уважаемое и востребованное а�
     insert_ $ Role { roleStaff = e2
                    , roleService = s55
                    , roleName = "Визажист"
+                   , roleDuration = 60 * (1 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s55
                    , roleName = "Визажист"
+                   , roleDuration = 60 * (1 * 60 + 45)
                    , roleRating = Just 5
                    }
 
@@ -1933,18 +2011,21 @@ Collagen 90-II — это уважаемое и востребованное а�
     insert_ $ Role { roleStaff = e9
                    , roleService = s61
                    , roleName = "Массажист"
+                   , roleDuration = 60 * (1 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e1
                    , roleService = s61
                    , roleName = "Массажист"
+                   , roleDuration = 60 * (1 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e2
                    , roleService = s61
                    , roleName = "Массажист"
+                   , roleDuration = 60 * (1 * 60 + 0)
                    , roleRating = Just 5
                    }
 
@@ -1978,6 +2059,7 @@ Collagen 90-II — это уважаемое и востребованное а�
     insert_ $ Role { roleStaff = e10
                    , roleService = s62
                    , roleName = "Массажист"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
@@ -2022,12 +2104,14 @@ Collagen 90-II — это уважаемое и востребованное а�
     insert_ $ Role { roleStaff = e1
                    , roleService = s63
                    , roleName = "Массажист"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e11
                    , roleService = s63
                    , roleName = "Массажист"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -2074,18 +2158,21 @@ Collagen 90-II — это уважаемое и востребованное а�
     insert_ $ Role { roleStaff = e3
                    , roleService = s71
                    , roleName = "Визажист"
+                   , roleDuration = 60 * (3 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e2
                    , roleService = s71
                    , roleName = "Визажист"
+                   , roleDuration = 60 * (3 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e1
                    , roleService = s71
                    , roleName = "Визажист"
+                   , roleDuration = 60 * (3 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -2115,12 +2202,14 @@ Collagen 90-II — это уважаемое и востребованное а�
     insert_ $ Role { roleStaff = e4
                    , roleService = s72
                    , roleName = "Визажист"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s72
                    , roleName = "Визажист"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 
@@ -2150,12 +2239,14 @@ Collagen 90-II — это уважаемое и востребованное а�
     insert_ $ Role { roleStaff = e5
                    , roleService = s73
                    , roleName = "Визажист"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s73
                    , roleName = "Визажист"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -2185,12 +2276,14 @@ Collagen 90-II — это уважаемое и востребованное а�
     insert_ $ Role { roleStaff = e6
                    , roleService = s74
                    , roleName = "Визажист"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s74
                    , roleName = "Визажист"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
@@ -2235,18 +2328,21 @@ Collagen 90-II — это уважаемое и востребованное а�
     insert_ $ Role { roleStaff = e8
                    , roleService = s81
                    , roleName = "Специалист по депиляции"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s81
                    , roleName = "Специалист по депиляции"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s81
                    , roleName = "Специалист по депиляции"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -2276,12 +2372,14 @@ Collagen 90-II — это уважаемое и востребованное а�
     insert_ $ Role { roleStaff = e9
                    , roleService = s82
                    , roleName = "Специалист по депиляции"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e8
                    , roleService = s82
                    , roleName = "Специалист по депиляции"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
@@ -2326,18 +2424,21 @@ Collagen 90-II — это уважаемое и востребованное а�
     insert_ $ Role { roleStaff = e9
                    , roleService = s91
                    , roleName = "Мастера маникюра"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e8
                    , roleService = s91
                    , roleName = "Мастера маникюра"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s91
                    , roleName = "Мастера маникюра"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
@@ -2367,12 +2468,14 @@ Collagen 90-II — это уважаемое и востребованное а�
     insert_ $ Role { roleStaff = e10
                    , roleService = s92
                    , roleName = "Мастера маникюра"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s92
                    , roleName = "Мастера маникюра"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -2402,12 +2505,14 @@ Collagen 90-II — это уважаемое и востребованное а�
     insert_ $ Role { roleStaff = e1
                    , roleService = s93
                    , roleName = "Мастера маникюра"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e11
                    , roleService = s93
                    , roleName = "Мастера маникюра"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -2437,12 +2542,14 @@ Collagen 90-II — это уважаемое и востребованное а�
     insert_ $ Role { roleStaff = e2
                    , roleService = s94
                    , roleName = "Мастера маникюра"
+                   , roleDuration = 60 * (0 * 60 + 40)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e1
                    , roleService = s94
                    , roleName = "Мастера маникюра"
+                   , roleDuration = 60 * (0 * 60 + 40)
                    , roleRating = Just 5
                    }
 
@@ -2472,12 +2579,14 @@ Collagen 90-II — это уважаемое и востребованное а�
     insert_ $ Role { roleStaff = e3
                    , roleService = s95
                    , roleName = "Мастера маникюра"
+                   , roleDuration = 60 * (0 * 60 + 25)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e2
                    , roleService = s95
                    , roleName = "Мастера маникюра"
+                   , roleDuration = 60 * (0 * 60 + 25)
                    , roleRating = Just 5
                    }
 
@@ -2507,12 +2616,14 @@ Collagen 90-II — это уважаемое и востребованное а�
     insert_ $ Role { roleStaff = e4
                    , roleService = s96
                    , roleName = "Мастера маникюра"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s96
                    , roleName = "Мастера маникюра"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
@@ -2542,12 +2653,14 @@ Collagen 90-II — это уважаемое и востребованное а�
     insert_ $ Role { roleStaff = e6
                    , roleService = s97
                    , roleName = "Мастера маникюра"
+                   , roleDuration = 60 * (0 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s97
                    , roleName = "Мастера маникюра"
+                   , roleDuration = 60 * (0 * 60 + 15)
                    , roleRating = Just 5
                    }
 
@@ -2594,12 +2707,14 @@ Collagen 90-II — это уважаемое и востребованное а�
     insert_ $ Role { roleStaff = e7
                    , roleService = s101
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s101
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
@@ -2629,12 +2744,14 @@ Collagen 90-II — это уважаемое и востребованное а�
     insert_ $ Role { roleStaff = e8
                    , roleService = s102
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s102
                    , roleName = "Косметолог"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 

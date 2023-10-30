@@ -52,7 +52,7 @@ import Yesod.Core
     )
 
 import Yesod.Form
-    ( FormResult(FormSuccess), Field, MForm
+    ( FormResult(FormSuccess), MForm
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
     , FieldView (fvId, fvErrors, fvInput, fvLabel)
     , hiddenField, runInputGet, iopt, intField, checkM
@@ -61,6 +61,10 @@ import Yesod.Form
     , OptionList, optionsPairs, searchField, Textarea (Textarea), check
     , htmlField, checkBool
     )
+import Yesod.Form.Fields (FormMessage (MsgInvalidEntry))
+import Yesod.Form.Functions (parseHelper)
+import Yesod.Form.Types
+    ( Field (Field, fieldParse, fieldView, fieldEnctype), Enctype (UrlEncoded) )
 import Settings (widgetFile)
 import Settings.StaticFiles
     ( img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg
@@ -94,6 +98,7 @@ import Foundation
       , MsgOffer, MsgExperts, MsgNoExpertsYet, MsgAddExpert, MsgExpert
       , MsgValueNotInRange, MsgExpertAlreadyInTheList, MsgRating, MsgEmployee
       , MsgRole, MsgLogin, MsgUserProfile, MsgNavigationMenu, MsgEdit, MsgDel
+      , MsgCompletionTime
       )
     )
 
@@ -121,8 +126,8 @@ import Model
     , Offer (Offer, offerName, offerPrice, offerPrefix, offerSuffix, offerDescr)
     , OfferId
     , ServiceStatus (ServiceStatusPulished, ServiceStatusUnpublished)
-    , Role (Role, roleStaff, roleName, roleRating), StaffId, Staff (Staff)
-    , RoleId
+    , Role (Role, roleStaff, roleName, roleDuration, roleRating), StaffId
+    , Staff (Staff), RoleId
     )
 
 import qualified Yesod.Persist as P ((=.))
@@ -188,6 +193,8 @@ getAdmExpertR rid (Services sids) = do
             `innerJoin` table @Service `on` (\(r :& _ :& s) -> r ^. RoleService ==. s ^. ServiceId)
         where_ $ r ^. RoleId ==. val rid
         return (r,e,s)
+    app <- getYesod
+    langs <- languages
     dlgRoleDelete <- newIdent
     defaultLayout $ do
         setTitleI MsgExpert
@@ -232,15 +239,36 @@ formExpert sid role extra = do
         , fsTooltip = Nothing , fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (roleName . entityVal <$> role)
+    (durationR,durationV) <- mreq hmField FieldSettings
+        { fsLabel = SomeMessage MsgCompletionTime
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (roleDuration . entityVal <$> role)
     (ratingR,ratingV) <- mopt ratingField FieldSettings
         { fsLabel = SomeMessage MsgRating
         , fsTooltip = Nothing , fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input"),("min","0"),("max","5")]
         } (roleRating . entityVal <$> role)
-    let r = Role <$> emplR <*> FormSuccess sid <*> nameR <*> ratingR
+
+        
+    let r = Role <$> emplR <*> FormSuccess sid <*> nameR <*> durationR <*> ratingR
     let w = $(widgetFile "admin/services/expert/form")
     return (r,w)
   where
+
+      hmField :: Field Handler DiffTime
+      hmField = Field
+          { fieldParse = parseHelper $ \s -> case parseTimeM True defaultTimeLocale "%H:%M" . unpack $ s of
+              Just x -> Right x
+              Nothing -> Left $ MsgInvalidEntry s
+          , fieldView = \theId name attrs v isReq -> [whamlet|
+$newline never
+<input type=text ##{theId} name=#{name} value=#{showVal v} *{attrs} :isReq:required>
+|]
+          , fieldEnctype = UrlEncoded
+          }
+
+      showVal = either id (pack . formatTime defaultTimeLocale "%H:%M")
 
       ratingField = checkBool (\x -> x >= 1 && x <= 5) (MsgValueNotInRange 1 5) intField
 

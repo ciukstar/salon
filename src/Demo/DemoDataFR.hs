@@ -43,7 +43,7 @@ import Model
       , staffUser
       )
     , StaffPhoto (StaffPhoto, staffPhotoPhoto, staffPhotoMime, staffPhotoStaff)
-    , Role (Role, roleStaff, roleService, roleName, roleRating)
+    , Role (Role, roleStaff, roleService, roleName, roleDuration, roleRating)
     , Contents (Contents, contentsSection, contentsContent)
     , BookStatus (BookStatusRequest)
     , Book
@@ -426,6 +426,7 @@ Nous continuerons d'offrir les derniers traitements, les techniques les plus inn
     let role111 =  Role { roleStaff = e1
                         , roleService = s11
                         , roleName = "Coiffeur"
+                        , roleDuration = 60 * (1 * 60 + 0)
                         , roleRating = Just 5
                         } 
 
@@ -434,6 +435,7 @@ Nous continuerons d'offrir les derniers traitements, les techniques les plus inn
     insert_ $ Role { roleStaff = e2
                    , roleService = s11
                    , roleName = "Coiffeuse"
+                   , roleDuration = 60 * (1 * 60 + 0)
                    , roleRating = Just 5
                    }
 
@@ -478,18 +480,21 @@ Nous continuerons d'offrir les derniers traitements, les techniques les plus inn
     insert_ $ Role { roleStaff = e2
                    , roleService = s12
                    , roleName = "Coiffeuse"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 3
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s12
                    , roleName = "Coiffeur"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s12
                    , roleName = "Coiffeuse"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -519,6 +524,7 @@ Nous continuerons d'offrir les derniers traitements, les techniques les plus inn
     let role1311 = Role { roleStaff = e11
                         , roleService = s13
                         , roleName = "Styliste"
+                        , roleDuration = 60 * (1 * 60 + 35)
                         , roleRating = Just 5
                         }
 
@@ -527,6 +533,7 @@ Nous continuerons d'offrir les derniers traitements, les techniques les plus inn
     insert_ $ Role { roleStaff = e3
                    , roleService = s13
                    , roleName = "Assistante styliste"
+                   , roleDuration = 60 * (1 * 60 + 35)
                    , roleRating = Just 4
                    }
 
@@ -556,6 +563,7 @@ Nous continuerons d'offrir les derniers traitements, les techniques les plus inn
     insert_ $ Role { roleStaff = e4
                    , roleService = s14
                    , roleName = "Styliste junior"
+                   , roleDuration = 60 * (1 * 60 + 20)
                    , roleRating = Just 5
                    }
 
@@ -615,18 +623,21 @@ Nous continuerons d'offrir les derniers traitements, les techniques les plus inn
     insert_ $ Role { roleStaff = e3
                    , roleService = s1511
                    , roleName = "Styliste"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 4
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s1511
                    , roleName = "Styliste"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 4
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s1511
                    , roleName = "Styliste"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 4
                    }
 
@@ -649,18 +660,21 @@ Nous continuerons d'offrir les derniers traitements, les techniques les plus inn
     insert_ $ Role { roleStaff = e4
                    , roleService = s1512
                    , roleName = "Styliste"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s1512
                    , roleName = "Styliste"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s1512
                    , roleName = "Styliste"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
@@ -712,18 +726,21 @@ Nous continuerons d'offrir les derniers traitements, les techniques les plus inn
     insert_ $ Role { roleStaff = e8
                    , roleService = s1521
                    , roleName = "Coloriste"
+                   , roleDuration = 60 * (1 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s1521
                    , roleName = "Coloriste"
+                   , roleDuration = 60 * (1 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e10
                    , roleService = s1521
                    , roleName = "Coloriste"
+                   , roleDuration = 60 * (1 * 60 + 0)
                    , roleRating = Just 5
                    }
 
@@ -753,12 +770,14 @@ Nous continuerons d'offrir les derniers traitements, les techniques les plus inn
     insert_ $ Role { roleStaff = e10
                    , roleService = s1522
                    , roleName = "Coloriste"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e11
                    , roleService = s1522
                    , roleName = "Coloriste"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
@@ -788,18 +807,21 @@ Nous continuerons d'offrir les derniers traitements, les techniques les plus inn
     insert_ $ Role { roleStaff = e9
                    , roleService = s1523
                    , roleName = "Coloriste"
+                   , roleDuration = 60 * (1 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e10
                    , roleService = s1523
                    , roleName = "Coloriste"
+                   , roleDuration = 60 * (1 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e11
                    , roleService = s1523
                    , roleName = "Coloriste"
+                   , roleDuration = 60 * (1 * 60 + 45)
                    , roleRating = Just 5
                    }
 
@@ -844,18 +866,21 @@ Nous continuerons d'offrir les derniers traitements, les techniques les plus inn
     insert_ $ Role { roleStaff = e1
                    , roleService = s1531
                    , roleName = "Styliste"
+                   , roleDuration = 60 * (0 * 60 + 35)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e2
                    , roleService = s1531
                    , roleName = "Styliste"
+                   , roleDuration = 60 * (0 * 60 + 35)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s1531
                    , roleName = "Styliste"
+                   , roleDuration = 60 * (0 * 60 + 35)
                    , roleRating = Just 5
                    }
 
@@ -885,18 +910,21 @@ Nous continuerons d'offrir les derniers traitements, les techniques les plus inn
     insert_ $ Role { roleStaff = e3
                    , roleService = s1532
                    , roleName = "Styliste"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s1532
                    , roleName = "Styliste"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s1532
                    , roleName = "Styliste"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 5
                    }
 
@@ -926,18 +954,21 @@ Nous continuerons d'offrir les derniers traitements, les techniques les plus inn
     insert_ $ Role { roleStaff = e5
                    , roleService = s1533
                    , roleName = "Styliste"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s1533
                    , roleName = "Styliste"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s1533
                    , roleName = "Styliste"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 5
                    }
 
@@ -995,18 +1026,21 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
     insert_ $ Role { roleStaff = e8
                    , roleService = s21
                    , roleName = "Esthéticienne"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s21
                    , roleName = "Esthéticien"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e10
                    , roleService = s21
                    , roleName = "Esthéticien"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
@@ -1044,18 +1078,21 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
     insert_ $ Role { roleStaff = e6
                    , roleService = s22
                    , roleName = "Esthéticien"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s22
                    , roleName = "Esthéticienne"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e8
                    , roleService = s22
                    , roleName = "Esthéticienne"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1093,24 +1130,28 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
     insert_ $ Role { roleStaff = e3
                    , roleService = s23
                    , roleName = "Esthéticien"
+                   , roleDuration = 60 * (0 * 60 + 90)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s23
                    , roleName = "Esthéticienne"
+                   , roleDuration = 60 * (0 * 60 + 90)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s23
                    , roleName = "Esthéticien"
+                   , roleDuration = 60 * (0 * 60 + 90)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s23
                    , roleName = "Esthéticien"
+                   , roleDuration = 60 * (0 * 60 + 90)
                    , roleRating = Just 5
                    }
 
@@ -1148,18 +1189,21 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
     insert_ $ Role { roleStaff = e1
                    , roleService = s24
                    , roleName = "Esthéticien"
+                   , roleDuration = 60 * (2 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e2
                    , roleService = s24
                    , roleName = "Esthéticienne"
+                   , roleDuration = 60 * (2 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s24
                    , roleName = "Esthéticien"
+                   , roleDuration = 60 * (2 * 60 + 0)
                    , roleRating = Just 5
                    }
 
@@ -1197,24 +1241,28 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
     insert_ $ Role { roleStaff = e9
                    , roleService = s25
                    , roleName = "Esthéticien"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e10
                    , roleService = s25
                    , roleName = "Esthéticien"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e11
                    , roleService = s25
                    , roleName = "Esthéticienne"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e1
                    , roleService = s25
                    , roleName = "Esthéticien"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
@@ -1275,12 +1323,14 @@ En conséquence, le peeling au lait est un puissant processus de resurfaçage de
     insert_ $ Role { roleStaff = e8
                    , roleService = s31
                    , roleName = "Esthéticienne"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s31
                    , roleName = "Esthéticien"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1323,18 +1373,21 @@ Le Scientia Derma Roller est un appareil incroyable qui augmente naturellement l
     insert_ $ Role { roleStaff = e7
                    , roleService = s32
                    , roleName = "Esthéticienne"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e8
                    , roleService = s32
                    , roleName = "Esthéticienne"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s32
                    , roleName = "Esthéticien"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1368,18 +1421,21 @@ Procédure indolore, elle aide à éliminer les cicatrices d'acné, les pores di
     insert_ $ Role { roleStaff = e5
                    , roleService = s33
                    , roleName = "Esthéticien"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s33
                    , roleName = "Esthéticien"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s33
                    , roleName = "Esthéticienne"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 
@@ -1419,18 +1475,21 @@ Procédure indolore, elle aide à éliminer les cicatrices d'acné, les pores di
     insert_ $ Role { roleStaff = e3
                    , roleService = s34
                    , roleName = "Esthéticien"
+                   , roleDuration = 60 * (2 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s34
                    , roleName = "Esthéticienne"
+                   , roleDuration = 60 * (2 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s34
                    , roleName = "Esthéticien"
+                   , roleDuration = 60 * (2 * 60 + 0)
                    , roleRating = Just 5
                    }
 
@@ -1497,12 +1556,14 @@ Ce soin réduit l'apparence des rides et ridules. Unifie le teint et illumine la
     insert_ $ Role { roleStaff = e2
                    , roleService = s41
                    , roleName = "Esthéticienne"
+                   , roleDuration = 60 * (2 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s41
                    , roleName = "Esthéticien"
+                   , roleDuration = 60 * (2 * 60 + 0)
                    , roleRating = Just 5
                    }
 
@@ -1551,12 +1612,14 @@ Après un seul traitement, les rides d'expression semblent détendues. Les rides
     insert_ $ Role { roleStaff = e1
                    , roleService = s42
                    , roleName = "Esthéticien"
+                   , roleDuration = 60 * (2 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e2
                    , roleService = s42
                    , roleName = "Esthéticienne"
+                   , roleDuration = 60 * (2 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1608,12 +1671,14 @@ Ce traitement améliore le teint global en minimisant l'apparence des rides et r
     insert_ $ Role { roleStaff = e10
                    , roleService = s43
                    , roleName = "Esthéticien"
+                   , roleDuration = 60 * (2 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e1
                    , roleService = s43
                    , roleName = "Esthéticien"
+                   , roleDuration = 60 * (2 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1647,6 +1712,7 @@ Il favorise la production de collagène, resserre et raffermit les tissus cutan�
     insert_ $ Role { roleStaff = e9
                    , roleService = s44
                    , roleName = "Esthéticien"
+                   , roleDuration = 60 * (0 * 60 + 15)
                    , roleRating = Just 5
                    }
 
@@ -1704,18 +1770,21 @@ Semblable à une permanente, essayez d’éviter de mouiller vos cils pendant 4 
     insert_ $ Role { roleStaff = e7
                    , roleService = s51
                    , roleName = "Maquilleur"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e8
                    , roleService = s51
                    , roleName = "Maquilleur"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s51
                    , roleName = "Maquilleur"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
@@ -1757,12 +1826,14 @@ Semblable à une permanente, essayez d’éviter de mouiller vos cils pendant 4 
     insert_ $ Role { roleStaff = e6
                    , roleService = s52
                    , roleName = "Maquilleur"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s52
                    , roleName = "Maquilleur"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1792,18 +1863,21 @@ Semblable à une permanente, essayez d’éviter de mouiller vos cils pendant 4 
     insert_ $ Role { roleStaff = e4
                    , roleService = s53
                    , roleName = "Maquilleur"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s53
                    , roleName = "Maquilleur"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s53
                    , roleName = "Maquilleur"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1840,12 +1914,14 @@ Les traitements peuvent être effectués toutes les semaines ou toutes les deux 
     insert_ $ Role { roleStaff = e3
                    , roleService = s54
                    , roleName = "Maquilleur"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s54
                    , roleName = "Maquilleur"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1875,12 +1951,14 @@ Les traitements peuvent être effectués toutes les semaines ou toutes les deux 
     insert_ $ Role { roleStaff = e2
                    , roleService = s55
                    , roleName = "Maquilleur"
+                   , roleDuration = 60 * (1 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s55
                    , roleName = "Maquilleur"
+                   , roleDuration = 60 * (1 * 60 + 45)
                    , roleRating = Just 5
                    }
 
@@ -1929,18 +2007,21 @@ La massothérapie suédoise est la modalité qui vient à l’esprit lorsque la 
     insert_ $ Role { roleStaff = e9
                    , roleService = s61
                    , roleName = "Massothérapeute"
+                   , roleDuration = 60 * (1 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e1
                    , roleService = s61
                    , roleName = "Massothérapeute"
+                   , roleDuration = 60 * (1 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e2
                    , roleService = s61
                    , roleName = "Massothérapeute"
+                   , roleDuration = 60 * (1 * 60 + 0)
                    , roleRating = Just 5
                    }
 
@@ -1974,6 +2055,7 @@ Le massage sur chaise est un massage de 15 à 20 minutes axé sur le dos, les é
     insert_ $ Role { roleStaff = e10
                    , roleService = s62
                    , roleName = "Massothérapeute"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
@@ -2018,12 +2100,14 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     insert_ $ Role { roleStaff = e1
                    , roleService = s63
                    , roleName = "Massothérapeute"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e11
                    , roleService = s63
                    , roleName = "Massothérapeute"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -2070,18 +2154,21 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     insert_ $ Role { roleStaff = e3
                    , roleService = s71
                    , roleName = "Maquilleur"
+                   , roleDuration = 60 * (3 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e2
                    , roleService = s71
                    , roleName = "Maquilleur"
+                   , roleDuration = 60 * (3 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e1
                    , roleService = s71
                    , roleName = "Maquilleur"
+                   , roleDuration = 60 * (3 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -2111,12 +2198,14 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     insert_ $ Role { roleStaff = e4
                    , roleService = s72
                    , roleName = "Maquilleur"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s72
                    , roleName = "Maquilleur"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 
@@ -2146,12 +2235,14 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     insert_ $ Role { roleStaff = e5
                    , roleService = s73
                    , roleName = "Maquilleur"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s73
                    , roleName = "Maquilleur"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -2181,12 +2272,14 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     insert_ $ Role { roleStaff = e6
                    , roleService = s74
                    , roleName = "Maquilleur"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s74
                    , roleName = "Maquilleur"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
@@ -2231,18 +2324,21 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     insert_ $ Role { roleStaff = e8
                    , roleService = s81
                    , roleName = "Spécialiste de l'épilation"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s81
                    , roleName = "Spécialiste de l'épilation"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s81
                    , roleName = "Spécialiste de l'épilation"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -2272,12 +2368,14 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     insert_ $ Role { roleStaff = e9
                    , roleService = s82
                    , roleName = "Spécialiste de l'épilation"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e8
                    , roleService = s82
                    , roleName = "Spécialiste de l'épilation"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
@@ -2322,18 +2420,21 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     insert_ $ Role { roleStaff = e9
                    , roleService = s91
                    , roleName = "Technicien en manucure"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e8
                    , roleService = s91
                    , roleName = "Technicienne en manucure"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s91
                    , roleName = "Technicienne en manucure"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
@@ -2363,12 +2464,14 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     insert_ $ Role { roleStaff = e10
                    , roleService = s92
                    , roleName = "Technicien en ongles"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s92
                    , roleName = "Technicien en ongles"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -2398,12 +2501,14 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     insert_ $ Role { roleStaff = e1
                    , roleService = s93
                    , roleName = "Technicien en ongles"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e11
                    , roleService = s93
                    , roleName = "Technicienne en ongles"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -2433,12 +2538,14 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     insert_ $ Role { roleStaff = e2
                    , roleService = s94
                    , roleName = "Technicienne en ongles"
+                   , roleDuration = 60 * (0 * 60 + 40)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e1
                    , roleService = s94
                    , roleName = "Technicien en ongles"
+                   , roleDuration = 60 * (0 * 60 + 40)
                    , roleRating = Just 5
                    }
 
@@ -2468,12 +2575,14 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     insert_ $ Role { roleStaff = e3
                    , roleService = s95
                    , roleName = "Technicien en ongles"
+                   , roleDuration = 60 * (0 * 60 + 25)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e2
                    , roleService = s95
                    , roleName = "Technicienne en ongles"
+                   , roleDuration = 60 * (0 * 60 + 25)
                    , roleRating = Just 5
                    }
 
@@ -2503,12 +2612,14 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     insert_ $ Role { roleStaff = e4
                    , roleService = s96
                    , roleName = "Esthéticienne"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s96
                    , roleName = "Esthéticien"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
@@ -2538,12 +2649,14 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     insert_ $ Role { roleStaff = e6
                    , roleService = s97
                    , roleName = "Technicien en ongles"
+                   , roleDuration = 60 * (0 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s97
                    , roleName = "Technicien en ongles"
+                   , roleDuration = 60 * (0 * 60 + 15)
                    , roleRating = Just 5
                    }
 
@@ -2592,12 +2705,14 @@ Mise en forme du corps : Abdomen et taille, hanches et cuisses, jambes et bras
     insert_ $ Role { roleStaff = e7
                    , roleService = s101
                    , roleName = "Esthéticienne"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s101
                    , roleName = "Esthéticien"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
@@ -2627,12 +2742,14 @@ Mise en forme du corps : Abdomen et taille, hanches et cuisses, jambes et bras
     insert_ $ Role { roleStaff = e8
                    , roleService = s102
                    , roleName = "Esthéticienne"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s102
                    , roleName = "Esthéticienne"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 

@@ -33,6 +33,7 @@ Role
   staff StaffId OnDeleteCascade
   service ServiceId OnDeleteCascade
   name Text
+  duration DiffTime
   rating Int Maybe
   UniqueRole staff service name
   deriving Eq

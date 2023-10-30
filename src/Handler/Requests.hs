@@ -131,7 +131,7 @@ postRequestAssignR bid sid = do
               return (r,e)
 
           case role of
-            Just (Entity rid (Role _ _ rname _ ),Entity _ (Staff ename _ _ _ _ _)) -> do
+            Just (Entity rid (Role _ _ rname _ _),Entity _ (Staff ename _ _ _ _ _)) -> do
                 runDB $ update $ \x -> do
                     set x [ BookRole =. just (val rid) ]
                     where_ $ x ^. BookId ==. val bid'

@@ -1,3 +1,4 @@
+CompletionTime: Timpul de finalizare
 Today: Astăzi
 Mon: lun.
 Tue: mar.

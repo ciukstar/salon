@@ -21,7 +21,7 @@
         <div.mdc-radio__ripple>
         <div.mdc-radio__focus-ring>
   <div.mdc-list-divider role=none>
-  $forall e@(Entity sid (Staff sname _ _ _ _ _), Entity rid (Role _ _ rname rating)) <- options
+  $forall e@(Entity sid (Staff sname _ _ _ _ _), Entity rid (Role _ _ rname _ rating)) <- options
     $with checked <- isChecked eval e
       <li.mdc-list-item.mdc-list-item--with-leading-image role=option
         .mdc-list-item--with-three-lines.mdc-list-item--with-trailing-radio

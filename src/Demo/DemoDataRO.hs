@@ -43,7 +43,7 @@ import Model
       , staffUser
       )
     , StaffPhoto (StaffPhoto, staffPhotoPhoto, staffPhotoMime, staffPhotoStaff)
-    , Role (Role, roleStaff, roleService, roleName, roleRating)
+    , Role (Role, roleStaff, roleService, roleName, roleDuration, roleRating)
     , Contents (Contents, contentsSection, contentsContent)
     , BookStatus (BookStatusRequest)
     , Book
@@ -425,6 +425,7 @@ populateRO = do
     let role111 =  Role { roleStaff = e1
                         , roleService = s11
                         , roleName = "Frizer"
+                        , roleDuration = 60 * (1 * 60 + 0)
                         , roleRating = Just 5
                         } 
 
@@ -433,6 +434,7 @@ populateRO = do
     insert_ $ Role { roleStaff = e2
                    , roleService = s11
                    , roleName = "Frizer"
+                   , roleDuration = 60 * (1 * 60 + 0)
                    , roleRating = Just 5
                    }
 
@@ -477,18 +479,21 @@ populateRO = do
     insert_ $ Role { roleStaff = e2
                    , roleService = s12
                    , roleName = "Coafeză"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 3
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s12
                    , roleName = "Coafor"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s12
                    , roleName = "Coafeză"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -518,6 +523,7 @@ populateRO = do
     let role1311 = Role { roleStaff = e11
                         , roleService = s13
                         , roleName = "Stilist"
+                        , roleDuration = 60 * (1 * 60 + 35)
                         , roleRating = Just 5
                         }
 
@@ -526,6 +532,7 @@ populateRO = do
     insert_ $ Role { roleStaff = e3
                    , roleService = s13
                    , roleName = "Stilist asistent"
+                   , roleDuration = 60 * (1 * 60 + 35)
                    , roleRating = Just 4
                    }
 
@@ -555,6 +562,7 @@ populateRO = do
     insert_ $ Role { roleStaff = e4
                    , roleService = s14
                    , roleName = "Stilist junior"
+                   , roleDuration = 60 * (1 * 60 + 20)
                    , roleRating = Just 5
                    }
 
@@ -614,18 +622,21 @@ populateRO = do
     insert_ $ Role { roleStaff = e3
                    , roleService = s1511
                    , roleName = "Stilist"
+                   , roleDuration = 60 * (1 * 60 + 20)
                    , roleRating = Just 4
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s1511
                    , roleName = "Stilist"
+                   , roleDuration = 60 * (1 * 60 + 20)
                    , roleRating = Just 4
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s1511
                    , roleName = "Stilist"
+                   , roleDuration = 60 * (1 * 60 + 20)
                    , roleRating = Just 4
                    }
 
@@ -648,18 +659,21 @@ populateRO = do
     insert_ $ Role { roleStaff = e4
                    , roleService = s1512
                    , roleName = "Stilist"
+                   , roleDuration = 60 * (1 * 60 + 20)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s1512
                    , roleName = "Stilist"
+                   , roleDuration = 60 * (1 * 60 + 20)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s1512
                    , roleName = "Stilist"
+                   , roleDuration = 60 * (1 * 60 + 20)
                    , roleRating = Just 5
                    }
 
@@ -711,18 +725,21 @@ populateRO = do
     insert_ $ Role { roleStaff = e8
                    , roleService = s1521
                    , roleName = "Colorist"
+                   , roleDuration = 60 * (1 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s1521
                    , roleName = "Colorist"
+                   , roleDuration = 60 * (1 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e10
                    , roleService = s1521
                    , roleName = "Colorist"
+                   , roleDuration = 60 * (1 * 60 + 0)
                    , roleRating = Just 5
                    }
 
@@ -752,12 +769,14 @@ populateRO = do
     insert_ $ Role { roleStaff = e10
                    , roleService = s1522
                    , roleName = "Colorist"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e11
                    , roleService = s1522
                    , roleName = "Colorist"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
@@ -787,18 +806,21 @@ populateRO = do
     insert_ $ Role { roleStaff = e9
                    , roleService = s1523
                    , roleName = "Colorist"
+                   , roleDuration = 60 * (1 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e10
                    , roleService = s1523
                    , roleName = "Colorist"
+                   , roleDuration = 60 * (1 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e11
                    , roleService = s1523
                    , roleName = "Colorist"
+                   , roleDuration = 60 * (1 * 60 + 45)
                    , roleRating = Just 5
                    }
 
@@ -843,18 +865,21 @@ populateRO = do
     insert_ $ Role { roleStaff = e1
                    , roleService = s1531
                    , roleName = "Stilist"
+                   , roleDuration = 60 * (0 * 60 + 35)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e2
                    , roleService = s1531
                    , roleName = "Stilist"
+                   , roleDuration = 60 * (0 * 60 + 35)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s1531
                    , roleName = "Stilist"
+                   , roleDuration = 60 * (0 * 60 + 35)
                    , roleRating = Just 5
                    }
 
@@ -884,18 +909,21 @@ populateRO = do
     insert_ $ Role { roleStaff = e3
                    , roleService = s1532
                    , roleName = "Stilist"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s1532
                    , roleName = "Stilist"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s1532
                    , roleName = "Stilist"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 5
                    }
 
@@ -925,18 +953,21 @@ populateRO = do
     insert_ $ Role { roleStaff = e5
                    , roleService = s1533
                    , roleName = "Stilist"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s1533
                    , roleName = "Stilist"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s1533
                    , roleName = "Stilist"
+                   , roleDuration = 60 * (1 * 60 + 25)
                    , roleRating = Just 5
                    }
 
@@ -994,18 +1025,21 @@ Fața ta este o pânză expresivă care arată experiența și emoția. Într-un
     insert_ $ Role { roleStaff = e8
                    , roleService = s21
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s21
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e10
                    , roleService = s21
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
@@ -1043,18 +1077,21 @@ Fața ta este o pânză expresivă care arată experiența și emoția. Într-un
     insert_ $ Role { roleStaff = e6
                    , roleService = s22
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s22
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e8
                    , roleService = s22
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1092,24 +1129,28 @@ Fața ta este o pânză expresivă care arată experiența și emoția. Într-un
     insert_ $ Role { roleStaff = e3
                    , roleService = s23
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (0 * 60 + 90)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s23
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (0 * 60 + 90)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s23
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (0 * 60 + 90)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s23
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (0 * 60 + 90)
                    , roleRating = Just 5
                    }
 
@@ -1147,18 +1188,21 @@ Fața ta este o pânză expresivă care arată experiența și emoția. Într-un
     insert_ $ Role { roleStaff = e1
                    , roleService = s24
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (2 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e2
                    , roleService = s24
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (2 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s24
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (2 * 60 + 0)
                    , roleRating = Just 5
                    }
 
@@ -1196,24 +1240,28 @@ Fața ta este o pânză expresivă care arată experiența și emoția. Într-un
     insert_ $ Role { roleStaff = e9
                    , roleService = s25
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e10
                    , roleService = s25
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e11
                    , roleService = s25
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e1
                    , roleService = s25
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
@@ -1274,12 +1322,14 @@ Ca rezultat, peelingul cu lapte este un proces puternic de refacere a pielii cu 
     insert_ $ Role { roleStaff = e8
                    , roleService = s31
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s31
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1322,18 +1372,21 @@ Scientia Derma Roller este un dispozitiv incredibil care crește în mod natural
     insert_ $ Role { roleStaff = e7
                    , roleService = s32
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e8
                    , roleService = s32
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s32
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1367,18 +1420,21 @@ O procedură nedureroasă, ajută la îndepărtarea cicatricilor de acnee, a por
     insert_ $ Role { roleStaff = e5
                    , roleService = s33
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s33
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s33
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 
@@ -1418,18 +1474,21 @@ O procedură nedureroasă, ajută la îndepărtarea cicatricilor de acnee, a por
     insert_ $ Role { roleStaff = e3
                    , roleService = s34
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (2 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s34
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (2 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s34
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (2 * 60 + 0)
                    , roleRating = Just 5
                    }
 
@@ -1496,12 +1555,14 @@ Acest tratament reduce aspectul liniilor fine și al ridurilor. Uniformizează t
     insert_ $ Role { roleStaff = e2
                    , roleService = s41
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s41
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
@@ -1550,12 +1611,14 @@ După doar un tratament, liniile de expresie par relaxate. Ridurile fine și rid
     insert_ $ Role { roleStaff = e1
                    , roleService = s42
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (2 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e2
                    , roleService = s42
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (2 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1607,12 +1670,14 @@ Acest tratament îmbunătățește tenul general reducând la minimum aspectul l
     insert_ $ Role { roleStaff = e10
                    , roleService = s43
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (2 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e1
                    , roleService = s43
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (2 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1646,6 +1711,7 @@ Promovează producerea de colagen, strânge și fermește țesuturile pielii, hi
     insert_ $ Role { roleStaff = e9
                    , roleService = s44
                    , roleName = "Cosmetician"
+                   , roleDuration = 60 * (0 * 60 + 15)
                    , roleRating = Just 5
                    }
 
@@ -1703,18 +1769,21 @@ Similar cu o permanentă, încercați să evitați să vă umeziți genele timp 
     insert_ $ Role { roleStaff = e7
                    , roleService = s51
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e8
                    , roleService = s51
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s51
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
@@ -1756,12 +1825,14 @@ Similar cu o permanentă, încercați să evitați să vă umeziți genele timp 
     insert_ $ Role { roleStaff = e6
                    , roleService = s52
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s52
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1791,18 +1862,21 @@ Similar cu o permanentă, încercați să evitați să vă umeziți genele timp 
     insert_ $ Role { roleStaff = e4
                    , roleService = s53
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s53
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s53
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1839,12 +1913,14 @@ Tratamentele pot fi efectuate în fiecare săptămână sau la două săptămân
     insert_ $ Role { roleStaff = e3
                    , roleService = s54
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s54
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (1 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -1874,12 +1950,14 @@ Tratamentele pot fi efectuate în fiecare săptămână sau la două săptămân
     insert_ $ Role { roleStaff = e2
                    , roleService = s55
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (1 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s55
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (1 * 60 + 45)
                    , roleRating = Just 5
                    }
 
@@ -1928,18 +2006,21 @@ Terapia de masaj suedez este modalitatea care vine în minte atunci când majori
     insert_ $ Role { roleStaff = e9
                    , roleService = s61
                    , roleName = "Maseur"
+                   , roleDuration = 60 * (1 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e1
                    , roleService = s61
                    , roleName = "Maseur"
+                   , roleDuration = 60 * (1 * 60 + 0)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e2
                    , roleService = s61
                    , roleName = "Maseur"
+                   , roleDuration = 60 * (1 * 60 + 0)
                    , roleRating = Just 5
                    }
 
@@ -1973,6 +2054,7 @@ Masajul pe scaun este un masaj de 15-20 de minute care se concentrează pe spate
     insert_ $ Role { roleStaff = e10
                    , roleService = s62
                    , roleName = "Maseur"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
@@ -2017,12 +2099,14 @@ Masajul picioarelor este o practică terapeutică care implică manipularea pici
     insert_ $ Role { roleStaff = e1
                    , roleService = s63
                    , roleName = "Maseur"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e11
                    , roleService = s63
                    , roleName = "Maseur"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -2071,18 +2155,21 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
     insert_ $ Role { roleStaff = e3
                    , roleService = s71
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (3 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e2
                    , roleService = s71
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (3 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e1
                    , roleService = s71
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (3 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -2112,12 +2199,14 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
     insert_ $ Role { roleStaff = e4
                    , roleService = s72
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s72
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 
@@ -2147,12 +2236,14 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
     insert_ $ Role { roleStaff = e5
                    , roleService = s73
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e4
                    , roleService = s73
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -2182,12 +2273,14 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
     insert_ $ Role { roleStaff = e6
                    , roleService = s74
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s74
                    , roleName = "Makeup artist"
+                   , roleDuration = 60 * (0 * 60 + 60)
                    , roleRating = Just 5
                    }
 
@@ -2232,18 +2325,21 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
     insert_ $ Role { roleStaff = e8
                    , roleService = s81
                    , roleName = "Specialist în epilare"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s81
                    , roleName = "Specialist în epilare"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s81
                    , roleName = "Specialist în epilare"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -2273,12 +2369,14 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
     insert_ $ Role { roleStaff = e9
                    , roleService = s82
                    , roleName = "Specialist în epilare"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e8
                    , roleService = s82
                    , roleName = "Specialist în epilare"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
@@ -2323,18 +2421,21 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
     insert_ $ Role { roleStaff = e9
                    , roleService = s91
                    , roleName = "Manichiurista"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e8
                    , roleService = s91
                    , roleName = "Manichiurista"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s91
                    , roleName = "Manichiurista"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
@@ -2364,12 +2465,14 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
     insert_ $ Role { roleStaff = e10
                    , roleService = s92
                    , roleName = "Manichiurista"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s92
                    , roleName = "Manichiurista"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -2399,12 +2502,14 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
     insert_ $ Role { roleStaff = e1
                    , roleService = s93
                    , roleName = "Manichiurista"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e11
                    , roleService = s93
                    , roleName = "Manichiurista"
+                   , roleDuration = 60 * (0 * 60 + 30)
                    , roleRating = Just 5
                    }
 
@@ -2434,12 +2539,14 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
     insert_ $ Role { roleStaff = e2
                    , roleService = s94
                    , roleName = "Manichiurista"
+                   , roleDuration = 60 * (0 * 60 + 40)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e1
                    , roleService = s94
                    , roleName = "Manichiurista"
+                   , roleDuration = 60 * (0 * 60 + 40)
                    , roleRating = Just 5
                    }
 
@@ -2469,12 +2576,14 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
     insert_ $ Role { roleStaff = e3
                    , roleService = s95
                    , roleName = "Manichiurista"
+                   , roleDuration = 60 * (0 * 60 + 25)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e2
                    , roleService = s95
                    , roleName = "Manichiurista"
+                   , roleDuration = 60 * (0 * 60 + 25)
                    , roleRating = Just 5
                    }
 
@@ -2504,12 +2613,14 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
     insert_ $ Role { roleStaff = e4
                    , roleService = s96
                    , roleName = "Estetician"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e3
                    , roleService = s96
                    , roleName = "Estetician"
+                   , roleDuration = 60 * (0 * 60 + 20)
                    , roleRating = Just 5
                    }
 
@@ -2539,12 +2650,14 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
     insert_ $ Role { roleStaff = e6
                    , roleService = s97
                    , roleName = "Manichiurista"
+                   , roleDuration = 60 * (0 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e5
                    , roleService = s97
                    , roleName = "Manichiurista"
+                   , roleDuration = 60 * (0 * 60 + 15)
                    , roleRating = Just 5
                    }
 
@@ -2591,12 +2704,14 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
     insert_ $ Role { roleStaff = e7
                    , roleService = s101
                    , roleName = "Estetician"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e6
                    , roleService = s101
                    , roleName = "Estetician"
+                   , roleDuration = 60 * (1 * 60 + 15)
                    , roleRating = Just 5
                    }
 
@@ -2626,12 +2741,14 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
     insert_ $ Role { roleStaff = e8
                    , roleService = s102
                    , roleName = "Estetician"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s102
                    , roleName = "Estetician"
+                   , roleDuration = 60 * (0 * 60 + 45)
                    , roleRating = Just 5
                    }
 
