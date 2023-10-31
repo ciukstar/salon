@@ -1,3 +1,4 @@
+ChoosePeriod: Choisir la période
 CompletionTime: Délai de réalisation
 Today: Aujourd'hui
 Mon: lun.

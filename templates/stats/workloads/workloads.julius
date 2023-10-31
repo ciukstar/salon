@@ -1,0 +1,20 @@
+
+Array.from(
+  document.getElementById(#{toolbar}).querySelectorAll('time.period')
+).forEach(function (x) {
+  x.textContent = new Date(x.getAttribute('datetime')).toLocaleDateString(
+    navigator.language,
+    { year: 'numeric',
+      month: 'numeric',
+      day: 'numeric'
+    }
+  );
+});
+
+Array.from(
+  document.querySelectorAll('.percent-format')
+).forEach(function (x) {
+  x.textContent = Number(x.dataset.value).toLocaleString(navigator.language, {
+    style: 'percent', minimumFractionDigits: 0, maximumFractionDigits: 2
+  })
+});

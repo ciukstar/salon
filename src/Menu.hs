@@ -1,11 +1,14 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE PatternSynonyms #-}
 
 module Menu (menu) where
 
 import Control.Monad.IO.Class (liftIO)
 import Data.Text (pack)
+import Data.Time.Calendar (toGregorian, periodLastDay, periodFirstDay)
+import Data.Time.Calendar.Month (pattern YearMonth)
 import Data.Time.Clock (utctDay, getCurrentTime)
 import Yesod.Core (liftHandler)
 import Yesod.Core.Handler (getCurrentRoute)
@@ -31,7 +34,7 @@ import Foundation
       ( MsgSourceCode, MsgDocumentation, MsgBrand, MsgContactUs, MsgAboutUs
       , MsgMyAppointments, MsgServices, MsgBookAppointment, MsgWelcome, MsgSalon
       , MsgUsers, MsgContact, MsgStaff, MsgData, MsgResources, MsgRequests
-      , MsgCalendar, MsgBusiness, MsgClose, MsgAnalytics, MsgPopularOffers
+      , MsgBusiness, MsgClose, MsgAnalytics, MsgPopularOffers
       , MsgWorkload
       )
     )
@@ -47,5 +50,10 @@ menu :: Widget
 menu = do
     business <- liftHandler $ runDB $ selectOne $ from $ table @Business
     today <- utctDay <$> liftIO getCurrentTime
+    
+    let (y,m,_) = toGregorian today
+        firstDay = periodFirstDay $ YearMonth y m
+        lastDay = periodLastDay $ YearMonth y m
+        
     curr <- getCurrentRoute
     $(widgetFile "menu")

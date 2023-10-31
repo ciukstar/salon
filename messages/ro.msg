@@ -1,3 +1,4 @@
+ChoosePeriod: Alege perioada
 CompletionTime: Timpul de finalizare
 Today: Astăzi
 Mon: lun.

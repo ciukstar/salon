@@ -134,7 +134,7 @@ instance Yesod App where
     isAuthorized (StaticR _) _ = return Authorized
 
     isAuthorized (StatsR PopOffersR) _ = return Authorized
-    isAuthorized (StatsR WorkloadsR) _ = return Authorized
+    isAuthorized (StatsR (WorkloadsR _ _)) _ = return Authorized
         
     isAuthorized (AdminR UsersR) _ = return Authorized
     isAuthorized (AdminR UserCreateFormR) _ = return Authorized

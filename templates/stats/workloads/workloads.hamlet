@@ -22,3 +22,53 @@
           <i.material-symbols-outlined>login
 
 <main.mdc-top-app-bar--fixed-adjust>
+
+  <div ##{toolbar} role=toolbar>
+    <button.mdc-button.mdc-button--outlined.mdc-button--icon-trailing type=button
+      onclick="document.getElementById('#{dlgTimeFrame}').MDCDialog.open()">
+      <span.mdc-button__ripple>
+      <span.mdc-button__focus-ring>
+      <span.mdc-button__label>
+        $with (s,e) <- (show start,show end)
+          <time.period datetime=#{s}>#{s}
+          &mdash;
+          <time.period datetime=#{e}>#{e}
+      <i.mdc-button-icon.material-symbols-outlined>arrow_drop_down
+
+  <nav.mdc-list data-mdc-auto-init=MDCList>
+    $forall ((eid,ename),ratio) <- ratios
+      <a.mdc-list-item.mdc-list-item--with-leading-image.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon 
+        href=#>
+        <span.mdc-list-item__ripple>
+        <span.mdc-list-item__start>
+          <img src=@{AdminR $ AdmStaffPhotoR eid} width=56 height=56 alt=_{MsgPhoto} loading=lazy>
+        <span.mdc-list-item__content>
+          <div.mdc-list-item__primary-text>
+            #{ename}
+          <div.mdc-list-item__secondary-text>
+            _{MsgWorkload}
+          $with x <- show ratio
+            <div.percent-format.mdc-list-item__secondary-text data-value=#{x}>
+              #{x}
+        <span.mdc-list-item__end>
+          <i.material-symbols-outlined>arrow_forward_ios
+
+<div.mdc-dialog ##{dlgTimeFrame} data-mdc-auto-init=MDCDialog>
+  <div.mdc-dialog__container>
+    <div.mdc-dialog__surface role=dialog aria-modal=true tabindex=-1>
+      <div.mdc-dialog__header>
+        <h4.mdc-dialog__title>_{MsgChoosePeriod}
+      <div.mdc-dialog__content>
+        ...
+              
+      <div.mdc-dialog__actions>
+        <button.mdc-button type=button data-mdc-dialog-action=cancel>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgCancel}
+        <button.mdc-button.mdc-button--raised type=submit form=formSearch>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgSelect}
+      
+  <div.mdc-dialog__scrim>

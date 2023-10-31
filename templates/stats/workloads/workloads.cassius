@@ -1,0 +1,8 @@
+
+main
+  ##{toolbar}
+    padding: 1rem
+
+.mdc-dialog
+  .mdc-dialog__actions
+    gap: 0.5rem

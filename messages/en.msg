@@ -1,3 +1,4 @@
+ChoosePeriod: Choose period
 CompletionTime: Completion time
 Today: Today
 Mon: Mon

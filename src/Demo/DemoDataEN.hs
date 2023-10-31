@@ -5,7 +5,6 @@
 
 module Demo.DemoDataEN (populateEN) where
 
-import Data.Maybe (fromMaybe)
 import Text.Blaze.Html.Renderer.Text (renderHtml)
 import Text.Hamlet (shamlet)
 import Text.Shakespeare.Text (st)
@@ -2878,7 +2877,7 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
     let book2 = Book { bookOffer = o111
                      , bookRole = Just r111
                      , bookCustomer = c2
-                     , bookDay = addDays 2 today
+                     , bookDay = today
                      , bookTime = time
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
@@ -2904,7 +2903,7 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
     let book3 = Book { bookOffer = o141
                      , bookRole = Nothing
                      , bookCustomer = c1
-                     , bookDay = addDays 3 today
+                     , bookDay = addDays 1 today
                      , bookTime = time
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business

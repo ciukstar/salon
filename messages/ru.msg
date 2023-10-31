@@ -1,3 +1,4 @@
+ChoosePeriod: Выберите период
 CompletionTime: Время выполнения
 Today: Сегодня
 Mon: пн
