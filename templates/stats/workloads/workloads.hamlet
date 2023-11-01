@@ -23,6 +23,21 @@
 
 <main.mdc-top-app-bar--fixed-adjust>
 
+  $case fr
+    $of FormFailure _
+      <div.mdc-banner role=banner data-mdc-auto-init=MDCBanner>
+        <div.mdc-banner__content role=alertdialog aria-live=assertive>
+          <div.mdc-banner__graphic-text-wrapper>
+            <div.mdc-banner__graphic role=img style="background-color:var(--mdc-theme-error)">
+              <i.mdc-banner__icon.material-symbols-outlined>warning
+            <div.mdc-banner__text>
+              _{MsgInvalidFormData}
+          <div.mdc-banner__actions>
+            <button.mdc-banner__primary-action.mdc-icon-button type=button>
+              <span.mdc-icon-button__ripple>
+              <i.material-symbols-outlined>close
+    $of _
+
   <div ##{toolbar} role=toolbar>
     <button.mdc-button.mdc-button--outlined.mdc-button--icon-trailing type=button
       onclick="document.getElementById('#{dlgTimeFrame}').MDCDialog.open()">
@@ -36,37 +51,43 @@
       <i.mdc-button-icon.material-symbols-outlined>arrow_drop_down
 
   <nav.mdc-list data-mdc-auto-init=MDCList>
-    $forall ((eid,ename),ratio) <- ratios
-      <a.mdc-list-item.mdc-list-item--with-leading-image.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon 
-        href=#>
-        <span.mdc-list-item__ripple>
-        <span.mdc-list-item__start>
-          <img src=@{AdminR $ AdmStaffPhotoR eid} width=56 height=56 alt=_{MsgPhoto} loading=lazy>
-        <span.mdc-list-item__content>
-          <div.mdc-list-item__primary-text>
-            #{ename}
-          <div.mdc-list-item__secondary-text>
-            _{MsgWorkload}
-          $with x <- show ratio
-            <div.percent-format.mdc-list-item__secondary-text data-value=#{x}>
-              #{x}
-        <span.mdc-list-item__end>
-          <i.material-symbols-outlined>arrow_forward_ios
+    $if null ratios
+      <figure style="text-align:center">
+        <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
+        <figcaption>_{MsgNoDataFound}.
+    $else
+      $forall ((eid,ename),ratio) <- ratios
+        <a.mdc-list-item.mdc-list-item--with-leading-image.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon 
+          href=@?{(StatsR $ WorkloadEmplMonthR eid (dayPeriod end),stati)}>
+          <span.mdc-list-item__ripple>
+          <span.mdc-list-item__start>
+            <img src=@{AdminR $ AdmStaffPhotoR eid} width=56 height=56 alt=_{MsgPhoto} loading=lazy>
+          <span.mdc-list-item__content>
+            <div.mdc-list-item__primary-text>
+              #{ename}
+            <div.mdc-list-item__secondary-text>
+              _{MsgWorkload}
+            $with x <- show ratio
+              <div.percent-format.mdc-list-item__secondary-text data-value=#{x}>
+                #{x}
+          <span.mdc-list-item__end>
+            <i.material-symbols-outlined>arrow_forward_ios
 
 <div.mdc-dialog ##{dlgTimeFrame} data-mdc-auto-init=MDCDialog>
   <div.mdc-dialog__container>
     <div.mdc-dialog__surface role=dialog aria-modal=true tabindex=-1>
       <div.mdc-dialog__header>
-        <h4.mdc-dialog__title>_{MsgChoosePeriod}
+        <h4.mdc-dialog__title>_{MsgPeriod}
       <div.mdc-dialog__content>
-        ...
+        <form method=get action=@{StatsR WorkloadsR} ##{formTimeFrame} enctype=#{et} novalidate>
+          ^{fw}
               
       <div.mdc-dialog__actions>
         <button.mdc-button type=button data-mdc-dialog-action=cancel>
           <span.mdc-button__ripple>
           <span.mdc-button__focus-ring>
           <span.mdc-button__label>_{MsgCancel}
-        <button.mdc-button.mdc-button--raised type=submit form=formSearch>
+        <button.mdc-button.mdc-button--raised type=submit form=#{formTimeFrame}>
           <span.mdc-button__ripple>
           <span.mdc-button__focus-ring>
           <span.mdc-button__label>_{MsgSelect}

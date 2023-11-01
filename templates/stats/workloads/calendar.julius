@@ -1,12 +1,11 @@
 
 Array.from(
-  document.getElementById(#{toolbar}).querySelectorAll('time.period')
+  document.querySelectorAll('time.year-month[datetime]')
 ).forEach(function (x) {
   x.textContent = new Date(x.getAttribute('datetime')).toLocaleDateString(
     navigator.language,
     { year: 'numeric',
-      month: 'numeric',
-      day: 'numeric'
+      month: 'long'
     }
   );
 });
@@ -18,9 +17,3 @@ Array.from(
     style: 'percent', minimumFractionDigits: 0, maximumFractionDigits: 2
   })
 });
-
-window.mdc.autoInit();
-
-Array.from(
-  document.querySelectorAll('div.mdc-banner')
-).forEach(function (x) { x.MDCBanner.open(); });

@@ -1,3 +1,9 @@
+TotalScheduledTime: Общее запланированное время
+TotalBookedTime: Общее забронированное время
+NoDataFound: Данные не найдены
+BetweenTo: По
+BetweenFrom: С
+Period: Период
 ChoosePeriod: Выберите период
 CompletionTime: Время выполнения
 Today: Сегодня

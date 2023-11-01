@@ -1,0 +1,55 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
+        href=@?{(StatsR WorkloadsR,stati)}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgWorkload}
+
+<main.mdc-top-app-bar--fixed-adjust>
+
+  $maybe Entity eid (Staff ename _ _ _ _ _) <- employee
+    <figure>
+      <img src=@{AdminR $ AdmStaffPhotoR eid} width=56 height=56 alt=_{MsgPhoto} loading=lazy>
+      <figcaption>#{ename}
+
+  
+  <div.calendar>
+    <div.header>
+      <a.mdc-icon-button href=@?{(StatsR $ WorkloadEmplMonthR eid prev,stati)} role=button>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>arrow_back
+      $with m <- show month
+        <time.year-month datetime=#{m}>
+          #{m}
+      <a.mdc-icon-button href=@?{(StatsR $ WorkloadEmplMonthR eid next,stati)} role=button>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>arrow_forward
+    $forall wd <- [MsgMon,MsgTue,MsgWed,MsgThu,MsgFri,MsgSat,MsgSun]
+      <div.col-header>
+        _{wd}
+    $forall i <- [0,1,2,3,4,5]
+      $forall day <- take 7 (drop (i * 7) page)
+        <div.cell>
+          $with (y,m,d) <- toGregorian day
+            $if (==) month (YearMonth y m)
+              $with slot <- find ((((==) day) . snd) . fst) ratios
+                $maybe ((eid,day),ratio) <- slot
+                  <a href=@?{(StatsR $ WorkloadEmplDayR eid day,stati)}>
+                    <time.day-of-month datetime=#{show day}>
+                      <small>#{d}
+                    $with r <- show ratio
+                      <small.percent-format data-value=#{r}>
+                        #{show r}
+                    <div style="border:2px solid var(--theme-accent)">
+                $nothing
+                  <a href=#>
+                    <time.day-of-month datetime=#{show day}>
+                      <small>#{d}
+            $else
+              <time.day-of-month datetime=#{show day} style="color:var(--theme-text-hint-on-light)">
+                <small>#{d}

@@ -39,7 +39,10 @@ import ClassyPrelude.Yesod
     , truncate
     )
 import Yesod.Auth.HashDB (HashDBUser (userPasswordHash, setPasswordHash))
-import Yesod.Core.Dispatch (PathMultiPiece, toPathMultiPiece, fromPathMultiPiece)
+import Yesod.Core.Dispatch
+    ( PathMultiPiece, toPathMultiPiece, fromPathMultiPiece
+    , PathPiece, toPathPiece, fromPathPiece
+    )
 import Data.Text (pack, unpack)
 import Text.Hamlet (Html)
 import Text.Show (Show, show)
@@ -181,8 +184,17 @@ share [mkPersist sqlSettings, mkMigrate "migrateAll"]
     $(persistFileWith lowerCaseSettings "config/models.persistentmodels")
 
 
+instance PathPiece Month where
+    toPathPiece :: Month -> Text
+    toPathPiece = pack . show
+
+    fromPathPiece :: Text -> Maybe Month
+    fromPathPiece = readMaybe . unpack
+
+
 newtype Services = Services { unServices :: [ServiceId] }
     deriving (Show, Read, Eq)
+
 
 instance PathMultiPiece Services where
     toPathMultiPiece :: Services -> [Text]

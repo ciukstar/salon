@@ -1,3 +1,9 @@
+TotalScheduledTime: Total scheduled time
+TotalBookedTime: Total booked time
+NoDataFound: No data found
+BetweenTo: To
+BetweenFrom: From
+Period: Period
 ChoosePeriod: Choose period
 CompletionTime: Completion time
 Today: Today

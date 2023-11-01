@@ -1,3 +1,9 @@
+TotalScheduledTime: Durée totale programmée
+TotalBookedTime: Durée totale réservée
+NoDataFound: Aucune donnée disponible
+BetweenTo: Au
+BetweenFrom: Du
+Period: Période
 ChoosePeriod: Choisir la période
 CompletionTime: Délai de réalisation
 Today: Aujourd'hui

@@ -48,8 +48,12 @@
 
 
 /stats StatsR:
-    /pop-offers          PopOffersR GET
-    /workloads/#Day/#Day WorkloadsR GET
+
+    /pop-offers	PopOffersR GET
+    
+    /workloads/#StaffId/days/#Day WorkloadEmplDayR   GET
+    /workloads/#StaffId/#Month    WorkloadEmplMonthR GET
+    /workloads  	          WorkloadsR         GET
 
 
 /admin AdminR:

@@ -1,0 +1,39 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
+        href=@?{(StatsR $ WorkloadEmplMonthR eid (dayPeriod day),stati)}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgWorkload}
+
+<main.mdc-top-app-bar--fixed-adjust>
+
+  $maybe Entity eid (Staff ename _ _ _ _ _) <- employee
+    <figure>
+      <img src=@{AdminR $ AdmStaffPhotoR eid} width=56 height=56 alt=_{MsgPhoto} loading=lazy>
+      <figcaption>#{ename}
+
+    $with d <- show day
+      <time.day datetime=#{d}>#{d}
+
+
+    $with rmsg <- renderMessage app langs
+      $with pat <- intercalate "" ["%H",rmsg MsgSymbolHour," %M",rmsg MsgSymbolMinute]
+        $with fmt <- formatTime defaultTimeLocale (unpack pat)
+          <div.mdc-data-table>
+            <div.mdc-data-table__container>
+              <table.mdc-data-table__table>
+                <tbody.mdc-data-table__content>
+                  <tr.mdc-data-table__row>
+                    <th.mdc-data-table__cell scope=row>_{MsgTotalBookedTime}:
+                    <td.mdc-data-table__cell>#{fmt booked}
+                  <tr.mdc-data-table__row>
+                    <th.mdc-data-table__cell scope=row>_{MsgTotalScheduledTime}:
+                    <td.mdc-data-table__cell>#{fmt planned}
+                  <tr.mdc-data-table__row>
+                    <th.mdc-data-table__cell scope=row>_{MsgWorkload}:
+                    <td.mdc-data-table__cell>
+                      $with r <- show ratio
+                        <span.percent-format data-value=#{r}>#{r}

@@ -1,3 +1,9 @@
+TotalScheduledTime: Timp total programat
+TotalBookedTime: Timp total rezervat
+NoDataFound: Nu s-au gasit date
+BetweenTo: Până la
+BetweenFrom: De la
+Period: Perioada
 ChoosePeriod: Alege perioada
 CompletionTime: Timpul de finalizare
 Today: Astăzi

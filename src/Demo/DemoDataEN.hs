@@ -392,13 +392,51 @@ We will continue to offer the latest treatments, the most innovative techniques 
                                       , staffPhotoMime = "image/avif"
                                       }
 
-    e9 <- insert $ Staff { staffName = "Jorge Walker"
-                         , staffStatus = EmplStatusAvailable
-                         , staffPhone = businessPhone business
-                         , staffMobile = businessMobile business
-                         , staffEmail = Just "jwalker@mail.uk"
-                         , staffUser = Nothing
-                         }
+    let empl9 = Staff { staffName = "Jorge Walker"
+                      , staffStatus = EmplStatusAvailable
+                      , staffPhone = businessPhone business
+                      , staffMobile = businessMobile business
+                      , staffEmail = Just "jwalker@mail.uk"
+                      , staffUser = Nothing
+                      }
+
+    e9 <- insert empl9
+
+    insert_ $ Schedule { scheduleStaff = e9
+                       , scheduleWorkDay = addDays (-2) today
+                       , scheduleWorkStart = TimeOfDay 9 0 0
+                       , scheduleWorkEnd = TimeOfDay 18 0 0
+                       }
+
+    insert_ $ Schedule { scheduleStaff = e9
+                       , scheduleWorkDay = addDays (-1) today
+                       , scheduleWorkStart = TimeOfDay 9 0 0
+                       , scheduleWorkEnd = TimeOfDay 18 0 0
+                       }
+
+    insert_ $ Schedule { scheduleStaff = e9
+                       , scheduleWorkDay = addDays 0 today
+                       , scheduleWorkStart = TimeOfDay 9 0 0
+                       , scheduleWorkEnd = TimeOfDay 18 0 0
+                       }
+
+    insert_ $ Schedule { scheduleStaff = e9
+                       , scheduleWorkDay = addDays 1 today
+                       , scheduleWorkStart = TimeOfDay 9 0 0
+                       , scheduleWorkEnd = TimeOfDay 18 0 0
+                       }
+
+    insert_ $ Schedule { scheduleStaff = e9
+                       , scheduleWorkDay = addDays 2 today
+                       , scheduleWorkStart = TimeOfDay 9 0 0
+                       , scheduleWorkEnd = TimeOfDay 18 0 0
+                       }
+
+    insert_ $ Schedule { scheduleStaff = e9
+                       , scheduleWorkDay = addDays 3 today
+                       , scheduleWorkStart = TimeOfDay 9 0 0
+                       , scheduleWorkEnd = TimeOfDay 18 0 0
+                       }
 
     case B64.decode man05 of
       Left _ -> return ()
@@ -1273,13 +1311,13 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
                             , serviceGroup = Just s2
                             }
 
-    insert_ $ Offer { offerService = s25
-                    , offerName = "Price"
-                    , offerPrice = 100
-                    , offerPrefix = Just "$"
-                    , offerSuffix = Nothing
-                    , offerDescr = Nothing
-                    }
+    o251 <- insert $ Offer { offerService = s25
+                           , offerName = "Price"
+                           , offerPrice = 100
+                           , offerPrefix = Just "$"
+                           , offerSuffix = Nothing
+                           , offerDescr = Nothing
+                           }
 
     insert_ $ Offer { offerService = s25
                     , offerName = "Package"
@@ -1296,12 +1334,14 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
-    insert_ $ Role { roleStaff = e9
-                   , roleService = s25
-                   , roleName = "Esthetician"
-                   , roleDuration = 60 * (1 * 60 + 15)
-                   , roleRating = Just 5
-                   }
+    let role925 = Role { roleStaff = e9
+                       , roleService = s25
+                       , roleName = "Esthetician"
+                       , roleDuration = 60 * (1 * 60 + 15)
+                       , roleRating = Just 5
+                       }
+
+    r925 <- insert role925
 
     insert_ $ Role { roleStaff = e10
                    , roleService = s25
@@ -1420,13 +1460,13 @@ The Scientia Derma Roller is an incredible device which naturally increases the 
                             , serviceGroup = Just s3
                             }
 
-    insert_ $ Offer { offerService = s32
-                    , offerName = "Price"
-                    , offerPrice = 330
-                    , offerPrefix = Just "$"
-                    , offerSuffix = Nothing
-                    , offerDescr = Nothing
-                    }
+    o321 <- insert $ Offer { offerService = s32
+                           , offerName = "Price"
+                           , offerPrice = 330
+                           , offerPrefix = Just "$"
+                           , offerSuffix = Nothing
+                           , offerDescr = Nothing
+                           }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s32
@@ -2924,6 +2964,110 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
                    , histStatus = BookStatusRequest
                    , histRoleName = Nothing
                    , histStaffName = Nothing
+                   }
+
+    let book4 = Book { bookOffer = o251
+                     , bookRole = Just r925
+                     , bookCustomer = c1
+                     , bookDay = addDays 1 today
+                     , bookTime = time
+                     , bookAddr = businessAddr business
+                     , bookTzo = businessTzo business
+                     , bookTz = businessTz business
+                     , bookStatus = BookStatusRequest
+                     }
+
+    b4 <- insert book4
+
+    insert_ $ Hist { histBook = b4
+                   , histUser = c1
+                   , histLogtime = now
+                   , histDay = bookDay book4
+                   , histTime = bookTime book4
+                   , histAddr = bookAddr book4
+                   , histTzo = bookTzo book4
+                   , histTz = bookTz book4
+                   , histStatus = BookStatusRequest
+                   , histRoleName = Just $ roleName role925
+                   , histStaffName = Just $ staffName empl9
+                   }
+
+    let book5 = Book { bookOffer = o321
+                     , bookRole = Just r925
+                     , bookCustomer = c1
+                     , bookDay = addDays 1 today
+                     , bookTime = time
+                     , bookAddr = businessAddr business
+                     , bookTzo = businessTzo business
+                     , bookTz = businessTz business
+                     , bookStatus = BookStatusRequest
+                     }
+
+    b5 <- insert book5
+
+    insert_ $ Hist { histBook = b5
+                   , histUser = c1
+                   , histLogtime = now
+                   , histDay = bookDay book5
+                   , histTime = bookTime book5
+                   , histAddr = bookAddr book5
+                   , histTzo = bookTzo book5
+                   , histTz = bookTz book5
+                   , histStatus = BookStatusRequest
+                   , histRoleName = Just $ roleName role925
+                   , histStaffName = Just $ staffName empl9
+                   }
+
+    let book6 = Book { bookOffer = o321
+                     , bookRole = Just r925
+                     , bookCustomer = c1
+                     , bookDay = addDays 2 today
+                     , bookTime = time
+                     , bookAddr = businessAddr business
+                     , bookTzo = businessTzo business
+                     , bookTz = businessTz business
+                     , bookStatus = BookStatusRequest
+                     }
+
+    b6 <- insert book6
+
+    insert_ $ Hist { histBook = b6
+                   , histUser = c1
+                   , histLogtime = now
+                   , histDay = bookDay book6
+                   , histTime = bookTime book6
+                   , histAddr = bookAddr book6
+                   , histTzo = bookTzo book6
+                   , histTz = bookTz book6
+                   , histStatus = BookStatusRequest
+                   , histRoleName = Just $ roleName role925
+                   , histStaffName = Just $ staffName empl9
+                   }
+
+    let book7 = Book { bookOffer = o321
+                     , bookRole = Just r925
+                     , bookCustomer = c1
+                     , bookDay = addDays 3 today
+                     , bookTime = time
+                     , bookAddr = businessAddr business
+                     , bookTzo = businessTzo business
+                     , bookTz = businessTz business
+                     , bookStatus = BookStatusRequest
+                     }
+
+    b7 <- insert book7
+
+    insert_ $ Hist { histBook = b7
+                   , histUser = c1
+                   , histLogtime = now
+                   , histDay = bookDay book7
+                   , histTime = bookTime book7
+                   , histAddr = bookAddr book7
+                   , histTzo = bookTzo book7
+                   , histTz = bookTz book7
+                   , histStatus = BookStatusRequest
+                   , histRoleName = Just $ roleName role925
+                   , histStaffName = Just $ staffName empl9
                    }
 
     return ()

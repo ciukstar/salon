@@ -73,7 +73,7 @@
           <span.mdc-deprecated-list-item__text>_{MsgContactUs}
       <hr.mdc-deprecated-list-divider role=separator>
       
-      <details :elem curr [Just (StatsR PopOffersR),Just (StatsR (WorkloadsR firstDay lastDay))]:open
+      <details :elem curr [Just (StatsR PopOffersR),Just (StatsR WorkloadsR)]:open
         ontoggle="this.querySelector('i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
         <summary.mdc-deprecated-list>
           <li.mdc-deprecated-list-item>
@@ -90,10 +90,10 @@
             <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>query_stats
             <span.mdc-deprecated-list-item__text>_{MsgPopularOffers}
       
-          <a.mdc-deprecated-list-item href=@{StatsR $ WorkloadsR firstDay lastDay}
-            :Just (StatsR $ WorkloadsR firstDay lastDay) /= curr:tabindex=-1
-            :Just (StatsR $ WorkloadsR firstDay lastDay) == curr:tabindex=0
-            :Just (StatsR $ WorkloadsR firstDay lastDay) == curr:.mdc-deprecated-list-item--activated>
+          <a.mdc-deprecated-list-item href=@?{(StatsR WorkloadsR,[("start",pack $ show firstDay),("end",pack $ show lastDay)])}
+            :Just (StatsR WorkloadsR) /= curr:tabindex=-1
+            :Just (StatsR WorkloadsR) == curr:tabindex=0
+            :Just (StatsR WorkloadsR) == curr:.mdc-deprecated-list-item--activated>
             <span.mdc-deprecated-list-item__ripple>
             <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>query_stats
             <span.mdc-deprecated-list-item__text>_{MsgWorkload}

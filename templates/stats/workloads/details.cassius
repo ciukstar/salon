@@ -1,0 +1,17 @@
+
+main
+  display: flex
+  flex-direction: column
+  gap: 1rem
+  figure, time.day
+    text-align: center
+  time.day
+    display: block
+    color: var(--theme-text-hint-on-light)
+  div.mdc-data-table
+    align-self: center
+    tbody tr th
+      font-weight: 500
+      white-space: normal
+    tbody tr td
+      white-space: normal

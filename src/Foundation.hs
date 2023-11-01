@@ -15,6 +15,7 @@ module Foundation where
 import Import.NoFoundation
 import Data.Kind            (Type)
 import qualified Data.Text as T (pack)
+import Data.Time.Calendar.Month (Month)
 import Text.Hamlet          (hamletFile)
 import Text.Jasmine         (minifym)
 import Control.Monad.Logger (LogSource)
@@ -134,7 +135,10 @@ instance Yesod App where
     isAuthorized (StaticR _) _ = return Authorized
 
     isAuthorized (StatsR PopOffersR) _ = return Authorized
-    isAuthorized (StatsR (WorkloadsR _ _)) _ = return Authorized
+    isAuthorized (StatsR WorkloadsR) _ = return Authorized
+    isAuthorized (StatsR (WorkloadEmplMonthR _ _)) _ = return Authorized
+    isAuthorized (StatsR (WorkloadEmplDayR _ _)) _ = return Authorized
+        
         
     isAuthorized (AdminR UsersR) _ = return Authorized
     isAuthorized (AdminR UserCreateFormR) _ = return Authorized
