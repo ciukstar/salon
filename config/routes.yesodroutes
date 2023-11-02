@@ -10,7 +10,7 @@
 /requests/#BookId                   RequestR           GET POST
 /requests                           RequestsR          GET
 
-/search/appointments             AppointmentsSearchR     GET
+/search/appointments             AppointmentsSearchR    GET
 /appointments/#BookId/approve    AppointmentApproveR    POST
 /appointments/#BookId/reschedule AppointmentRescheduleR GET
 /appointments/#BookId/cancel     AppointmentCancelR     POST

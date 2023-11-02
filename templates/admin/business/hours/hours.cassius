@@ -15,8 +15,12 @@ header
     height: 56px
 
 main
-  div.toolbar
-    margin-left: 1rem
+  ##{toolbarTop}
+    display: flex
+    flex-direction: row
+    justify-content: space-between
+    align-items: center
+    margin: 1rem 1rem 0 1rem
     a.mdc-segmented-button__segment
       border-width: 1px
       border-style: solid

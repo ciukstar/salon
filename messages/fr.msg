@@ -1,3 +1,8 @@
+BasicEntities: Entités de base
+BusinessDay: Jour ouvrable
+SortDescending: Trier par ordre décroissant
+SortAscending: Trier par ordre croissant
+Sort: Trier
 Workday: Journée de travail
 TimeSlot: Créneau horaire
 CustomerRanking: Classement des clients
@@ -305,3 +310,9 @@ Doc002 hrefServices: Les services à annoncer sont définis et publiés dans la 
 Doc003: Chaque service peut avoir plusieurs offres avec des prix et des devises correspondants. Les offres sont définies pour chaque Service dans la rubrique « Services » du groupe « Données ».
 
 Doc004 hrefServices hrefBook: Une fois le service et ses offres définis, le service peut être publié. La prestation et les offres seront présentées au client dans la rubrique <a href=#{hrefServices}>« Services »</a> et disponibles à la réservation dans la rubrique <a href=#{hrefBook}>« Prenez rendez-vous »</a>.
+
+Doc005 hrefBusiness: Des informations détaillées sur l'entreprise peuvent être fournies dans la section <a href=#{hrefBusiness}>« Entreprise »</a> du groupe « Données » du menu principal.
+
+Doc006 hrefBusiness: De plus, dans la section <a href=#{hrefBusiness}>« Affaires »</a>, l'horaire de travail de l'organisation pour chaque jour peut être ajouté.
+
+Doc007: Actuellement, l'application ne prend en charge qu'une seule entreprise. Un support multi-métiers est prévu pour les futures versions de l'application.

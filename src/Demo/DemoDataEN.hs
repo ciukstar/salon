@@ -229,6 +229,12 @@ We will continue to offer the latest treatments, the most innovative techniques 
                        , scheduleWorkEnd = TimeOfDay 18 0 0
                        }
 
+    insert_ $ Schedule { scheduleStaff = e1
+                       , scheduleWorkDay = addDays 2 today
+                       , scheduleWorkStart = TimeOfDay 9 0 0
+                       , scheduleWorkEnd = TimeOfDay 18 0 0
+                       }
+
     pass2 <- liftIO $ makePassword "marylopez" 17
     let user2 = User { userName = "marylopez"
                      , userPassword = decodeUtf8 pass2

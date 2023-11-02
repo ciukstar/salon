@@ -1,3 +1,8 @@
+BasicEntities: Entităţile de bază
+BusinessDay: Zi de lucru
+SortDescending: Sortează descrescător
+SortAscending: Sortare ascendentă
+Sort: Sortează
 Workday: Zi de lucru
 TimeSlot: Interval de timp
 CustomerRanking: Clasamentul clienților
@@ -305,3 +310,9 @@ Doc002 hrefServices: Serviciile care vor fi promovate sunt definite și publicat
 Doc003: Fiecare serviciu poate avea mai multe oferte cu prețuri și valute corespunzătoare. Ofertele sunt definite pentru fiecare Serviciu în secțiunea „Servicii” din grupul „Date”.
 
 Doc004 hrefServices hrefBook: Odată ce serviciul și ofertele sale sunt definite, serviciul poate fi publicat. Serviciul și ofertele vor fi afișate clientului în secțiunea <a href=#{hrefServices}>„Servicii”</a> și disponibile pentru rezervare în secțiunea <a href=#{hrefBook}>„Rezervă o programare”</a>.
+
+Doc005 hrefBusiness: Informații detaliate despre afacere pot fi furnizate în secțiunea <a href=#{hrefBusiness}>„Afacere”</a> din grupul „Date” din meniul principal.
+
+Doc006 hrefBusiness: În plus, în secțiunea <a href=#{hrefBusiness}>„Afaceri”</a>, poate fi adăugat programul de lucru al organizației pentru fiecare zi.
+
+Doc007: În prezent, aplicația acceptă o singură afacere. Asistența multi-business este planificată pentru versiunile viitoare ale aplicației.

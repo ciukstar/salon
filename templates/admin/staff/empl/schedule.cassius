@@ -14,7 +14,7 @@ main
       .mdc-tab-indicator.mdc-tab-indicator--active
         .mdc-tab-indicator__content--underline
           border-color: var(--mdc-theme-on-primary)
-  div.toolbar
+  ##{toolbarTop}
     padding: 1rem 1rem 0.5rem 1rem
     display: flex
     flex-direction: row

@@ -1,7 +1,11 @@
 
 main
-  ##{toolbar}
-    padding: 1rem
+  ##{toolbarTop}
+    margin: 1rem 1rem 1rem 0
+    display: flex
+    flex-direction: row
+    justify-content: space-between
+    align-items: center
 
 ##{dlgTimeFrame}
   ##{formTimeFrame}

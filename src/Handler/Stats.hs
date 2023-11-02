@@ -15,6 +15,7 @@ module Handler.Stats
 import Control.Monad.IO.Class (liftIO)
 import Data.Bifunctor (second)
 import Data.Foldable (find)
+import Data.List (sortBy)
 import Data.Maybe (fromMaybe, isJust)
 import Data.Text (pack, unpack, intercalate)
 import Data.Time.Calendar
@@ -28,6 +29,7 @@ import Data.Time.LocalTime (timeOfDayToTime)
 import qualified Data.Map.Lazy as M (fromListWith, fromList, toList)
 import qualified Data.Map.Merge.Lazy as ML (merge, mapMissing, zipWithMatched)
 import Text.Hamlet (Html)
+import Text.Read (readMaybe)
 import Text.Shakespeare.I18N (SomeMessage (SomeMessage), renderMessage)
 import Yesod.Auth (maybeAuth, Route (LoginR))
 import Yesod.Core (defaultLayout)
@@ -36,7 +38,7 @@ import Yesod.Core.Handler
     )
 import Yesod.Core.Widget (setTitleI, whamlet)
 import Yesod.Form.Input (runInputGet, iopt)
-import Yesod.Form.Fields (dayField)
+import Yesod.Form.Fields (dayField, textField)
 import Yesod.Form.Functions (check, generateFormGet', runFormGet, mreq)
 import Yesod.Form.Types
     ( Field, MForm, FormResult (FormSuccess, FormMissing, FormFailure)
@@ -65,7 +67,8 @@ import Foundation
       , MsgSelect, MsgCancel, MsgPeriod, MsgBetweenFrom, MsgBetweenTo, MsgBack
       , MsgInvalidFormData, MsgInvalidTimeInterval, MsgNoDataFound, MsgMon
       , MsgTue, MsgWed, MsgThu, MsgFri, MsgSat, MsgSun, MsgTotalBookedTime
-      , MsgTotalScheduledTime, MsgSymbolMinute, MsgSymbolHour
+      , MsgTotalScheduledTime, MsgSymbolMinute, MsgSymbolHour, MsgSortAscending
+      , MsgSortDescending
       )
     )
 
@@ -77,6 +80,7 @@ import Model
       , StaffId, BookDay, RoleDuration, ScheduleStaff, ScheduleWorkDay, ScheduleWorkEnd
       , ScheduleWorkStart, StaffName
       )
+    , SortOrder (SortOrderAsc, SortOrderDesc)
     )
 
 import Settings (widgetFile)
@@ -189,12 +193,12 @@ getWorkloadEmplMonthR eid month = do
 
 getWorkloadsR :: Handler Html
 getWorkloadsR = do
-    stati <- reqGetParams <$> getRequest
+    stati <- filter ((/= "sort") . fst) . reqGetParams <$> getRequest
 
     today <- liftIO (utctDay <$> getCurrentTime)
     start <- fromMaybe today <$> runInputGet (iopt dayField "start")
     end <- fromMaybe today <$> runInputGet (iopt dayField "end")
-
+    sort <- fromMaybe SortOrderDesc . (readMaybe . unpack =<<) <$> runInputGet (iopt textField "sort")
 
     booked <- (unwrap <$>) <$> runDB ( select $ do
         b :& r :& e <- from $ table @Book
@@ -213,7 +217,7 @@ getWorkloadsR = do
         where_ $ s ^. ScheduleWorkDay `between` (val start, val end)
         return (e ^. StaffId, e ^. StaffName, s ^. ScheduleWorkStart, s ^. ScheduleWorkEnd) ) )
 
-    let ratios = M.toList $ ML.merge
+    let ratios = sortBy (choose sort) . M.toList $ ML.merge
           (ML.mapMissing $ \ _ _ -> 0)
           (ML.mapMissing $ \ _ _ -> 0)
           (ML.zipWithMatched $ \ _ x y -> (if 0 == y then 0 else x / y :: Double))
@@ -222,11 +226,11 @@ getWorkloadsR = do
 
     user <- maybeAuth
     setUltDestCurrent
-    toolbar <- newIdent
+    toolbarTop <- newIdent
     dlgTimeFrame <- newIdent
     formTimeFrame <- newIdent
 
-    ((fr,fw),et) <- runFormGet $ formPeriod start end
+    ((fr,fw0),et0) <- runFormGet $ formPeriod start end
     case fr of
       FormMissing -> do
           (fw,et) <- generateFormGet' $ formPeriod start end
@@ -234,14 +238,17 @@ getWorkloadsR = do
               setTitleI MsgWorkload
               $(widgetFile "stats/workloads/workloads")
 
-      _ -> defaultLayout $ do
-          setTitleI MsgWorkload
-          $(widgetFile "stats/workloads/workloads")
-
-
+      _ -> do
+          let (fw,et) = (fw0,et0)
+          defaultLayout $ do
+              setTitleI MsgWorkload
+              $(widgetFile "stats/workloads/workloads")
 
   where
 
+      choose SortOrderAsc  (_,x) (_,y) = x `compare` y
+      choose SortOrderDesc (_,x) (_,y) = y `compare` x
+      
       unwrap (Value eid,Value ename,Value dur) = ((eid,ename),dur)
 
       calcdur (Value eid,Value ename,Value start,Value end) =

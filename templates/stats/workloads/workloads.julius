@@ -1,6 +1,6 @@
 
 Array.from(
-  document.getElementById(#{toolbar}).querySelectorAll('time.period')
+  document.getElementById(#{toolbarTop}).querySelectorAll('time.period')
 ).forEach(function (x) {
   x.textContent = new Date(x.getAttribute('datetime')).toLocaleDateString(
     navigator.language,

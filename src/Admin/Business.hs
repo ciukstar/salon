@@ -34,9 +34,8 @@ import Control.Monad.IO.Class (liftIO)
 import Data.Bifunctor (first)
 import Data.Fixed (mod')
 import qualified Data.Map.Lazy as M (fromListWith, lookup)
-import Data.Maybe (isNothing, isJust)
+import Data.Maybe (isNothing, isJust, fromMaybe)
 import Data.Text (Text, pack, unpack, intercalate)
-import Text.Shakespeare.I18N (renderMessage)
 import Data.Time.Clock
     ( NominalDiffTime, getCurrentTime, utctDay, secondsToNominalDiffTime )
 import Data.Time.Calendar
@@ -50,13 +49,18 @@ import Data.Time.LocalTime
     )
 import Data.Time.Format (formatTime, defaultTimeLocale)
 import Text.Hamlet (Html)
+import Text.Shakespeare.I18N (renderMessage)
+import Text.Read (readMaybe)
 import Yesod.Auth (maybeAuth, Route (LoginR))
 import Yesod.Core
     ( Yesod(defaultLayout), getMessages, SomeMessage (SomeMessage)
     , redirect, addMessageI, newIdent
     )
-import Yesod.Core.Handler (setUltDestCurrent, getCurrentRoute, getYesod, languages)
+import Yesod.Core.Handler
+    ( setUltDestCurrent, getCurrentRoute, getYesod, languages
+    )
 import Yesod.Core.Widget (setTitleI)
+import Yesod.Form.Input (runInputGet, iopt)
 import Yesod.Form.Fields
     ( textField, emailField, textareaField, intField, dayField, timeField
     , hiddenField
@@ -101,7 +105,8 @@ import Foundation
       , MsgNoBusinessScheduleYet, MsgBusinessHours, MsgStartTime, MsgEndTime
       , MsgDayType, MsgWeekday, MsgWeekend, MsgHoliday, MsgInvalidTimeInterval
       , MsgList, MsgCalendar, MsgMon, MsgTue, MsgWed, MsgThu, MsgFri, MsgSat, MsgSun
-      , MsgSymbolHour, MsgSymbolMinute, MsgToday
+      , MsgSymbolHour, MsgSymbolMinute, MsgToday, MsgBusinessDay, MsgSortAscending
+      , MsgSortDescending
       )
     )
 
@@ -123,6 +128,7 @@ import Model
       , BusinessHoursDayType
       )
     , DayType (Weekday, Weekend, Holiday)
+    , SortOrder (SortOrderAsc, SortOrderDesc)
     )
 
 import Settings (widgetFile)
@@ -136,7 +142,6 @@ getBusinessCalendarSlotR bid day sid = do
         where_ $ x ^. BusinessHoursId ==. val sid
         return x
     dlgSlotDelete <- newIdent
-    let month = (\(y,m,_) -> YearMonth y m) . toGregorian
     defaultLayout $ do
         setTitleI MsgBusinessHours
         $(widgetFile "admin/business/calendar/slots/slot")
@@ -243,12 +248,11 @@ getBusinessCalendarSlotsR bid day = do
         x <- from $ table @BusinessHours
         where_ $ x ^. BusinessHoursDay ==. val day
         return x
-    dlgSlotDelete <- newIdent
     let month = (\(y,m,_) -> YearMonth y m) . toGregorian
     fabSlotCreate <- newIdent
     msgs <- getMessages
     defaultLayout $ do
-        setTitleI MsgBusinessHours
+        setTitleI MsgBusinessDay
         $(widgetFile "admin/business/calendar/slots/slots")
 
 
@@ -389,15 +393,19 @@ postBusinessHoursR bid = do
 
 getBusinessHoursR :: BusinessId -> Handler Html
 getBusinessHoursR bid = do
+    sort <- fromMaybe SortOrderDesc . (readMaybe . unpack =<<) <$> runInputGet (iopt textField "sort")
     slots <- runDB $ select $ do
         x <- from $ table @BusinessHours
-        orderBy [desc (x ^. BusinessHoursDay), asc (x ^. BusinessHoursOpen)]
+        case sort of
+          SortOrderAsc -> orderBy [asc (x ^. BusinessHoursDay), asc (x ^. BusinessHoursOpen)]
+          _            -> orderBy [desc (x ^. BusinessHoursDay), desc (x ^. BusinessHoursOpen)]
         return x
     user <- maybeAuth
     curr <- getCurrentRoute
     month <- (\(y,m,_) -> YearMonth y m) . toGregorian . utctDay <$> liftIO getCurrentTime
     setUltDestCurrent
     msgs <- getMessages
+    toolbarTop <- newIdent
     fabBusinessHoursCreate <- newIdent
     defaultLayout $ do
         setTitleI MsgBusinessDays

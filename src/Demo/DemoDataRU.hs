@@ -14,7 +14,7 @@ import Data.Text.Lazy (toStrict)
 import Data.Time.Calendar (addDays)
 import Data.Time.Clock (getCurrentTime, UTCTime (utctDay,utctDayTime), DiffTime)
 import Data.Time.Format (parseTimeM, defaultTimeLocale)
-import Data.Time.LocalTime (timeToTimeOfDay, TimeZone (TimeZone))
+import Data.Time.LocalTime (TimeOfDay (TimeOfDay), timeToTimeOfDay, TimeZone (TimeZone))
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import ClassyPrelude.Yesod (ReaderT)
 import Yesod.Form.Fields (Textarea (Textarea))
@@ -52,6 +52,13 @@ import Model
       ( Hist, histBook, histLogtime, histDay, histTime, histAddr, histTzo
       , histStatus, histUser, histTz, histRoleName, histStaffName
       )
+    , Schedule
+      ( Schedule, scheduleStaff, scheduleWorkDay, scheduleWorkStart, scheduleWorkEnd)
+    , BusinessHours
+      ( BusinessHours, businessHoursBusiness, businessHoursDay, businessHoursOpen
+      , businessHoursClose, businessHoursDayType
+      )
+    , DayType (Weekday, Holiday)
     )
 import Data.FileEmbed (embedFile)
 import Demo.DemoPhotos
@@ -76,7 +83,35 @@ populateRU = do
                             , businessEmail = Just "salon@mail.ru"
                             }
 
-    insert_ business
+    b <- insert business
+
+    insert_ $ BusinessHours { businessHoursBusiness = b
+                            , businessHoursDay = addDays (-1) today
+                            , businessHoursOpen = TimeOfDay 9 0 0
+                            , businessHoursClose = TimeOfDay 17 45 0
+                            , businessHoursDayType = Holiday
+                            }
+
+    insert_ $ BusinessHours { businessHoursBusiness = b
+                            , businessHoursDay = today
+                            , businessHoursOpen = TimeOfDay 9 0 0
+                            , businessHoursClose = TimeOfDay 18 0 0
+                            , businessHoursDayType = Weekday
+                            }
+
+    insert_ $ BusinessHours { businessHoursBusiness = b
+                            , businessHoursDay = addDays 1 today
+                            , businessHoursOpen = TimeOfDay 9 0 0
+                            , businessHoursClose = TimeOfDay 18 0 0
+                            , businessHoursDayType = Weekday
+                            }
+
+    insert_ $ BusinessHours { businessHoursBusiness = b
+                            , businessHoursDay = addDays 2 today
+                            , businessHoursOpen = TimeOfDay 9 0 0
+                            , businessHoursClose = TimeOfDay 18 0 0
+                            , businessHoursDayType = Weekday
+                            }
 
     insert_ $ Contents { contentsSection = "CONTACTS"
                        , contentsContent = Textarea $ toStrict $ renderHtml [shamlet|
@@ -169,6 +204,30 @@ populateRU = do
                               , userPhotoPhoto = x
                               , userPhotoMime = "image/avif"
                               }
+
+    insert_ $ Schedule { scheduleStaff = e1
+                       , scheduleWorkDay = addDays (-1) today
+                       , scheduleWorkStart = TimeOfDay 9 0 0
+                       , scheduleWorkEnd = TimeOfDay 18 0 0
+                       }
+
+    insert_ $ Schedule { scheduleStaff = e1
+                       , scheduleWorkDay = today
+                       , scheduleWorkStart = TimeOfDay 9 0 0
+                       , scheduleWorkEnd = TimeOfDay 18 0 0
+                       }
+
+    insert_ $ Schedule { scheduleStaff = e1
+                       , scheduleWorkDay = addDays 1 today
+                       , scheduleWorkStart = TimeOfDay 9 0 0
+                       , scheduleWorkEnd = TimeOfDay 18 0 0
+                       }
+
+    insert_ $ Schedule { scheduleStaff = e1
+                       , scheduleWorkDay = addDays 2 today
+                       , scheduleWorkStart = TimeOfDay 9 0 0
+                       , scheduleWorkEnd = TimeOfDay 18 0 0
+                       }
 
     pass2 <- liftIO $ makePassword "bulanovalm" 17
     let user2 = User { userName = "bulanovalm"
@@ -334,14 +393,51 @@ populateRU = do
                                       , staffPhotoPhoto = x
                                       , staffPhotoMime = "image/avif"
                                       }
+    let empl9 = Staff { staffName = "Кузнецов Артем Сергеевич"
+                      , staffStatus = EmplStatusAvailable
+                      , staffPhone = businessPhone business
+                      , staffMobile = businessMobile business
+                      , staffEmail = Just "kuznetsovas@mail.ru"
+                      , staffUser = Nothing
+                      }
 
-    e9 <- insert $ Staff { staffName = "Кузнецов Артем Сергеевич"
-                         , staffStatus = EmplStatusAvailable
-                         , staffPhone = businessPhone business
-                         , staffMobile = businessMobile business
-                         , staffEmail = Just "kuznetsovas@mail.ru"
-                         , staffUser = Nothing
-                         }
+    e9 <- insert empl9
+
+    insert_ $ Schedule { scheduleStaff = e9
+                       , scheduleWorkDay = addDays (-2) today
+                       , scheduleWorkStart = TimeOfDay 9 0 0
+                       , scheduleWorkEnd = TimeOfDay 18 0 0
+                       }
+
+    insert_ $ Schedule { scheduleStaff = e9
+                       , scheduleWorkDay = addDays (-1) today
+                       , scheduleWorkStart = TimeOfDay 9 0 0
+                       , scheduleWorkEnd = TimeOfDay 18 0 0
+                       }
+
+    insert_ $ Schedule { scheduleStaff = e9
+                       , scheduleWorkDay = addDays 0 today
+                       , scheduleWorkStart = TimeOfDay 9 0 0
+                       , scheduleWorkEnd = TimeOfDay 18 0 0
+                       }
+
+    insert_ $ Schedule { scheduleStaff = e9
+                       , scheduleWorkDay = addDays 1 today
+                       , scheduleWorkStart = TimeOfDay 9 0 0
+                       , scheduleWorkEnd = TimeOfDay 18 0 0
+                       }
+
+    insert_ $ Schedule { scheduleStaff = e9
+                       , scheduleWorkDay = addDays 2 today
+                       , scheduleWorkStart = TimeOfDay 9 0 0
+                       , scheduleWorkEnd = TimeOfDay 18 0 0
+                       }
+
+    insert_ $ Schedule { scheduleStaff = e9
+                       , scheduleWorkDay = addDays 3 today
+                       , scheduleWorkStart = TimeOfDay 9 0 0
+                       , scheduleWorkEnd = TimeOfDay 18 0 0
+                       }
 
     case B64.decode man05 of
       Left _ -> return ()
@@ -1218,13 +1314,13 @@ populateRU = do
                             , serviceGroup = Just s2
                             }
 
-    insert_ $ Offer { offerService = s25
-                    , offerName = "Цена"
-                    , offerPrice = 10000
-                    , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
-                    , offerDescr = Nothing
-                    }
+    o251 <- insert $ Offer { offerService = s25
+                           , offerName = "Цена"
+                           , offerPrice = 10000
+                           , offerPrefix = Nothing
+                           , offerSuffix = Just "₽"
+                           , offerDescr = Nothing
+                           }
 
     insert_ $ Offer { offerService = s25
                     , offerName = "Пакет"
@@ -1241,12 +1337,14 @@ populateRU = do
                               Designed by <a href="https://www.freepik.com/" target=_blank>Freepik</a>|]
                         }
 
-    insert_ $ Role { roleStaff = e9
-                   , roleService = s25
-                   , roleName = "Косметолог"
-                   , roleDuration = 60 * (1 * 60 + 15)
-                   , roleRating = Just 5
-                   }
+    let role925 = Role { roleStaff = e9
+                       , roleService = s25
+                       , roleName = "Косметолог"
+                       , roleDuration = 60 * (1 * 60 + 15)
+                       , roleRating = Just 5
+                       }
+
+    r925 <- insert role925
 
     insert_ $ Role { roleStaff = e10
                    , roleService = s25
@@ -1364,13 +1462,13 @@ Milk Peel включает в себя натуральный экстракт �
                             , serviceGroup = Just s3
                             }
 
-    insert_ $ Offer { offerService = s32
-                    , offerName = "Цена"
-                    , offerPrice = 33000
-                    , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
-                    , offerDescr = Nothing
-                    }
+    o321 <- insert $ Offer { offerService = s32
+                           , offerName = "Цена"
+                           , offerPrice = 33000
+                           , offerPrefix = Nothing
+                           , offerSuffix = Just "₽"
+                           , offerDescr = Nothing
+                           }
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s32
@@ -2866,7 +2964,111 @@ Collagen 90-II — это уважаемое и востребованное а�
                    , histStatus = BookStatusRequest
                    , histRoleName = Nothing
                    , histStaffName = Nothing
-                   }           
+                   }
+
+    let book4 = Book { bookOffer = o251
+                     , bookRole = Just r925
+                     , bookCustomer = c1
+                     , bookDay = addDays 1 today
+                     , bookTime = time
+                     , bookAddr = businessAddr business
+                     , bookTzo = businessTzo business
+                     , bookTz = businessTz business
+                     , bookStatus = BookStatusRequest
+                     }
+
+    b4 <- insert book4
+
+    insert_ $ Hist { histBook = b4
+                   , histUser = c1
+                   , histLogtime = now
+                   , histDay = bookDay book4
+                   , histTime = bookTime book4
+                   , histAddr = bookAddr book4
+                   , histTzo = bookTzo book4
+                   , histTz = bookTz book4
+                   , histStatus = BookStatusRequest
+                   , histRoleName = Just $ roleName role925
+                   , histStaffName = Just $ staffName empl9
+                   }
+
+    let book5 = Book { bookOffer = o321
+                     , bookRole = Just r925
+                     , bookCustomer = c1
+                     , bookDay = addDays 1 today
+                     , bookTime = time
+                     , bookAddr = businessAddr business
+                     , bookTzo = businessTzo business
+                     , bookTz = businessTz business
+                     , bookStatus = BookStatusRequest
+                     }
+
+    b5 <- insert book5
+
+    insert_ $ Hist { histBook = b5
+                   , histUser = c1
+                   , histLogtime = now
+                   , histDay = bookDay book5
+                   , histTime = bookTime book5
+                   , histAddr = bookAddr book5
+                   , histTzo = bookTzo book5
+                   , histTz = bookTz book5
+                   , histStatus = BookStatusRequest
+                   , histRoleName = Just $ roleName role925
+                   , histStaffName = Just $ staffName empl9
+                   }
+
+    let book6 = Book { bookOffer = o321
+                     , bookRole = Just r925
+                     , bookCustomer = c1
+                     , bookDay = addDays 2 today
+                     , bookTime = time
+                     , bookAddr = businessAddr business
+                     , bookTzo = businessTzo business
+                     , bookTz = businessTz business
+                     , bookStatus = BookStatusRequest
+                     }
+
+    b6 <- insert book6
+
+    insert_ $ Hist { histBook = b6
+                   , histUser = c1
+                   , histLogtime = now
+                   , histDay = bookDay book6
+                   , histTime = bookTime book6
+                   , histAddr = bookAddr book6
+                   , histTzo = bookTzo book6
+                   , histTz = bookTz book6
+                   , histStatus = BookStatusRequest
+                   , histRoleName = Just $ roleName role925
+                   , histStaffName = Just $ staffName empl9
+                   }
+
+    let book7 = Book { bookOffer = o321
+                     , bookRole = Just r925
+                     , bookCustomer = c1
+                     , bookDay = addDays 3 today
+                     , bookTime = time
+                     , bookAddr = businessAddr business
+                     , bookTzo = businessTzo business
+                     , bookTz = businessTz business
+                     , bookStatus = BookStatusRequest
+                     }
+
+    b7 <- insert book7
+
+    insert_ $ Hist { histBook = b7
+                   , histUser = c1
+                   , histLogtime = now
+                   , histDay = bookDay book7
+                   , histTime = bookTime book7
+                   , histAddr = bookAddr book7
+                   , histTzo = bookTzo book7
+                   , histTz = bookTz book7
+                   , histStatus = BookStatusRequest
+                   , histRoleName = Just $ roleName role925
+                   , histStaffName = Just $ staffName empl9
+                   }
         
     return ()
   where

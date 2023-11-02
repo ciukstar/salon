@@ -38,7 +38,7 @@
               <i.material-symbols-outlined>close
     $of _
 
-  <div ##{toolbar} role=toolbar>
+  <div.toolbar role=toolbar ##{toolbarTop}>
     <button.mdc-button.mdc-button--outlined.mdc-button--icon-trailing type=button
       onclick="document.getElementById('#{dlgTimeFrame}').MDCDialog.open()">
       <span.mdc-button__ripple>
@@ -50,6 +50,20 @@
           <time.period datetime=#{e}>#{e}
       <i.mdc-button-icon.material-symbols-outlined>arrow_drop_down
 
+    $case sort
+      $of SortOrderAsc
+        <a.mdc-icon-button role=button title=_{MsgSortDescending}
+          href=@?{(StatsR WorkloadsR,((++) [("sort",pack $ show SortOrderDesc)] stati))}>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined style="transform:rotateX(180deg)">sort
+      $of SortOrderDesc
+        <a.mdc-icon-button role=button title=_{MsgSortAscending}
+          href=@?{(StatsR WorkloadsR,((++) [("sort",pack $ show SortOrderAsc)] stati))}>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>sort
+
   <nav.mdc-list data-mdc-auto-init=MDCList>
     $if null ratios
       <figure style="text-align:center">
@@ -58,7 +72,7 @@
     $else
       $forall ((eid,ename),ratio) <- ratios
         <a.mdc-list-item.mdc-list-item--with-leading-image.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon 
-          href=@?{(StatsR $ WorkloadEmplMonthR eid (dayPeriod end),stati)}>
+          href=@?{(StatsR $ WorkloadEmplMonthR eid (dayPeriod end),((++) [("sort",pack $ show sort)] stati))}>
           <span.mdc-list-item__ripple>
           <span.mdc-list-item__start>
             <img src=@{AdminR $ AdmStaffPhotoR eid} width=56 height=56 alt=_{MsgPhoto} loading=lazy>

@@ -31,6 +31,14 @@
   <p>#{preEscapedToMarkup $ renderMessage app langs (MsgDoc004 (rndr ServicesR) (rndr BookOffersR))}
   
   <div.mdc-typography--headline4>
+    _{MsgBasicEntities}
+    
+  <div.mdc-typography--headline5>_{MsgBusiness}
+  <p>#{preEscapedToMarkup $ renderMessage app langs (MsgDoc005 (rndr $ AdminR BusinessR))}
+  <p>#{preEscapedToMarkup $ renderMessage app langs (MsgDoc006 (rndr $ AdminR BusinessR))}
+  <p>_{MsgDoc007}
+    
+  <div.mdc-typography--headline4>
     _{MsgErdDiagram}
   <img #imgErdDiagram src=@{StaticR img_Salon_ERD_svg} alt=_{MsgErdDiagram} loading=lazy>
   

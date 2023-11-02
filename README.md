@@ -17,6 +17,16 @@ Each service can have multiple offers with corresponding prices and currencies. 
 
 Once the service and its offerings are defined, the service can be published. The service and offers will be displayed to the customer in the section ["Services"](https://salon-w3cpovaqka-de.a.run.app/services) and available for booking in the section ["Book appointment"](https://salon-w3cpovaqka-de.a.run.app/book).
 
+# Basic Entities
+
+## Business
+
+Detailed information about the business can be provided in the section ["Business"](https://salon-w3cpovaqka-de.a.run.app/admin/business) of the group "Data" in the main menu.
+
+Additionally, in the section ["Business"](https://salon-w3cpovaqka-de.a.run.app/admin/business), the organization's work schedule for each day can be added.
+
+Currently, the app only supports one business. Multi-business support is planned for future versions of the application.
+
 ## ERD Diagram
 
 ![Entity Relationship Diagram](static/img/Salon-ERD.svg)

@@ -17,6 +17,16 @@ Fiecare serviciu poate avea mai multe oferte cu prețuri și valute corespunzăt
 
 Odată ce serviciul și ofertele sale sunt definite, serviciul poate fi publicat. Serviciul și ofertele vor fi afișate clientului în secțiunea [„Servicii”](https://salonro-w3cpovaqka-de.a.run.app/services) și disponibile pentru rezervare în secțiunea [„Rezervă o programare”](https://salonro-w3cpovaqka-de.a.run.app/book).
 
+# Entităţile de bază
+
+## Afacere
+
+Informații detaliate despre afacere pot fi furnizate în secțiunea [„Afacere”](https://salonro-w3cpovaqka-de.a.run.app/admin/business) din grupul „Date” din meniul principal.
+
+În plus, în secțiunea [„Afaceri”](https://salonro-w3cpovaqka-de.a.run.app/admin/business), poate fi adăugat programul de lucru al organizației pentru fiecare zi.
+
+În prezent, aplicația acceptă o singură afacere. Asistența multi-business este planificată pentru versiunile viitoare ale aplicației.
+
 ## Diagrama ERD
 
 ![Diagrama Entitate-Relație](static/img/Salon-ERD.svg)

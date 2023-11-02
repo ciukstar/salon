@@ -79,7 +79,8 @@
         <i.mdc-segmented-button__icon.material-symbols-outlined>list
         <div.mdc-segmented-button__label>_{MsgList}
 
-    <a.mdc-icon-button href=@{AdminR $ BusinessCalendarR bid today} role=button title=_{MsgToday}>
+    <a.mdc-icon-button href=@{AdminR $ BusinessCalendarR bid today} role=button title=_{MsgToday}
+      :today == month:style="visibility:hidden">
       <span.mdc-icon-button__ripple>
       <span.mdc-icon-button__focus-ring>
       <i.material-symbols-outlined>today

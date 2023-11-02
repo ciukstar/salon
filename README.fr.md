@@ -17,6 +17,16 @@ Chaque service peut avoir plusieurs offres avec des prix et des devises correspo
 
 Une fois le service et ses offres définis, le service peut être publié. La prestation et les offres seront présentées au client dans la rubrique [« Services »](https://salonfr-w3cpovaqka-de.a.run.app/services) et disponibles à la réservation dans la rubrique [« Prenez rendez-vous »](https://salonfr-w3cpovaqka-de.a.run.app/book).
 
+# Entités de base
+
+## Entreprise
+
+Des informations détaillées sur l'entreprise peuvent être fournies dans la section [« Entreprise »](https://salonfr-w3cpovaqka-de.a.run.app/admin/business) du groupe « Données » du menu principal.
+
+De plus, dans la section [« Entreprise »](https://salonfr-w3cpovaqka-de.a.run.app/admin/business), l'horaire de travail de l'organisation pour chaque jour peut être ajouté.
+
+Actuellement, l'application ne prend en charge qu'une seule entreprise. Un support multi-métiers est prévu pour les futures versions de l'application.
+
 ## Diagramme ERD
 
 ![Diagramme entité-relation](static/img/Salon-ERD.svg)

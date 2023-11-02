@@ -212,6 +212,11 @@ instance HashDBUser User where
     setPasswordHash :: Text -> User -> User
     setPasswordHash h u = u { userPassword = h }
 
+
+data SortOrder = SortOrderAsc | SortOrderDesc
+    deriving (Eq, Show, Read)
+
+    
 instance SqlString Textarea
 
 

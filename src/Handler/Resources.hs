@@ -19,11 +19,13 @@ import Foundation
       ( StaticR, AuthR, PhotoPlaceholderR, AccountPhotoR
       , ProfileR, AdminR, HomeR, ServicesR, BookOffersR
       )
-    , AdminR (AdmServicesR)
+    , AdminR (AdmServicesR, BusinessR)
     , AppMessage
       ( MsgDocumentation, MsgPhoto, MsgNavigationMenu, MsgLogin, MsgUserProfile
       , MsgErdDiagram, MsgBookingStateDiagram, MsgAppointmentStateDiagram
+      , MsgBasicEntities, MsgBusiness
       , MsgAppName, MsgOverview, MsgDoc001, MsgDoc002, MsgDoc003, MsgDoc004
+      , MsgDoc005, MsgDoc006, MsgDoc007
       )
     )
 

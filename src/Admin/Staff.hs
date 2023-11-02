@@ -63,6 +63,7 @@ import Data.Time.Clock
 import Data.Time.Format (formatTime, defaultTimeLocale, parseTimeM)
 import Data.Time.LocalTime (TimeOfDay, LocalTime (LocalTime), diffLocalTime)
 import Text.Hamlet (Html)
+import Text.Read (readMaybe)
 import Data.FileEmbed (embedFile)
 import Data.Maybe (isJust, fromMaybe)
 import Control.Monad (forM)
@@ -142,7 +143,7 @@ import Foundation
       , MsgWorkingHours, MsgDay, MsgStartTime, MsgEndTime, MsgDetails, MsgToday
       , MsgInvalidTimeInterval, MsgMon, MsgTue, MsgWed, MsgThu, MsgFri, MsgSat
       , MsgSun, MsgSymbolHour, MsgSymbolMinute, MsgInvalidFormData, MsgAdd
-      , MsgCompletionTime, MsgWorkday
+      , MsgCompletionTime, MsgWorkday, MsgSortAscending, MsgSortDescending
       )
     )
 
@@ -161,6 +162,7 @@ import Model
     , ServiceId, Service (Service)
     , UserId,  User (User), UserPhoto (UserPhoto)
     , EmplStatus (EmplStatusUnavailable, EmplStatusAvailable)
+    , SortOrder (SortOrderAsc, SortOrderDesc)
     )
 
 import Settings.StaticFiles (img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg)
@@ -299,7 +301,6 @@ $forall (v,icon) <- [(startV,"schedule"),(endV,"schedule")]
 
 getEmplCalendarSlotR :: StaffId -> ScheduleId -> Day -> Handler Html
 getEmplCalendarSlotR eid wid day = do
-    let month = (\(y,m,_) -> YearMonth y m) . toGregorian
     slot <- runDB $ selectOne $ do
         x <- from $ table @Schedule
         where_ $ x ^. ScheduleId ==. val wid
@@ -401,6 +402,8 @@ getAdmEmplCalendarR eid month = do
     let next = addMonths 1 month
     let prev = addMonths (-1) month
     today <- (\(y,m,_) -> YearMonth y m) . toGregorian . utctDay <$> liftIO getCurrentTime
+    toolbarTop <- newIdent
+    calendarPage <- newIdent
     defaultLayout $ do
         setTitleI MsgEmployee
         $(widgetFile "admin/staff/empl/calendar/calendar")
@@ -412,6 +415,7 @@ getAdmEmplCalendarR eid month = do
 
 getAdmScheduleR :: StaffId -> Handler Html
 getAdmScheduleR eid = do
+    sort <- fromMaybe SortOrderDesc . (readMaybe . unpack =<<) <$> runInputGet (iopt textField "sort")
     mwid <- runInputGet $ iopt textField "wid"
     scrollY <- runInputGet $ iopt textField "y"
     stati <- reqGetParams <$> getRequest
@@ -423,12 +427,15 @@ getAdmScheduleR eid = do
     schedule <- runDB $ select $ do
         x <- from $ table @Schedule
         where_ $ x ^. ScheduleStaff ==. val eid
-        orderBy [desc (x ^. ScheduleWorkDay), desc (x ^. ScheduleWorkStart), desc (x ^. ScheduleWorkEnd)]
+        case sort of
+          SortOrderAsc -> orderBy [asc (x ^. ScheduleWorkDay), asc (x ^. ScheduleWorkStart)]
+          _            -> orderBy [desc (x ^. ScheduleWorkDay), desc (x ^. ScheduleWorkStart)]
         return x
     curr <- getCurrentRoute
     msgs <- getMessages
     touchTargetWrapperAddSchedule <- newIdent
     month <- (\(y,m,_) -> YearMonth y m) . toGregorian . utctDay <$> liftIO getCurrentTime
+    toolbarTop <- newIdent
     defaultLayout $ do
         setTitleI MsgEmployee
         $(widgetFile "admin/staff/empl/schedule")

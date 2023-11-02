@@ -62,7 +62,7 @@
             <span.mdc-icon-button__ripple>
             <i.material-symbols-outlined>close
 
-  <div.toolbar role=toolbar>
+  <div.toolbar role=toolbar ##{toolbarTop}>
     <div.mdc-segmented-button.mdc-segmented-button--single-select role=radiogroup data-mdc-auto-init=MDCSegmentedButton>
       <a.mdc-segmented-button__segment href=@{AdminR $ BusinessCalendarR bid month} role=radio
         :curr == Just (AdminR $ BusinessCalendarR bid month):.mdc-segmented-button__segment--selected
@@ -78,6 +78,20 @@
         <div.mdc-segmented-button__ripple>
         <i.mdc-segmented-button__icon.material-symbols-outlined>list
         <div.mdc-segmented-button__label>_{MsgList}
+
+    $case sort
+      $of SortOrderAsc
+        <a.mdc-icon-button role=button title=_{MsgSortDescending}
+          href=@?{(AdminR $ BusinessHoursR bid,[("sort",pack $ show SortOrderDesc)])}>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined style="transform:rotateX(180deg)">sort
+      $of SortOrderDesc
+        <a.mdc-icon-button role=button title=_{MsgSortAscending}
+          href=@?{(AdminR $ BusinessHoursR bid,[("sort",pack $ show SortOrderAsc)])}>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>sort
 
   $if null slots
     <figure style="text-align:center">

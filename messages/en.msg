@@ -1,3 +1,8 @@
+BasicEntities: Basic Entities
+BusinessDay: Business day
+SortDescending: Sort descending
+SortAscending: Sort ascending
+Sort: Sort
 Workday: Workday
 TimeSlot: Time slot
 CustomerRanking: Customer ranking
@@ -305,3 +310,9 @@ Doc002 hrefServices@Text: The services to be advertised are defined and publishe
 Doc003: Each service can have multiple offers with corresponding prices and currencies. Offers are defined for each Service in the “Services” section in the “Data” group.
 
 Doc004 hrefServices@Text hrefBook@Text: Once the service and its offerings are defined, the service can be published. The service and offers will be displayed to the customer in the section <a href=#{hrefServices}>"Services"</a> and available for booking in the section <a href=#{hrefBook}>"Book appointment"</a>.
+
+Doc005 hrefBusiness@Text: Detailed information about the business can be provided in the section <a href=#{hrefBusiness}>"Business"</a> of the group "Data" in the main menu.
+
+Doc006 hrefBusiness@Text: Additionally, in the section <a href=#{hrefBusiness}>"Business"</a>, the organization's work schedule for each day can be added.
+
+Doc007: Currently, the app only supports one business. Multi-business support is planned for future versions of the application.
