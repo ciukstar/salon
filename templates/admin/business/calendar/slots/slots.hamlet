@@ -1,0 +1,57 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
+        href=@{AdminR $ BusinessCalendarR bid (month day)}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgBusinessHours}
+
+<main.mdc-top-app-bar--fixed-adjust>
+
+  <nav.mdc-list data-mdc-auto-init=MDCList>
+    $forall Entity sid (BusinessHours _ day open close dtype) <- slots
+      $with (d,o,c) <- (show day, show open,show close)
+        <a.mdc-list-item.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon
+          href=@{AdminR $ BusinessCalendarSlotR bid day sid}>
+          <span.mdc-list-item__ripple>
+          <span.mdc-list-item__content>
+            <div.mdc-list-item__primary-text>
+              $with d <- show day
+                <time.day datetime=#{d}>
+                  #{d}
+            <div.mdc-list-item__secondary-text>
+              <time.time-of-day datetime="#{d}T#{o}">
+                #{o}
+              &mdash;
+              <time.time-of-day datetime="#{d}T#{c}">
+                #{c}
+            <div.mdc-list-item__secondary-text>
+              $case dtype
+                $of Weekday
+                  _{MsgWeekday}
+                $of Weekend
+                  _{MsgWeekend}
+                $of Holiday
+                  _{MsgHoliday}
+          <span.mdc-list-item__end>
+            <i.material-symbols-outlined>arrow_forward_ios
+            
+  <div.mdc-touch-target-wrapper ##{fabSlotCreate}>
+    <a.mdc-fab.mdc-fab--touch href=@{AdminR $ BusinessCalendarSlotCreateR bid day} title=_{MsgAdd}>
+      <span.mdc-fab__ripple>
+      <span.mdc-fab__focus-ring>
+      <span.mdc-fab__icon.material-symbols-outlined>add
+      <span.mdc-fab__touch>
+
+
+$forall (_,msg) <- filter (((==) "info") . fst) msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar style="bottom:5rem">
+    <div.mdc-snackbar__surface>
+      <div.mdc-snackbar__label>#{msg}
+      <div.mdc-snackbar__actions>
+        <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>close

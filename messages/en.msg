@@ -1,3 +1,6 @@
+Workday: Workday
+TimeSlot: Time slot
+CustomerRanking: Customer ranking
 TotalScheduledTime: Total scheduled time
 TotalBookedTime: Total booked time
 NoDataFound: No data found

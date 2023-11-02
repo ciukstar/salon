@@ -16,6 +16,7 @@
 
 module Model where
 
+import Data.Ord (Ord)
 import Data.Proxy (Proxy)
 import Data.Time
     ( TimeOfDay, LocalTime, DiffTime, diffTimeToPicoseconds
@@ -61,7 +62,7 @@ import Database.Persist.Sql (fromSqlKey, toSqlKey, PersistFieldSql, sqlType)
 
 
 data DayType = Weekday | Weekend | Holiday
-    deriving (Show, Read, Eq)
+    deriving (Show, Read, Eq, Ord)
 derivePersistField "DayType"
 
 

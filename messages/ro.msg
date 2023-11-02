@@ -1,3 +1,6 @@
+Workday: Zi de lucru
+TimeSlot: Interval de timp
+CustomerRanking: Clasamentul clienților
 TotalScheduledTime: Timp total programat
 TotalBookedTime: Timp total rezervat
 NoDataFound: Nu s-au gasit date

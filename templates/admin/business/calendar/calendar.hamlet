@@ -35,12 +35,12 @@
                 <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
               <span.mdc-tab__ripple>
               <span.mdc-tab__focus-ring>
-            <a.mdc-tab href=@{AdminR $ BusinessCalendarR bid pivot} role=tab tabindex=0
-              :curr == Just (AdminR $ BusinessCalendarR bid pivot):.mdc-tab--active
-              :curr == Just (AdminR $ BusinessCalendarR bid pivot):aria-selected=true>
+            <a.mdc-tab href=@{AdminR $ BusinessCalendarR bid month} role=tab tabindex=0
+              :curr == Just (AdminR $ BusinessCalendarR bid month):.mdc-tab--active
+              :curr == Just (AdminR $ BusinessCalendarR bid month):aria-selected=true>
               <span.mdc-tab__content>
                 <span.mdc-tab__text-label>_{MsgBusinessHours}
-              <span.mdc-tab-indicator :curr == Just (AdminR $ BusinessCalendarR bid pivot):.mdc-tab-indicator--active>
+              <span.mdc-tab-indicator :curr == Just (AdminR $ BusinessCalendarR bid month):.mdc-tab-indicator--active>
                 <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
               <span.mdc-tab__ripple>
               <span.mdc-tab__focus-ring>
@@ -64,10 +64,10 @@
 
   <div.toolbar role=toolbar>
     <div.mdc-segmented-button.mdc-segmented-button--single-select role=radiogroup data-mdc-auto-init=MDCSegmentedButton>
-      <a.mdc-segmented-button__segment href=@{AdminR $ BusinessCalendarR bid pivot} role=radio
-        :curr == Just (AdminR $ BusinessCalendarR bid pivot):.mdc-segmented-button__segment--selected
-        :curr == Just (AdminR $ BusinessCalendarR bid pivot):aria-checked=true
-        :curr /= Just (AdminR $ BusinessCalendarR bid pivot):aria-checked=false>
+      <a.mdc-segmented-button__segment href=@{AdminR $ BusinessCalendarR bid month} role=radio
+        :curr == Just (AdminR $ BusinessCalendarR bid month):.mdc-segmented-button__segment--selected
+        :curr == Just (AdminR $ BusinessCalendarR bid month):aria-checked=true
+        :curr /= Just (AdminR $ BusinessCalendarR bid month):aria-checked=false>
         <div.mdc-segmented-button__ripple>
         <i.mdc-segmented-button__icon.material-symbols-outlined>calendar_month
         <div.mdc-segmented-button__label>_{MsgCalendar}
@@ -84,62 +84,69 @@
       <span.mdc-icon-button__focus-ring>
       <i.material-symbols-outlined>today
 
-  $if null slots
-    <figure style="text-align:center">
-      <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
-      <figcaption>
-        _{MsgNoBusinessScheduleYet}.
-
-  $else
-    <div.calendar>
-      <div.header>
-        <a.mdc-icon-button href=@{AdminR $ BusinessCalendarR bid prev} role=button>
-          <span.mdc-icon-button__ripple>
-          <span.mdc-icon-button__focus-ring>
-          <i.material-symbols-outlined>arrow_back
-        $with day <- show pivot
-          <time.month-of-year datetime=#{day}>
-            #{day}
-        <a.mdc-icon-button href=@{AdminR $ BusinessCalendarR bid next} role=button>
-          <span.mdc-icon-button__ripple>
-          <span.mdc-icon-button__focus-ring>
-          <i.material-symbols-outlined>arrow_forward
-      $forall wd <- [MsgMon,MsgTue,MsgWed,MsgThu,MsgFri,MsgSat,MsgSun]
-        <div.col-header>
-          _{wd}
-      $with (rmsg,(py,pm,_),hour) <- (renderMessage app langs,toGregorian pivot,secondsToNominalDiffTime 3600)
-        $with pat1 <- intercalate "" ["%H",rmsg MsgSymbolHour]
-          $with pat2 <- intercalate "" ["%H",rmsg MsgSymbolHour," %M",rmsg MsgSymbolMinute]
-            $forall i <- [0,1,2,3,4,5]
-              $forall day <- take 7 (drop (i * 7) calendar)
-                <div.cell>
-                  $with (y,m,d) <- toGregorian day
-                    $if (==) (y,m) (py,pm)
-                      $with slot <- find ((((==) day) . businessHoursDay) . entityVal) slots
-                        $maybe Entity sid (BusinessHours _ sday open close dtype) <- slot
-                          <a href=@{AdminR $ BusinessCalendarSlotR bid sid}>
+  <div.calendar>
+    <div.header>
+      <a.mdc-icon-button href=@{AdminR $ BusinessCalendarR bid prev} role=button>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>arrow_back
+      $with m <- show month
+        <time.month-of-year datetime=#{m}>
+          #{m}
+      <a.mdc-icon-button href=@{AdminR $ BusinessCalendarR bid next} role=button>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>arrow_forward
+    $forall wd <- [MsgMon,MsgTue,MsgWed,MsgThu,MsgFri,MsgSat,MsgSun]
+      <div.col-header>
+        _{wd}
+    $with (rmsg,hour) <- (renderMessage app langs,secondsToNominalDiffTime 3600)
+      $with pat1 <- intercalate "" ["%H",rmsg MsgSymbolHour]
+        $with pat2 <- intercalate "" ["%H",rmsg MsgSymbolHour," %M",rmsg MsgSymbolMinute]
+          $forall i <- [0,1,2,3,4,5]
+            $forall day <- take 7 (drop (i * 7) page)
+              <div.cell>
+                $with (y,m,d) <- toGregorian day
+                  $if (==) month (YearMonth y m)
+                    $maybe dur <- M.lookup (day,Weekday) slots
+                      <a href=@{AdminR $ BusinessCalendarSlotsR bid day}>
+                        <time.day-of-month datetime=#{show day}>
+                          <small>#{d}
+                        <small>
+                          $if fullHours dur hour
+                            #{formatTime defaultTimeLocale (unpack pat1) dur}
+                          $else
+                            #{formatTime defaultTimeLocale (unpack pat2) dur}
+                          <div style="border:2px solid var(--theme-accent)">
+                    $nothing
+                      $maybe dur <- M.lookup (day,Weekend) slots
+                        <a href=@{AdminR $ BusinessCalendarSlotsR bid day}>
+                          <time.day-of-month datetime=#{show day}>
+                            <small>#{d}
+                          <small>
+                            $if fullHours dur hour
+                              #{formatTime defaultTimeLocale (unpack pat1) dur}
+                            $else
+                              #{formatTime defaultTimeLocale (unpack pat2) dur}
+                            <div style="border:2px solid var(--theme-warn)">
+                      $nothing
+                        $maybe dur <- M.lookup (day,Holiday) slots
+                          <a href=@{AdminR $ BusinessCalendarSlotsR bid day}>
                             <time.day-of-month datetime=#{show day}>
                               <small>#{d}
-                            $with dur <- diffLocalTime (LocalTime sday close) (LocalTime sday open)
-                              <small>
-                                $if fullHours dur hour
-                                  #{formatTime defaultTimeLocale (unpack pat1) dur}
-                                $else
-                                  #{formatTime defaultTimeLocale (unpack pat2) dur}
-                            $case dtype
-                              $of Weekday
-                                <div style="border:2px solid var(--theme-accent)">
-                              $of Weekend
-                                <div style="border:2px solid var(--theme-warn)">
-                              $of Holiday
-                                <div style="border:2px solid var(--theme-success)">
+                            <small>
+                              $if fullHours dur hour
+                                #{formatTime defaultTimeLocale (unpack pat1) dur}
+                              $else
+                                #{formatTime defaultTimeLocale (unpack pat2) dur}
+                              <div style="border:2px solid var(--theme-success)">
                         $nothing
                           <a href=@{AdminR $ BusinessCalendarSlotCreateR bid day}>
                             <time.day-of-month datetime=#{show day}>
-                              <small>#{d}
-                    $else
-                      <time.day-of-month datetime=#{show day} style="color:var(--theme-text-hint-on-light)">
-                        <small>#{d}
+                              <small>#{d}                       
+                  $else
+                    <time.day-of-month datetime=#{show day} style="color:var(--theme-text-hint-on-light)">
+                      <small>#{d}
 
 
 $forall (_,msg) <- filter (((==) "info") . fst) msgs

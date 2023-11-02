@@ -55,18 +55,20 @@
     /workloads/#StaffId/#Month    WorkloadEmplMonthR GET
     /workloads  	          WorkloadsR         GET
 
+    /customer-ranking CustomerRankingR GET
 
 /admin AdminR:
 
     /form/business/#BusinessId/calendar/slot/#Day/#BusinessHoursId BusinessCalendarSlotEditR   GET POST
     /form/business/#BusinessId/calendar/slot/#Day             	   BusinessCalendarSlotCreateR GET POST
     /delete/business/#BusinessId/caledar/#BusinessHoursId/#Day 	   BusinessCalendarSlotDeleteR POST
-    /business/#BusinessId/slot/#BusinessHoursId 	      	   BusinessCalendarSlotR       GET
+    /business/#BusinessId/day/#Day/slots/#BusinessHoursId          BusinessCalendarSlotR       GET
+    /business/#BusinessId/days/#Day/slots      	                   BusinessCalendarSlotsR      GET
     /form/business/#BusinessId/#BusinessHoursId               	   BusinessHoursEditR 	       GET
     /form/business/#BusinessId                   	      	   BusinessHoursCreateR        GET
     /delete/business/#BusinessId/hours/#BusinessHoursId       	   BusinessTimeSlotDeleteR     POST
     /business/#BusinessId/hours/#BusinessHoursId 	      	   BusinessTimeSlotR           GET POST
-    /business/#BusinessId/caledar/#Day 		 	      	   BusinessCalendarR           GET
+    /business/#BusinessId/caledar/#Month	 	      	   BusinessCalendarR           GET
     /business/#BusinessId/hours 		 	      	   BusinessHoursR              GET POST
     /business/delete            		 	      	   BusinessDeleteR             POST
     /business/#BusinessId/edit  		 	      	   BusinessEditR               GET POST
@@ -114,7 +116,8 @@
     /form/staff/#StaffId/cal/slot/#ScheduleId/#Day   EmplCalendarSlotEditR   GET
     /form/staff/#StaffId/cal/slot/#Day               EmplCalendarSlotCreateR GET
     /staff/#StaffId/calendar/slot/#ScheduleId/#Day   EmplCalendarSlotR       GET POST
-    /staff/#StaffId/calendar/#Day                    AdmEmplCalendarR        GET POST
+    /staff/#StaffId/calendar/days/#Day               EmplCalendarSlotsR      GET POST
+    /staff/#StaffId/calendar/#Month                  AdmEmplCalendarR        GET
     /delete/staff/#StaffId/schedule/#ScheduleId      AdmScheduleDeleteR      POST
     /form/staff/#StaffId/schedule/#ScheduleId        AdmScheduleEditR        GET
     /form/staff/#StaffId/schedule                    AdmScheduleCreateR      GET

@@ -51,10 +51,10 @@
     
     <div.toolbar role=toolbar>
       <div.mdc-segmented-button.mdc-segmented-button--single-select role=radiogroup data-mdc-auto-init=MDCSegmentedButton>
-        <a.mdc-segmented-button__segment href=@{AdminR $ AdmEmplCalendarR eid today} role=radio
-          :curr == Just (AdminR $ AdmEmplCalendarR eid today):.mdc-segmented-button__segment--selected
-          :curr == Just (AdminR $ AdmEmplCalendarR eid today):aria-checked=true
-          :curr /= Just (AdminR $ AdmEmplCalendarR eid today):aria-checked=false>
+        <a.mdc-segmented-button__segment href=@{AdminR $ AdmEmplCalendarR eid month} role=radio
+          :curr == Just (AdminR $ AdmEmplCalendarR eid month):.mdc-segmented-button__segment--selected
+          :curr == Just (AdminR $ AdmEmplCalendarR eid month):aria-checked=true
+          :curr /= Just (AdminR $ AdmEmplCalendarR eid month):aria-checked=false>
           <div.mdc-segmented-button__ripple>
           <i.mdc-segmented-button__icon.material-symbols-outlined>calendar_month
           <div.mdc-segmented-button__label>_{MsgCalendar}

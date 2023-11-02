@@ -67,3 +67,14 @@
                       _{MsgWeekend}
                     $of Holiday
                       _{MsgHoliday}
+
+
+$forall (_,msg) <- filter (((==) "info") . fst) msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
+    <div.mdc-snackbar__surface>
+      <div.mdc-snackbar__label>#{msg}
+      <div.mdc-snackbar__actions>
+        <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>close

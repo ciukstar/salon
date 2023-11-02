@@ -3,6 +3,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TupleSections #-}
+{-# LANGUAGE PatternSynonyms #-}
 
 module Admin.Staff
   ( getAdmStaffR
@@ -36,23 +37,25 @@ module Admin.Staff
   , getEmplCalendarSlotEditR
   , postEmplCalendarSlotDeleteR
   , getEmplCalendarSlotCreateR
-  , postAdmEmplCalendarR
+  , postEmplCalendarSlotsR
   , postEmplCalendarSlotR
+  , getEmplCalendarSlotsR
   ) where
 
 import Control.Applicative ((<|>))
 import Control.Monad.IO.Class (liftIO)
 import Data.Bifunctor (Bifunctor(first))
 import Data.Fixed (mod')
-import Data.Foldable (find)
+import qualified Data.Map.Lazy as M (lookup, fromListWith)
 import Data.Text (Text, pack, unpack, intercalate)
 import qualified Data.Text as T (toLower, words, concat)
 import Text.Shakespeare.I18N (renderMessage)
 import Data.Text.Encoding (encodeUtf8)
 import Data.Time.Calendar
-    ( Day, toGregorian, fromGregorian, weekFirstDay, addDays
-    , DayOfWeek (Monday), addGregorianMonthsClip
+    ( Day, DayOfWeek (Monday), toGregorian, weekFirstDay, addDays
+    , periodFirstDay, periodLastDay
     )
+import Data.Time.Calendar.Month (Month, addMonths, pattern YearMonth)
 import Data.Time.Clock
     ( utctDay, getCurrentTime, secondsToNominalDiffTime, NominalDiffTime
     , DiffTime
@@ -101,12 +104,12 @@ import qualified Database.Persist as P ((=.))
 import Database.Persist.Sql (fromSqlKey, toSqlKey)
 import Yesod.Persist (YesodPersist(runDB))
 import Database.Esqueleto.Experimental
-    ( select, selectOne, from, table, orderBy, asc, val
+    ( select, selectOne, from, table, orderBy, asc, val, between
     , (^.), (==.), (:&)((:&)), (?.), (=.), (%), (++.), (||.)
     , where_, not_, selectQuery, subSelectList, in_
     , just, notIn, isNothing_, innerJoin, on, desc
     , leftJoin, update, set, like, upper_, distinct, valList
-    , exists, Value (unValue), justList
+    , exists, Value (Value, unValue), justList
     )
 
 import Foundation
@@ -121,7 +124,7 @@ import Foundation
       , AdmStaffSearchR, AdmScheduleR, AdmTimeSlotR, AdmScheduleCreateR
       , AdmScheduleEditR, AdmScheduleDeleteR, AdmEmplCalendarR
       , EmplCalendarSlotR, EmplCalendarSlotEditR, EmplCalendarSlotDeleteR
-      , EmplCalendarSlotCreateR, AdmEmplCalendarR
+      , EmplCalendarSlotCreateR, AdmEmplCalendarR, EmplCalendarSlotsR
       )
     , AppMessage
       ( MsgStaff, MsgPhoto, MsgCancel, MsgSave, MsgBack, MsgAddWorkingHours
@@ -138,8 +141,8 @@ import Foundation
       , MsgNavigationMenu, MsgUserProfile, MsgLogin, MsgUnregisterAsUser
       , MsgWorkingHours, MsgDay, MsgStartTime, MsgEndTime, MsgDetails, MsgToday
       , MsgInvalidTimeInterval, MsgMon, MsgTue, MsgWed, MsgThu, MsgFri, MsgSat
-      , MsgSun, MsgSymbolHour, MsgSymbolMinute, MsgInvalidFormData
-      , MsgCompletionTime
+      , MsgSun, MsgSymbolHour, MsgSymbolMinute, MsgInvalidFormData, MsgAdd
+      , MsgCompletionTime, MsgWorkday
       )
     )
 
@@ -164,14 +167,30 @@ import Settings.StaticFiles (img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_
 import Menu (menu)
 
 
+getEmplCalendarSlotsR :: StaffId -> Day -> Handler Html
+getEmplCalendarSlotsR eid day = do
+    let month = (\(y,m,_) -> YearMonth y m) . toGregorian
+    slots <- runDB $ select $ do
+        x <- from $ table @Schedule
+        where_ $ x ^. ScheduleStaff ==. val eid
+        where_ $ x ^. ScheduleWorkDay ==. val day
+        return x
+    fabSlotCreate <- newIdent
+    msgs <- getMessages
+    defaultLayout $ do
+        setTitleI MsgWorkday
+        $(widgetFile "admin/staff/empl/calendar/slots/slots")
+
+
 postEmplCalendarSlotDeleteR :: StaffId -> ScheduleId -> Day -> Handler Html
 postEmplCalendarSlotDeleteR eid wid day = do
+    let month = (\(y,m,_) -> YearMonth y m) . toGregorian
     ((fr,_),_) <- runFormPost formSlotDelete
     case fr of
       FormSuccess () -> do
           runDB $ delete wid
           addMessageI "info" MsgRecordDeleted
-          redirect $ AdminR $ AdmEmplCalendarR eid day
+          redirect $ AdminR $ AdmEmplCalendarR eid (month day)
       _ -> do
           addMessageI "warn" MsgInvalidFormData
           redirect $ AdminR $ EmplCalendarSlotR eid wid day
@@ -188,7 +207,7 @@ postEmplCalendarSlotR eid wid day = do
       _ -> defaultLayout $ do
           timeDay <- newIdent
           setTitleI MsgWorkingHours
-          $(widgetFile "admin/staff/empl/calendar/slot/edit")
+          $(widgetFile "admin/staff/empl/calendar/slots/edit")
 
 
 getEmplCalendarSlotEditR :: StaffId -> ScheduleId -> Day -> Handler Html
@@ -201,30 +220,32 @@ getEmplCalendarSlotEditR eid wid day = do
     defaultLayout $ do
         timeDay <- newIdent
         setTitleI MsgWorkingHours
-        $(widgetFile "admin/staff/empl/calendar/slot/edit")
+        $(widgetFile "admin/staff/empl/calendar/slots/edit")
 
 
-postAdmEmplCalendarR :: StaffId -> Day -> Handler Html
-postAdmEmplCalendarR eid day = do
+postEmplCalendarSlotsR :: StaffId -> Day -> Handler Html
+postEmplCalendarSlotsR eid day = do
+    let month = (\(y,m,_) -> YearMonth y m) . toGregorian
     ((fr,fw),et) <- runFormPost $ formSlot eid day Nothing
     case fr of
       FormSuccess r -> do
           runDB $ insert_ r
           addMessageI "info" MsgRecordAdded
-          redirect $ AdminR $ AdmEmplCalendarR eid day
+          redirect $ AdminR $ EmplCalendarSlotsR eid day
       _ -> defaultLayout $ do
           timeDay <- newIdent
           setTitleI MsgWorkingHours
-          $(widgetFile "admin/staff/empl/calendar/slot/create")
+          $(widgetFile "admin/staff/empl/calendar/slots/create")
 
 
 getEmplCalendarSlotCreateR :: StaffId -> Day -> Handler Html
 getEmplCalendarSlotCreateR eid day = do
+    let month = (\(y,m,_) -> YearMonth y m) . toGregorian
     (fw,et) <- generateFormPost $ formSlot eid day Nothing
     defaultLayout $ do
         timeDay <- newIdent
         setTitleI MsgWorkingHours
-        $(widgetFile "admin/staff/empl/calendar/slot/create")
+        $(widgetFile "admin/staff/empl/calendar/slots/create")
 
 
 formSlot :: StaffId -> Day -> Maybe (Entity Schedule)
@@ -278,6 +299,7 @@ $forall (v,icon) <- [(startV,"schedule"),(endV,"schedule")]
 
 getEmplCalendarSlotR :: StaffId -> ScheduleId -> Day -> Handler Html
 getEmplCalendarSlotR eid wid day = do
+    let month = (\(y,m,_) -> YearMonth y m) . toGregorian
     slot <- runDB $ selectOne $ do
         x <- from $ table @Schedule
         where_ $ x ^. ScheduleId ==. val wid
@@ -287,7 +309,7 @@ getEmplCalendarSlotR eid wid day = do
     (fw,et) <- generateFormPost formSlotDelete
     defaultLayout $ do
         setTitleI MsgWorkingHours
-        $(widgetFile "admin/staff/empl/calendar/slot/slot")
+        $(widgetFile "admin/staff/empl/calendar/slots/slot")
 
 
 formSlotDelete :: Html -> MForm Handler (FormResult (),Widget)
@@ -351,35 +373,41 @@ getAdmTimeSlotR eid wid = do
         $(widgetFile "admin/staff/schedule/schedule")
 
 
-getAdmEmplCalendarR :: StaffId -> Day -> Handler Html
-getAdmEmplCalendarR eid pivot = do
+getAdmEmplCalendarR :: StaffId -> Month -> Handler Html
+getAdmEmplCalendarR eid month = do
     stati <- reqGetParams <$> getRequest
     empl <- runDB $ selectOne $ do
         x :& u <- from $ table @Staff
             `leftJoin` table @User `on` (\(x :& u) -> x ^. StaffUser ==. u ?. UserId)
         where_ $ x ^. StaffId ==. val eid
         return (x,u)
-    slots <- runDB $ select $ do
+        
+    slots <- M.fromListWith (+) . (diff <$>) <$> runDB ( select ( do
         x <- from $ table @Schedule
         where_ $ x ^. ScheduleStaff ==. val eid
-        orderBy [desc (x ^. ScheduleWorkDay), desc (x ^. ScheduleWorkStart), desc (x ^. ScheduleWorkEnd)]
-        return x
+        where_ $ x ^. ScheduleWorkDay `between` (val (periodFirstDay month), val (periodLastDay month))
+        return ( x ^. ScheduleWorkDay
+               , (x ^. ScheduleWorkStart,x ^. ScheduleWorkEnd)
+               ) ) )
 
     app <- getYesod
     langs <- languages
     curr <- getCurrentRoute
     msgs <- getMessages
 
-    let (y,m,_) = toGregorian pivot
-    let start = weekFirstDay Monday (fromGregorian y m 1)
+    let start = weekFirstDay Monday (periodFirstDay month)
     let end = addDays 41 start
     let page = [start .. end]
-    let next = addGregorianMonthsClip 1 pivot
-    let prev = addGregorianMonthsClip (-1) pivot
-    today <- utctDay <$> liftIO getCurrentTime
+    let next = addMonths 1 month
+    let prev = addMonths (-1) month
+    today <- (\(y,m,_) -> YearMonth y m) . toGregorian . utctDay <$> liftIO getCurrentTime
     defaultLayout $ do
         setTitleI MsgEmployee
         $(widgetFile "admin/staff/empl/calendar/calendar")
+
+  where
+      diff (Value d,(Value s,Value e)) = (d,diffLocalTime (LocalTime d e) (LocalTime d s))
+
 
 
 getAdmScheduleR :: StaffId -> Handler Html
@@ -400,7 +428,7 @@ getAdmScheduleR eid = do
     curr <- getCurrentRoute
     msgs <- getMessages
     touchTargetWrapperAddSchedule <- newIdent
-    today <- utctDay <$> liftIO getCurrentTime
+    month <- (\(y,m,_) -> YearMonth y m) . toGregorian . utctDay <$> liftIO getCurrentTime
     defaultLayout $ do
         setTitleI MsgEmployee
         $(widgetFile "admin/staff/empl/schedule")

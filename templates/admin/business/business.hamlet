@@ -62,9 +62,9 @@
               <span.mdc-tab__ripple>
               <span.mdc-tab__focus-ring>
             $maybe Entity bid _ <- business
-              <a.mdc-tab href=@{AdminR $ BusinessCalendarR bid today} role=tab tabindex=0
-                :curr == Just (AdminR $ BusinessCalendarR bid today):.mdc-tab--active
-                :curr == Just (AdminR $ BusinessCalendarR bid today):aria-selected=true>
+              <a.mdc-tab href=@{AdminR $ BusinessCalendarR bid month} role=tab tabindex=0
+                :curr == Just (AdminR $ BusinessCalendarR bid month):.mdc-tab--active
+                :curr == Just (AdminR $ BusinessCalendarR bid month):aria-selected=true>
                 <span.mdc-tab__content>
                   <span.mdc-tab__text-label>_{MsgBusinessHours}
                 <span.mdc-tab-indicator :curr == Just (AdminR $ BusinessHoursR bid):.mdc-tab-indicator--active>

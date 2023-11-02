@@ -1,0 +1,48 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
+        href=@{AdminR $ AdmEmplCalendarR eid (month day)}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgWorkday}
+
+<main.mdc-top-app-bar--fixed-adjust>
+  <nav.mdc-list data-mdc-auto-init=MDCList>
+    $forall Entity wid (Schedule eid day start end) <- slots
+      $with (d,s,e) <- (show day,show start,show end)
+        <a.mdc-list-item.mdc-list-item--with-two-lines.mdc-list-item--with-trailing-icon
+          href=@{AdminR $ EmplCalendarSlotR eid wid day}>
+          <span.mdc-list-item__ripple>
+          <span.mdc-list-item__content>
+            <div.mdc-list-item__primary-text>
+              <time.day datetime=#{d}>
+                #{d}
+            <div.mdc-list-item__secondary-text>
+              <time.time-of-day datetime="#{d}T#{s}">
+                #{s}
+              &mdash;
+              <time.time-of-day datetime="#{d}T#{e}">
+                #{e}
+            
+          <span.mdc-list-item__end>
+            <i.material-symbols-outlined>arrow_forward_ios
+            
+  <div.mdc-touch-target-wrapper ##{fabSlotCreate}>
+    <a.mdc-fab.mdc-fab--touch href=@{AdminR $ EmplCalendarSlotCreateR eid day} title=_{MsgAdd}>
+      <span.mdc-fab__ripple>
+      <span.mdc-fab__focus-ring>
+      <span.mdc-fab__icon.material-symbols-outlined>add
+      <span.mdc-fab__touch>
+
+$forall (_,msg) <- msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar style="bottom:5rem">
+    <div.mdc-snackbar__surface role=status aria-relevant=additions>
+      <div.mdc-snackbar__label aria-atomic=false>
+        #{msg}
+      <div.mdc-snackbar__actions aria-atomic=true>
+        <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>close

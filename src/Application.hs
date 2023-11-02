@@ -93,6 +93,7 @@ import Handler.Resources (getDocsR)
 
 import Handler.Stats
     ( getPopOffersR, getWorkloadsR, getWorkloadEmplMonthR, getWorkloadEmplDayR
+    , getCustomerRankingR
     )
 
 import Admin.Business
@@ -100,10 +101,10 @@ import Admin.Business
   , getBusinessEditR, postBusinessEditR, postBusinessDeleteR
   , getBusinessHoursR, postBusinessHoursR, getBusinessHoursCreateR
   , getBusinessTimeSlotR, postBusinessTimeSlotDeleteR, getBusinessHoursEditR
-  , postBusinessTimeSlotR, getBusinessCalendarR, getBusinessCalendarSlotR
+  , postBusinessTimeSlotR, getBusinessCalendarR, getBusinessCalendarSlotsR
   , getBusinessCalendarSlotCreateR, postBusinessCalendarSlotCreateR
   , getBusinessCalendarSlotEditR, postBusinessCalendarSlotEditR
-  , postBusinessCalendarSlotDeleteR
+  , postBusinessCalendarSlotDeleteR, getBusinessCalendarSlotR
   )
 
 import Admin.Brand
@@ -147,8 +148,10 @@ import Admin.Staff
     , postAdmScheduleR, getAdmTimeSlotR, postAdmTimeSlotR, getAdmScheduleEditR
     , postAdmScheduleDeleteR, getAdmEmplCalendarR, getEmplCalendarSlotR
     , getEmplCalendarSlotEditR, postEmplCalendarSlotDeleteR
-    , getEmplCalendarSlotCreateR, postAdmEmplCalendarR, postEmplCalendarSlotR
+    , getEmplCalendarSlotCreateR, postEmplCalendarSlotsR, postEmplCalendarSlotR
+    , getEmplCalendarSlotsR
     )
+    
 import Admin.Services
     ( getAdmServicesR
     , getAdmServiceCreateFormR

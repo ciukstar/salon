@@ -9,6 +9,7 @@ module Handler.Stats
   , getWorkloadsR
   , getWorkloadEmplMonthR
   , getWorkloadEmplDayR
+  , getCustomerRankingR
   ) where
 
 import Control.Monad.IO.Class (liftIO)
@@ -57,7 +58,7 @@ import Foundation
     ( Handler, Widget
     , Route (AccountPhotoR, PhotoPlaceholderR, ProfileR, AuthR, AdminR, StatsR)
     , AdminR (AdmStaffPhotoR)
-    , StatsR (WorkloadsR, WorkloadEmplMonthR, WorkloadEmplDayR)
+    , StatsR (WorkloadsR, WorkloadEmplMonthR, WorkloadEmplDayR, CustomerRankingR)
     , AppMessage
       ( MsgPopularOffers, MsgUserProfile, MsgPhoto, MsgNavigationMenu, MsgLogin
       , MsgNoDataToDisplay, MsgService, MsgBookings, MsgNumberSign, MsgWorkload
@@ -80,6 +81,14 @@ import Model
 
 import Settings (widgetFile)
 import Menu (menu)
+
+
+getCustomerRankingR :: Handler Html
+getCustomerRankingR = do
+    user <- maybeAuth
+    defaultLayout $ do
+        setTitleI MsgWorkload
+        $(widgetFile "stats/customer/aov")
 
 
 getWorkloadEmplDayR :: StaffId -> Day -> Handler Html
@@ -299,4 +308,4 @@ getPopOffersR = do
     setUltDestCurrent
     defaultLayout $ do
         setTitleI MsgPopularOffers
-        $(widgetFile "stats/pop-offers/offers")
+        $(widgetFile "stats/offers/pop")

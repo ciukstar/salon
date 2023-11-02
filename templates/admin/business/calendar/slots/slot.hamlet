@@ -1,23 +1,22 @@
 <header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row.mdc-theme--background>
-    $maybe Entity _ (BusinessHours _ day _ _ _) <- slot
-      <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-        <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
-          href=@{AdminR $ BusinessCalendarR bid day}>
-          <span.mdc-icon-button__ripple>
-          <span.mdc-icon-button__focus-ring>
-          <i.material-symbols-outlined>arrow_back
-        <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgBusinessHours}
-      <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end.mdc-theme--text-primary-on-light>
-        <button.mdc-icon-button type=button title=_{MsgDel}
-          onclick="document.getElementById('#{dlgSlotDelete}').MDCDialog.open()">
-          <span.mdc-icon-button__ripple>
-          <span.mdc-icon-button__focus-ring>
-          <i.material-symbols-outlined>delete
-        <a.mdc-icon-button href=@{AdminR $ BusinessCalendarSlotEditR bid day sid} role=button title=_{MsgEdit}>
-          <span.mdc-icon-button__ripple>
-          <span.mdc-icon-button__focus-ring>
-          <i.material-symbols-outlined>edit
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
+        href=@{AdminR $ BusinessCalendarR bid (month day)}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgBusinessHours}
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end.mdc-theme--text-primary-on-light>
+      <button.mdc-icon-button type=button title=_{MsgDel}
+        onclick="document.getElementById('#{dlgSlotDelete}').MDCDialog.open()">
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>delete
+      <a.mdc-icon-button href=@{AdminR $ BusinessCalendarSlotEditR bid day sid} role=button title=_{MsgEdit}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>edit
 
 <div.mdc-dialog ##{dlgSlotDelete} data-mdc-auto-init=MDCDialog>
   <div.mdc-dialog__container>
@@ -29,8 +28,6 @@
           <span.mdc-button__ripple>
           <span.mdc-button__focus-ring>
           <span.mdc-button__label>_{MsgCancel}
-        
-        $maybe Entity _ (BusinessHours _ day _ _ _) <- slot
           <form method=post action=@{AdminR $ BusinessCalendarSlotDeleteR bid sid day}>
             <button.mdc-button.mdc-button--raised type=submit>
               <span.mdc-button__ripple>

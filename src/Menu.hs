@@ -25,7 +25,7 @@ import Foundation
       ( ResourcesR, AdminR, ContactR, AboutUsR, AppointmentsR
       , BookOffersR, RequestsR, ServicesR, HomeR, StatsR
       )
-    , StatsR (PopOffersR, WorkloadsR)
+    , StatsR (PopOffersR, WorkloadsR, CustomerRankingR)
     , AdminR
       ( BrandR, UsersR, AdmContactsR, AdmAboutR, AdmStaffR, AdmServicesR
       , BusinessR, BusinessHoursR, BusinessCalendarR
@@ -35,7 +35,7 @@ import Foundation
       , MsgMyAppointments, MsgServices, MsgBookAppointment, MsgWelcome, MsgSalon
       , MsgUsers, MsgContact, MsgStaff, MsgData, MsgResources, MsgRequests
       , MsgBusiness, MsgClose, MsgAnalytics, MsgPopularOffers
-      , MsgWorkload
+      , MsgWorkload, MsgCustomerRanking
       )
     )
 
@@ -52,8 +52,9 @@ menu = do
     today <- utctDay <$> liftIO getCurrentTime
     
     let (y,m,_) = toGregorian today
-        firstDay = periodFirstDay $ YearMonth y m
-        lastDay = periodLastDay $ YearMonth y m
+        month = YearMonth y m
+        firstDay = periodFirstDay month
+        lastDay = periodLastDay month
         
     curr <- getCurrentRoute
     $(widgetFile "menu")

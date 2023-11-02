@@ -1,3 +1,6 @@
+Workday: Journée de travail
+TimeSlot: Créneau horaire
+CustomerRanking: Classement des clients
 TotalScheduledTime: Durée totale programmée
 TotalBookedTime: Durée totale réservée
 NoDataFound: Aucune donnée disponible

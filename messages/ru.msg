@@ -1,3 +1,6 @@
+Workday: Рабочий день
+TimeSlot: Временной интервал
+CustomerRanking: Рейтинг клиентов
 TotalScheduledTime: Общее запланированное время
 TotalBookedTime: Общее забронированное время
 NoDataFound: Данные не найдены

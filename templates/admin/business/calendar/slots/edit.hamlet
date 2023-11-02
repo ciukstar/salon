@@ -2,7 +2,7 @@
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
       <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
-        href=@{AdminR $ BusinessCalendarSlotR bid sid}>
+        href=@{AdminR $ BusinessCalendarSlotsR bid day}>
         <span.mdc-button__ripple>
         <span.mdc-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
@@ -14,7 +14,7 @@
   <form method=post action=@{AdminR $ BusinessCalendarSlotEditR bid day sid} enctype=#{et} novalidate>
     ^{fw}
     <div.form-actions>
-      <a.mdc-button href=@{AdminR $ BusinessCalendarSlotR bid sid} role=button>
+      <a.mdc-button href=@{AdminR $ BusinessCalendarSlotsR bid day} role=button>
         <span.mdc-button__ripple>
         <span.mdc-button__focus-ring>
         <span.mdc-button__label>_{MsgCancel}

@@ -138,6 +138,8 @@ instance Yesod App where
     isAuthorized (StatsR WorkloadsR) _ = return Authorized
     isAuthorized (StatsR (WorkloadEmplMonthR _ _)) _ = return Authorized
     isAuthorized (StatsR (WorkloadEmplDayR _ _)) _ = return Authorized
+    isAuthorized (StatsR CustomerRankingR) _ = return Authorized
+    
         
         
     isAuthorized (AdminR UsersR) _ = return Authorized
@@ -194,6 +196,7 @@ instance Yesod App where
     isAuthorized (AdminR (AdmEmplUnregR _ _)) _ = return Authorized
     isAuthorized (AdminR AdmStaffSearchR) _ = return Authorized
     isAuthorized (AdminR (AdmEmplCalendarR _ _)) _ = return Authorized
+    isAuthorized (AdminR (EmplCalendarSlotsR _ _)) _ = return Authorized
     isAuthorized (AdminR (EmplCalendarSlotR {})) _ = return Authorized
     isAuthorized (AdminR (EmplCalendarSlotEditR {})) _ = return Authorized
     isAuthorized (AdminR (EmplCalendarSlotDeleteR {})) _ = return Authorized
@@ -219,7 +222,8 @@ instance Yesod App where
     isAuthorized (AdminR (BusinessTimeSlotR _ _)) _ = return Authorized
     isAuthorized (AdminR (BusinessTimeSlotDeleteR _ _)) _ = return Authorized
     isAuthorized (AdminR (BusinessHoursEditR _ _)) _ = return Authorized
-    isAuthorized (AdminR (BusinessCalendarSlotR _ _)) _ = return Authorized
+    isAuthorized (AdminR (BusinessCalendarSlotsR _ _)) _ = return Authorized
+    isAuthorized (AdminR (BusinessCalendarSlotR {})) _ = return Authorized
     isAuthorized (AdminR (BusinessCalendarSlotCreateR _ _)) _ = return Authorized
     isAuthorized (AdminR (BusinessCalendarSlotEditR {})) _ = return Authorized
     isAuthorized (AdminR (BusinessCalendarSlotDeleteR {})) _ = return Authorized
