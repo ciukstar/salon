@@ -1,3 +1,9 @@
+NumberOfOrders: Nombre de commandes
+ValueOfOrders: Valeur des commandes
+TotalOrderValue: Valeur totale des commandes
+ServiceRanking: Classement des services
+AcronymAOV: VMC
+AverageOrderValue: Valeur moyenne des commandes 
 BasicEntities: Entités de base
 BusinessDay: Jour ouvrable
 SortDescending: Trier par ordre décroissant

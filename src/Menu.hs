@@ -25,7 +25,7 @@ import Foundation
       ( ResourcesR, AdminR, ContactR, AboutUsR, AppointmentsR
       , BookOffersR, RequestsR, ServicesR, HomeR, StatsR
       )
-    , StatsR (PopOffersR, WorkloadsR, CustomerRankingR)
+    , StatsR (PopOffersR, WorkloadsR, StatsAovR)
     , AdminR
       ( BrandR, UsersR, AdmContactsR, AdmAboutR, AdmStaffR, AdmServicesR
       , BusinessR, BusinessHoursR, BusinessCalendarR
@@ -35,7 +35,7 @@ import Foundation
       , MsgMyAppointments, MsgServices, MsgBookAppointment, MsgWelcome, MsgSalon
       , MsgUsers, MsgContact, MsgStaff, MsgData, MsgResources, MsgRequests
       , MsgBusiness, MsgClose, MsgAnalytics, MsgPopularOffers
-      , MsgWorkload, MsgCustomerRanking
+      , MsgWorkload, MsgCustomerRanking, MsgServiceRanking
       )
     )
 

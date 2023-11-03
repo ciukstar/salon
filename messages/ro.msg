@@ -1,3 +1,9 @@
+NumberOfOrders: Numărul de comenzi
+ValueOfOrders: Valoarea comenzilor
+TotalOrderValue: Valoarea totală a comenzilor
+ServiceRanking: Clasamentul serviciilor
+AcronymAOV: AOV
+AverageOrderValue: Valoarea medie a comenzii
 BasicEntities: Entităţile de bază
 BusinessDay: Zi de lucru
 SortDescending: Sortează descrescător

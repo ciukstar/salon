@@ -93,7 +93,7 @@ import Handler.Resources (getDocsR)
 
 import Handler.Stats
     ( getPopOffersR, getWorkloadsR, getWorkloadEmplMonthR, getWorkloadEmplDayR
-    , getCustomerRankingR
+    , getStatsAovR, getAovDetailsR
     )
 
 import Admin.Business

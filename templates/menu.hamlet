@@ -73,7 +73,7 @@
           <span.mdc-deprecated-list-item__text>_{MsgContactUs}
       <hr.mdc-deprecated-list-divider role=separator>
       
-      <details :elem curr [Just (StatsR PopOffersR),Just (StatsR WorkloadsR),Just (StatsR CustomerRankingR)]:open
+      <details :elem curr [Just (StatsR PopOffersR),Just (StatsR WorkloadsR),Just (StatsR StatsAovR)]:open
         ontoggle="this.querySelector('i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
         <summary.mdc-deprecated-list>
           <li.mdc-deprecated-list-item>
@@ -82,29 +82,31 @@
             <span.mdc-deprecated-list-item__text>_{MsgAnalytics}
             
         <nav.mdc-deprecated-list>
-          <a.mdc-deprecated-list-item href=@{StatsR PopOffersR}
+          <a.mdc-deprecated-list-item 
+            href=@?{(StatsR PopOffersR,[("start",pack $ show firstDay),("end",pack $ show lastDay)])}
             :Just (StatsR PopOffersR) /= curr:tabindex=-1
             :Just (StatsR PopOffersR) == curr:tabindex=0
             :Just (StatsR PopOffersR) == curr:.mdc-deprecated-list-item--activated>
             <span.mdc-deprecated-list-item__ripple>
             <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>query_stats
-            <span.mdc-deprecated-list-item__text>_{MsgPopularOffers}
+            <span.mdc-deprecated-list-item__text>_{MsgServiceRanking}
       
-          <a.mdc-deprecated-list-item href=@?{(StatsR WorkloadsR,[("start",pack $ show firstDay),("end",pack $ show lastDay)])}
+          <a.mdc-deprecated-list-item href=@?{(StatsR StatsAovR,[("start",pack $ show firstDay),("end",pack $ show lastDay)])}
+            :Just (StatsR StatsAovR) /= curr:tabindex=-1
+            :Just (StatsR StatsAovR) == curr:tabindex=0
+            :Just (StatsR StatsAovR) == curr:.mdc-deprecated-list-item--activated>
+            <span.mdc-deprecated-list-item__ripple>
+            <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>query_stats
+            <span.mdc-deprecated-list-item__text>_{MsgCustomerRanking}
+      
+          <a.mdc-deprecated-list-item
+            href=@?{(StatsR WorkloadsR,[("start",pack $ show firstDay),("end",pack $ show lastDay)])}
             :Just (StatsR WorkloadsR) /= curr:tabindex=-1
             :Just (StatsR WorkloadsR) == curr:tabindex=0
             :Just (StatsR WorkloadsR) == curr:.mdc-deprecated-list-item--activated>
             <span.mdc-deprecated-list-item__ripple>
             <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>query_stats
             <span.mdc-deprecated-list-item__text>_{MsgWorkload}
-      
-          <a.mdc-deprecated-list-item href=@{StatsR CustomerRankingR}
-            :Just (StatsR CustomerRankingR) /= curr:tabindex=-1
-            :Just (StatsR CustomerRankingR) == curr:tabindex=0
-            :Just (StatsR CustomerRankingR) == curr:.mdc-deprecated-list-item--activated>
-            <span.mdc-deprecated-list-item__ripple>
-            <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>query_stats
-            <span.mdc-deprecated-list-item__text>_{MsgCustomerRanking}
             
       <hr.mdc-deprecated-list-divider role=separator>
       

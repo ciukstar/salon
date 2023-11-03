@@ -6,12 +6,6 @@ main
     flex-direction: row
     justify-content: space-between
     align-items: center
-    
-  div.mdc-data-table
-    margin: 1rem 0
-    width: 100%
-    thead th, tbody th
-      white-space: normal
 
 ##{dlgTimeFrame}
   ##{formTimeFrame}
@@ -23,11 +17,3 @@ main
       flex-direction: column
   .mdc-dialog__actions
     gap: 0.5rem
-
-@media screen and (min-width: 0) and (max-width: 767px)
-  main
-    div.mdc-data-table
-      margin: 0
-      border-radius: 0
-      border-left: 0
-      border-right: 0

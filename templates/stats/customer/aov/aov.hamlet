@@ -6,7 +6,7 @@
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>menu
-      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgPopularOffers}
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgAverageOrderValue}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end>
       $maybe Entity uid _ <- user
@@ -23,6 +23,21 @@
 
 <main.mdc-top-app-bar--fixed-adjust>
 
+  $case fr
+    $of FormFailure _
+      <div.mdc-banner role=banner data-mdc-auto-init=MDCBanner>
+        <div.mdc-banner__content role=alertdialog aria-live=assertive>
+          <div.mdc-banner__graphic-text-wrapper>
+            <div.mdc-banner__graphic role=img style="background-color:var(--mdc-theme-error)">
+              <i.mdc-banner__icon.material-symbols-outlined>warning
+            <div.mdc-banner__text>
+              _{MsgInvalidFormData}
+          <div.mdc-banner__actions>
+            <button.mdc-banner__primary-action.mdc-icon-button type=button>
+              <span.mdc-icon-button__ripple>
+              <i.material-symbols-outlined>close
+    $of _
+
   <div.toolbar role=toolbar ##{toolbarTop}>
     <button.mdc-button.mdc-button--outlined.mdc-button--icon-trailing type=button
       onclick="document.getElementById('#{dlgTimeFrame}').MDCDialog.open()">
@@ -38,40 +53,45 @@
     $case sort
       $of SortOrderAsc
         <a.mdc-icon-button role=button title=_{MsgSortDescending}
-          href=@?{(StatsR PopOffersR,((++) [("sort",pack $ show SortOrderDesc)] stati))}>
+          href=@?{(StatsR StatsAovR,((++) [("sort",pack $ show SortOrderDesc)] stati))}>
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined style="transform:rotateX(180deg)">sort
       $of SortOrderDesc
         <a.mdc-icon-button role=button title=_{MsgSortAscending}
-          href=@?{(StatsR PopOffersR,((++) [("sort",pack $ show SortOrderAsc)] stati))}>
+          href=@?{(StatsR StatsAovR,((++) [("sort",pack $ show SortOrderAsc)] stati))}>
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>sort
-      
-  $if null offers
-    <figure style="text-align:center">
-      <span style="font-size:4rem;line-eight:1;color:var(--mdc-theme-primary)">&varnothing;
-      <figcaption>
-        _{MsgNoDataToDisplay}
-  $else
-    <div.mdc-data-table>
-      <div.mdc-data-table__table-cotainer>
-        <table.mdc-data-table__table>
-          <thead>
-            <tr.mdc-data-table__header-row>
-              <th.mdc-data-table__header-cell role=columnheader scope=col>
-                _{MsgNumberSign}
-              <th.mdc-data-table__header-cell role=columnheader scope=col>
-                _{MsgService}
-              <th.mdc-data-table__header-cell.mdc-data-table__header-cell--numeric role=columnheader scope=col>
-                _{MsgBookings}
-          <tbody.mdc-data-table__cotent>
-            $forall (i,(Entity _ (Service sname _ _ _ _ _),Entity _ (Offer _ _ _ _ _ _),Value n)) <- report
-              <tr.mdc-data-table__row>
-                <th.mdc-data-table__cell scope=row>#{i}
-                <th.mdc-data-table__cell scope=row>#{sname}
-                <td.mdc-data-table__cell.mdc-data-table__cell--numeric>#{n}
+
+  <nav.mdc-list>
+    $forall (Value cid,Value uname, Value fname,Value aov) <- report
+      <a.mdc-list-item.mdc-list-item--with-leading-image.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon
+        href=@?{(StatsR $ AovDetailsR cid start end,((++) [("sort",pack $ show sort)] stati))}>
+        <span.mdc-list-item__ripple>
+        <span.mdc-list-item__start>
+          <img width=56 height=56 src=@{AccountPhotoR cid} alt=_{MsgPhoto} loading=lazy
+            onerror="this.src = '@{PhotoPlaceholderR}'">
+          
+        <span.mdc-list-item__content>
+          <div.mdc-list-item__primary-text>
+            $maybe fname <- fname
+              #{fname}
+            $nothing
+              #{uname}
+          <div.mdc-list-item__secondary-text>
+            _{MsgAcronymAOV}
+          <div.mdc-list-item__secondary-text>
+            $with aov <- show aov
+              $maybe c <- currency
+                <span.currency data-value=#{aov} data-currency=#{c}>
+                  #{aov} #{c}
+              $nothing
+                <span.numeric data-value=#{aov}>
+                  #{aov}
+                  
+        <span.mdc-list-item__end>
+          <i.material-symbols-outlined>arrow_forward_ios
 
 
 <div.mdc-dialog ##{dlgTimeFrame} data-mdc-auto-init=MDCDialog>
@@ -80,10 +100,9 @@
       <div.mdc-dialog__header>
         <h4.mdc-dialog__title>_{MsgPeriod}
       <div.mdc-dialog__content>
-        <form method=get ##{formTimeFrame} enctype=#{et} novalidate
-          action=@{StatsR PopOffersR}>
-          ^{fw}
+        <form method=get action=@{StatsR StatsAovR} ##{formTimeFrame} enctype=#{et} novalidate>
           <input type=text name=sort value=#{pack $ show sort} hidden>
+          ^{fw}
               
       <div.mdc-dialog__actions>
         <button.mdc-button type=button data-mdc-dialog-action=cancel>

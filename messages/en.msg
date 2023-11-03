@@ -1,3 +1,9 @@
+NumberOfOrders: Number of orders
+ValueOfOrders: Value of orders
+TotalOrderValue: Total order value
+ServiceRanking: Service ranking
+AcronymAOV: AOV
+AverageOrderValue: Average order value
 BasicEntities: Basic Entities
 BusinessDay: Business day
 SortDescending: Sort descending

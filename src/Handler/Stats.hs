@@ -9,11 +9,13 @@ module Handler.Stats
   , getWorkloadsR
   , getWorkloadEmplMonthR
   , getWorkloadEmplDayR
-  , getCustomerRankingR
+  , getStatsAovR
+  , getAovDetailsR
   ) where
 
 import Control.Monad.IO.Class (liftIO)
 import Data.Bifunctor (second)
+import Data.Fixed (Centi)
 import Data.Foldable (find)
 import Data.List (sortBy)
 import Data.Maybe (fromMaybe, isJust)
@@ -51,16 +53,19 @@ import Database.Persist (Entity (Entity))
 
 import Database.Esqueleto.Experimental
     ( SqlExpr, Value (Value), select, from, table, innerJoin, on, subSelectCount
-    , (:&)((:&)), (^.), (==.)
-    , where_, orderBy, desc, just, groupBy, sum_, coalesceDefault, val, between
-    , selectOne, unValue
+    , (:&)((:&)), (^.), (==.), (/.)
+    , where_, orderBy, asc, desc, just, groupBy, sum_, coalesceDefault, val
+    , between, selectOne, unValue, count
     )
 
 import Foundation
     ( Handler, Widget
     , Route (AccountPhotoR, PhotoPlaceholderR, ProfileR, AuthR, AdminR, StatsR)
     , AdminR (AdmStaffPhotoR)
-    , StatsR (WorkloadsR, WorkloadEmplMonthR, WorkloadEmplDayR, CustomerRankingR)
+    , StatsR
+      ( WorkloadsR, WorkloadEmplMonthR, WorkloadEmplDayR, StatsAovR, PopOffersR
+      , AovDetailsR
+      )
     , AppMessage
       ( MsgPopularOffers, MsgUserProfile, MsgPhoto, MsgNavigationMenu, MsgLogin
       , MsgNoDataToDisplay, MsgService, MsgBookings, MsgNumberSign, MsgWorkload
@@ -68,17 +73,19 @@ import Foundation
       , MsgInvalidFormData, MsgInvalidTimeInterval, MsgNoDataFound, MsgMon
       , MsgTue, MsgWed, MsgThu, MsgFri, MsgSat, MsgSun, MsgTotalBookedTime
       , MsgTotalScheduledTime, MsgSymbolMinute, MsgSymbolHour, MsgSortAscending
-      , MsgSortDescending
+      , MsgSortDescending, MsgAverageOrderValue, MsgAcronymAOV, MsgValueOfOrders
+      , MsgNumberOfOrders
       )
     )
 
 import Model
     ( Offer (Offer), Book, Service (Service), Role, Staff (Staff), StaffId
-    , Schedule
+    , Schedule, User, UserId, Business
     , EntityField
       ( OfferId, BookOffer, ServiceId, OfferService, BookRole, RoleId, RoleStaff
       , StaffId, BookDay, RoleDuration, ScheduleStaff, ScheduleWorkDay, ScheduleWorkEnd
-      , ScheduleWorkStart, StaffName
+      , ScheduleWorkStart, StaffName, UserId, OfferPrice, BookId, BookCustomer
+      , UserName, UserFullName, BusinessCurrency
       )
     , SortOrder (SortOrderAsc, SortOrderDesc)
     )
@@ -87,18 +94,84 @@ import Settings (widgetFile)
 import Menu (menu)
 
 
-getCustomerRankingR :: Handler Html
-getCustomerRankingR = do
-    user <- maybeAuth
+getAovDetailsR :: UserId -> Day -> Day -> Handler Html
+getAovDetailsR cid start end = do
+    stati <- reqGetParams <$> getRequest
+
+    currency <- (unValue <$>) <$> runDB ( selectOne $ do
+        x <- from $ table @Business
+        return (x ^. BusinessCurrency) )
+
+    item <- runDB $ selectOne $ do
+        b :& c :& o <- from $ table @Book
+            `innerJoin` table @User `on` (\(b :& c) -> b ^. BookCustomer ==. c ^. UserId)
+            `innerJoin` table @Offer `on` (\(b :& _ :& o) -> b ^. BookOffer ==. o ^. OfferId)
+        where_ $ c ^. UserId ==. val cid
+        where_ $ b ^. BookDay `between` (val start,val end)
+
+        let t = coalesceDefault [sum_ (o ^. OfferPrice)] (val 0) :: SqlExpr (Value Centi)
+        let n = count (b ^. BookId) :: SqlExpr (Value Centi)
+        let aov = t /. n
+        groupBy (c ^. UserId, c ^. UserName, c ^. UserFullName)
+        return  (c ^. UserId, c ^. UserName, c ^. UserFullName,t,n,aov)
+
     defaultLayout $ do
-        setTitleI MsgWorkload
-        $(widgetFile "stats/customer/aov")
+        setTitleI MsgAverageOrderValue
+        $(widgetFile "stats/customer/aov/details")
+
+
+getStatsAovR :: Handler Html
+getStatsAovR = do
+    user <- maybeAuth
+    stati <- filter ((/= "sort") . fst) . reqGetParams <$> getRequest
+    today <- liftIO (utctDay <$> getCurrentTime)
+    start <- fromMaybe today <$> runInputGet (iopt dayField "start")
+    end <- fromMaybe today <$> runInputGet (iopt dayField "end")
+    sort <- fromMaybe SortOrderDesc . (readMaybe . unpack =<<) <$> runInputGet (iopt textField "sort")
+
+    currency <- (unValue <$>) <$> runDB ( selectOne $ do
+        x <- from $ table @Business
+        return (x ^. BusinessCurrency) )
+
+    report <- runDB $ select $ do
+        b :& c :& o <- from $ table @Book
+            `innerJoin` table @User `on` (\(b :& c) -> b ^. BookCustomer ==. c ^. UserId)
+            `innerJoin` table @Offer `on` (\(b :& _ :& o) -> b ^. BookOffer ==. o ^. OfferId)
+        where_ $ b ^. BookDay `between` (val start,val end)
+        let t = coalesceDefault [sum_ (o ^. OfferPrice)] (val 0) :: SqlExpr (Value Centi)
+        let n = count (b ^. BookId) :: SqlExpr (Value Centi)
+        let aov = t /. n
+        groupBy (c ^. UserId, c ^. UserName, c ^. UserFullName)
+        orderBy $ case sort of
+          SortOrderDesc -> [desc aov]
+          SortOrderAsc  -> [asc aov]
+        return  (c ^. UserId, c ^. UserName, c ^. UserFullName,aov)
+
+    setUltDestCurrent
+    toolbarTop <- newIdent
+    dlgTimeFrame <- newIdent
+    formTimeFrame <- newIdent
+
+    ((fr,fw0),et0) <- runFormGet $ formPeriod start end
+    case fr of
+      FormMissing -> do
+          (fw,et) <- generateFormGet' $ formPeriod start end
+          defaultLayout $ do
+              setTitleI MsgAverageOrderValue
+              $(widgetFile "stats/customer/aov/aov")
+
+      _ -> do
+          let (fw,et) = (fw0,et0)
+          defaultLayout $ do
+              setTitleI MsgAverageOrderValue
+              $(widgetFile "stats/customer/aov/aov")
+
 
 
 getWorkloadEmplDayR :: StaffId -> Day -> Handler Html
 getWorkloadEmplDayR eid day = do
     stati <- reqGetParams <$> getRequest
-    
+
     employee <- runDB $ selectOne $ do
         x <- from $ table @Staff
         where_ $ x ^. StaffId ==. val eid
@@ -110,7 +183,7 @@ getWorkloadEmplDayR eid day = do
             `innerJoin` table @Staff `on` (\(_ :& r :& e) -> r ^. RoleStaff ==. e ^. StaffId)
         where_ $ e ^. StaffId ==. val eid
         where_ $ b ^. BookDay ==. val day
-        
+
         let dur = coalesceDefault [sum_ (r ^. RoleDuration)] (val 0) :: SqlExpr (Value DiffTime)
 
         return dur )
@@ -125,7 +198,7 @@ getWorkloadEmplDayR eid day = do
     let ratio = if planned == 0 then 0 else
                   fromIntegral (diffTimeToPicoseconds booked)
                   / fromIntegral (diffTimeToPicoseconds planned) :: Double
-            
+
     app <- getYesod
     langs <- languages
     defaultLayout $ do
@@ -135,13 +208,13 @@ getWorkloadEmplDayR eid day = do
   where
 
       calcdur (Value start,Value end) = timeOfDayToTime end - timeOfDayToTime start
-    
+
 
 
 getWorkloadEmplMonthR :: StaffId -> Month -> Handler Html
 getWorkloadEmplMonthR eid month = do
     stati <- reqGetParams <$> getRequest
-    
+
     employee <- runDB $ selectOne $ do
         x <- from $ table @Staff
         where_ $ x ^. StaffId ==. val eid
@@ -153,7 +226,7 @@ getWorkloadEmplMonthR eid month = do
             `innerJoin` table @Staff `on` (\(_ :& r :& e) -> r ^. RoleStaff ==. e ^. StaffId)
         where_ $ e ^. StaffId ==. val eid
         where_ $ (b ^. BookDay) `between` (val (periodFirstDay month), val (periodLastDay month))
-        
+
         let dur = coalesceDefault [sum_ (r ^. RoleDuration)] (val 0) :: SqlExpr (Value DiffTime)
 
         groupBy (e ^. StaffId, b ^. BookDay)
@@ -248,7 +321,7 @@ getWorkloadsR = do
 
       choose SortOrderAsc  (_,x) (_,y) = x `compare` y
       choose SortOrderDesc (_,x) (_,y) = y `compare` x
-      
+
       unwrap (Value eid,Value ename,Value dur) = ((eid,ename),dur)
 
       calcdur (Value eid,Value ename,Value start,Value end) =
@@ -305,14 +378,44 @@ $forall (v,icon) <- [(startV,"event"),(endV,"event")]
 getPopOffersR :: Handler Html
 getPopOffersR = do
     user <- maybeAuth
-    offers <- zip [1 :: Int ..] <$> runDB ( select $ do
+    stati <- filter ((/= "sort") . fst) . reqGetParams <$> getRequest
+    today <- liftIO (utctDay <$> getCurrentTime)
+    start <- fromMaybe today <$> runInputGet (iopt dayField "start")
+    end <- fromMaybe today <$> runInputGet (iopt dayField "end")
+    sort <- fromMaybe SortOrderDesc . (readMaybe . unpack =<<) <$> runInputGet (iopt textField "sort")
+
+    offers <- runDB ( select $ do
         o :& s <- from $ table @Offer
             `innerJoin` table @Service `on` (\(o :& s) -> o ^. OfferService ==. s ^. ServiceId)
         let n :: SqlExpr (Value Int)
-            n = subSelectCount $ from (table @Book) >>= \b -> where_ $ b ^. BookOffer ==. o ^. OfferId
-        orderBy [desc n]
+            n = subSelectCount $ do
+                b <- from (table @Book)
+                where_ $ b ^. BookOffer ==. o ^. OfferId
+                where_ $ b ^. BookDay `between` (val start, val end)
+        orderBy $ case sort of
+          SortOrderAsc -> [asc n]
+          _            -> [desc n]
         return (s,o,n) )
+
+    let report = case sort of
+          SortOrderDesc -> zip [1 :: Int ..] offers
+          SortOrderAsc -> let l = length offers in zip [l, l - 1 .. 1] offers
+
     setUltDestCurrent
-    defaultLayout $ do
-        setTitleI MsgPopularOffers
-        $(widgetFile "stats/offers/pop")
+    toolbarTop <- newIdent
+    dlgTimeFrame <- newIdent
+    formTimeFrame <- newIdent
+
+    ((fr,fw0),et0) <- runFormGet $ formPeriod start end
+    case fr of
+      FormMissing -> do
+          (fw,et) <- generateFormGet' $ formPeriod start end
+          defaultLayout $ do
+              setTitleI MsgPopularOffers
+              $(widgetFile "stats/offers/pop")
+
+      _ -> do
+          let (fw,et) = (fw0,et0)
+          defaultLayout $ do
+              setTitleI MsgPopularOffers
+              $(widgetFile "stats/offers/pop")

@@ -1,0 +1,54 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
+        href=@?{(StatsR $ StatsAovR,stati)}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
+        _{MsgAverageOrderValue}
+
+<main.mdc-top-app-bar--fixed-adjust>
+
+  $maybe (Value cid,Value uname,Value fname,Value amount,Value nr,Value aov) <- item
+    <figure>
+      <img width=56 height=56 src=@{AccountPhotoR cid} alt=_{MsgPhoto} loading=lazy
+        onerror="this.src = '@{PhotoPlaceholderR}'">
+      <figcaption>
+        $maybe x <- fname
+          #{x}
+        $nothing
+          #{uname}
+
+    <div.period>
+      $with (s,e) <- (show start,show end)
+        <time.day datetime=#{s}>#{s}
+        &mdash;
+        <time.day datetime=#{e}>#{e}
+
+    <div.mdc-data-table>
+      <div.mdc-data-table__container>
+        <table.mdc-data-table__table>
+          <tbody.mdc-data-table__content>
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgValueOfOrders}:
+              <td.mdc-data-table__cell.mdc-data-table__header-cell--numeric>
+                $with x <- show amount
+                  $maybe c <- currency
+                    <span.currency data-value=#{x} data-currency=#{c}>#{x}
+                  $nothing
+                    <span.numeric data-value=#{x}>#{x}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgNumberOfOrders}:
+              <td.mdc-data-table__cell.mdc-data-table__header-cell--numeric>
+                $with x <- show nr
+                  <span.numeric data-value=#{x}>#{x}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgAcronymAOV}:
+              <td.mdc-data-table__cell.mdc-data-table__header-cell--numeric>
+                $with x <- show aov
+                  $maybe c <- currency
+                    <span.currency data-value=#{x} data-currency=#{c}>#{x}
+                  $nothing
+                    <span.numeric data-value=#{x}>#{x}

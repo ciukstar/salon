@@ -1,0 +1,35 @@
+
+Array.from(
+  document.querySelectorAll('time.day[datetime]')
+).forEach(function (x) {
+  x.textContent = new Date(x.getAttribute('datetime')).toLocaleDateString(
+    navigator.language,
+    { year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    }
+  );
+});
+
+Array.from(
+  document.querySelectorAll('span.currency')
+).forEach(function (x) {
+  x.textContent = Intl.NumberFormat(navigator.language, {
+    style: 'currency',
+    currency: x.dataset.currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+    useGrouping: true
+  }).format(x.dataset.value);
+});
+
+Array.from(
+  document.querySelectorAll('span.numeric')
+).forEach(function (x) {
+  x.textContent = Intl.NumberFormat(navigator.language, {
+    style: 'decimal',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+    useGrouping: true
+  }).format(x.dataset.value);
+});

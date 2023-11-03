@@ -138,7 +138,8 @@ instance Yesod App where
     isAuthorized (StatsR WorkloadsR) _ = return Authorized
     isAuthorized (StatsR (WorkloadEmplMonthR _ _)) _ = return Authorized
     isAuthorized (StatsR (WorkloadEmplDayR _ _)) _ = return Authorized
-    isAuthorized (StatsR CustomerRankingR) _ = return Authorized
+    isAuthorized (StatsR StatsAovR) _ = return Authorized
+    isAuthorized (StatsR (AovDetailsR {})) _ = return Authorized
     
         
         

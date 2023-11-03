@@ -1,0 +1,18 @@
+
+Array.from(
+  document.getElementById(#{toolbarTop}).querySelectorAll('time.period')
+).forEach(function (x) {
+  x.textContent = new Date(x.getAttribute('datetime')).toLocaleDateString(
+    navigator.language,
+    { year: 'numeric',
+      month: 'numeric',
+      day: 'numeric'
+    }
+  );
+});
+
+window.mdc.autoInit();
+
+Array.from(
+  document.querySelectorAll('div.mdc-banner')
+).forEach(function (x) { x.MDCBanner.open(); });

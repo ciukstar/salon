@@ -1,3 +1,9 @@
+NumberOfOrders: Количество заказов
+ValueOfOrders: Стоимость заказов
+TotalOrderValue: Общая стоимость заказов
+ServiceRanking: Рейтинг услуг
+AcronymAOV: Средний чек
+AverageOrderValue: Средняя стоимость заказа
 BasicEntities: Основные сущности
 BusinessDay: Рабочий день
 SortDescending: Сортировать по убыванию

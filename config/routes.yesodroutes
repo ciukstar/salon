@@ -55,7 +55,8 @@
     /workloads/#StaffId/#Month    WorkloadEmplMonthR GET
     /workloads  	          WorkloadsR         GET
 
-    /customer-ranking CustomerRankingR GET
+    /aov/#UserId/#Day/#Day AovDetailsR GET
+    /aov 	 	  StatsAovR   GET
 
 /admin AdminR:
 

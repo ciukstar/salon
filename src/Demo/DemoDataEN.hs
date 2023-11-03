@@ -80,7 +80,7 @@ populateEN = do
 
     let business = Business { businessName = "Salon"
                             , businessFullName = Just "Salon Ltd"
-                            , businessCurrency = "$"
+                            , businessCurrency = "GBP"
                             , businessAddr = "Charing Cross, London WC2N 5DU, United Kingdom"
                             , businessTzo = utc
                             , businessTz = "Europe/London"
