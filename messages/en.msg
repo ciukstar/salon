@@ -322,3 +322,7 @@ Doc005 hrefBusiness@Text: Detailed information about the business can be provide
 Doc006 hrefBusiness@Text: Additionally, in the section <a href=#{hrefBusiness}>"Business"</a>, the organization's work schedule for each day can be added.
 
 Doc007: Currently, the app only supports one business. Multi-business support is planned for future versions of the application.
+
+Doc008 href@Text: Application users, including clients, employees and administrators, can be registered through the <a href=#{href}>"Registration"</a> form.
+
+Doc009 href@Text: Users can also be managed by administrators in the section <a href=#{href}>“Users”</a> of the group “Data”.

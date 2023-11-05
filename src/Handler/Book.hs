@@ -37,7 +37,7 @@ import Data.Time.Format (formatTime, defaultTimeLocale)
 import Text.Hamlet (Html)
 import Text.Shakespeare.I18N (renderMessage, SomeMessage (SomeMessage))
 import Yesod.Core
-    ( Yesod(defaultLayout), YesodRequest (reqGetParams)
+    ( Yesod(defaultLayout), YesodRequest (reqGetParams), liftHandler
     , getYesod, languages, whamlet, setUltDestCurrent, getMessages
     , redirect, getRequest, addMessageI, deleteSession, lookupSession
     , setSession, MonadIO (liftIO), getPostParams, newIdent
@@ -110,7 +110,7 @@ import Model
     , EntityField
       ( StaffId, RoleId, ServiceId, OfferService, ServicePublished, BookId
       , ServiceName, RoleStaff, RoleRating, RoleService, OfferId, BookOffer
-      , BookCustomer, ThumbnailService, ThumbnailAttribution
+      , BookCustomer, ThumbnailService, ThumbnailAttribution, BusinessCurrency
       , ServiceOverview, ServiceDescr, ServiceGroup, StaffStatus
       )
     )
@@ -135,6 +135,9 @@ postBookSearchR = do
                    , y <> ((\((_,Entity oid _),_) -> ("oid",pack $ show $ fromSqlKey oid)) <$> items)
                    )
       _ -> do
+          currency <- (unValue <$>) <$> runDB ( selectOne $ do
+              x <- from $ table @Business
+              return $ x ^. BusinessCurrency )
           msgs <- getMessages
           let items = ioffers
           defaultLayout $ do
@@ -152,6 +155,10 @@ getBookSearchR = do
     offers <- runDB $ queryOffers categs mq []
     items <- runDB $ queryItems categs mq (toSqlKey . read . unpack . snd <$> oids)
     (fw,et) <- generateFormPost $ formOffers items offers
+
+    currency <- (unValue <$>) <$> runDB ( selectOne $ do
+        x <- from $ table @Business
+        return $ x ^. BusinessCurrency )
 
     groups <- runDB $ select $ do
         x <- from $ table @Service
@@ -173,6 +180,11 @@ getBookEndR :: Handler Html
 getBookEndR = do
     user <- maybeAuth
     bids <- (toSqlKey . read . unpack . snd <$>) . filter ((== "bid") . fst) . reqGetParams <$> getRequest
+    
+    currency <- (unValue <$>) <$> runDB ( selectOne $ do
+        x <- from $ table @Business
+        return $ x ^. BusinessCurrency )
+        
     books <- runDB $ select $ do
         x :& o :& s <- from $ table @Book
             `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
@@ -363,6 +375,11 @@ postBookOffersR = do
                    , ys <> ((\((_,Entity oid _),_) -> ("oid",pack $ show $ fromSqlKey oid)) <$> items)
                    )
       _ -> do
+          
+          currency <- (unValue <$>) <$> runDB ( selectOne $ do
+              x <- from $ table @Business
+              return $ x ^. BusinessCurrency )
+
           msgs <- getMessages
           let items = ioffers
           formPostOffers <- newIdent
@@ -376,7 +393,9 @@ getBookOffersR = do
     y <- runInputGet (iopt textField "y")
     oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
     user <- maybeAuth
-    business <- runDB $ selectOne $ from $ table @Business
+    currency <- (unValue <$>) <$> runDB ( selectOne $ do
+        x <- from $ table @Business
+        return $ x ^. BusinessCurrency )
     offers <- runDB $ queryOffers [] Nothing []
     items <- runDB $ queryItems [] Nothing (toSqlKey . read . unpack . snd <$> oids)
     (fw,et) <- generateFormPost $ formOffers items offers
@@ -403,7 +422,11 @@ formCustomer :: Maybe (Entity User)
                                       )
 formCustomer user day time business items offers role roles extra = do
 
-    (offersR,offersV) <- mreq (check notNull (offersField offers)) FieldSettings
+    currency <- (unValue <$>) <$> liftHandler ( runDB ( selectOne $ do
+        x <- from $ table @Business
+        return $ x ^. BusinessCurrency ) )
+
+    (offersR,offersV) <- mreq (check notNull (offersField currency offers)) FieldSettings
         { fsLabel = SomeMessage MsgOffer
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = []
@@ -465,9 +488,9 @@ formCustomer user day time business items offers role roles extra = do
         [] -> Left MsgSelectAtLeastOneServicePlease
         _ -> Right xs
 
-      offersField :: [((Entity Service, Entity Offer),Maybe Html)]
+      offersField :: Maybe Text -> [((Entity Service, Entity Offer),Maybe Html)]
                   -> Field Handler [((Entity Service, Entity Offer),Maybe Html)]
-      offersField options = Field
+      offersField currency options = Field
           { fieldParse = \xs _ -> return $
             (Right . Just . filter (\((_, Entity oid _),_) -> oid `elem` (toSqlKey . read . unpack <$> xs))) options
           , fieldView = \theId name attrs vals _isReq -> do
@@ -509,8 +532,12 @@ formTime :: Maybe Day -> Maybe TimeOfDay -> Maybe (Entity Business)
                            , Widget
                            )
 formTime day time business items offers role roles extra = do
+    
+    currency <- (unValue <$>) <$> liftHandler ( runDB ( selectOne $ do
+        x <- from $ table @Business
+        return $ x ^. BusinessCurrency ) )
 
-    (offersR,offersV) <- mreq (check notNull (offersField offers)) FieldSettings
+    (offersR,offersV) <- mreq (check notNull (offersField currency offers)) FieldSettings
         { fsLabel = SomeMessage MsgOffer
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("hidden","hidden")]
@@ -600,9 +627,9 @@ formTime day time business items offers role roles extra = do
         [] -> Left MsgSelectAtLeastOneServicePlease
         _ -> Right xs
 
-      offersField :: [((Entity Service, Entity Offer),Maybe Html)]
+      offersField :: Maybe Text -> [((Entity Service, Entity Offer),Maybe Html)]
                   -> Field Handler [((Entity Service, Entity Offer),Maybe Html)]
-      offersField options = Field
+      offersField currency options = Field
           { fieldParse = \xs _ -> return $
             (Right . Just . filter (\((_, Entity oid _),_) -> oid `elem` (toSqlKey . read . unpack <$> xs))) options
           , fieldView = \theId name attrs vals _isReq -> do
@@ -642,8 +669,11 @@ formStaff :: [((Entity Service,Entity Offer),Maybe Html)]
                            , Widget
                            )
 formStaff items offers role roles extra = do
+    currency <- (unValue <$>) <$> liftHandler ( runDB ( selectOne $ do
+        x <- from $ table @Business
+        return $ x ^. BusinessCurrency ) )
 
-    (offersR,offersV) <- mreq (check notNull (offersField offers)) FieldSettings
+    (offersR,offersV) <- mreq (check notNull (offersField currency offers)) FieldSettings
         { fsLabel = SomeMessage MsgOffer
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = []
@@ -660,9 +690,9 @@ formStaff items offers role roles extra = do
         [] -> Left MsgSelectAtLeastOneServicePlease
         _ -> Right xs
 
-      offersField :: [((Entity Service,Entity Offer),Maybe Html)]
+      offersField :: Maybe Text -> [((Entity Service,Entity Offer),Maybe Html)]
                   -> Field Handler [((Entity Service,Entity Offer),Maybe Html)]
-      offersField options = Field
+      offersField currency options = Field
           { fieldParse = \xs _ -> return $
             (Right . Just . filter (\((_,Entity oid _),_) -> oid `elem` (toSqlKey . read . unpack <$> xs))) options
           , fieldView = \theId name attrs vals _isReq -> do
@@ -695,7 +725,12 @@ formOffers :: [((Entity Service, Entity Offer),Maybe Html)]
            -> [((Entity Service, Entity Offer),Maybe Html)]
            -> Html -> MForm Handler (FormResult [((Entity Service,Entity Offer),Maybe Html)], Widget)
 formOffers items offers extra = do
-    (r,v) <- mreq (check notNull (offersField offers)) FieldSettings
+    
+    currency <- (unValue <$>) <$> liftHandler ( runDB ( selectOne $ do
+        x <- from $ table @Business
+        return $ x ^. BusinessCurrency ) )
+        
+    (r,v) <- mreq (check notNull (offersField currency offers)) FieldSettings
         { fsLabel = SomeMessage MsgOffer
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = []
@@ -711,9 +746,9 @@ formOffers items offers extra = do
         [] -> Left MsgSelectAtLeastOneServicePlease
         _ -> Right xs
 
-      offersField :: [((Entity Service,Entity Offer),Maybe Html)]
+      offersField :: Maybe Text -> [((Entity Service,Entity Offer),Maybe Html)]
                   -> Field Handler [((Entity Service,Entity Offer),Maybe Html)]
-      offersField options = Field
+      offersField currency options = Field
           { fieldParse = \xs _ -> return $
             (Right . Just . filter (\((_, Entity oid _),_) -> oid `elem` (toSqlKey . read . unpack <$> xs))) options
           , fieldView = \theId name attrs vals _isReq -> do

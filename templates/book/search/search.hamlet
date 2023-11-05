@@ -54,17 +54,13 @@ $if not (null offers)
         <div #footerBookCountLabel>
           <span #footerBookCount>#{length items}
           <span>_{MsgServices}
-        $with amount <- show $ amount items
+        $with x <- show $ amount items
           <div #footerBookAmount>
-            $maybe ((_,Entity _ (Offer _ _ _ prefix _ _)),_) <- LS.head offers
-              $maybe prefix <- prefix
-                #{prefix}
-            <span data-amount=#{amount}>#{amount}
-            $maybe ((_,Entity _ (Offer _ _ _ prefix suffix _)),_) <- LS.head offers
-              $maybe _ <- prefix
-              $nothing
-                $maybe suffix <- suffix
-                  #{suffix}
+            $maybe c <- currency
+              <span.currency data-value=#{x} data-currency=#{c}>#{x}
+            $nothing
+              <span.currency data-value=#{x}>#{x}
+                  
       <section #footerSectionEnd>
         <button.mdc-button.mdc-button--raised.mdc-button--icon-trailing
           type=submit form=formOffers name=scrollY onclick="this.value = window.scrollY">

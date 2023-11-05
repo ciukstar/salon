@@ -27,6 +27,12 @@ Informații detaliate despre afacere pot fi furnizate în secțiunea [„Afacere
 
 În prezent, aplicația acceptă o singură afacere. Asistența multi-business este planificată pentru versiunile viitoare ale aplicației.
 
+## Utilizator
+
+Utilizatorii aplicației, inclusiv clienți, angajați și administratori, pot fi înregistrați prin intermediul formularului [„Înregistrare”](https://salonro-w3cpovaqka-de.a.run.app/account).
+
+De asemenea, utilizatorii pot fi gestionați de administratori în secțiunea [„Utilizatori”](https://salonro-w3cpovaqka-de.a.run.app/admin/users) din grupul „Date”.
+
 ## Diagrama ERD
 
 ![Diagrama Entitate-Relație](static/img/Salon-ERD.svg)

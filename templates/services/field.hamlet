@@ -16,12 +16,15 @@
               <strong>#{sname}
             <div>
               #{oname}:&nbsp;
-              $maybe prefix <- prefix
-                #{prefix}
-              $with price <- show price
-                <span.currency>#{price}
-              $maybe suffix <- suffix
-                #{suffix}
+              $maybe x <- prefix
+                #{x}
+              $with x <- show price
+                $maybe c <- currency
+                  <span.currency data-value=#{x} data-currency=#{c}>#{x}
+                $nothing
+                  <span.currency data-value=#{x}>#{x}
+              $maybe x <- suffix
+                #{x}
 
           <button.mdc-icon-button role=button type=button #buttonDetails#{ident}
             onclick="document.getElementById('details#{ident}').open = !document.getElementById('details#{ident}').open">

@@ -74,7 +74,7 @@ populateRU = do
 
     let business = Business { businessName = "Салон"
                             , businessFullName = Just "ООО Салон"
-                            , businessCurrency = "₽"
+                            , businessCurrency = "RUB"
                             , businessAddr = "Россия, г. Москва, проезд Воскресенские Ворота, 1А, Москва, 109012"
                             , businessTzo = TimeZone 180 False "MSK"
                             , businessTz = "Europe/Moscow"
@@ -540,7 +540,7 @@ populateRU = do
                            , offerName = "Цена"
                            , offerPrice = 800
                            , offerPrefix = Nothing
-                           , offerSuffix = Just "₽"
+                           , offerSuffix = Nothing
                            , offerDescr = Nothing
                            }
 
@@ -563,7 +563,7 @@ populateRU = do
                     , offerName = "Цена"
                     , offerPrice = 2800
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -607,7 +607,7 @@ populateRU = do
                            , offerName = "Цена"
                            , offerPrice = 3500
                            , offerPrefix = Nothing
-                           , offerSuffix = Just "₽"
+                           , offerSuffix = Nothing
                            , offerDescr = Nothing
                            }
 
@@ -646,7 +646,7 @@ populateRU = do
                            , offerName = "Цена"
                            , offerPrice = 1600
                            , offerPrefix = Nothing
-                           , offerSuffix = Just "₽-2 000 ₽ (в зависимости от длины волос)"
+                           , offerSuffix = Just "-2 000 ₽ (в зависимости от длины волос)"
                            , offerDescr = Nothing
                            }
 
@@ -706,7 +706,7 @@ populateRU = do
                     , offerName = "Цена"
                     , offerPrice = 9900
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽ и выше"
+                    , offerSuffix = Just " и выше"
                     , offerDescr = Nothing
                     }
 
@@ -750,7 +750,7 @@ populateRU = do
                     , offerName = "Цена"
                     , offerPrice = 11000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽ и выше"
+                    , offerSuffix = Just " и выше"
                     , offerDescr = Nothing
                     }
 
@@ -809,7 +809,7 @@ populateRU = do
                     , offerName = "Цена"
                     , offerPrice = 13000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -853,7 +853,7 @@ populateRU = do
                     , offerName = "Цена"
                     , offerPrice = 6800
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽ и выше"
+                    , offerSuffix = Just " и выше"
                     , offerDescr = Nothing
                     }
 
@@ -890,7 +890,7 @@ populateRU = do
                     , offerName = "Цена"
                     , offerPrice = 6800
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽ и выше"
+                    , offerSuffix = Just " и выше"
                     , offerDescr = Nothing
                     }
 
@@ -949,7 +949,7 @@ populateRU = do
                     , offerName = "Цена"
                     , offerPrice = 7900
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽ и выше"
+                    , offerSuffix = Just " и выше"
                     , offerDescr = Nothing
                     }
 
@@ -993,7 +993,7 @@ populateRU = do
                     , offerName = "Цена"
                     , offerPrice = 8900
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽ и выше"
+                    , offerSuffix = Just " и выше"
                     , offerDescr = Nothing
                     }
 
@@ -1037,7 +1037,7 @@ populateRU = do
                     , offerName = "Цена"
                     , offerPrice = 25000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽ и выше"
+                    , offerSuffix = Just " и выше"
                     , offerDescr = Nothing
                     }
 
@@ -1103,7 +1103,7 @@ populateRU = do
                     , offerName = "Цена"
                     , offerPrice = 5500
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1111,7 +1111,7 @@ populateRU = do
                     , offerName = "Пакет"
                     , offerPrice = 25000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽/5 сеансов"
+                    , offerSuffix = Just "/5 сеансов"
                     , offerDescr = Nothing
                     }
 
@@ -1155,7 +1155,7 @@ populateRU = do
                     , offerName = "Цена"
                     , offerPrice = 7500
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1163,7 +1163,7 @@ populateRU = do
                     , offerName = "Пакет"
                     , offerPrice = 35000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽/5 сеансов"
+                    , offerSuffix = Just "/5 сеансов"
                     , offerDescr = Nothing
                     }
 
@@ -1207,7 +1207,7 @@ populateRU = do
                     , offerName = "Цена"
                     , offerPrice = 9000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1215,7 +1215,7 @@ populateRU = do
                     , offerName = "Пакет"
                     , offerPrice = 40000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽/5 сеансов"
+                    , offerSuffix = Just "/5 сеансов"
                     , offerDescr = Nothing
                     }
 
@@ -1266,7 +1266,7 @@ populateRU = do
                     , offerName = "Цена"
                     , offerPrice = 9500
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1274,7 +1274,7 @@ populateRU = do
                     , offerName = "Пакет"
                     , offerPrice = 60000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽/7 сеансов"
+                    , offerSuffix = Just "/7 сеансов"
                     , offerDescr = Nothing
                     }
 
@@ -1318,7 +1318,7 @@ populateRU = do
                            , offerName = "Цена"
                            , offerPrice = 10000
                            , offerPrefix = Nothing
-                           , offerSuffix = Just "₽"
+                           , offerSuffix = Nothing
                            , offerDescr = Nothing
                            }
 
@@ -1326,7 +1326,7 @@ populateRU = do
                     , offerName = "Пакет"
                     , offerPrice = 46000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽/5 сеансов"
+                    , offerSuffix = Just "/5 сеансов"
                     , offerDescr = Nothing
                     }
 
@@ -1416,7 +1416,7 @@ Milk Peel включает в себя натуральный экстракт �
                     , offerName = "Цена"
                     , offerPrice = 33000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1466,7 +1466,7 @@ Milk Peel включает в себя натуральный экстракт �
                            , offerName = "Цена"
                            , offerPrice = 33000
                            , offerPrefix = Nothing
-                           , offerSuffix = Just "₽"
+                           , offerSuffix = Nothing
                            , offerDescr = Nothing
                            }
 
@@ -1514,7 +1514,7 @@ Milk Peel включает в себя натуральный экстракт �
                     , offerName = "Цена"
                     , offerPrice = 7000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1562,7 +1562,7 @@ Milk Peel включает в себя натуральный экстракт �
                     , offerName = "Цена"
                     , offerPrice = 9500
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1570,7 +1570,7 @@ Milk Peel включает в себя натуральный экстракт �
                     , offerName = "Пакет"
                     , offerPrice = 60000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽/7 сеансов"
+                    , offerSuffix = Just "/7 сеансов"
                     , offerDescr = Nothing
                     }
 
@@ -1643,7 +1643,7 @@ Milk Peel включает в себя натуральный экстракт �
                     , offerName = "Цена"
                     , offerPrice = 9500
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1651,7 +1651,7 @@ Milk Peel включает в себя натуральный экстракт �
                     , offerName = "Пакет"
                     , offerPrice = 43000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽/5 сеансов"
+                    , offerSuffix = Just "/5 сеансов"
                     , offerDescr = Nothing
                     }
 
@@ -1699,7 +1699,7 @@ Milk Peel включает в себя натуральный экстракт �
                     , offerName = "Цена"
                     , offerPrice = 17000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1707,7 +1707,7 @@ Milk Peel включает в себя натуральный экстракт �
                     , offerName = "Пакет"
                     , offerPrice = 78000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽/5 сеансов"
+                    , offerSuffix = Just "/5 сеансов"
                     , offerDescr = Nothing
                     }
 
@@ -1758,7 +1758,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                     , offerName = "Цена"
                     , offerPrice = 16000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1807,7 +1807,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                     , offerName = "Цена"
                     , offerPrice = 18000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1865,7 +1865,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                     , offerName = "Цена"
                     , offerPrice = 4500
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1921,7 +1921,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                     , offerName = "Цена"
                     , offerPrice = 13000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽ и выше"
+                    , offerSuffix = Just " и выше"
                     , offerDescr = Nothing
                     }
 
@@ -1958,7 +1958,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                     , offerName = "Цена"
                     , offerPrice = 2500
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2009,7 +2009,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                     , offerName = "Цена"
                     , offerPrice = 4000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2046,7 +2046,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                     , offerName = "Цена"
                     , offerPrice = 4000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2102,7 +2102,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                     , offerName = "Цена"
                     , offerPrice = 6000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2150,7 +2150,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                     , offerName = "Цена"
                     , offerPrice = 6000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2195,7 +2195,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                     , offerName = "Цена"
                     , offerPrice = 3000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2249,7 +2249,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                     , offerName = "Цена"
                     , offerPrice = 20000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2293,7 +2293,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                     , offerName = "Цена"
                     , offerPrice = 8500
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2330,7 +2330,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                     , offerName = "Цена"
                     , offerPrice = 6000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2367,7 +2367,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                     , offerName = "Цена"
                     , offerPrice = 100
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2419,7 +2419,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                     , offerName = "Цена"
                     , offerPrice = 5000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2463,7 +2463,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                     , offerName = "Цена"
                     , offerPrice = 4500
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2515,7 +2515,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                     , offerName = "Цена"
                     , offerPrice = 1500
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2559,7 +2559,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                     , offerName = "Цена"
                     , offerPrice = 3200
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2596,7 +2596,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                     , offerName = "Цена"
                     , offerPrice = 3500
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2633,7 +2633,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                     , offerName = "Цена"
                     , offerPrice = 5500
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2670,7 +2670,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                     , offerName = "Цена"
                     , offerPrice = 3800
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2707,7 +2707,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                     , offerName = "Цена"
                     , offerPrice = 1000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2744,7 +2744,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                     , offerName = "Цена"
                     , offerPrice = 500
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2798,7 +2798,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                     , offerName = "Цена"
                     , offerPrice = 35000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2835,7 +2835,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                     , offerName = "Цена"
                     , offerPrice = 30000
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "₽"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 

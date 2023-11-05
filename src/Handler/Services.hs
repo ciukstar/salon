@@ -28,7 +28,7 @@ import Text.Hamlet (Html)
 import Text.Read (readMaybe)
 import Yesod.Core
     ( Yesod(defaultLayout), setTitleI, setUltDestCurrent
-    , getMessages, typeSvg, preEscapedToMarkup
+    , getMessages, typeSvg, preEscapedToMarkup, liftHandler
     , TypedContent (TypedContent), ToContent (toContent)
     , whamlet, getRequest, YesodRequest (reqGetParams)
     , setSession, redirect
@@ -77,12 +77,12 @@ import Database.Esqueleto.Experimental
     )
 
 import Model
-    ( Service(Service), ServiceId
+    ( Service (Service), ServiceId, Business
     , Thumbnail (Thumbnail), Offer (Offer), OfferId
     , Services (Services)
     , EntityField
-      ( ServiceId, ThumbnailService, ServiceGroup, OfferService
-      , OfferId, ServicePublished, ServiceName, ServiceDescr
+      ( ServiceId, ThumbnailService, ServiceGroup, OfferService, ServiceDescr
+      , OfferId, ServicePublished, ServiceName, BusinessCurrency
       , ServiceOverview, ThumbnailAttribution
       )
     )
@@ -100,6 +100,11 @@ getServiceOffersR (Services sids) = do
     let scrollY = case ys of _:y:_ -> snd <$> y; _ -> Nothing
     let sid = last sids
     moid <- (toSqlKey <$>) <$> runInputGet (iopt intField "oid")
+
+    currency <- (unValue <$>) <$> runDB ( selectOne $ do
+        x <- from $ table @Business
+        return $ x ^. BusinessCurrency )
+    
     service <- (second (join . unValue) <$>) <$> runDB ( selectOne $ do
         x :& t <- from $ table @Service `leftJoin` table @Thumbnail
             `on` (\(x :& t) -> just (x ^. ServiceId) ==. t ?. ThumbnailService)
@@ -166,6 +171,11 @@ getServiceSearchOffersR (Services sids) = do
     let scrollY = case ys of _:y:_ -> snd <$> y; _ -> Nothing
     let sid = last sids
     moid <- (toSqlKey <$>) <$> runInputGet (iopt intField "oid")
+
+    currency <- (unValue <$>) <$> runDB ( selectOne $ do
+        x <- from $ table @Business
+        return $ x ^. BusinessCurrency )
+    
     service <- (second (join . unValue) <$>) <$> runDB ( selectOne $ do
         x :& t <- from $ table @Service `leftJoin` table @Thumbnail
             `on` (\(x :& t) -> just (x ^. ServiceId) ==. t ?. ThumbnailService)
@@ -337,7 +347,12 @@ getServiceR (Services sids) = do
 formOffer :: [(Entity Service,Entity Offer, Maybe Html)]
           -> Html -> MForm Handler (FormResult (Entity Service,Entity Offer,Maybe Html),Widget)
 formOffer offers extra = do
-    (r,v) <- mreq (optionsField offers) "" Nothing
+
+    currency <- (unValue <$>) <$> liftHandler ( runDB ( selectOne $ do
+        x <- from $ table @Business
+        return $ x ^. BusinessCurrency ) )
+        
+    (r,v) <- mreq (optionsField currency offers) "" Nothing
     return ( r
            , [whamlet|
 #{extra}
@@ -346,8 +361,9 @@ formOffer offers extra = do
            )
   where
 
-      optionsField :: [(Entity Service,Entity Offer,Maybe Html)] -> Field Handler (Entity Service, Entity Offer,Maybe Html)
-      optionsField options = Field
+      optionsField :: Maybe Text -> [(Entity Service,Entity Offer,Maybe Html)]
+                   -> Field Handler (Entity Service, Entity Offer,Maybe Html)
+      optionsField currency options = Field
           { fieldParse = parseHelper $ \s -> do
                 case (toSqlKey <$>) . readMaybe . unpack $ s of
                   Just oid -> case LS.head (filter (\(_,Entity oid' _,_) -> oid == oid') options) of
@@ -364,6 +380,11 @@ getServicesR = do
     open <- (snd <$>) . filter ((== "o") . fst) . reqGetParams <$> getRequest
     scrollY <- runInputGet (iopt textField "y")
     msid <- (toSqlKey <$>) <$> runInputGet (iopt intField "sid")
+    
+    currency <- (unValue <$>) <$> runDB ( selectOne $ do
+        x <- from $ table @Business
+        return $ x ^. BusinessCurrency )
+        
     srvs <- fetchServices Nothing
     let Srvs offer = srvs
     user <- maybeAuth
@@ -374,8 +395,8 @@ getServicesR = do
         $(widgetFile "services/services")
 
 
-buildSnippet :: [Text] -> Maybe ServiceId -> Services -> Srvs -> Widget
-buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
+buildSnippet :: Maybe Text -> [Text] -> Maybe ServiceId -> Services -> Srvs -> Widget
+buildSnippet currency open msid (Services sids) (Srvs services) = [whamlet|
 <nav.mdc-list data-mdc-auto-init=MDCList>
   $forall (((Entity sid (Service sname _ overview _ _ _), attrib), offers),srvs@(Srvs subservices)) <- services
     $with (gid,noffers) <- (pack $ show $ fromSqlKey sid, length offers)
@@ -409,7 +430,7 @@ buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
                   <i>#{overview}
               <span.mdc-list-item__end>
                 <i.material-symbols-outlined #iconExpand#{gid}>arrow_forward_ios
-          ^{buildSnippet open msid (Services (sids ++ [sid])) srvs}
+          ^{buildSnippet currency open msid (Services (sids ++ [sid])) srvs}
       $else
         <div.mdc-list-divider role=separator>
         <a.mdc-list-item.mdc-list-item--with-one-line
@@ -428,13 +449,15 @@ buildSnippet open msid (Services sids) (Srvs services) = [whamlet|
               $forall Entity _ (Offer _ oname price prefix suffix _) <- take 1 offers
                 <div.mdc-list-item__secondary-text style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
                   #{oname}:&nbsp;
-                  $maybe prefix <- prefix
-                    #{prefix}
-                  $with price <- show price
-                    <span.numeric-format data-value=#{price} data-minFracDigits=0 data-maxFracDigits=2>
-                      #{price}
-                  $maybe suffix <- suffix
-                    #{suffix}
+                  $maybe x <- prefix
+                    #{x}
+                  $with x <- show price
+                    $maybe c <- currency
+                      <span.currency data-value=#{x} data-currency=#{c}>#{x}
+                    $nothing
+                      <span.currency data-value=#{x}>#{x}
+                  $maybe x <- suffix
+                    #{x}
           <span.mdc-list-item__end>
             <i.material-symbols-outlined>arrow_forward_ios
         $maybe attribution <- attrib

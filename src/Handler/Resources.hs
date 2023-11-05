@@ -16,16 +16,16 @@ import Yesod.Auth (maybeAuth, Route (LoginR))
 import Foundation
     ( Handler
     , Route
-      ( StaticR, AuthR, PhotoPlaceholderR, AccountPhotoR
+      ( StaticR, AuthR, PhotoPlaceholderR, AccountPhotoR, AccountR
       , ProfileR, AdminR, HomeR, ServicesR, BookOffersR
       )
-    , AdminR (AdmServicesR, BusinessR)
+    , AdminR (AdmServicesR, BusinessR, UsersR)
     , AppMessage
       ( MsgDocumentation, MsgPhoto, MsgNavigationMenu, MsgLogin, MsgUserProfile
       , MsgErdDiagram, MsgBookingStateDiagram, MsgAppointmentStateDiagram
-      , MsgBasicEntities, MsgBusiness
+      , MsgBasicEntities, MsgBusiness, MsgUser
       , MsgAppName, MsgOverview, MsgDoc001, MsgDoc002, MsgDoc003, MsgDoc004
-      , MsgDoc005, MsgDoc006, MsgDoc007
+      , MsgDoc005, MsgDoc006, MsgDoc007, MsgDoc008, MsgDoc009
       )
     )
 

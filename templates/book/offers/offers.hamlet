@@ -50,15 +50,12 @@
       <div #footerBookCountLabel>
         <span #footerBookCount>#{length items}
         <span>_{MsgServices}
-      $with amount <- show $ amount items
+      $with x <- show $ amount items
         <div #footerBookAmount>
-          $maybe Entity _ (Business _ _ curr _ _ _ _ _ _) <- business
-            $if "$" == curr
-              #{curr}
-          <span data-amount=#{amount}>#{amount}
-          $maybe Entity _ (Business _ _ curr _ _ _ _ _ _) <- business
-            $if "$" /= curr
-              #{curr}
+          $maybe c <- currency
+            <span.currency data-value=#{x} data-currency=#{c}>#{x}
+          $nothing
+            <span.currency data-value=#{x}>#{x}
               
     <section #footerSectionEnd>
       <button.mdc-button.mdc-button--raised.mdc-button--icon-trailing

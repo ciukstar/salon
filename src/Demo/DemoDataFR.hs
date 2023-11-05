@@ -79,7 +79,7 @@ populateFR = do
 
     let business = Business { businessName = "Salon"
                             , businessFullName = Just "SARL Salon"
-                            , businessCurrency = "€"
+                            , businessCurrency = "EUR"
                             , businessAddr = "Champ de Mars, 5 Av. Anatole France, 75007 Paris"
                             , businessTzo = TimeZone 60 False "FR"
                             , businessTz = "Europe/Paris"
@@ -540,7 +540,7 @@ Nous continuerons d'offrir les derniers traitements, les techniques les plus inn
                            , offerName = "Prix"
                            , offerPrice = 26
                            , offerPrefix = Nothing
-                           , offerSuffix = Just "€"
+                           , offerSuffix = Nothing
                            , offerDescr = Nothing
                            }
 
@@ -563,7 +563,7 @@ Nous continuerons d'offrir les derniers traitements, les techniques les plus inn
                     , offerName = "Prix"
                     , offerPrice = 28
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -607,7 +607,7 @@ Nous continuerons d'offrir les derniers traitements, les techniques les plus inn
                            , offerName = "Prix"
                            , offerPrice = 35
                            , offerPrefix = Nothing
-                           , offerSuffix = Just "€"
+                           , offerSuffix = Nothing
                            , offerDescr = Nothing
                            }
 
@@ -646,7 +646,7 @@ Nous continuerons d'offrir les derniers traitements, les techniques les plus inn
                            , offerName = "Prix"
                            , offerPrice = 16
                            , offerPrefix = Nothing
-                           , offerSuffix = Just "€-20 € (en fonction de la longueur de leurs cheveux)"
+                           , offerSuffix = Just "-20 € (en fonction de la longueur de leurs cheveux)"
                            , offerDescr = Nothing
                            }
 
@@ -706,7 +706,7 @@ Nous continuerons d'offrir les derniers traitements, les techniques les plus inn
                     , offerName = "Prix"
                     , offerPrice = 99
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€ et plus"
+                    , offerSuffix = Just " et plus"
                     , offerDescr = Nothing
                     }
 
@@ -750,7 +750,7 @@ Nous continuerons d'offrir les derniers traitements, les techniques les plus inn
                     , offerName = "Prix"
                     , offerPrice = 110
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€ et plus"
+                    , offerSuffix = Just " et plus"
                     , offerDescr = Nothing
                     }
 
@@ -809,7 +809,7 @@ Nous continuerons d'offrir les derniers traitements, les techniques les plus inn
                     , offerName = "Prix"
                     , offerPrice = 130
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -853,7 +853,7 @@ Nous continuerons d'offrir les derniers traitements, les techniques les plus inn
                     , offerName = "Prix"
                     , offerPrice = 68
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€ et plus"
+                    , offerSuffix = Just " et plus"
                     , offerDescr = Nothing
                     }
 
@@ -890,7 +890,7 @@ Nous continuerons d'offrir les derniers traitements, les techniques les plus inn
                     , offerName = "Prix"
                     , offerPrice = 68
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€ et plus"
+                    , offerSuffix = Just " et plus"
                     , offerDescr = Nothing
                     }
 
@@ -949,7 +949,7 @@ Nous continuerons d'offrir les derniers traitements, les techniques les plus inn
                     , offerName = "Prix"
                     , offerPrice = 79
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€ et plus"
+                    , offerSuffix = Just " et plus"
                     , offerDescr = Nothing
                     }
 
@@ -993,7 +993,7 @@ Nous continuerons d'offrir les derniers traitements, les techniques les plus inn
                     , offerName = "Prix"
                     , offerPrice = 89
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€ et plus"
+                    , offerSuffix = Just " et plus"
                     , offerDescr = Nothing
                     }
 
@@ -1037,7 +1037,7 @@ Nous continuerons d'offrir les derniers traitements, les techniques les plus inn
                     , offerName = "Prix"
                     , offerPrice = 250
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€ et plus"
+                    , offerSuffix = Just " et plus"
                     , offerDescr = Nothing
                     }
 
@@ -1101,7 +1101,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
                     , offerName = "Prix"
                     , offerPrice = 55
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1109,7 +1109,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
                     , offerName = "Forfait"
                     , offerPrice = 250
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€/5 séances"
+                    , offerSuffix = Just "/5 séances"
                     , offerDescr = Nothing
                     }
 
@@ -1153,7 +1153,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
                     , offerName = "Prix"
                     , offerPrice = 75
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1161,7 +1161,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
                     , offerName = "Forfait"
                     , offerPrice = 350
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€/5 séances"
+                    , offerSuffix = Just "/5 séances"
                     , offerDescr = Nothing
                     }
 
@@ -1205,7 +1205,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
                     , offerName = "Prix"
                     , offerPrice = 90
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1213,7 +1213,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
                     , offerName = "Forfait"
                     , offerPrice = 400
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€/5 séances"
+                    , offerSuffix = Just "/5 séances"
                     , offerDescr = Nothing
                     }
 
@@ -1264,7 +1264,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
                     , offerName = "Prix"
                     , offerPrice = 95
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1272,7 +1272,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
                     , offerName = "Forfait"
                     , offerPrice = 600
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€/7 séances"
+                    , offerSuffix = Just "/7 séances"
                     , offerDescr = Nothing
                     }
 
@@ -1316,7 +1316,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
                            , offerName = "Prix"
                            , offerPrice = 100
                            , offerPrefix = Nothing
-                           , offerSuffix = Just "€"
+                           , offerSuffix = Nothing
                            , offerDescr = Nothing
                            }
 
@@ -1324,7 +1324,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
                     , offerName = "Forfait"
                     , offerPrice = 460
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€/5 séances"
+                    , offerSuffix = Just "/5 séances"
                     , offerDescr = Nothing
                     }
 
@@ -1415,7 +1415,7 @@ En conséquence, le peeling au lait est un puissant processus de resurfaçage de
                     , offerName = "Prix"
                     , offerPrice = 330
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1465,7 +1465,7 @@ Le Scientia Derma Roller est un appareil incroyable qui augmente naturellement l
                            , offerName = "Prix"
                            , offerPrice = 330
                            , offerPrefix = Nothing
-                           , offerSuffix = Just "€"
+                           , offerSuffix = Nothing
                            , offerDescr = Nothing
                            }
 
@@ -1513,7 +1513,7 @@ Procédure indolore, elle aide à éliminer les cicatrices d'acné, les pores di
                     , offerName = "Prix"
                     , offerPrice = 70
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1559,7 +1559,7 @@ Procédure indolore, elle aide à éliminer les cicatrices d'acné, les pores di
                     , offerName = "Prix"
                     , offerPrice = 95
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1567,7 +1567,7 @@ Procédure indolore, elle aide à éliminer les cicatrices d'acné, les pores di
                     , offerName = "Forfait"
                     , offerPrice = 600
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€/7 séances"
+                    , offerSuffix = Just "/7 séances"
                     , offerDescr = Nothing
                     }
 
@@ -1640,7 +1640,7 @@ Ce soin réduit l'apparence des rides et ridules. Unifie le teint et illumine la
                     , offerName = "Prix"
                     , offerPrice = 95
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1648,7 +1648,7 @@ Ce soin réduit l'apparence des rides et ridules. Unifie le teint et illumine la
                     , offerName = "Forfait"
                     , offerPrice = 430
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€/5 séances"
+                    , offerSuffix = Just "/5 séances"
                     , offerDescr = Nothing
                     }
 
@@ -1696,7 +1696,7 @@ Après un seul traitement, les rides d'expression semblent détendues. Les rides
                     , offerName = "Prix"
                     , offerPrice = 170
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1704,7 +1704,7 @@ Après un seul traitement, les rides d'expression semblent détendues. Les rides
                     , offerName = "Forfait"
                     , offerPrice = 780
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€/5 séances"
+                    , offerSuffix = Just "/5 séances"
                     , offerDescr = Nothing
                     }
 
@@ -1755,7 +1755,7 @@ Ce traitement améliore le teint global en minimisant l'apparence des rides et r
                     , offerName = "Prix"
                     , offerPrice = 160
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1763,7 +1763,7 @@ Ce traitement améliore le teint global en minimisant l'apparence des rides et r
                     , offerName = "Forfait"
                     , offerPrice = 730
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€/5 séances"
+                    , offerSuffix = Just "/5 séances"
                     , offerDescr = Nothing
                     }
 
@@ -1804,7 +1804,7 @@ Il favorise la production de collagène, resserre et raffermit les tissus cutan�
                     , offerName = "Prix"
                     , offerPrice = 180
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1862,7 +1862,7 @@ Semblable à une permanente, essayez d’éviter de mouiller vos cils pendant 4 
                     , offerName = "Prix"
                     , offerPrice = 45
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1918,7 +1918,7 @@ Semblable à une permanente, essayez d’éviter de mouiller vos cils pendant 4 
                     , offerName = "Prix"
                     , offerPrice = 130
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€ et plus"
+                    , offerSuffix = Just " et plus"
                     , offerDescr = Nothing
                     }
 
@@ -1955,7 +1955,7 @@ Semblable à une permanente, essayez d’éviter de mouiller vos cils pendant 4 
                     , offerName = "Prix"
                     , offerPrice = 25
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2006,7 +2006,7 @@ Les traitements peuvent être effectués toutes les semaines ou toutes les deux 
                     , offerName = "Prix"
                     , offerPrice = 40
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2043,7 +2043,7 @@ Les traitements peuvent être effectués toutes les semaines ou toutes les deux 
                     , offerName = "Prix"
                     , offerPrice = 40
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2099,7 +2099,7 @@ La massothérapie suédoise est la modalité qui vient à l’esprit lorsque la 
                     , offerName = "Prix"
                     , offerPrice = 60
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2147,7 +2147,7 @@ Le massage sur chaise est un massage de 15 à 20 minutes axé sur le dos, les é
                     , offerName = "Prix"
                     , offerPrice = 60
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2192,7 +2192,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
                     , offerName = "Prix"
                     , offerPrice = 30
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2246,7 +2246,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
                     , offerName = "Prix"
                     , offerPrice = 200
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2290,7 +2290,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
                     , offerName = "Prix"
                     , offerPrice = 85
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2327,7 +2327,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
                     , offerName = "Prix"
                     , offerPrice = 60
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2364,7 +2364,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
                     , offerName = "Prix"
                     , offerPrice = 100
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2416,7 +2416,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
                     , offerName = "Prix"
                     , offerPrice = 50
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2460,7 +2460,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
                     , offerName = "Prix"
                     , offerPrice = 45
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2512,7 +2512,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
                     , offerName = "Prix"
                     , offerPrice = 15
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2556,7 +2556,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
                     , offerName = "Prix"
                     , offerPrice = 32
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2593,7 +2593,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
                     , offerName = "Prix"
                     , offerPrice = 35
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2630,7 +2630,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
                     , offerName = "Prix"
                     , offerPrice = 55
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2667,7 +2667,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
                     , offerName = "Prix"
                     , offerPrice = 38
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2704,7 +2704,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
                     , offerName = "Prix"
                     , offerPrice = 10
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2741,7 +2741,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
                     , offerName = "Prix"
                     , offerPrice = 5
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2797,7 +2797,7 @@ Mise en forme du corps : Abdomen et taille, hanches et cuisses, jambes et bras
                     , offerName = "Prix"
                     , offerPrice = 350
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2834,7 +2834,7 @@ Mise en forme du corps : Abdomen et taille, hanches et cuisses, jambes et bras
                     , offerName = "Prix"
                     , offerPrice = 300
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "€"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 

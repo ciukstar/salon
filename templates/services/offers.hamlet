@@ -67,13 +67,16 @@
                   #{sname}
                 <div.mdc-list-item__secondary-text>
                   #{oname}:
-                <div.mdc-list-item__secondary-text style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
-                  $maybe prefix <- prefix
-                    #{prefix}
-                  $with price <- show price
-                    <span.currency>#{price}
-                  $maybe suffix <- suffix
-                    #{suffix}
+                <div.mdc-list-item__secondary-text>
+                  $maybe x <- prefix
+                    #{x}
+                  $with x <- show price
+                    $maybe c <- currency
+                      <span.currency data-value=#{x} data-currency=#{c}>#{x}
+                    $nothing
+                      <span.currency data-value=#{x}>#{x}
+                  $maybe x <- suffix
+                    #{x}
 
               <span.mdc-list-item__end>
                 <i.material-symbols-outlined>arrow_forward_ios

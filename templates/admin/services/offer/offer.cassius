@@ -10,3 +10,5 @@ main
     border-right: none
     table th
       font-weight: 500
+    table th, table td
+      white-space: normal

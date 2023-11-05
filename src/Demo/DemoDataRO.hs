@@ -539,7 +539,7 @@ populateRO = do
                            , offerName = "Preț"
                            , offerPrice = 26
                            , offerPrefix = Nothing
-                           , offerSuffix = Just "RON"
+                           , offerSuffix = Nothing
                            , offerDescr = Nothing
                            }
 
@@ -562,7 +562,7 @@ populateRO = do
                     , offerName = "Preț"
                     , offerPrice = 28
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -606,7 +606,7 @@ populateRO = do
                            , offerName = "Preț"
                            , offerPrice = 35
                            , offerPrefix = Nothing
-                           , offerSuffix = Just "RON"
+                           , offerSuffix = Nothing
                            , offerDescr = Nothing
                            }
 
@@ -645,7 +645,7 @@ populateRO = do
                            , offerName = "Preț"
                            , offerPrice = 16
                            , offerPrefix = Nothing
-                           , offerSuffix = Just "RON-20 RON (în funcție de lungimea părului lor)"
+                           , offerSuffix = Just "-20 RON (în funcție de lungimea părului)"
                            , offerDescr = Nothing
                            }
 
@@ -705,7 +705,7 @@ populateRO = do
                     , offerName = "Preț"
                     , offerPrice = 99
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON și mai mult"
+                    , offerSuffix = Just " și mai mult"
                     , offerDescr = Nothing
                     }
 
@@ -749,7 +749,7 @@ populateRO = do
                     , offerName = "Preț"
                     , offerPrice = 110
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON și mai mult"
+                    , offerSuffix = Just " și mai mult"
                     , offerDescr = Nothing
                     }
 
@@ -808,7 +808,7 @@ populateRO = do
                     , offerName = "Preț"
                     , offerPrice = 130
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -852,7 +852,7 @@ populateRO = do
                     , offerName = "Preț"
                     , offerPrice = 68
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON si mai mult"
+                    , offerSuffix = Just " și mai mult"
                     , offerDescr = Nothing
                     }
 
@@ -889,7 +889,7 @@ populateRO = do
                     , offerName = "Preț"
                     , offerPrice = 68
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON și mai mult"
+                    , offerSuffix = Just " și mai mult"
                     , offerDescr = Nothing
                     }
 
@@ -948,7 +948,7 @@ populateRO = do
                     , offerName = "Preț"
                     , offerPrice = 79
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON și mai mult"
+                    , offerSuffix = Just " și mai mult"
                     , offerDescr = Nothing
                     }
 
@@ -992,7 +992,7 @@ populateRO = do
                     , offerName = "Preț"
                     , offerPrice = 89
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON și mai mult"
+                    , offerSuffix = Just " și mai mult"
                     , offerDescr = Nothing
                     }
 
@@ -1036,7 +1036,7 @@ populateRO = do
                     , offerName = "Preț"
                     , offerPrice = 250
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON și mai mult"
+                    , offerSuffix = Just " și mai mult"
                     , offerDescr = Nothing
                     }
 
@@ -1100,7 +1100,7 @@ Fața ta este o pânză expresivă care arată experiența și emoția. Într-un
                     , offerName = "Preț"
                     , offerPrice = 55
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1108,7 +1108,7 @@ Fața ta este o pânză expresivă care arată experiența și emoția. Într-un
                     , offerName = "Pachet"
                     , offerPrice = 250
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON/5 sesiuni"
+                    , offerSuffix = Just "/5 sesiuni"
                     , offerDescr = Nothing
                     }
 
@@ -1152,7 +1152,7 @@ Fața ta este o pânză expresivă care arată experiența și emoția. Într-un
                     , offerName = "Preț"
                     , offerPrice = 75
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1160,7 +1160,7 @@ Fața ta este o pânză expresivă care arată experiența și emoția. Într-un
                     , offerName = "Pachet"
                     , offerPrice = 350
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON/5 sesiuni"
+                    , offerSuffix = Just "/5 sesiuni"
                     , offerDescr = Nothing
                     }
 
@@ -1204,7 +1204,7 @@ Fața ta este o pânză expresivă care arată experiența și emoția. Într-un
                     , offerName = "Preț"
                     , offerPrice = 90
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1212,7 +1212,7 @@ Fața ta este o pânză expresivă care arată experiența și emoția. Într-un
                     , offerName = "Pachet"
                     , offerPrice = 400
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON/5 sesiuni"
+                    , offerSuffix = Just "/5 sesiuni"
                     , offerDescr = Nothing
                     }
 
@@ -1263,7 +1263,7 @@ Fața ta este o pânză expresivă care arată experiența și emoția. Într-un
                     , offerName = "Preț"
                     , offerPrice = 95
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1271,7 +1271,7 @@ Fața ta este o pânză expresivă care arată experiența și emoția. Într-un
                     , offerName = "Pachet"
                     , offerPrice = 600
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON/7 sesiuni"
+                    , offerSuffix = Just "/7 sesiuni"
                     , offerDescr = Nothing
                     }
 
@@ -1315,7 +1315,7 @@ Fața ta este o pânză expresivă care arată experiența și emoția. Într-un
                            , offerName = "Preț"
                            , offerPrice = 100
                            , offerPrefix = Nothing
-                           , offerSuffix = Just "RON"
+                           , offerSuffix = Nothing
                            , offerDescr = Nothing
                            }
 
@@ -1323,7 +1323,7 @@ Fața ta este o pânză expresivă care arată experiența și emoția. Într-un
                     , offerName = "Pachet"
                     , offerPrice = 460
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON/5 sesiuni"
+                    , offerSuffix = Just "/5 sesiuni"
                     , offerDescr = Nothing
                     }
 
@@ -1414,7 +1414,7 @@ Ca rezultat, peelingul cu lapte este un proces puternic de refacere a pielii cu 
                     , offerName = "Preț"
                     , offerPrice = 330
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1464,7 +1464,7 @@ Scientia Derma Roller este un dispozitiv incredibil care crește în mod natural
                            , offerName = "Preț"
                            , offerPrice = 330
                            , offerPrefix = Nothing
-                           , offerSuffix = Just "RON"
+                           , offerSuffix = Nothing
                            , offerDescr = Nothing
                            }
 
@@ -1512,7 +1512,7 @@ O procedură nedureroasă, ajută la îndepărtarea cicatricilor de acnee, a por
                     , offerName = "Preț"
                     , offerPrice = 70
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1566,7 +1566,7 @@ O procedură nedureroasă, ajută la îndepărtarea cicatricilor de acnee, a por
                     , offerName = "Pachet"
                     , offerPrice = 600
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON/7 sesiuni"
+                    , offerSuffix = Just "/7 sesiuni"
                     , offerDescr = Nothing
                     }
 
@@ -1639,7 +1639,7 @@ Acest tratament reduce aspectul liniilor fine și al ridurilor. Uniformizează t
                     , offerName = "Preț"
                     , offerPrice = 95
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1647,7 +1647,7 @@ Acest tratament reduce aspectul liniilor fine și al ridurilor. Uniformizează t
                     , offerName = "Pachet"
                     , offerPrice = 430
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON/5 sesiuni"
+                    , offerSuffix = Just "/5 sesiuni"
                     , offerDescr = Nothing
                     }
 
@@ -1695,7 +1695,7 @@ După doar un tratament, liniile de expresie par relaxate. Ridurile fine și rid
                     , offerName = "Preț"
                     , offerPrice = 170
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1703,7 +1703,7 @@ După doar un tratament, liniile de expresie par relaxate. Ridurile fine și rid
                     , offerName = "Pachet"
                     , offerPrice = 780
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON/5 sesiuni"
+                    , offerSuffix = Just "/5 sesiuni"
                     , offerDescr = Nothing
                     }
 
@@ -1754,7 +1754,7 @@ Acest tratament îmbunătățește tenul general reducând la minimum aspectul l
                     , offerName = "Preț"
                     , offerPrice = 160
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1762,7 +1762,7 @@ Acest tratament îmbunătățește tenul general reducând la minimum aspectul l
                     , offerName = "Pachet"
                     , offerPrice = 730
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON/5 sesiuni"
+                    , offerSuffix = Just "/5 sesiuni"
                     , offerDescr = Nothing
                     }
 
@@ -1803,7 +1803,7 @@ Promovează producerea de colagen, strânge și fermește țesuturile pielii, hi
                     , offerName = "Preț"
                     , offerPrice = 180
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1861,7 +1861,7 @@ Similar cu o permanentă, încercați să evitați să vă umeziți genele timp 
                     , offerName = "Preț"
                     , offerPrice = 45
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -1917,7 +1917,7 @@ Similar cu o permanentă, încercați să evitați să vă umeziți genele timp 
                     , offerName = "Preț"
                     , offerPrice = 130
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON și mai mult"
+                    , offerSuffix = Just " și mai mult"
                     , offerDescr = Nothing
                     }
 
@@ -1954,7 +1954,7 @@ Similar cu o permanentă, încercați să evitați să vă umeziți genele timp 
                     , offerName = "Preț"
                     , offerPrice = 25
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2005,7 +2005,7 @@ Tratamentele pot fi efectuate în fiecare săptămână sau la două săptămân
                     , offerName = "Preț"
                     , offerPrice = 40
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2042,7 +2042,7 @@ Tratamentele pot fi efectuate în fiecare săptămână sau la două săptămân
                     , offerName = "Preț"
                     , offerPrice = 40
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2098,7 +2098,7 @@ Terapia de masaj suedez este modalitatea care vine în minte atunci când majori
                     , offerName = "Preț"
                     , offerPrice = 60
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2146,7 +2146,7 @@ Masajul pe scaun este un masaj de 15-20 de minute care se concentrează pe spate
                     , offerName = "Preț"
                     , offerPrice = 60
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2191,7 +2191,7 @@ Masajul picioarelor este o practică terapeutică care implică manipularea pici
                     , offerName = "Preț"
                     , offerPrice = 30
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2247,7 +2247,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
                     , offerName = "Preț"
                     , offerPrice = 200
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2291,7 +2291,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
                     , offerName = "Preț"
                     , offerPrice = 85
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2328,7 +2328,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
                     , offerName = "Preț"
                     , offerPrice = 60
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2365,7 +2365,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
                     , offerName = "Preț"
                     , offerPrice = 100
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2417,7 +2417,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
                     , offerName = "Preț"
                     , offerPrice = 50
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2461,7 +2461,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
                     , offerName = "Preț"
                     , offerPrice = 45
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2513,7 +2513,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
                     , offerName = "Preț"
                     , offerPrice = 15
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2557,7 +2557,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
                     , offerName = "Preț"
                     , offerPrice = 32
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2631,7 +2631,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
                     , offerName = "Preț"
                     , offerPrice = 55
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2668,7 +2668,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
                     , offerName = "Preț"
                     , offerPrice = 38
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2705,7 +2705,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
                     , offerName = "Preț"
                     , offerPrice = 10
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2742,7 +2742,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
                     , offerName = "Preț"
                     , offerPrice = 5
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2796,7 +2796,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
                     , offerName = "Preț"
                     , offerPrice = 350
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 
@@ -2833,7 +2833,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
                     , offerName = "Preț"
                     , offerPrice = 300
                     , offerPrefix = Nothing
-                    , offerSuffix = Just "RON"
+                    , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
 

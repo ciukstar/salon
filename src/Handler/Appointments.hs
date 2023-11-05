@@ -57,7 +57,7 @@ import Database.Esqueleto.Experimental
     ( select, selectOne, from, table, innerJoin, on, where_, val, like, in_, valList
     , (:&)((:&)), (^.), (==.), (?.), (=.), (||.), (%), (++.)
     , orderBy, desc, leftJoin, just, update, set, exists, upper_
-    , justList
+    , justList, unValue
     )
 
 import Foundation
@@ -94,6 +94,7 @@ import Model
     , BookId, Book (Book, bookDay, bookTz, bookTzo, bookTime, bookAddr)
     , Offer (Offer), Service (Service), Role (Role, roleName), Hist (Hist)
     , Staff (Staff, staffName), Thumbnail (Thumbnail), User (User), Contents (Contents)
+    , Business
     , EntityField
       ( BookOffer, OfferId, BookCustomer, BookId, OfferService, ServiceId
       , BookDay, BookTime, BookRole, RoleId, RoleStaff, StaffId, ThumbnailService
@@ -101,6 +102,7 @@ import Model
       , UserId, BookTzo, BookAddr, StaffUser, ServiceName, ServiceOverview, ServiceDescr
       , RoleName, OfferName, OfferPrefix, OfferSuffix, OfferDescr, StaffName, StaffPhone
       , StaffMobile, StaffEmail, UserName, UserFullName, UserEmail, BookStatus
+      , BusinessCurrency
       )
     )
 
@@ -406,10 +408,16 @@ getAppointmentR bid = do
     app <- getYesod
     langs <- languages
     user <- maybeAuth
+    
+    currency <- (unValue <$>) <$> runDB ( selectOne $ do
+        x <- from $ table @Business
+        return $ x ^. BusinessCurrency )
+        
     location <- runDB $ selectOne $ do
         x <- from $ table @Contents
         where_ $ x ^. ContentsSection ==. val section
         return x
+        
     book <- runDB $ selectOne $ do
         x :& o :& s :& t :& r :& e <- from $ table @Book
             `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)

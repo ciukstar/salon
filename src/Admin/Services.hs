@@ -121,13 +121,13 @@ import Model
       ( ServiceId, ThumbnailPhoto, ThumbnailMime, ServiceGroup, ThumbnailService
       , ServiceName, OfferService, OfferId, OfferName, ServiceOverview
       , ServiceDescr, ServicePublished, ThumbnailAttribution, RoleStaff, StaffId
-      , RoleService, RoleName, RoleId
+      , RoleService, RoleName, RoleId, BusinessCurrency
       )
     , Offer (Offer, offerName, offerPrice, offerPrefix, offerSuffix, offerDescr)
     , OfferId
     , ServiceStatus (ServiceStatusPulished, ServiceStatusUnpublished)
     , Role (Role, roleStaff, roleName, roleDuration, roleRating), StaffId
-    , Staff (Staff), RoleId
+    , Staff (Staff), RoleId, Business
     )
 
 import qualified Yesod.Persist as P ((=.))
@@ -137,7 +137,7 @@ import Database.Esqueleto.Experimental
     ( selectOne, from, table, where_, val, in_, valList, just, justList
     , (^.), (?.), (==.), (%), (++.), (||.), (:&) ((:&)), (=.)
     , isNothing, select, orderBy, asc, upper_, like, not_, exists
-    , leftJoin, on, update, set, Value (unValue), innerJoin
+    , leftJoin, on, update, set, Value (unValue), innerJoin, unValue
     )
 
 import Menu (menu)
@@ -377,7 +377,12 @@ getAdmPriceR :: OfferId -> Services -> Handler Html
 getAdmPriceR pid sids = do
     y <- (("y",) <$>) <$> runInputGet (iopt textField "y")
     o <- (("o",) <$>) <$> runInputGet (iopt textField "o")
-    price <- runDB $ selectOne $ do
+    
+    currency <- (unValue <$>) <$> runDB ( selectOne $ do
+        x <- from $ table @Business
+        return $ x ^. BusinessCurrency )
+        
+    offer <- runDB $ selectOne $ do
         x <- from $ table @Offer
         where_ $ x ^. OfferId ==. val pid
         return x
@@ -604,6 +609,11 @@ getAdmServicesR (Services sids) = do
     mpid <- (toSqlKey <$>) <$> runInputGet (iopt intField "pid")
     msid <- (toSqlKey <$>) <$> runInputGet (iopt intField "sid")
     user <- maybeAuth
+    
+    currency <- (unValue <$>) <$> runDB ( selectOne $ do
+        x <- from $ table @Business
+        return $ x ^. BusinessCurrency )
+        
     service <- case sids of
       [] -> return Nothing
       (last -> sid) -> (second (join . unValue) <$>) <$> runDB ( selectOne $ do

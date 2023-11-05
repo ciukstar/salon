@@ -37,7 +37,7 @@
     <div.mdc-dialog__scrim>
         
 <main.mdc-top-app-bar--fixed-adjust>
-  $maybe Entity _ (Offer _ name price prefix suffix descr) <- price
+  $maybe Entity _ (Offer _ name price prefix suffix descr) <- offer
     <div.mdc-data-table>
       <div.mdc-data-table__table-container>
         <table.mdc-data-table__table>
@@ -48,13 +48,16 @@
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgPrice}
               <td.mdc-data-table__cell>
-                $maybe prefix <- prefix
-                  #{prefix}
-                $with price <- show price
-                  <span.numeric-format data-value=#{price} data-minFracDigits=0 data-maxFracDigits=2>
-                    #{price}
-                $maybe suffix <- suffix
-                  #{suffix}
+                $maybe x <- prefix
+                  #{x}
+                $with x <- show price
+                  $maybe c <- currency
+                    <span.currency data-value=#{x} data-currency=#{c}>#{x}
+                  $nothing
+                    <span.currency data-value=#{x}>#{x}
+                $maybe x <- suffix
+                  #{x}
+                    
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgDescription}
               <td.mdc-data-table__cell>

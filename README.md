@@ -27,6 +27,13 @@ Additionally, in the section ["Business"](https://salon-w3cpovaqka-de.a.run.app/
 
 Currently, the app only supports one business. Multi-business support is planned for future versions of the application.
 
+## User
+
+Application users, including clients, employees and administrators, can be registered through the ["Registration"](https://salon-w3cpovaqka-de.a.run.app/account) form.
+
+Users can also be managed by administrators in the section [“Users”](https://salon-w3cpovaqka-de.a.run.app/admin/users) of the group “Data”.
+
+
 ## ERD Diagram
 
 ![Entity Relationship Diagram](static/img/Salon-ERD.svg)

@@ -1,8 +1,8 @@
 
-window.scroll(0,#{fromMaybe "0" scrollY});
-
 Array.from(
-  document.querySelectorAll('span.currency[data-value][data-currency]')
+  document.getElementById('footerBookAmount').querySelectorAll(
+    'span.currency[data-value][data-currency]'
+  )
 ).forEach(function (x) {
   x.textContent = Intl.NumberFormat(navigator.language, {
     style: 'currency',
@@ -14,7 +14,9 @@ Array.from(
 });
 
 Array.from(
-  document.querySelectorAll('span.currency[data-value]:not([data-currency])')
+  document.getElementById('footerBookAmount').querySelectorAll(
+    'span.currency[data-value]:not([data-currency])'
+  )
 ).forEach(function (x) {
   x.textContent = Intl.NumberFormat(navigator.language, {
     minimumFractionDigits: 0,

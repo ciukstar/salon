@@ -1,6 +1,27 @@
 
-window.mdc.autoInit();
+Array.from(
+  document.querySelectorAll('span.currency[data-value][data-currency]')
+).forEach(function (x) {
+  x.textContent = Intl.NumberFormat(navigator.language, {
+    style: 'currency',
+    currency: x.dataset.currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+    useGrouping: true
+  }).format(x.dataset.value);
+});
 
+Array.from(
+  document.querySelectorAll('span.currency[data-value]:not([data-currency])')
+).forEach(function (x) {
+  x.textContent = Intl.NumberFormat(navigator.language, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+    useGrouping: true
+  }).format(x.dataset.value);
+});
+
+window.mdc.autoInit();
 
 var serviceList = document.getElementById(#{theId}).MDCList;
 
@@ -8,30 +29,47 @@ serviceList.selectedIndex = serviceList.listElements.map(
   (x,i) => x.matches('[aria-checked=true]') ? [i] : []
 ).flat();
 
-Array.from(
-  document.getElementById(#{theId}).querySelectorAll('.mdc-list-item .mdc-list-item__content span[data-amount]')
-).forEach(function (x) {
-  x.textContent = Number(x.dataset.amount).toLocaleString(
-    navigator.language,
-    { minimumFractionDigits: 0,
-      maximumFractionDigits: 2
-    }
-  );
-});
-
 serviceList.listen('MDCList:selectionChange',function (e) {
-  if (0 === this.MDCList.selectedIndex.filter(x => e.detail.changedIndices.includes(x)).length) {
-    this.MDCList.selectedIndex = [...this.MDCList.selectedIndex,...e.detail.changedIndices];
+  const l = this.MDCList; 
+  if (0 === l.selectedIndex.filter(x => e.detail.changedIndices.includes(x)).length) {
+    l.selectedIndex = [...l.selectedIndex,...e.detail.changedIndices];
   } else {
-    this.MDCList.selectedIndex = this.MDCList.selectedIndex.filter(x => !e.detail.changedIndices.includes(x));
+    l.selectedIndex = l.selectedIndex.filter(x => !e.detail.changedIndices.includes(x));
   }
-  document.getElementById('footerBookCount').textContent = this.MDCList.selectedIndex.length;
-  document.getElementById('footerBookAmount').querySelector('span[data-amount]').textContent = this.MDCList.listElements.filter(
-    x => x.matches('[aria-checked=true]')
-  ).reduce((a,b) => a + Number(b.dataset.amount),0).toLocaleString(
-    navigator.language,
-    { minimumFractionDigits: 0,
-      maximumFractionDigits: 2
-    }
-  );
+
+  document.getElementById('footerBookCount').textContent = l.selectedIndex.length;
+  
+  Array.from(
+    document.getElementById('footerBookAmount').querySelectorAll(
+      'span.currency[data-value][data-currency]'
+    )
+  ).forEach(function (y) {
+    y.textContent = Intl.NumberFormat(navigator.language, {
+      style: 'currency',
+      currency: y.dataset.currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+      useGrouping: true
+    }).format(
+      l.listElements.filter(
+	x => x.matches('[aria-checked=true]')
+      ).reduce((a,b) => a + Number(b.dataset.amount),0)
+    );
+  });
+  
+  Array.from(
+    document.getElementById('footerBookAmount').querySelectorAll(
+      'span.currency[data-value]:not([data-currency])'
+    )
+  ).forEach(function (y) {
+    y.textContent = Intl.NumberFormat(navigator.language, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+      useGrouping: true
+    }).format(
+      l.listElements.filter(
+	x => x.matches('[aria-checked=true]')
+      ).reduce((a,b) => a + Number(b.dataset.amount),0)
+    );
+  });
 });

@@ -322,3 +322,7 @@ Doc005 hrefBusiness: Informații detaliate despre afacere pot fi furnizate în s
 Doc006 hrefBusiness: În plus, în secțiunea <a href=#{hrefBusiness}>„Afaceri”</a>, poate fi adăugat programul de lucru al organizației pentru fiecare zi.
 
 Doc007: În prezent, aplicația acceptă o singură afacere. Asistența multi-business este planificată pentru versiunile viitoare ale aplicației.
+
+Doc008 href: Utilizatorii aplicației, inclusiv clienți, angajați și administratori, pot fi înregistrați prin intermediul formularului <a href=#{href}>„Înregistrare”</a>.
+
+Doc009 href: De asemenea, utilizatorii pot fi gestionați de administratori în secțiunea <a href=#{href}>„Utilizatori”</a> din grupul „Date”.

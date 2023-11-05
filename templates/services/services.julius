@@ -1,16 +1,28 @@
 
 window.scroll(0,#{fromMaybe "0" scrollY});
+
 window.mdc.autoInit();
 
-Array.from (
-  document.querySelectorAll('span.numeric-format')
+Array.from(
+  document.querySelectorAll('span.currency[data-value][data-currency]')
 ).forEach(function (x) {
-  x.textContent = Number(x.dataset.value).toLocaleString(
-    navigator.language,
-    { minimumFractionDigits: x.dataset.minFracDigits,
-      maximumFractionDigits: x.dataset.maxFracDigits
-    }
-  );
+  x.textContent = Intl.NumberFormat(navigator.language, {
+    style: 'currency',
+    currency: x.dataset.currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+    useGrouping: true
+  }).format(x.dataset.value);
+});
+
+Array.from(
+  document.querySelectorAll('span.currency[data-value]:not([data-currency])')
+).forEach(function (x) {
+  x.textContent = Intl.NumberFormat(navigator.language, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+    useGrouping: true
+  }).format(x.dataset.value);
 });
 
 window.onscroll = function (e) {

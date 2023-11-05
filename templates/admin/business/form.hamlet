@@ -32,10 +32,13 @@
     <span.mdc-floating-label>#{fvLabel currV}
     ^{fvInput currV}
     <span.mdc-line-ripple>
-  $maybe errs <- fvErrors currV
-    <div.mdc-text-field-helper-line>
+  <div.mdc-text-field-helper-line>
+    $maybe errs <- fvErrors currV
       <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
         #{errs}
+    $nothing
+      <div.mdc-text-field-helper-text.mdc-text-field-helper-text--persistent aria-hidden=true>
+        ISO 4217
 
 <div.form-field>
   <div.mdc-text-field.mdc-text-field--textarea.mdc-text-field--filled data-mdc-auto-init=MDCTextField

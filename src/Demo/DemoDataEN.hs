@@ -544,7 +544,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     o111 <- insert $ Offer { offerService = s11
                            , offerName = "Price"
                            , offerPrice = 26
-                           , offerPrefix = Just "$"
+                           , offerPrefix = Nothing
                            , offerSuffix = Nothing
                            , offerDescr = Nothing
                            }
@@ -567,7 +567,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Offer { offerService = s12
                     , offerName = "Price"
                     , offerPrice = 28
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -611,7 +611,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     o131 <- insert $ Offer { offerService = s13
                            , offerName = "Price"
                            , offerPrice = 35
-                           , offerPrefix = Just "$"
+                           , offerPrefix = Nothing
                            , offerSuffix = Nothing
                            , offerDescr = Nothing
                            }
@@ -650,8 +650,8 @@ We will continue to offer the latest treatments, the most innovative techniques 
     o141 <- insert $ Offer { offerService = s14
                            , offerName = "Price"
                            , offerPrice = 16
-                           , offerPrefix = Just "$"
-                           , offerSuffix = Just "-$20 (depending on the length of their hair)"
+                           , offerPrefix = Nothing
+                           , offerSuffix = Just "- £20 (depending on the length of their hair)"
                            , offerDescr = Nothing
                            }
 
@@ -710,7 +710,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Offer { offerService = s1511
                     , offerName = "Price"
                     , offerPrice = 99
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Just " & up"
                     , offerDescr = Nothing
                     }
@@ -754,7 +754,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Offer { offerService = s1512
                     , offerName = "Price"
                     , offerPrice = 110
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Just " & up"
                     , offerDescr = Nothing
                     }
@@ -813,7 +813,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Offer { offerService = s1521
                     , offerName = "Price"
                     , offerPrice = 130
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -857,7 +857,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Offer { offerService = s1522
                     , offerName = "Price"
                     , offerPrice = 68
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Just " & up"
                     , offerDescr = Nothing
                     }
@@ -894,7 +894,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Offer { offerService = s1523
                     , offerName = "Price"
                     , offerPrice = 68
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Just " & up"
                     , offerDescr = Nothing
                     }
@@ -953,7 +953,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Offer { offerService = s1531
                     , offerName = "Price"
                     , offerPrice = 79
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Just " & up"
                     , offerDescr = Nothing
                     }
@@ -997,7 +997,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Offer { offerService = s1532
                     , offerName = "Price"
                     , offerPrice = 89
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Just " & up"
                     , offerDescr = Nothing
                     }
@@ -1041,7 +1041,7 @@ We will continue to offer the latest treatments, the most innovative techniques 
     insert_ $ Offer { offerService = s1533
                     , offerName = "Price"
                     , offerPrice = 250
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Just " & up"
                     , offerDescr = Nothing
                     }
@@ -1105,7 +1105,7 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
     insert_ $ Offer { offerService = s21
                     , offerName = "Price"
                     , offerPrice = 55
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -1113,7 +1113,7 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
     insert_ $ Offer { offerService = s21
                     , offerName = "Package"
                     , offerPrice = 250
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Just "/5 sessions"
                     , offerDescr = Nothing
                     }
@@ -1157,7 +1157,7 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
     insert_ $ Offer { offerService = s22
                     , offerName = "Price"
                     , offerPrice = 75
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -1165,7 +1165,7 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
     insert_ $ Offer { offerService = s22
                     , offerName = "Package"
                     , offerPrice = 350
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Just "/5 sessions"
                     , offerDescr = Nothing
                     }
@@ -1209,7 +1209,7 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
     insert_ $ Offer { offerService = s23
                     , offerName = "Price"
                     , offerPrice = 90
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -1217,7 +1217,7 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
     insert_ $ Offer { offerService = s23
                     , offerName = "Package"
                     , offerPrice = 400
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Just "/5 sessions"
                     , offerDescr = Nothing
                     }
@@ -1268,7 +1268,7 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
     insert_ $ Offer { offerService = s24
                     , offerName = "Price"
                     , offerPrice = 95
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -1276,7 +1276,7 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
     insert_ $ Offer { offerService = s24
                     , offerName = "Package"
                     , offerPrice = 600
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Just "/7 sessions"
                     , offerDescr = Nothing
                     }
@@ -1320,7 +1320,7 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
     o251 <- insert $ Offer { offerService = s25
                            , offerName = "Price"
                            , offerPrice = 100
-                           , offerPrefix = Just "$"
+                           , offerPrefix = Nothing
                            , offerSuffix = Nothing
                            , offerDescr = Nothing
                            }
@@ -1328,7 +1328,7 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
     insert_ $ Offer { offerService = s25
                     , offerName = "Package"
                     , offerPrice = 460
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Just "/5 sessions"
                     , offerDescr = Nothing
                     }
@@ -1419,7 +1419,7 @@ As a result, the milk peel is a powerful skin resurfacing process with substanti
     insert_ $ Offer { offerService = s31
                     , offerName = "Price"
                     , offerPrice = 330
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -1469,7 +1469,7 @@ The Scientia Derma Roller is an incredible device which naturally increases the 
     o321 <- insert $ Offer { offerService = s32
                            , offerName = "Price"
                            , offerPrice = 330
-                           , offerPrefix = Just "$"
+                           , offerPrefix = Nothing
                            , offerSuffix = Nothing
                            , offerDescr = Nothing
                            }
@@ -1517,7 +1517,7 @@ A painless procedure, it helps to remove acne scars, enlarged pores, facial line
     insert_ $ Offer { offerService = s33
                     , offerName = "Price"
                     , offerPrice = 70
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -1563,7 +1563,7 @@ A painless procedure, it helps to remove acne scars, enlarged pores, facial line
     insert_ $ Offer { offerService = s34
                     , offerName = "Price"
                     , offerPrice = 95
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -1571,7 +1571,7 @@ A painless procedure, it helps to remove acne scars, enlarged pores, facial line
     insert_ $ Offer { offerService = s34
                     , offerName = "Package"
                     , offerPrice = 600
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Just "/7 sessions"
                     , offerDescr = Nothing
                     }
@@ -1644,7 +1644,7 @@ This treatment reduces the appearance of lines and wrinkles Evens out skin tone 
     insert_ $ Offer { offerService = s41
                     , offerName = "Price"
                     , offerPrice = 95
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -1652,7 +1652,7 @@ This treatment reduces the appearance of lines and wrinkles Evens out skin tone 
     insert_ $ Offer { offerService = s41
                     , offerName = "Package"
                     , offerPrice = 430
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Just "/5 sessions"
                     , offerDescr = Nothing
                     }
@@ -1700,7 +1700,7 @@ After just one treatment, expression lines appear relaxed Lines and wrinkles are
     insert_ $ Offer { offerService = s42
                     , offerName = "Price"
                     , offerPrice = 170
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -1708,7 +1708,7 @@ After just one treatment, expression lines appear relaxed Lines and wrinkles are
     insert_ $ Offer { offerService = s42
                     , offerName = "Package"
                     , offerPrice = 780
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Just "/5 sessions"
                     , offerDescr = Nothing
                     }
@@ -1759,7 +1759,7 @@ This treatment improves the overall complexion by minimizing the appearance of f
     insert_ $ Offer { offerService = s43
                     , offerName = "Price"
                     , offerPrice = 160
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -1767,7 +1767,7 @@ This treatment improves the overall complexion by minimizing the appearance of f
     insert_ $ Offer { offerService = s43
                     , offerName = "Package"
                     , offerPrice = 730
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Just "/5 sessions"
                     , offerDescr = Nothing
                     }
@@ -1808,7 +1808,7 @@ It promotes collagen production, tightens and firms skin tissues, hydrates & rej
     insert_ $ Offer { offerService = s44
                     , offerName = "Price"
                     , offerPrice = 180
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -1866,7 +1866,7 @@ Similar to a regular hair perm, try to avoid wetting your eyelashes for 4 hours 
     insert_ $ Offer { offerService = s51
                     , offerName = "Price"
                     , offerPrice = 45
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -1922,7 +1922,7 @@ Similar to a regular hair perm, try to avoid wetting your eyelashes for 4 hours 
     insert_ $ Offer { offerService = s52
                     , offerName = "Price"
                     , offerPrice = 130
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Just " & up"
                     , offerDescr = Nothing
                     }
@@ -1959,7 +1959,7 @@ Similar to a regular hair perm, try to avoid wetting your eyelashes for 4 hours 
     insert_ $ Offer { offerService = s53
                     , offerName = "Price"
                     , offerPrice = 25
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -2010,7 +2010,7 @@ Treatments can be performed every week or every other week, depending upon skin 
     insert_ $ Offer { offerService = s54
                     , offerName = "Price"
                     , offerPrice = 40
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -2047,7 +2047,7 @@ Treatments can be performed every week or every other week, depending upon skin 
     insert_ $ Offer { offerService = s55
                     , offerName = "Price"
                     , offerPrice = 40
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -2103,7 +2103,7 @@ Swedish massage therapy is the modality that comes to mind when most people thin
     insert_ $ Offer { offerService = s61
                     , offerName = "Price"
                     , offerPrice = 60
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -2151,7 +2151,7 @@ Chair massage is a 15-20 minute massage focused on the back, shoulders, neck, ar
     insert_ $ Offer { offerService = s62
                     , offerName = "Price"
                     , offerPrice = 60
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -2196,7 +2196,7 @@ During a foot massage, various techniques may be used, including kneading, strok
     insert_ $ Offer { offerService = s63
                     , offerName = "Price"
                     , offerPrice = 30
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -2252,7 +2252,7 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
     insert_ $ Offer { offerService = s71
                     , offerName = "Price"
                     , offerPrice = 200
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -2296,7 +2296,7 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
     insert_ $ Offer { offerService = s72
                     , offerName = "Price"
                     , offerPrice = 85
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -2333,7 +2333,7 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
     insert_ $ Offer { offerService = s73
                     , offerName = "Price"
                     , offerPrice = 60
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -2370,7 +2370,7 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
     insert_ $ Offer { offerService = s74
                     , offerName = "Price"
                     , offerPrice = 100
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -2422,7 +2422,7 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
     insert_ $ Offer { offerService = s81
                     , offerName = "Price"
                     , offerPrice = 50
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -2466,7 +2466,7 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
     insert_ $ Offer { offerService = s82
                     , offerName = "Price"
                     , offerPrice = 45
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -2518,7 +2518,7 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
     insert_ $ Offer { offerService = s91
                     , offerName = "Price"
                     , offerPrice = 15
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -2562,7 +2562,7 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
     insert_ $ Offer { offerService = s92
                     , offerName = "Price"
                     , offerPrice = 32
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -2599,7 +2599,7 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
     insert_ $ Offer { offerService = s93
                     , offerName = "Price"
                     , offerPrice = 35
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -2636,7 +2636,7 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
     insert_ $ Offer { offerService = s94
                     , offerName = "Price"
                     , offerPrice = 55
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -2673,7 +2673,7 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
     insert_ $ Offer { offerService = s95
                     , offerName = "Price"
                     , offerPrice = 38
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -2710,7 +2710,7 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
     insert_ $ Offer { offerService = s96
                     , offerName = "Price"
                     , offerPrice = 10
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -2747,7 +2747,7 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
     insert_ $ Offer { offerService = s97
                     , offerName = "Price"
                     , offerPrice = 5
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -2803,7 +2803,7 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
     insert_ $ Offer { offerService = s101
                     , offerName = "Price"
                     , offerPrice = 350
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }
@@ -2840,7 +2840,7 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
     insert_ $ Offer { offerService = s102
                     , offerName = "Price"
                     , offerPrice = 300
-                    , offerPrefix = Just "$"
+                    , offerPrefix = Nothing
                     , offerSuffix = Nothing
                     , offerDescr = Nothing
                     }

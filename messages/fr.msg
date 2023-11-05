@@ -322,3 +322,7 @@ Doc005 hrefBusiness: Des informations détaillées sur l'entreprise peuvent êtr
 Doc006 hrefBusiness: De plus, dans la section <a href=#{hrefBusiness}>« Affaires »</a>, l'horaire de travail de l'organisation pour chaque jour peut être ajouté.
 
 Doc007: Actuellement, l'application ne prend en charge qu'une seule entreprise. Un support multi-métiers est prévu pour les futures versions de l'application.
+
+Doc008 href: Les utilisateurs de l'application, y compris les clients, les employés et les administrateurs, peuvent être enregistrés via le formulaire <a href=#{href}>« Inscription »</a>.
+
+Doc009 href: De plus, les utilisateurs peuvent être gérés par les administrateurs dans la section <a href=#{href}>« Utilisateurs »</a> du groupe « Données ».

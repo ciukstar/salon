@@ -34,8 +34,8 @@ import Foundation
       ( MsgSourceCode, MsgDocumentation, MsgBrand, MsgContactUs, MsgAboutUs
       , MsgMyAppointments, MsgServices, MsgBookAppointment, MsgWelcome, MsgSalon
       , MsgUsers, MsgContact, MsgStaff, MsgData, MsgResources, MsgRequests
-      , MsgBusiness, MsgClose, MsgAnalytics, MsgPopularOffers
-      , MsgWorkload, MsgCustomerRanking, MsgServiceRanking
+      , MsgBusiness, MsgClose, MsgAnalytics, MsgWorkload, MsgCustomerRanking
+      , MsgServiceRanking
       )
     )
 

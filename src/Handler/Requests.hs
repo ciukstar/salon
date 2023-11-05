@@ -84,13 +84,14 @@ import Database.Esqueleto.Experimental
     ( select, from, table, innerJoin, leftJoin, on, where_, val
     , (:&)((:&)), (==.), (^.), (?.), (%), (++.), (||.), (&&.), (=.)
     , orderBy, desc, just, selectOne, valList, in_, upper_, like, isNothing_
-    , not_, update, set, exists
+    , not_, update, set, exists, unValue
     )
 
 import Model
     ( Book (Book, bookDay, bookTz, bookTzo, bookTime, bookAddr)
-    , BookId, Offer, ServiceId, Service (Service), Role (Role, roleName), Staff (Staff, staffName)
-    , Offer (Offer), Thumbnail (Thumbnail), User (User), Contents (Contents)
+    , BookId, Offer, ServiceId, Service (Service), Role (Role, roleName)
+    , Staff (Staff, staffName), Offer (Offer), Thumbnail (Thumbnail)
+    , User (User), Contents (Contents)
     , BookStatus
       ( BookStatusRequest, BookStatusApproved, BookStatusCancelled
       , BookStatusPaid, BookStatusAdjusted
@@ -104,7 +105,7 @@ import Model
       , ServiceDescr, ServiceOverview, RoleName, OfferName, OfferPrefix
       , OfferSuffix, OfferDescr, StaffName, StaffPhone, StaffMobile, StaffEmail
       , UserName, UserFullName, UserEmail, BookTz, HistBook, HistLogtime
-      , RoleService, HistUser, BookTzo, BookAddr
+      , RoleService, HistUser, BookTzo, BookAddr, BusinessCurrency
       )
     )
 
@@ -497,6 +498,11 @@ getRequestR bid = do
     stati <- reqGetParams <$> getRequest
     user <- maybeAuth
     unless (isJust user) $ redirect (RequestsR, stati)
+
+    currency <- (unValue <$>) <$> runDB ( selectOne $ do
+        x <- from $ table @Business
+        return $ x ^. BusinessCurrency )
+    
     empl <- runDB $ selectOne $ do
         x <- from $ table @Staff
         where_ $ case user of

@@ -55,13 +55,16 @@
               <div style="line-height:1">
                 <small>
                   #{oname}:&nbsp;
-                  $maybe prefix <- pref
-                    #{prefix}
-                  <span #offerPrice>#{show price}
-                  $maybe _ <- pref
-                  $nothing
-                    $maybe suffix <- suff
-                      #{suffix}
+                  $maybe x <- pref
+                    #{x}
+                  $with x <- show price
+                    $maybe c <- currency
+                      <span.currency data-value=#{x} data-currency=#{c}>#{x}
+                    $nothing
+                      <span.currency data-value=#{x}>#{x}
+                  $maybe x <- suff
+                    #{x}
+                    
               $maybe duration <- dur
                 $with translate <- renderMessage app langs
                   $with pat <- intercalate "" ["%H",translate MsgSymbolHour," %M",translate MsgSymbolMinute]

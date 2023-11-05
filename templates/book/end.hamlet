@@ -55,14 +55,16 @@
               <div.mdc-list-item__primary-text>
                 #{sname}
               <div.mdc-list-item__secondary-text>
-                #{oname}: 
-                $maybe prefix <- prefix
-                  #{prefix}
-                <span.price data-amount=#{show price}>#{show price}
-                $maybe _ <- prefix
-                $nothing
-                  $maybe suffix <- suffix
-                    #{suffix}
+                #{oname}:&nbsp;
+                $maybe x <- prefix
+                  #{x}
+                $with x <- show price
+                  $maybe c <- currency
+                    <span.currency data-value=#{x} data-currency=#{c}>#{x}
+                  $nothing
+                    <span.currency data-value=#{x}>#{x}
+                $maybe x <- suffix
+                  #{x}
               $with dt <- ((<>) ((<>) (pack $ show date) " ") (pack $ show time))
                 $with dtz <- ((<>) dt ((<>) ((<>) " (" tz) ")"))
                   <time.mdc-list-item__secondary-text datetime=#{dt}>

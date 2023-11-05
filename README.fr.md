@@ -27,6 +27,12 @@ De plus, dans la section [« Entreprise »](https://salonfr-w3cpovaqka-de.a.run.
 
 Actuellement, l'application ne prend en charge qu'une seule entreprise. Un support multi-métiers est prévu pour les futures versions de l'application.
 
+## Utilisateur
+
+Les utilisateurs de l'application, y compris les clients, les employés et les administrateurs, peuvent être enregistrés via le formulaire [« Inscription »](https://salonfr-w3cpovaqka-de.a.run.app/account).
+
+De plus, les utilisateurs peuvent être gérés par les administrateurs dans la section [« Utilisateurs »](https://salonfr-w3cpovaqka-de.a.run.app/admin/users) du groupe « Données ».
+
 ## Diagramme ERD
 
 ![Diagramme entité-relation](static/img/Salon-ERD.svg)

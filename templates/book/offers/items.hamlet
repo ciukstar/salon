@@ -26,12 +26,15 @@
 
           <div.mdc-list-item__secondary-text style="white-space:nowrap">
             #{pname}: 
-            $maybe prefix <- pref
-              #{prefix}
-            $with amount <- show price
-              <span data-amount=#{amount}>#{amount}
-            $maybe suffix <- suff
-              #{suffix}
+            $maybe x <- pref
+              #{x}
+            $with x <- show price
+              $maybe c <- currency
+                <span.currency data-value=#{x} data-currency=#{c}>#{x}
+              $nothing
+                <span.currency data-value=#{x}>#{x}
+            $maybe x <- suff
+              #{x}
 
         <span.mdc-list-item__end>
           <div.mdc-checkbox :checked:checked tabindex=-1 data-mdc-auto-init=MDCCheckbox>

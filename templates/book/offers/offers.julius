@@ -15,14 +15,31 @@ window.onscroll = function (e) {
   }
 };
 
-document.getElementById('footerBookAmount').querySelector('span[data-amount]').textContent = Number(
-  document.getElementById('footerBookAmount').querySelector('span[data-amount]').dataset.amount
-).toLocaleString(
-  navigator.language,
-  { minimumFractionDigits: 0,
-    maximumFractionDigits: 2
-  }
-);
+Array.from(
+  document.getElementById('footerBookAmount').querySelectorAll(
+    'span.currency[data-value][data-currency]'
+  )
+).forEach(function (x) {
+  x.textContent = Intl.NumberFormat(navigator.language, {
+    style: 'currency',
+    currency: x.dataset.currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+    useGrouping: true
+  }).format(x.dataset.value);
+});
+
+Array.from(
+  document.getElementById('footerBookAmount').querySelectorAll(
+    'span.currency[data-value]:not([data-currency])'
+  )
+).forEach(function (x) {
+  x.textContent = Intl.NumberFormat(navigator.language, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+    useGrouping: true
+  }).format(x.dataset.value);
+});
 
 Array.from(
   document.querySelectorAll('aside.mdc-snackbar')

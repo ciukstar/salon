@@ -3,7 +3,7 @@
   $forall e@((Entity sid (Service sname _ _ duration _ _),Entity oid (Offer _ pname price prefix suffix _)),attrib) <- options
     $with checked <- isChecked vals e
       <input type=checkbox name=#{name} value=#{fromSqlKey oid} *{attrs} :checked:checked hidden>
-      <li.mdc-list-item tabindex=-1 role=option data-amount=#{show price}
+      <li.mdc-list-item tabindex=-1 role=option
         .mdc-list-item--with-leading-image.mdc-list-item--with-three-lines
         :checked:aria-checked=true :not checked:aria-checked=false>
         <span.mdc-list-item__ripple>
@@ -20,13 +20,17 @@
                     #{duration}
 
           <div.mdc-list-item__secondary-text style="white-space:nowrap">
-            #{pname}: 
-            $maybe prefix <- prefix
-              #{prefix}
-            $with amount <- show price
-              <span data-amount=#{amount}>#{amount}
-            $maybe suffix <- suffix
-              #{suffix}
+            #{pname}:&nbsp;
+            $maybe x <- prefix
+              #{x}
+            $with x <- show price
+              $maybe c <- currency
+                <span.currency data-value=#{x} data-currency=#{c}>#{x}
+              $nothing
+                <span.currency data-value=#{x}>#{x}
+            $maybe x <- suffix
+              #{x}
+              
       <li.mdc-list-divider role=separator style="position:relative">
         $maybe attribution <- attrib
           <div style="position:absolute;bottom:0;left:4px;font-size:0.5rem;line-height:1">

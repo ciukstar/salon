@@ -20,13 +20,17 @@
                     #{duration}
 
           <div.mdc-list-item__secondary-text style="white-space:nowrap">
-            #{pname}: 
-            $maybe prefix <- prefix
-              #{prefix}
-            $with amount <- show price
-              <span data-amount=#{amount}>#{amount}
-            $maybe suffix <- suffix
-              #{suffix}
+            #{pname}:&nbsp;
+            $maybe x <- prefix
+              #{x}
+            $with x <- show price
+              $maybe c <- currency
+                <span.currency data-value=#{x} data-currency=#{c}>#{x}
+              $nothing
+                <span.currency data-value=#{x}>#{x}
+            $maybe x <- suffix
+              #{x}
+              
       <li.mdc-list-divider role=separator style="position:relative">
         $maybe attribution <- attrib
           <div style="position:absolute;bottom:0;left:4px;font-size:0.5rem;line-height:1">

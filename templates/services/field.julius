@@ -1,11 +1,22 @@
 
 Array.from(
-  document.querySelectorAll('span.currency')
+  document.querySelectorAll('span.currency[data-value][data-currency]')
 ).forEach(function (x) {
-  x.textContent = Number(x.textContent).toLocaleString(
-    navigator.language,
-    { minimumFractionDigits: 0,
-      maximumFractionDigits: 2
-    }
-  );
+  x.textContent = Intl.NumberFormat(navigator.language, {
+    style: 'currency',
+    currency: x.dataset.currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+    useGrouping: true
+  }).format(x.dataset.value);
+});
+
+Array.from(
+  document.querySelectorAll('span.currency[data-value]:not([data-currency])')
+).forEach(function (x) {
+  x.textContent = Intl.NumberFormat(navigator.language, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+    useGrouping: true
+  }).format(x.dataset.value);
 });
