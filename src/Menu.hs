@@ -27,8 +27,9 @@ import Foundation
       )
     , StatsR (PopOffersR, WorkloadsR, StatsAovR)
     , AdminR
-      ( BrandR, UsersR, AdmContactsR, AdmAboutR, AdmStaffR, AdmServicesR
-      , BusinessR, BusinessHoursR, BusinessCalendarR
+      ( BrandR, UsersR, AdmContactsR, AdmStaffR, AdmServicesR
+      , BusinessR, BusinessHoursR, BusinessCalendarR, BusinessAboutR
+      , BusinessContactR
       )
     , AppMessage
       ( MsgSourceCode, MsgDocumentation, MsgBrand, MsgContactUs, MsgAboutUs

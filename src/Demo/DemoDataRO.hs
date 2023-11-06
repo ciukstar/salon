@@ -64,6 +64,7 @@ import Model
       ( BusinessHours, businessHoursBusiness, businessHoursDay, businessHoursOpen
       , businessHoursClose, businessHoursDayType
       )
+    , AboutUs (AboutUs, aboutUsBusiness, aboutUsHtml)
     , DayType (Weekday, Holiday)
     )
 import Data.FileEmbed (embedFile)
@@ -118,6 +119,18 @@ populateRO = do
                             , businessHoursDayType = Weekday
                             }
 
+    insert_ $ AboutUs { aboutUsBusiness = b
+                      , aboutUsHtml = [shamlet|
+<h2 style="color:gray">Misiunea noastră
+<p>Misiunea noastră este simplă: să oferim un mediu special fiecărei persoane care își intră pe uși, unde se pot răsfăța, se pot îngriji și se pot răsfăța, sporindu-și în același timp imaginea personală și aducând un sentiment de bunăstare în viața lor.
+<h2 style="color:gray">Etosul nostru
+<p>Orice persoană care vine la saloanele noastre este unică. Tratăm fiecare client unic în funcție de nevoile sale personale. Ne mândrim să oferim serviciul pe care clientul se așteaptă și tratamentele de care el/ea are nevoie și le vom reevalua continuu cerințele în funcție de stilul de viață și de corp.
+<p>Nu vom oferi niciodată tratamente care nu sunt necesare și facem din fiecare client o prioritate. Acesta este exact motivul pentru care putem spune cu mândrie că, de-a lungul anilor, ne-am construit o bază de clienți loiali. Învățăm de la ei pe măsură ce avem grijă de ei și ne străduim să ținem pasul cu cele mai recente tendințe și tratamente disponibile pentru a ne asigura că îndeplinim întotdeauna nevoile clienților noștri valoroși și ale oricăror viitori vizitatori.
+<h2 style="color:gray">Obiectivele noastre
+<p>Vom continua să oferim cele mai noi tratamente, cele mai inovatoare tehnici în timp ce folosim cele mai bune produse de pe piață. Toate acestea în medii elegante, curate și primitoare cu terapeuți pregătiți, profesioniști și prietenoși. Ne vom strădui să divulgăm mesajul nostru că este dreptul fiecăruia de a se simți bine!
+|]
+                      }
+
     insert_ $ Contents { contentsSection = "CONTACTS"
                        , contentsContent = Textarea $ toStrict $ renderHtml [shamlet|
 <section style="margin:0 1rem">
@@ -149,21 +162,6 @@ populateRO = do
     <dd>
       #{businessAddr business}
 <iframe width="100%" height="400px" loding="lazy" title="Salon" style="border:none" src="https://api.mapbox.com/styles/v1/mapbox/streets-v12.html?title=false&zoomwheel=false&access_token=pk.eyJ1IjoiY2l1a3N0YXIiLCJhIjoiY2o1enNibDNsMGNrNDJ3dDhxeTJuc3luMiJ9.Jgc5GdYUMbYwGq-zRWtzfw#15/44.4327417/26.1039028">
-|]
-                       }
-
-    insert_ $ Contents { contentsSection = "ABOUT_US"
-                       , contentsContent = Textarea $ toStrict $ renderHtml [shamlet|
-<h2 style="color:gray">Misiunea noastră
-<p>
-  Misiunea noastră este simplă: să oferim un mediu special fiecărei persoane care își intră pe uși, unde se pot răsfăța, se pot îngriji și se pot răsfăța, sporindu-și în același timp imaginea personală și aducând un sentiment de bunăstare în viața lor.
-<h2 style="color:gray">Etosul nostru
-<p>
-  Orice persoană care vine la saloanele noastre este unică. Tratăm fiecare client unic în funcție de nevoile sale personale. Ne mândrim să oferim serviciul pe care clientul se așteaptă și tratamentele de care el/ea are nevoie și le vom reevalua continuu cerințele în funcție de stilul de viață și de corp.
-  Nu vom oferi niciodată tratamente care nu sunt necesare și facem din fiecare client o prioritate. Acesta este exact motivul pentru care putem spune cu mândrie că, de-a lungul anilor, ne-am construit o bază de clienți loiali. Învățăm de la ei pe măsură ce avem grijă de ei și ne străduim să ținem pasul cu cele mai recente tendințe și tratamente disponibile pentru a ne asigura că îndeplinim întotdeauna nevoile clienților noștri valoroși și ale oricăror viitori vizitatori.
-<h2 style="color:gray">Obiectivele noastre
-<p>
-  Vom continua să oferim cele mai noi tratamente, cele mai inovatoare tehnici în timp ce folosim cele mai bune produse de pe piață. Toate acestea în medii elegante, curate și primitoare cu terapeuți pregătiți, profesioniști și prietenoși. Ne vom strădui să divulgăm mesajul nostru că este dreptul fiecăruia de a se simți bine!
 |]
                        }
     

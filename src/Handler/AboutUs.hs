@@ -4,14 +4,12 @@
 
 module Handler.AboutUs (getAboutUsR) where
 
-import Data.Text (Text)
 import Text.Hamlet (Html)
 import Yesod.Auth (Route (LoginR), maybeAuth)
 import Yesod.Core
     ( Yesod(defaultLayout), setTitleI, setUltDestCurrent
-    , preEscapedToMarkup, getMessages
+    , getMessages
     )
-import Yesod.Form.Fields (unTextarea)
 
 import Settings (widgetFile)
 import Foundation
@@ -25,27 +23,17 @@ import Foundation
 
 import Yesod.Persist.Core (YesodPersist(runDB))
 import Database.Persist (Entity(Entity))
-import Database.Esqueleto.Experimental
-    (selectOne, from, table, where_, val
-    , (^.), (==.)
-    )
-import Model (Contents(Contents), EntityField (ContentsSection))
+import Database.Esqueleto.Experimental (selectOne, from, table)
+import Model (AboutUs(AboutUs))
 
 import Menu (menu)
 
 getAboutUsR :: Handler Html
 getAboutUsR = do
     user <- maybeAuth
-    content <- runDB $ selectOne $ do
-        x <- from $ table @Contents
-        where_ $ x ^. ContentsSection ==. val section
-        return x
+    info <- runDB $ selectOne $ from $ table @AboutUs
     setUltDestCurrent
     msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgAboutUs
         $(widgetFile "about/about")
-
-
-section :: Text
-section = "ABOUT_US"

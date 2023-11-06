@@ -22,7 +22,7 @@
         <div.mdc-card__ripple>
       $maybe overview <- overview
         <div.mdc-card-wrapper__text-section style="padding:1rem">
-          <i style="color:var(--theme-text-small-hint-on-light)">
+          <i style="color:var(--theme-text-hint-on-light)">
             #{overview}
       $maybe description <- descr
         <div.mdc-card-wrapper__text-section>
@@ -55,7 +55,7 @@
                 _{MsgNoOffersYet}.
           $forall ((Entity oid (Offer _ oname price prefix suffix _),Entity sid (Service sname _ _ _ _ _)),attrib) <- offers
             <a.mdc-list-item role=menuitem 
-              href=@?{(OfferR oid (Services (sids ++ [sid])),catMaybes ys)}
+              href=@?{(OfferR oid (Services (sids ++ [sid])),catMaybes $ take 1 ys)}
               .mdc-list-item--with-leading-image.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon
               :moid == Just oid:.mdc-list-item--activated
               onclick="this.href = [new window.URL(this.href)].map(x => {x.searchParams.append('y',window.scrollY); return x.href;})[0]">

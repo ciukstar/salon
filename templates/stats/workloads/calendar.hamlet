@@ -18,14 +18,14 @@
   
   <div.calendar>
     <div.header>
-      <a.mdc-icon-button href=@?{(StatsR $ WorkloadEmplMonthR eid prev,stati)} role=button>
+      <a.mdc-icon-button href=@?{(StatsR $ WorkloadEmplMonthR eid prev,stati)} role=button rel=nofollow>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
       $with m <- show month
         <time.year-month datetime=#{m}>
           #{m}
-      <a.mdc-icon-button href=@?{(StatsR $ WorkloadEmplMonthR eid next,stati)} role=button>
+      <a.mdc-icon-button href=@?{(StatsR $ WorkloadEmplMonthR eid next,stati)} role=button rel=nofollow>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_forward
@@ -39,7 +39,7 @@
             $if (==) month (YearMonth y m)
               $with slot <- find ((((==) day) . snd) . fst) ratios
                 $maybe ((eid,day),ratio) <- slot
-                  <a href=@?{(StatsR $ WorkloadEmplDayR eid day,stati)}>
+                  <a href=@?{(StatsR $ WorkloadEmplDayR eid day,stati)} rel=nofollow>
                     <time.day-of-month datetime=#{show day}>
                       <small>#{d}
                     $with r <- show ratio
@@ -47,7 +47,7 @@
                         #{show r}
                     <div style="border:2px solid var(--theme-accent)">
                 $nothing
-                  <a href=#>
+                  <a href=# rel=nofollow>
                     <time.day-of-month datetime=#{show day}>
                       <small>#{d}
             $else

@@ -64,6 +64,7 @@ import Model
       ( BusinessHours, businessHoursBusiness, businessHoursDay, businessHoursOpen
       , businessHoursClose, businessHoursDayType
       )
+    , AboutUs (AboutUs, aboutUsBusiness, aboutUsHtml)
     , DayType (Weekday, Holiday)
     )
 import Data.FileEmbed (embedFile)
@@ -118,6 +119,18 @@ populateFR = do
                             , businessHoursDayType = Weekday
                             }
 
+    insert_ $ AboutUs { aboutUsBusiness = b
+                      , aboutUsHtml = [shamlet|
+<h2 style="color:gray">Notre mission
+<p>La mission de <i>Salon</i> est simple : offrir à chaque personne qui franchit ses portes un environnement spécial, où elle peut se faire plaisir, se toiletter et se faire dorloter, tout en valorisant son image personnelle et en apportant un sentiment de bien-être dans sa vie.
+<h2 style="color:gray">Notre éthique
+<p>Chaque personne qui vient dans nos salons est unique. Nous traitons chaque client unique en fonction de ses besoins personnels. Nous sommes fiers d'offrir le service que le client attend et les traitements dont il a besoin, et nous réévaluerons continuellement ses demandes en fonction de son style de vie et de son corps.
+<p>Nous n’offrirons jamais de traitements inutiles et ferons de chaque client une priorité. C’est exactement la raison pour laquelle nous pouvons affirmer avec fierté qu’au fil des années, nous avons bâti une clientèle fidèle. Nous apprenons d'eux tout en prenant soin d'eux et nous nous efforçons de suivre les dernières tendances et traitements disponibles pour garantir que nous répondons toujours aux besoins de nos précieux clients et de tous les futurs visiteurs.
+<h2 style="color:gray">Nos objectifs
+<p>Nous continuerons d'offrir les derniers traitements, les techniques les plus innovantes tout en utilisant les meilleurs produits sur le marché. Tout cela dans des environnements élégants, propres et accueillants avec des thérapeutes formés, professionnels et sympathiques. Nous nous efforcerons de divulguer notre message selon lequel chacun a le droit de se sentir bien !
+|]
+                      }
+
     insert_ $ Contents { contentsSection = "CONTACTS"
                        , contentsContent = Textarea $ toStrict $ renderHtml [shamlet|
 <section style="margin:0 1rem">
@@ -150,23 +163,6 @@ populateFR = do
       #{businessAddr business}
 <p>
   <iframe width="100%" height="400px" loding="lazy" title="Salon" style="border:none" src="https://api.mapbox.com/styles/v1/mapbox/streets-v12.html?title=false&zoomwheel=false&access_token=pk.eyJ1IjoiY2l1a3N0YXIiLCJhIjoiY2o1enNibDNsMGNrNDJ3dDhxeTJuc3luMiJ9.Jgc5GdYUMbYwGq-zRWtzfw#15/48.858222/2.2945">
-|]
-                       }
-
-    insert_ $ Contents { contentsSection = "ABOUT_US"
-                       , contentsContent = Textarea [st|
-<h2 style="color:gray">Notre mission</h2>
-<p>La mission de <i>Salon</i> est simple : offrir à chaque personne qui franchit ses portes un environnement spécial, où elle peut se faire plaisir, se toiletter et se faire dorloter, tout en valorisant son image personnelle et en apportant un sentiment de bien-être dans sa vie.
-</p>
-<h2 style="color:gray">Notre éthique</h2>
-<p>
-Chaque personne qui vient dans nos salons est unique. Nous traitons chaque client unique en fonction de ses besoins personnels. Nous sommes fiers d'offrir le service que le client attend et les traitements dont il a besoin, et nous réévaluerons continuellement ses demandes en fonction de son style de vie et de son corps.
-Nous n’offrirons jamais de traitements inutiles et ferons de chaque client une priorité. C’est exactement la raison pour laquelle nous pouvons affirmer avec fierté qu’au fil des années, nous avons bâti une clientèle fidèle. Nous apprenons d'eux tout en prenant soin d'eux et nous nous efforçons de suivre les dernières tendances et traitements disponibles pour garantir que nous répondons toujours aux besoins de nos précieux clients et de tous les futurs visiteurs.
-</p>
-<h2 style="color:gray">Nos objectifs</h2>
-<p>
-Nous continuerons d'offrir les derniers traitements, les techniques les plus innovantes tout en utilisant les meilleurs produits sur le marché. Tout cela dans des environnements élégants, propres et accueillants avec des thérapeutes formés, professionnels et sympathiques. Nous nous efforcerons de divulguer notre message selon lequel chacun a le droit de se sentir bien !
-</p>
 |]
                        }
     

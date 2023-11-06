@@ -77,14 +77,14 @@
     
     <div.calendar ##{calendarPage}>
       <div.header>
-        <a.mdc-icon-button href=@{AdminR $ AdmEmplCalendarR eid prev} role=button>
+        <a.mdc-icon-button href=@{AdminR $ AdmEmplCalendarR eid prev} role=button rel=nofollow>
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>arrow_back
         $with m <- show month
           <time.month-of-year datetime=#{m}>
             #{m}
-        <a.mdc-icon-button href=@{AdminR $ AdmEmplCalendarR eid next} role=button>
+        <a.mdc-icon-button href=@{AdminR $ AdmEmplCalendarR eid next} role=button rel=nofollow>
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>arrow_forward
@@ -100,7 +100,7 @@
                   $with (y,m,d) <- toGregorian day
                     $if (==) month (YearMonth y m)
                       $maybe dur <- M.lookup day slots
-                        <a href=@{AdminR $ EmplCalendarSlotsR eid day}>
+                        <a href=@{AdminR $ EmplCalendarSlotsR eid day} rel=nofollow>
                           <time.day-of-month datetime=#{show day}>
                             <small>#{d}
                           <small>
@@ -110,7 +110,7 @@
                               #{formatTime defaultTimeLocale (unpack pat2) dur}
                           <div style="border:2px solid var(--theme-accent)">
                       $nothing
-                        <a href=@{AdminR $ EmplCalendarSlotCreateR eid day}>
+                        <a href=@{AdminR $ EmplCalendarSlotCreateR eid day} rel=nofollow>
                           <time.day-of-month datetime=#{show day}>
                             <small>#{d}
                     $else

@@ -56,9 +56,16 @@
     /workloads  	          WorkloadsR         GET
 
     /aov/#UserId/#Day/#Day AovDetailsR GET
-    /aov 	 	  StatsAovR   GET
+    /aov 	 	   StatsAovR   GET
 
 /admin AdminR:
+
+    /contact/business/#BusinessId BusinessContactR GET
+
+    /delete/about/business/#BusinessId/#AboutUsId BusinessAboutDeleteR POST
+    /form/about/business/#BusinessId/#AboutUsId   BusinessAboutEditR   GET POST
+    /form/about/business/#BusinessId              BusinessAboutCreateR GET
+    /about/business/#BusinessId                   BusinessAboutR       GET POST
 
     /form/business/#BusinessId/calendar/slot/#Day/#BusinessHoursId BusinessCalendarSlotEditR   GET POST
     /form/business/#BusinessId/calendar/slot/#Day             	   BusinessCalendarSlotCreateR GET POST
@@ -87,11 +94,6 @@
     /form/contacts               AdmContactsCreateR GET
     /delete/contacts/#ContentsId AdmContactsDeleteR POST
     /contacts                    AdmContactsR       GET POST
-
-    /form/about/#ContentsId   AdmAboutEditR   GET POST
-    /form/about               AdmAboutCreateR GET
-    /delete/about/#ContentsId AdmAboutDeleteR POST
-    /about                    AdmAboutR       GET POST
 
 
     /delete/experts/#RoleId/+Services AdmExpertDeleteR      POST

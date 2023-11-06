@@ -114,6 +114,16 @@ Brand
   icoMime Text Maybe
   more Textarea Maybe
 
+ContactUs
+  business BusinessId OnDeleteCascade
+  html Html
+  UniqueContactUs business
+
+AboutUs
+  business BusinessId OnDeleteCascade
+  html Html
+  UniqueAboutUs business
+
 BusinessHours
   business BusinessId OnDeleteCascade
   day Day

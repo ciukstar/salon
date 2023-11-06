@@ -26,6 +26,13 @@ module Admin.Business
   , postBusinessCalendarSlotEditR
   , postBusinessCalendarSlotDeleteR
   , getBusinessCalendarSlotR
+  , getBusinessAboutR
+  , postBusinessAboutR
+  , getBusinessAboutCreateR
+  , getBusinessAboutEditR
+  , postBusinessAboutEditR
+  , postBusinessAboutDeleteR
+  , getBusinessContactR
   ) where
 
 import Control.Applicative ((<|>))
@@ -59,11 +66,11 @@ import Yesod.Core
 import Yesod.Core.Handler
     ( setUltDestCurrent, getCurrentRoute, getYesod, languages
     )
-import Yesod.Core.Widget (setTitleI)
+import Yesod.Core.Widget (setTitleI, whamlet)
 import Yesod.Form.Input (runInputGet, iopt)
 import Yesod.Form.Fields
     ( textField, emailField, textareaField, intField, dayField, timeField
-    , hiddenField
+    , hiddenField, htmlField
     )
 import Yesod.Form.Functions
     ( generateFormPost, mreq, mopt, runFormPost, checkM, check )
@@ -94,6 +101,9 @@ import Foundation
       , BusinessCalendarSlotsR, BusinessCalendarSlotCreateR
       , BusinessCalendarSlotCreateR, BusinessCalendarSlotEditR
       , BusinessCalendarSlotDeleteR, BusinessCalendarSlotR
+      , BusinessAboutR, BusinessAboutCreateR, BusinessAboutEditR
+      , BusinessAboutDeleteR
+      , BusinessContactR
       )
     , AppMessage
       ( MsgBusiness, MsgPhoto, MsgNoBusinessYet, MsgTheName, MsgAddress, MsgAdd
@@ -106,7 +116,8 @@ import Foundation
       , MsgDayType, MsgWeekday, MsgWeekend, MsgHoliday, MsgInvalidTimeInterval
       , MsgList, MsgCalendar, MsgMon, MsgTue, MsgWed, MsgThu, MsgFri, MsgSat, MsgSun
       , MsgSymbolHour, MsgSymbolMinute, MsgToday, MsgBusinessDay, MsgSortAscending
-      , MsgSortDescending
+      , MsgSortDescending, MsgAboutUs, MsgContactUs, MsgNoContentYet, MsgContent
+      , MsgAlreadyExists
       )
     )
 
@@ -121,11 +132,13 @@ import Model
       ( BusinessHours, businessHoursDay, businessHoursOpen, businessHoursClose
       , businessHoursDayType
       )
+    , AboutUsId, AboutUs (AboutUs, aboutUsHtml)
+    , ContactUs (ContactUs)
     , EntityField
       ( BusinessName, BusinessFullName, BusinessAddr, BusinessPhone, BusinessMobile
       , BusinessEmail, BusinessId, BusinessTzo, BusinessTz, BusinessCurrency
       , BusinessHoursId, BusinessHoursDay, BusinessHoursOpen, BusinessHoursClose
-      , BusinessHoursDayType
+      , BusinessHoursDayType, AboutUsBusiness, AboutUsId, ContactUsBusiness
       )
     , DayType (Weekday, Weekend, Holiday)
     , SortOrder (SortOrderAsc, SortOrderDesc)
@@ -133,6 +146,140 @@ import Model
 
 import Settings (widgetFile)
 import Menu (menu)
+
+
+getBusinessContactR :: BusinessId -> Handler Html
+getBusinessContactR bid = do
+    user <- maybeAuth
+
+    info <- runDB $ selectOne $ do
+        x <- from $ table @ContactUs
+        where_ $ x ^. ContactUsBusiness ==. val bid
+        return x
+
+    curr <- getCurrentRoute
+    msgs <- getMessages
+    defaultLayout $ do
+        setTitleI MsgContactUs
+        $(widgetFile "admin/business/contact/contacts")
+
+
+postBusinessAboutDeleteR :: BusinessId -> AboutUsId -> Handler Html
+postBusinessAboutDeleteR bid xid = do
+    runDB $ P.delete xid
+    addMessageI "info" MsgRecordDeleted
+    redirect $ AdminR $ BusinessAboutR bid
+
+
+postBusinessAboutEditR :: BusinessId -> AboutUsId -> Handler Html
+postBusinessAboutEditR bid xid = do
+    info <- runDB $ selectOne $ do
+        x <- from $ table @AboutUs
+        where_ $ x ^. AboutUsId ==. val xid
+        return x
+    ((fr,fw),et) <- runFormPost $ formAbout bid info
+    case fr of
+      FormSuccess r -> do
+          runDB $ replace xid r
+          addMessageI "info" MsgRecordEdited
+          redirect $ AdminR $ BusinessAboutR bid
+      _ -> defaultLayout $ do
+          setTitleI MsgAboutUs
+          $(widgetFile "admin/business/about/edit")
+
+
+getBusinessAboutEditR :: BusinessId -> AboutUsId -> Handler Html
+getBusinessAboutEditR bid xid = do
+    info <- runDB $ selectOne $ do
+        x <- from $ table @AboutUs
+        where_ $ x ^. AboutUsId ==. val xid
+        return x
+    (fw,et) <- generateFormPost $ formAbout bid info
+    defaultLayout $ do
+        setTitleI MsgAboutUs
+        $(widgetFile "admin/business/about/edit")
+
+
+postBusinessAboutR :: BusinessId -> Handler Html
+postBusinessAboutR bid = do
+    ((fr,fw),et) <- runFormPost $ formAbout bid Nothing
+    case fr of
+      FormSuccess r -> do
+          runDB $ insert_ r
+          addMessageI "info" MsgRecordAdded
+          redirect $ AdminR $ BusinessAboutR bid
+      _ -> defaultLayout $ do
+        setTitleI MsgAboutUs
+        $(widgetFile "admin/business/about/create")
+
+
+getBusinessAboutCreateR :: BusinessId -> Handler Html
+getBusinessAboutCreateR bid = do
+    (fw,et) <- generateFormPost $ formAbout bid Nothing
+    defaultLayout $ do
+        setTitleI MsgAboutUs
+        $(widgetFile "admin/business/about/create")
+
+
+formAbout :: BusinessId -> Maybe (Entity AboutUs)
+          -> Html -> MForm Handler (FormResult AboutUs, Widget)
+formAbout bid e extra = do
+    (htmlR,htmlV) <- mreq uniqueField FieldSettings
+        { fsLabel = SomeMessage MsgContent
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input"),("rows","12")]
+        } ( aboutUsHtml . entityVal <$> e)
+    let r = AboutUs bid <$> htmlR
+    let v = [whamlet|
+#{extra}
+<div.form-field>
+  <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--textarea data-mdc-auto-init=MDCTextField
+    :isJust (fvErrors htmlV):.mdc-text-field--invalid>
+    <span.mdc-text-field__ripple>
+    <span.mdc-floating-label>_{MsgContent}
+    <span.mdc-text-field__resizer>
+      ^{fvInput htmlV}
+    <spam.mdc-line-ripple>
+  $maybe errs <- fvErrors htmlV
+    <div.mdc-text-field-helper-line>
+      <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+        #{errs}
+|]
+    return (r,v)
+  where
+      
+    uniqueField = checkM uniqueBusinessId htmlField
+
+    uniqueBusinessId :: Html -> Handler (Either AppMessage Html)
+    uniqueBusinessId html = do
+        case e of
+          Just _ -> return $ Right html
+          Nothing -> do
+              x <- runDB $ selectOne $ do
+                  y <- from $ table @AboutUs
+                  where_ $ y ^. AboutUsBusiness ==. val bid
+                  return y
+              case x of
+                Just _ -> return $ Left MsgAlreadyExists
+                Nothing -> return $ Right html
+
+
+getBusinessAboutR :: BusinessId -> Handler Html
+getBusinessAboutR bid = do
+    user <- maybeAuth
+
+    info <- runDB $ selectOne $ do
+        x <- from $ table @AboutUs
+        where_ $ x ^. AboutUsBusiness ==. val bid
+        return x
+
+    curr <- getCurrentRoute
+    msgs <- getMessages
+    formAboutUsDelete <- newIdent
+    dlgAboutUsDelete <- newIdent
+    defaultLayout $ do
+        setTitleI MsgContactUs
+        $(widgetFile "admin/business/about/about")
 
 
 getBusinessCalendarSlotR :: BusinessId -> Day -> BusinessHoursId -> Handler Html
@@ -144,7 +291,7 @@ getBusinessCalendarSlotR bid day sid = do
     dlgSlotDelete <- newIdent
     defaultLayout $ do
         setTitleI MsgBusinessHours
-        $(widgetFile "admin/business/calendar/slots/slot")
+        $(widgetFile "admin/business/schedule/calendar/slots/slot")
 
 
 postBusinessCalendarSlotDeleteR :: BusinessId -> BusinessHoursId -> Day -> Handler Html
@@ -152,7 +299,7 @@ postBusinessCalendarSlotDeleteR bid sid day = do
     runDB $ P.delete sid
     addMessageI "info" MsgRecordDeleted
     redirect (AdminR $ BusinessCalendarR bid ((\(y,m,_) -> YearMonth y m) . toGregorian $ day))
-    
+
 
 postBusinessCalendarSlotEditR :: BusinessId -> Day -> BusinessHoursId -> Handler Html
 postBusinessCalendarSlotEditR bid day sid = do
@@ -166,7 +313,7 @@ postBusinessCalendarSlotEditR bid day sid = do
           timeDay <- newIdent
           defaultLayout $ do
               setTitleI MsgBusinessHours
-              $(widgetFile "admin/business/calendar/slots/edit")
+              $(widgetFile "admin/business/schedule/calendar/slots/edit")
 
 
 getBusinessCalendarSlotEditR :: BusinessId -> Day -> BusinessHoursId -> Handler Html
@@ -179,7 +326,7 @@ getBusinessCalendarSlotEditR bid day sid = do
     timeDay <- newIdent
     defaultLayout $ do
         setTitleI MsgBusinessHours
-        $(widgetFile "admin/business/calendar/slots/edit")
+        $(widgetFile "admin/business/schedule/calendar/slots/edit")
 
 
 postBusinessCalendarSlotCreateR :: BusinessId -> Day -> Handler Html
@@ -195,7 +342,7 @@ postBusinessCalendarSlotCreateR bid day = do
           timeDay <- newIdent
           defaultLayout $ do
               setTitleI MsgBusinessHours
-              $(widgetFile "admin/business/calendar/slots/create")
+              $(widgetFile "admin/business/schedule/calendar/slots/create")
 
 
 getBusinessCalendarSlotCreateR :: BusinessId -> Day -> Handler Html
@@ -205,7 +352,7 @@ getBusinessCalendarSlotCreateR bid day = do
     timeDay <- newIdent
     defaultLayout $ do
         setTitleI MsgBusinessHours
-        $(widgetFile "admin/business/calendar/slots/create")
+        $(widgetFile "admin/business/schedule/calendar/slots/create")
 
 
 formSlot :: BusinessId -> Day -> Maybe (Entity BusinessHours)
@@ -228,7 +375,7 @@ formSlot bid day slot extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
         } (pack . show <$> ((businessHoursDayType . entityVal <$> slot) <|> pure Weekday))
     let r = BusinessHours bid day <$> startR <*> endR <*> typeR
-    let w = $(widgetFile "admin/business/calendar/slots/form")
+    let w = $(widgetFile "admin/business/schedule/calendar/slots/form")
     return (r,w)
   where
 
@@ -253,19 +400,19 @@ getBusinessCalendarSlotsR bid day = do
     msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgBusinessDay
-        $(widgetFile "admin/business/calendar/slots/slots")
+        $(widgetFile "admin/business/schedule/calendar/slots/slots")
 
 
 getBusinessCalendarR :: BusinessId -> Month -> Handler Html
 getBusinessCalendarR bid month = do
-    
+
     slots <- M.fromListWith (+) . (diff <$>) <$> runDB ( select ( do
         x <- from $ table @BusinessHours
         where_ $ x ^. BusinessHoursDay `between` (val (periodFirstDay month), val (periodLastDay month))
         return ( (x ^. BusinessHoursDay,x ^. BusinessHoursDayType)
                , (x ^. BusinessHoursOpen, x ^. BusinessHoursClose)
                ) ) )
-        
+
     app <- getYesod
     langs <- languages
     user <- maybeAuth
@@ -281,8 +428,8 @@ getBusinessCalendarR bid month = do
     today <- (\(y,m,_) -> YearMonth y m) . toGregorian . utctDay <$> liftIO getCurrentTime
     defaultLayout $ do
         setTitleI MsgBusinessDays
-        $(widgetFile "/admin/business/calendar/calendar")
-        
+        $(widgetFile "/admin/business/schedule/calendar/calendar")
+
   where
       diff ((Value d,Value t),(Value o,Value c)) = ((d,t),diffLocalTime (LocalTime d c) (LocalTime d o))
 
@@ -296,7 +443,7 @@ postBusinessTimeSlotR bid sid = do
           redirect (AdminR $ BusinessTimeSlotR bid sid)
       _ -> defaultLayout $ do
           setTitleI MsgBusinessHours
-          $(widgetFile "admin/business/hours/edit")
+          $(widgetFile "admin/business/schedule/hours/edit")
 
 
 getBusinessHoursEditR :: BusinessId -> BusinessHoursId -> Handler Html
@@ -308,7 +455,7 @@ getBusinessHoursEditR bid sid = do
     (fw,et) <- generateFormPost $ formHours bid slot
     defaultLayout $ do
         setTitleI MsgBusinessHours
-        $(widgetFile "admin/business/hours/edit")
+        $(widgetFile "admin/business/schedule/hours/edit")
 
 
 postBusinessTimeSlotDeleteR :: BusinessId -> BusinessHoursId -> Handler Html
@@ -328,7 +475,7 @@ getBusinessTimeSlotR bid sid = do
     msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgBusinessHours
-        $(widgetFile "admin/business/hours/slot")
+        $(widgetFile "admin/business/schedule/hours/slot")
 
 
 getBusinessHoursCreateR :: BusinessId -> Handler Html
@@ -336,7 +483,7 @@ getBusinessHoursCreateR bid = do
     (fw,et) <- generateFormPost $ formHours bid Nothing
     defaultLayout $ do
         setTitleI MsgBusinessHours
-        $(widgetFile "admin/business/hours/create")
+        $(widgetFile "admin/business/schedule/hours/create")
 
 
 formHours :: BusinessId -> Maybe (Entity BusinessHours)
@@ -364,7 +511,7 @@ formHours bid slot extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing, fsAttrs = []
         } (pack . show <$> ((businessHoursDayType . entityVal <$> slot) <|> pure Weekday))
     let r = BusinessHours bid <$> dayR <*> startR <*> endR <*> typeR
-    let w = $(widgetFile "admin/business/hours/form")
+    let w = $(widgetFile "admin/business/schedule/hours/form")
     return (r,w)
   where
 
@@ -388,7 +535,7 @@ postBusinessHoursR bid = do
           redirect $ AdminR $ BusinessHoursR bid
       _ -> defaultLayout $ do
           setTitleI MsgBusinessHours
-          $(widgetFile "admin/business/hours/create")
+          $(widgetFile "admin/business/schedule/hours/create")
 
 
 getBusinessHoursR :: BusinessId -> Handler Html
@@ -409,7 +556,7 @@ getBusinessHoursR bid = do
     fabBusinessHoursCreate <- newIdent
     defaultLayout $ do
         setTitleI MsgBusinessDays
-        $(widgetFile "/admin/business/hours/hours")
+        $(widgetFile "/admin/business/schedule/hours/hours")
 
 
 postBusinessDeleteR :: Handler Html
@@ -568,4 +715,3 @@ formBusiness business extra = do
 
 fullHours :: NominalDiffTime -> NominalDiffTime -> Bool
 fullHours x y = mod' x y == 0
-

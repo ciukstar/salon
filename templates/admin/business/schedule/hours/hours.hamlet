@@ -44,7 +44,24 @@
                 <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
               <span.mdc-tab__ripple>
               <span.mdc-tab__focus-ring>
-    
+              <a.mdc-tab href=@{AdminR $ BusinessAboutR bid} role=tab tabindex=0
+                :curr == Just (AdminR $ BusinessAboutR bid):.mdc-tab--active
+                :curr == Just (AdminR $ BusinessAboutR bid):aria-selected=true>
+                <span.mdc-tab__content>
+                  <span.mdc-tab__text-label>_{MsgAboutUs}
+                <span.mdc-tab-indicator :curr == Just (AdminR $ BusinessAboutR bid):.mdc-tab-indicator--active>
+                  <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
+                <span.mdc-tab__ripple>
+                <span.mdc-tab__focus-ring>
+              <a.mdc-tab href=@{AdminR $ BusinessContactR bid} role=tab tabindex=0
+                :curr == Just (AdminR $ BusinessContactR bid):.mdc-tab--active
+                :curr == Just (AdminR $ BusinessContactR bid):aria-selected=true>
+                <span.mdc-tab__content>
+                  <span.mdc-tab__text-label>_{MsgContactUs}
+                <span.mdc-tab-indicator :curr == Just (AdminR $ BusinessContactR bid):.mdc-tab-indicator--active>
+                  <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
+                <span.mdc-tab__ripple>
+                <span.mdc-tab__focus-ring>
     
 <main.mdc-top-app-bar--fixed-adjust>
   <div.mdc-top-app-bar--fixed-adjust>

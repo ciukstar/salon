@@ -44,7 +44,24 @@
                 <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
               <span.mdc-tab__ripple>
               <span.mdc-tab__focus-ring>
-
+              <a.mdc-tab href=@{AdminR $ BusinessAboutR bid} role=tab tabindex=0
+                :curr == Just (AdminR $ BusinessAboutR bid):.mdc-tab--active
+                :curr == Just (AdminR $ BusinessAboutR bid):aria-selected=true>
+                <span.mdc-tab__content>
+                  <span.mdc-tab__text-label>_{MsgAboutUs}
+                <span.mdc-tab-indicator :curr == Just (AdminR $ BusinessAboutR bid):.mdc-tab-indicator--active>
+                  <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
+                <span.mdc-tab__ripple>
+                <span.mdc-tab__focus-ring>
+              <a.mdc-tab href=@{AdminR $ BusinessContactR bid} role=tab tabindex=0
+                :curr == Just (AdminR $ BusinessContactR bid):.mdc-tab--active
+                :curr == Just (AdminR $ BusinessContactR bid):aria-selected=true>
+                <span.mdc-tab__content>
+                  <span.mdc-tab__text-label>_{MsgContactUs}
+                <span.mdc-tab-indicator :curr == Just (AdminR $ BusinessContactR bid):.mdc-tab-indicator--active>
+                  <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
+                <span.mdc-tab__ripple>
+                <span.mdc-tab__focus-ring>
 
 <main.mdc-top-app-bar--fixed-adjust>
   <div.mdc-top-app-bar--fixed-adjust>
@@ -87,14 +104,14 @@
 
   <div.calendar>
     <div.header>
-      <a.mdc-icon-button href=@{AdminR $ BusinessCalendarR bid prev} role=button>
+      <a.mdc-icon-button href=@{AdminR $ BusinessCalendarR bid prev} role=button rel=nofollow>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
       $with m <- show month
         <time.month-of-year datetime=#{m}>
           #{m}
-      <a.mdc-icon-button href=@{AdminR $ BusinessCalendarR bid next} role=button>
+      <a.mdc-icon-button href=@{AdminR $ BusinessCalendarR bid next} role=button rel=nofollow>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_forward
@@ -110,7 +127,7 @@
                 $with (y,m,d) <- toGregorian day
                   $if (==) month (YearMonth y m)
                     $maybe dur <- M.lookup (day,Weekday) slots
-                      <a href=@{AdminR $ BusinessCalendarSlotsR bid day}>
+                      <a href=@{AdminR $ BusinessCalendarSlotsR bid day} rel=nofollow>
                         <time.day-of-month datetime=#{show day}>
                           <small>#{d}
                         <small>
@@ -121,7 +138,7 @@
                           <div style="border:2px solid var(--theme-accent)">
                     $nothing
                       $maybe dur <- M.lookup (day,Weekend) slots
-                        <a href=@{AdminR $ BusinessCalendarSlotsR bid day}>
+                        <a href=@{AdminR $ BusinessCalendarSlotsR bid day} rel=nofollow>
                           <time.day-of-month datetime=#{show day}>
                             <small>#{d}
                           <small>
@@ -132,7 +149,7 @@
                             <div style="border:2px solid var(--theme-warn)">
                       $nothing
                         $maybe dur <- M.lookup (day,Holiday) slots
-                          <a href=@{AdminR $ BusinessCalendarSlotsR bid day}>
+                          <a href=@{AdminR $ BusinessCalendarSlotsR bid day} rel=nofollow>
                             <time.day-of-month datetime=#{show day}>
                               <small>#{d}
                             <small>
@@ -142,7 +159,7 @@
                                 #{formatTime defaultTimeLocale (unpack pat2) dur}
                               <div style="border:2px solid var(--theme-success)">
                         $nothing
-                          <a href=@{AdminR $ BusinessCalendarSlotCreateR bid day}>
+                          <a href=@{AdminR $ BusinessCalendarSlotCreateR bid day} rel=nofollow>
                             <time.day-of-month datetime=#{show day}>
                               <small>#{d}                       
                   $else

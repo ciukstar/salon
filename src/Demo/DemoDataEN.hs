@@ -64,6 +64,7 @@ import Model
       ( BusinessHours, businessHoursBusiness, businessHoursDay, businessHoursOpen
       , businessHoursClose, businessHoursDayType
       )
+    , AboutUs (AboutUs, aboutUsBusiness, aboutUsHtml)
     , DayType (Weekday, Holiday)
     )
     
@@ -119,6 +120,18 @@ populateEN = do
                             , businessHoursDayType = Weekday
                             }
 
+    insert_ $ AboutUs { aboutUsBusiness = b
+                      , aboutUsHtml = [shamlet|
+<h2 style="color:gray">Our Mission
+<p>The mission of <i>Salon</i> is simple: to offer a special environment to every individual who walks through their doors, where they can indulge, groom and pamper themselves, while enhancing their personal image and bringing a feeling of well-being into their lives.
+<h2 style="color:gray">Our Ethos
+<p>Any individual who comes to our salons is unique. We treat each unique client to their personal needs. We pride ourselves in offering the service that the customer expects and the treatments he/she requires, and we will continuously reassess their demands based on their lifestyle and bodies.
+<p>We will never offer treatments that are unnecessary and make every client a priority. This is exactly the reason why we can proudly say that, over the years, we have built up a loyal client base. We learn from them as we look after them, and endeavour to keep up with the latest trends & treatments available to ensure we always meet the needs of our valued clients and any future visitors.
+<h2 style="color:gray">Our Goals
+<p>We will continue to offer the latest treatments, the most innovative techniques while using the best products on the market place. All this in elegant, clean and welcoming environments with trained, professional and friendly therapists. We will endeavour to divulge our message that is everyone’s right to feel good!
+|]
+                      }
+
     insert_ $ Contents { contentsSection = "CONTACTS"
                        , contentsContent = Textarea $ toStrict $ renderHtml [shamlet|
 <section style="margin:0 1rem">
@@ -150,24 +163,6 @@ populateEN = do
     <dd>
       #{businessAddr business}
 <iframe width="100%" height="400px" loding="lazy" title="Salon" style="border:none" src="https://api.mapbox.com/styles/v1/mapbox/streets-v12.html?title=false&zoomwheel=false&access_token=pk.eyJ1IjoiY2l1a3N0YXIiLCJhIjoiY2o1enNibDNsMGNrNDJ3dDhxeTJuc3luMiJ9.Jgc5GdYUMbYwGq-zRWtzfw#15/51.5073/-0.12755">
-|]
-                       }
-
-    insert_ $ Contents { contentsSection = "ABOUT_US"
-                       , contentsContent = Textarea [st|
-<h2 style="color:gray">Our Mission</h2>
-<p>
-The mission of <i>Salon</i> is simple: to offer a special environment to every individual who walks through their doors, where they can indulge, groom and pamper themselves, while enhancing their personal image and bringing a feeling of well-being into their lives.
-</p>
-<h2 style="color:gray">Our Ethos</h2>
-<p>
-Any individual who comes to our salons is unique. We treat each unique client to their personal needs. We pride ourselves in offering the service that the customer expects and the treatments he/she requires, and we will continuously reassess their demands based on their lifestyle and bodies.
-We will never offer treatments that are unnecessary and make every client a priority. This is exactly the reason why we can proudly say that, over the years, we have built up a loyal client base. We learn from them as we look after them, and endeavour to keep up with the latest trends & treatments available to ensure we always meet the needs of our valued clients and any future visitors.
-</p>
-<h2 style="color:gray">Our Goals</h2>
-<p>
-We will continue to offer the latest treatments, the most innovative techniques while using the best products on the market place. All this in elegant, clean and welcoming environments with trained, professional and friendly therapists. We will endeavour to divulge our message that is everyone’s right to feel good!
-</p>
 |]
                        }
 
