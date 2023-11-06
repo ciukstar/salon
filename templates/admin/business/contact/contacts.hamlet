@@ -9,6 +9,34 @@
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgBusiness}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end>
+      $maybe Entity xid _ <- info
+        <button.mdc-top-app-bar__action-item.mdc-icon-button type=button title=_{MsgDel}
+          onclick="document.getElementById('#{dlgContactUsDelete}').MDCDialog.open()">
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>delete
+        <a.mdc-top-app-bar__action-item.mdc-icon-button role=button title=_{MsgEdit}
+          href=@{AdminR $ BusinessContactEditR bid xid}>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>edit
+
+        <form method=post action=@{AdminR $ BusinessContactDeleteR bid xid} ##{formContactUsDelete} enctype=#{et}>
+          ^{fw}
+        <div.mdc-dialog ##{dlgContactUsDelete} data-mdc-auto-init=MDCDialog>
+          <div.mdc-dialog__container>
+            <div.mdc-dialog__surface role=alertdialog tabindex=-1>
+              <h4.mdc-dialog__title>_{MsgPleaseConfirm}
+              <div.mdc-dialog__content>_{MsgDeleteAreYouSure}
+              <div.mdc-dialog__actions style="display:flex;gap:0.5rem">
+                <button.mdc-dialog-button.mdc-button type=button data-mdc-dialog-action=cancel>
+                  <span.mdc-button__ripple>
+                  <span.mdc-button__label>_{MsgCancel}
+                <button.mdc-dialog-button.mdc-button.mdc-button--raised type=submit form=#{formContactUsDelete}>
+                  <span.mdc-button__ripple>
+                  <span.mdc-button__label>_{MsgYesDelete}
+          <div.mdc-dialog__scrim>
+          
       $maybe Entity uid _ <- user
         <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{ProfileR} role=button title=_{MsgUserProfile}>
           <span.mdc-icon-button__ripple>
@@ -39,7 +67,7 @@
               :curr == Just (AdminR $ BusinessHoursR bid):.mdc-tab--active
               :curr == Just (AdminR $ BusinessHoursR bid):aria-selected=true>
               <span.mdc-tab__content>
-                <span.mdc-tab__text-label>_{MsgBusinessHours}
+                <span.mdc-tab__text-label>_{MsgWorkSchedule}
               <span.mdc-tab-indicator :curr == Just (AdminR $ BusinessHoursR bid):.mdc-tab-indicator--active>
                 <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
               <span.mdc-tab__ripple>
@@ -74,7 +102,7 @@
       <figcaption>
         _{MsgNoContentYet}.
     <div.mdc-touch-target-wrapper style="position:fixed;right:1rem;bottom:1rem">
-      <a.mdc-fab.mdc-fab--touch href=#>
+      <a.mdc-fab.mdc-fab--touch href=@{AdminR $ BusinessContactCreateR bid}>
         <span.mdc-fab__ripple>
         <span.mdc-fab__focus-ring>
         <span.mdc-fab__icon.material-symbols-outlined>add

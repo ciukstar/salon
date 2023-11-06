@@ -37,7 +37,7 @@ import Yesod.Core
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Auth ( Route(LoginR), maybeAuth )
 import Yesod.Form.Fields
-    ( Textarea(unTextarea, Textarea), searchField, intField, timeField
+    ( Textarea(Textarea), searchField, intField, timeField
     , dayField, textField, textareaField
     )
 import Yesod.Form.Types
@@ -91,16 +91,16 @@ import Model
     ( Book (Book, bookDay, bookTz, bookTzo, bookTime, bookAddr)
     , BookId, Offer, ServiceId, Service (Service), Role (Role, roleName)
     , Staff (Staff, staffName), Offer (Offer), Thumbnail (Thumbnail)
-    , User (User), Contents (Contents)
+    , User (User)
     , BookStatus
       ( BookStatusRequest, BookStatusApproved, BookStatusCancelled
       , BookStatusPaid, BookStatusAdjusted
       )
     , Assignees (AssigneesMe, AssigneesNone, AssigneesOthers)
-    , Business (Business), Hist (Hist)
+    , Business (Business), Hist (Hist), ContactUs (ContactUs)
     , EntityField
       ( BookOffer, OfferId, OfferService, ServiceId, BookDay, BookTime
-      , BookRole, RoleId, RoleStaff, StaffId, StaffUser, ContentsSection
+      , BookRole, RoleId, RoleStaff, StaffId, StaffUser
       , BookId, ThumbnailService, BookCustomer, UserId, BookStatus, ServiceName
       , ServiceDescr, ServiceOverview, RoleName, OfferName, OfferPrefix
       , OfferSuffix, OfferDescr, StaffName, StaffPhone, StaffMobile, StaffEmail
@@ -111,7 +111,6 @@ import Model
 
 import Menu (menu)
 import Handler.Appointments (resolveBookStatus)
-import Handler.Contacts (section)
 
 
 postRequestAssignR :: BookId -> ServiceId -> Handler Html
@@ -511,11 +510,8 @@ getRequestR bid = do
     unless (isJust empl) $ redirect (RequestsR, stati)
     app <- getYesod
     langs <- languages
-    location <- runDB $ selectOne $ do
-        x <- from $ table @Contents
-        where_ $ x ^. ContentsSection ==. val section
-        return x
     business <- runDB $ selectOne $ from $ table @Business
+    location <- runDB $ selectOne $ from $ table @ContactUs
     request <- runDB $ selectOne $ do
         x :& o :& s :& t :& r :& e :& c <- from $ table @Book
             `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)

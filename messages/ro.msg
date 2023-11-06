@@ -42,7 +42,7 @@ EndTime: Ora de încheiere
 StartTime: Ora de începere
 WorkingHours: Orele de lucru
 NoScheduleYet: Nu există încă un program de lucru
-WorkSchedule: Program de lucru
+WorkSchedule: Program
 AddWorkingHours: Adaugă orele de lucru
 Workload: Volumul de muncă
 NumberSign: №
@@ -319,7 +319,17 @@ Doc004 hrefServices hrefBook: Odată ce serviciul și ofertele sale sunt definit
 
 Doc005 hrefBusiness: Informații detaliate despre afacere pot fi furnizate în secțiunea <a href=#{hrefBusiness}>„Afacere”</a> din grupul „Date” din meniul principal.
 
-Doc006 hrefBusiness: În plus, în secțiunea <a href=#{hrefBusiness}>„Afaceri”</a>, poate fi adăugat programul de lucru al organizației pentru fiecare zi.
+Doc0061 hrefSchedule hrefBusiness: În plus, din fila <a href=#{hrefSchedule}>„Program”</a> în secțiunea <a href=#{hrefBusiness}>„Afacere”</a>, poate fi adăugat programul de lucru al organizației pentru fiecare zi.
+
+Doc0062 hrefBusiness: În plus, din fila „Program” în secțiunea <a href=#{hrefBusiness}>„Afacere”</a>, poate fi adăugat programul de lucru al organizației pentru fiecare zi.
+
+Doc0063 hrefAboutUs hrefBusiness: Pagina „Despre noi” poate fi personalizată din fila <a href=#{hrefAboutUs}>„Despre noi”</a> din meniul <a href=#{hrefBusiness}>„Afacere”</a> din grupul „Date”.
+
+Doc0064 hrefBusiness: Pagina „Despre noi” poate fi personalizată din fila „Despre noi” din meniul <a href=#{hrefBusiness}>„Afacere”</a> din grupul „Date”.
+
+Doc0065 hrefContactUs hrefBusiness: Pagina „Contacte” poate fi personalizată din fila <a href=#{hrefContactUs}>„Contactați-ne”</a> din meniul <a href=#{hrefBusiness}>„Afacere”</a> din grupul „Date”.
+
+Doc0066 hrefBusiness: Pagina „Contacte” poate fi personalizată din fila „Contactați-ne” din meniul <a href=#{hrefBusiness}>„Afacere”</a> din grupul „Date”.
 
 Doc007: În prezent, aplicația acceptă o singură afacere. Asistența multi-business este planificată pentru versiunile viitoare ale aplicației.
 

@@ -5,12 +5,10 @@
 
 module Demo.DemoDataRU (populateRU) where
 
-import Text.Blaze.Html.Renderer.Text (renderHtml)
 import Text.Hamlet (shamlet)
 import Text.Shakespeare.Text (st)
 import qualified Data.ByteString.Base64 as B64 (decode)
 import Data.Text.Encoding (decodeUtf8)
-import Data.Text.Lazy (toStrict)
 import Data.Time.Calendar (addDays)
 import Data.Time.Clock (getCurrentTime, UTCTime (utctDay,utctDayTime), DiffTime)
 import Data.Time.Format (parseTimeM, defaultTimeLocale)
@@ -38,7 +36,6 @@ import Model
     , Staff (Staff, staffName, staffStatus, staffPhone, staffMobile, staffEmail, staffUser)
     , StaffPhoto (StaffPhoto, staffPhotoPhoto, staffPhotoMime, staffPhotoStaff)
     , Role (Role, roleStaff, roleService, roleName, roleDuration, roleRating)
-    , Contents (Contents, contentsSection, contentsContent)
     , BookStatus (BookStatusRequest)
     , Book
       ( Book, bookCustomer, bookOffer, bookRole, bookDay, bookTime, bookTzo
@@ -59,6 +56,7 @@ import Model
       , businessHoursClose, businessHoursDayType
       )
     , AboutUs (AboutUs, aboutUsBusiness, aboutUsHtml)
+    , ContactUs (ContactUs, contactUsBusiness, contactUsHtml)
     , DayType (Weekday, Holiday)
     )
 import Data.FileEmbed (embedFile)
@@ -126,8 +124,8 @@ populateRU = do
 |]
                       }
 
-    insert_ $ Contents { contentsSection = "CONTACTS"
-                       , contentsContent = Textarea $ toStrict $ renderHtml [shamlet|
+    insert_ $ ContactUs { contactUsBusiness = b
+                        , contactUsHtml = [shamlet|
 <section style="margin:0 1rem">
   <h3 style="color:gray">Звоните нам
   <dl>
@@ -159,7 +157,7 @@ populateRU = do
 <p>
   <iframe width="100%" height="400px" loding="lazy" title="Salon" style="border:none" src="https://api.mapbox.com/styles/v1/mapbox/streets-v12.html?title=false&zoomwheel=false&access_token=pk.eyJ1IjoiY2l1a3N0YXIiLCJhIjoiY2o1enNibDNsMGNrNDJ3dDhxeTJuc3luMiJ9.Jgc5GdYUMbYwGq-zRWtzfw#15/55.751244/37.618423">
 |]
-                       }
+                        }
                              
     pass <- liftIO $ makePassword "root" 17
     insert_ $ User { userName = "root"

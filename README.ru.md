@@ -23,7 +23,11 @@
 
 Подробную информацию об организации можно предоставить в разделе [«Организация»](https://salonru-w3cpovaqka-de.a.run.app/admin/business) группы «Данные» главного меню.
 
-Дополнительно в разделе [«Организация»](https://salonru-w3cpovaqka-de.a.run.app/admin/business) можно добавить график работы организации на каждый день.
+Дополнительно в разделе [«Организация»](https://salonru-w3cpovaqka-de.a.run.app/admin/business) на вкладке [«График»](https://salonru-w3cpovaqka-de.a.run.app/admin/business/1/hours) можно добавить график работы организации на каждый день.
+
+Страницу «О нас» можно настроить на вкладке [«О нас»](https://salonru-w3cpovaqka-de.a.run.app/admin/about/business/1) в меню [«Бизнес»](https://salonru-w3cpovaqka-de.a.run.app/admin/business) в группе «Данные».
+
+Страницу «Контакты» можно настроить на вкладке [«Контакты»](https://salonru-w3cpovaqka-de.a.run.app/admin/contact/business/1) в меню [«Бизнес»](https://salonru-w3cpovaqka-de.a.run.app/admin/business) в группе «Данные».
 
 В настоящее время приложение поддерживает только один бизнес. Поддержка нескольких организаций планируется в будущих версиях приложения.
 

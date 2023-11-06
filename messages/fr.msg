@@ -42,7 +42,7 @@ EndTime: Heure de fin
 StartTime: Heure de début
 WorkingHours: Heures de travail
 NoScheduleYet: Il n'y a pas encore d'horaire de travail
-WorkSchedule: Horaire de travail
+WorkSchedule: Horaire
 AddWorkingHours: Ajouter du temps de travail
 Workload: Charge de travail
 NumberSign: №
@@ -319,7 +319,17 @@ Doc004 hrefServices hrefBook: Une fois le service et ses offres définis, le ser
 
 Doc005 hrefBusiness: Des informations détaillées sur l'entreprise peuvent être fournies dans la section <a href=#{hrefBusiness}>« Entreprise »</a> du groupe « Données » du menu principal.
 
-Doc006 hrefBusiness: De plus, dans la section <a href=#{hrefBusiness}>« Affaires »</a>, l'horaire de travail de l'organisation pour chaque jour peut être ajouté.
+Doc0061 hrefSchedule hrefBusiness: De plus, à partir de l'onglet <a href=#{hrefSchedule}>« Horaire »</a> de la section <a href=#{hrefBusiness}>« Entreprise »</a>, l'horaire de travail de l'organisation pour chaque jour peut être ajouté.
+
+Doc0062 hrefBusiness: De plus, à partir de l'onglet « Horaire » de la section <a href=#{hrefBusiness}>« Entreprise »</a>, l'horaire de travail de l'organisation pour chaque jour peut être ajouté.
+
+Doc0063 hrefAboutUs hrefBusiness: La page « À propos de nous » est personnalisable depuis l'onglet <a href=#{hrefAboutUs}>« À propos de nous »</a> du menu <a href=#{hrefBusiness}>« Entreprise »</a> du groupe « Données ».
+
+Doc0064 hrefBusiness: La page « À propos de nous » est personnalisable depuis l'onglet « À propos de nous » du menu <a href=#{hrefBusiness}>« Entreprise »</a> du groupe « Données ».
+
+Doc0065 hrefContactUs hrefBusiness: La page « Contacts » est personnalisable depuis l'onglet <a href=#{hrefContactUs}>« Contactez-nous »</a> du menu <a href=#{hrefBusiness}>« Entreprise »</a> du groupe « Données ».
+
+Doc0066 hrefBusiness: La page « Contacts » est personnalisable depuis l'onglet « Contactez-nous » du menu <a href=#{hrefBusiness}>« Entreprise »</a> du groupe « Données ».
 
 Doc007: Actuellement, l'application ne prend en charge qu'une seule entreprise. Un support multi-métiers est prévu pour les futures versions de l'application.
 

@@ -21,7 +21,8 @@
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>edit
 
-        <form method=post action=@{AdminR $ BusinessAboutDeleteR bid xid} ##{formAboutUsDelete}>
+        <form method=post action=@{AdminR $ BusinessAboutDeleteR bid xid} ##{formAboutUsDelete} enctype=#{et}>
+          ^{fw}
         <div.mdc-dialog ##{dlgAboutUsDelete} data-mdc-auto-init=MDCDialog>
           <div.mdc-dialog__container>
             <div.mdc-dialog__surface role=alertdialog tabindex=-1>
@@ -67,7 +68,7 @@
               :curr == Just (AdminR $ BusinessHoursR bid):.mdc-tab--active
               :curr == Just (AdminR $ BusinessHoursR bid):aria-selected=true>
               <span.mdc-tab__content>
-                <span.mdc-tab__text-label>_{MsgBusinessHours}
+                <span.mdc-tab__text-label>_{MsgWorkSchedule}
               <span.mdc-tab-indicator :curr == Just (AdminR $ BusinessHoursR bid):.mdc-tab-indicator--active>
                 <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
               <span.mdc-tab__ripple>

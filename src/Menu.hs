@@ -27,14 +27,14 @@ import Foundation
       )
     , StatsR (PopOffersR, WorkloadsR, StatsAovR)
     , AdminR
-      ( BrandR, UsersR, AdmContactsR, AdmStaffR, AdmServicesR
+      ( BrandR, UsersR, AdmStaffR, AdmServicesR
       , BusinessR, BusinessHoursR, BusinessCalendarR, BusinessAboutR
       , BusinessContactR
       )
     , AppMessage
       ( MsgSourceCode, MsgDocumentation, MsgBrand, MsgContactUs, MsgAboutUs
       , MsgMyAppointments, MsgServices, MsgBookAppointment, MsgWelcome, MsgSalon
-      , MsgUsers, MsgContact, MsgStaff, MsgData, MsgResources, MsgRequests
+      , MsgUsers, MsgStaff, MsgData, MsgResources, MsgRequests
       , MsgBusiness, MsgClose, MsgAnalytics, MsgWorkload, MsgCustomerRanking
       , MsgServiceRanking
       )

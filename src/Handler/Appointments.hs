@@ -32,7 +32,7 @@ import Text.Shakespeare.I18N (renderMessage, SomeMessage (SomeMessage))
 import Yesod.Auth (maybeAuth, Route (LoginR))
 import Yesod.Core
     ( Yesod(defaultLayout), getMessages, getYesod, languages
-    , preEscapedToMarkup, redirect, addMessageI, MonadIO (liftIO)
+    , redirect, addMessageI, MonadIO (liftIO)
     , whamlet, newIdent
     )
 import Yesod.Core.Handler (setUltDestCurrent, reqGetParams, getRequest)
@@ -45,7 +45,7 @@ import Yesod.Form.Types
     )
 import Yesod.Form.Functions (generateFormPost, runFormPost, mreq, checkM)
 import Yesod.Form.Fields
-    ( Textarea (Textarea), unTextarea, intField, timeField, dayField, textField
+    ( Textarea (Textarea), intField, timeField, dayField, textField
     , textareaField, searchField
     )
 import Yesod.Persist
@@ -93,12 +93,12 @@ import Model
       )
     , BookId, Book (Book, bookDay, bookTz, bookTzo, bookTime, bookAddr)
     , Offer (Offer), Service (Service), Role (Role, roleName), Hist (Hist)
-    , Staff (Staff, staffName), Thumbnail (Thumbnail), User (User), Contents (Contents)
-    , Business
+    , Staff (Staff, staffName), Thumbnail (Thumbnail), User (User)
+    , Business, ContactUs (ContactUs)
     , EntityField
       ( BookOffer, OfferId, BookCustomer, BookId, OfferService, ServiceId
       , BookDay, BookTime, BookRole, RoleId, RoleStaff, StaffId, ThumbnailService
-      , ContentsSection, BookStatus, HistBook, HistLogtime, BookTz, HistUser
+      , BookStatus, HistBook, HistLogtime, BookTz, HistUser
       , UserId, BookTzo, BookAddr, StaffUser, ServiceName, ServiceOverview, ServiceDescr
       , RoleName, OfferName, OfferPrefix, OfferSuffix, OfferDescr, StaffName, StaffPhone
       , StaffMobile, StaffEmail, UserName, UserFullName, UserEmail, BookStatus
@@ -107,7 +107,6 @@ import Model
     )
 
 import Menu (menu)
-import Handler.Contacts (section)
 
 
 getAppointmentsSearchR :: Handler Html
@@ -413,10 +412,7 @@ getAppointmentR bid = do
         x <- from $ table @Business
         return $ x ^. BusinessCurrency )
         
-    location <- runDB $ selectOne $ do
-        x <- from $ table @Contents
-        where_ $ x ^. ContentsSection ==. val section
-        return x
+    location <- runDB $ selectOne $ from $ table @ContactUs
         
     book <- runDB $ selectOne $ do
         x :& o :& s :& t :& r :& e <- from $ table @Book

@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeApplications #-}
 
 module Handler.Resources (getDocsR) where
 
@@ -19,17 +20,25 @@ import Foundation
       ( StaticR, AuthR, PhotoPlaceholderR, AccountPhotoR, AccountR
       , ProfileR, AdminR, HomeR, ServicesR, BookOffersR
       )
-    , AdminR (AdmServicesR, BusinessR, UsersR)
+    , AdminR
+      ( AdmServicesR, BusinessR, UsersR, BusinessAboutR, BusinessContactR
+      , BusinessHoursR
+      )
     , AppMessage
       ( MsgDocumentation, MsgPhoto, MsgNavigationMenu, MsgLogin, MsgUserProfile
       , MsgErdDiagram, MsgBookingStateDiagram, MsgAppointmentStateDiagram
       , MsgBasicEntities, MsgBusiness, MsgUser
       , MsgAppName, MsgOverview, MsgDoc001, MsgDoc002, MsgDoc003, MsgDoc004
-      , MsgDoc005, MsgDoc006, MsgDoc007, MsgDoc008, MsgDoc009
+      , MsgDoc005, MsgDoc0061, MsgDoc0062, MsgDoc0063, MsgDoc0064
+      , MsgDoc0065, MsgDoc0066
+      , MsgDoc007, MsgDoc008, MsgDoc009
       )
     )
 
-import Model (Services (Services))
+import Yesod.Persist.Core (runDB)
+import Database.Esqueleto.Experimental (selectOne, from, table)
+
+import Model (Services (Services), Business)
 
 import Settings.StaticFiles
     ( img_Salon_ERD_svg, img_Booking_State_Diagram_svg
@@ -48,6 +57,9 @@ getDocsR = do
     setUltDestCurrent
     msgs <- getMessages
     topAppBar <- newIdent
+
+    business <- runDB $ selectOne $ from $ table @Business
+    
     defaultLayout $ do
         setTitleI MsgDocumentation
         $(widgetFile "resources/docs")

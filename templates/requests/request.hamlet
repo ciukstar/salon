@@ -148,7 +148,7 @@
                     <div>
                       <small>(_{MsgCustomer})
 
-          $maybe Entity _ (Contents _ content) <- location
+          $maybe Entity _ (ContactUs _ html) <- location
             <details.mdc-list.mdc-card-wrapper__text-section
               ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
               <summary.mdc-list-item.mdc-list-item--with-leading-icon
@@ -161,7 +161,7 @@
                     _{MsgMeetingLocation}
                 <span.mdc-list-item__end>
                  <i.expand.material-symbols-outlined>expand_more
-              #{preEscapedToMarkup $ unTextarea content}
+              ^{html}
 
           <div.mdc-card__actions>
             <div.mdc-card__action-buttons>

@@ -23,7 +23,11 @@ Odată ce serviciul și ofertele sale sunt definite, serviciul poate fi publicat
 
 Informații detaliate despre afacere pot fi furnizate în secțiunea [„Afacere”](https://salonro-w3cpovaqka-de.a.run.app/admin/business) din grupul „Date” din meniul principal.
 
-În plus, în secțiunea [„Afaceri”](https://salonro-w3cpovaqka-de.a.run.app/admin/business), poate fi adăugat programul de lucru al organizației pentru fiecare zi.
+În plus, din fila [„Program”](https://salonro-w3cpovaqka-de.a.run.app/admin/business/1/hours) în secțiunea [„Afacere”](https://salonro-w3cpovaqka-de.a.run.app/admin/business), poate fi adăugat programul de lucru al organizației pentru fiecare zi.
+
+Pagina „Despre noi” poate fi personalizată din fila [„Despre noi”](https://salonro-w3cpovaqka-de.a.run.app/admin/about/business/1) din meniul [„Afacere”](https://salonro-w3cpovaqka-de.a.run.app/admin/business) din grupul „Date”.
+
+Pagina „Contacte” poate fi personalizată din fila [„Contactați-ne”](https://salonro-w3cpovaqka-de.a.run.app/admin/contact/business/1) din meniul [„Afacere”](https://salonro-w3cpovaqka-de.a.run.app/admin/business) din grupul „Date”.
 
 În prezent, aplicația acceptă o singură afacere. Asistența multi-business este planificată pentru versiunile viitoare ale aplicației.
 

@@ -60,7 +60,10 @@
 
 /admin AdminR:
 
-    /contact/business/#BusinessId BusinessContactR GET
+    /delete/contact/business/#BusinessId/#ContactUsId BusinessContactDeleteR POST
+    /form/contact/business/#BusinessId/#ContactUsId   BusinessContactEditR   GET POST
+    /form/contact/business/#BusinessId		      BusinessContactCreateR GET
+    /contact/business/#BusinessId		      BusinessContactR       GET POST
 
     /delete/about/business/#BusinessId/#AboutUsId BusinessAboutDeleteR POST
     /form/about/business/#BusinessId/#AboutUsId   BusinessAboutEditR   GET POST
@@ -89,11 +92,6 @@
     /brand/#BrandId/edit   BrandEditR   GET POST
     /brand/create          BrandCreateR GET
     /brand                 BrandR       GET POST
-
-    /form/contacts/#ContentsId   AdmContactsEditR   GET POST
-    /form/contacts               AdmContactsCreateR GET
-    /delete/contacts/#ContentsId AdmContactsDeleteR POST
-    /contacts                    AdmContactsR       GET POST
 
 
     /delete/experts/#RoleId/+Services AdmExpertDeleteR      POST

@@ -309,7 +309,7 @@ MetaKeywords: beauty, salon, application
 MetaDescription: Beauty Salon Application
 
 Documentation: Docs
-Doc001 hrefHome@Text: The application <a href=#{hrefHome}>"Salon"</a> provides the ability to publish and advertise the services of beauty salon owners on the web.
+Doc001 hrefHome@Text: The <a href=#{hrefHome}>"Salon"</a> application provides the opportunity to publish and advertise the services of beauty salon owners on the web.
 
 Doc002 hrefServices@Text: The services to be advertised are defined and published in section <a href=#{hrefServices}>"Services"</a> of group "Data". Optionally, services can be defined as a hierarchy of groups and subservices.
 
@@ -319,7 +319,17 @@ Doc004 hrefServices@Text hrefBook@Text: Once the service and its offerings are d
 
 Doc005 hrefBusiness@Text: Detailed information about the business can be provided in the section <a href=#{hrefBusiness}>"Business"</a> of the group "Data" in the main menu.
 
-Doc006 hrefBusiness@Text: Additionally, in the section <a href=#{hrefBusiness}>"Business"</a>, the organization's work schedule for each day can be added.
+Doc0061 hrefSchedule@Text hrefBusiness@Text: Additionally, from the tab <a href=#{hrefSchedule}>"Schedule"</a> in the section <a href=#{hrefBusiness}>"Business"</a>, the organization's work schedule for each day can be added.
+
+Doc0062 hrefBusiness@Text: Additionally, from the tab "Schedule" in the section <a href=#{hrefBusiness}>"Business"</a>, the organization's work schedule for each day can be added.
+
+Doc0063 hrefAboutUs@Text hrefBusiness@Text: The "About Us" page can be customized from the <a href=#{hrefAboutUs}>"About Us"</a> tab in the menu <a href=#{hrefBusiness}>"Business"</a> in the group "Data".
+
+Doc0064 hrefBusiness@Text: The "About Us" page can be customized from the "About Us" tab in the menu <a href=#{hrefBusiness}>"Business"</a> in the group "Data".
+
+Doc0065 hrefContactUs@Text hrefBusiness@Text: The "Contacts" page can be customized from the <a href=#{hrefContactUs}>"Contact Us"</a> tab in the menu <a href=#{hrefBusiness}>"Business"</a> in the group "Data".
+
+Doc0066 hrefBusiness@Text: The "Contacts" page can be customized from the "Contact Us" tab in the menu <a href=#{hrefBusiness}>"Business"</a> in the group "Data".
 
 Doc007: Currently, the app only supports one business. Multi-business support is planned for future versions of the application.
 

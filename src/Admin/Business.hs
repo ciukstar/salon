@@ -33,6 +33,11 @@ module Admin.Business
   , postBusinessAboutEditR
   , postBusinessAboutDeleteR
   , getBusinessContactR
+  , postBusinessContactR
+  , getBusinessContactCreateR
+  , getBusinessContactEditR
+  , postBusinessContactEditR
+  , postBusinessContactDeleteR
   ) where
 
 import Control.Applicative ((<|>))
@@ -103,7 +108,8 @@ import Foundation
       , BusinessCalendarSlotDeleteR, BusinessCalendarSlotR
       , BusinessAboutR, BusinessAboutCreateR, BusinessAboutEditR
       , BusinessAboutDeleteR
-      , BusinessContactR
+      , BusinessContactR, BusinessContactCreateR, BusinessContactEditR
+      , BusinessContactDeleteR
       )
     , AppMessage
       ( MsgBusiness, MsgPhoto, MsgNoBusinessYet, MsgTheName, MsgAddress, MsgAdd
@@ -117,7 +123,7 @@ import Foundation
       , MsgList, MsgCalendar, MsgMon, MsgTue, MsgWed, MsgThu, MsgFri, MsgSat, MsgSun
       , MsgSymbolHour, MsgSymbolMinute, MsgToday, MsgBusinessDay, MsgSortAscending
       , MsgSortDescending, MsgAboutUs, MsgContactUs, MsgNoContentYet, MsgContent
-      , MsgAlreadyExists
+      , MsgAlreadyExists, MsgInvalidFormData, MsgWorkSchedule
       )
     )
 
@@ -133,12 +139,13 @@ import Model
       , businessHoursDayType
       )
     , AboutUsId, AboutUs (AboutUs, aboutUsHtml)
-    , ContactUs (ContactUs)
+    , ContactUsId, ContactUs (ContactUs, contactUsHtml)
     , EntityField
       ( BusinessName, BusinessFullName, BusinessAddr, BusinessPhone, BusinessMobile
       , BusinessEmail, BusinessId, BusinessTzo, BusinessTz, BusinessCurrency
       , BusinessHoursId, BusinessHoursDay, BusinessHoursOpen, BusinessHoursClose
       , BusinessHoursDayType, AboutUsBusiness, AboutUsId, ContactUsBusiness
+      , ContactUsId
       )
     , DayType (Weekday, Weekend, Holiday)
     , SortOrder (SortOrderAsc, SortOrderDesc)
@@ -146,6 +153,112 @@ import Model
 
 import Settings (widgetFile)
 import Menu (menu)
+
+
+postBusinessContactDeleteR :: BusinessId -> ContactUsId -> Handler Html
+postBusinessContactDeleteR bid xid = do
+    ((fr,_),_) <- runFormPost formDelete
+    case fr of
+      FormSuccess () -> do
+          runDB $ P.delete xid
+          addMessageI "info" MsgRecordDeleted
+          redirect $ AdminR $ BusinessContactR bid
+      _ -> do
+          addMessageI "warn" MsgInvalidFormData
+          redirect $ AdminR $ BusinessContactR bid
+
+
+postBusinessContactEditR :: BusinessId -> ContactUsId -> Handler Html
+postBusinessContactEditR bid xid = do
+    info <- runDB $ selectOne $ do
+        x <- from $ table @ContactUs
+        where_ $ x ^. ContactUsId ==. val xid
+        return x
+    ((fr,fw),et) <- runFormPost $ formContact bid info
+    case fr of
+      FormSuccess r -> do
+          runDB $ replace xid r
+          addMessageI "info" MsgRecordEdited
+          redirect $ AdminR $ BusinessContactR bid
+      _ -> defaultLayout $ do
+          setTitleI MsgContactUs
+          $(widgetFile "admin/business/contact/edit")
+
+
+getBusinessContactEditR :: BusinessId -> ContactUsId -> Handler Html
+getBusinessContactEditR bid xid = do
+    info <- runDB $ selectOne $ do
+        x <- from $ table @ContactUs
+        where_ $ x ^. ContactUsId ==. val xid
+        return x
+    (fw,et) <- generateFormPost $ formContact bid info
+    defaultLayout $ do
+        setTitleI MsgAboutUs
+        $(widgetFile "admin/business/contact/edit")
+
+
+postBusinessContactR :: BusinessId -> Handler Html
+postBusinessContactR bid = do
+    ((fr,fw),et) <- runFormPost $ formContact bid Nothing
+    case fr of
+      FormSuccess r -> do
+          runDB $ insert_ r
+          addMessageI "info" MsgRecordAdded
+          redirect $ AdminR $ BusinessContactR bid
+      _ -> defaultLayout $ do
+          setTitleI MsgAboutUs
+          $(widgetFile "admin/business/contact/create")
+
+
+getBusinessContactCreateR :: BusinessId -> Handler Html
+getBusinessContactCreateR bid = do
+    (fw,et) <- generateFormPost $ formContact bid Nothing
+    defaultLayout $ do
+        setTitleI MsgAboutUs
+        $(widgetFile "admin/business/contact/create")
+
+
+formContact :: BusinessId -> Maybe (Entity ContactUs)
+            -> Html -> MForm Handler (FormResult ContactUs, Widget)
+formContact bid e extra = do
+    (htmlR,htmlV) <- mreq uniqueField FieldSettings
+        { fsLabel = SomeMessage MsgContent
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input"),("rows","12")]
+        } ( contactUsHtml . entityVal <$> e)
+    let r = ContactUs bid <$> htmlR
+    let v = [whamlet|
+#{extra}
+<div.form-field>
+  <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--textarea data-mdc-auto-init=MDCTextField
+    :isJust (fvErrors htmlV):.mdc-text-field--invalid>
+    <span.mdc-text-field__ripple>
+    <span.mdc-floating-label>_{MsgContent}
+    <span.mdc-text-field__resizer>
+      ^{fvInput htmlV}
+    <spam.mdc-line-ripple>
+  $maybe errs <- fvErrors htmlV
+    <div.mdc-text-field-helper-line>
+      <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+        #{errs}
+|]
+    return (r,v)
+  where
+      
+    uniqueField = checkM uniqueContactUs htmlField
+
+    uniqueContactUs :: Html -> Handler (Either AppMessage Html)
+    uniqueContactUs html = do
+        case e of
+          Just _ -> return $ Right html
+          Nothing -> do
+              x <- runDB $ selectOne $ do
+                  y <- from $ table @ContactUs
+                  where_ $ y ^. ContactUsBusiness ==. val bid
+                  return y
+              case x of
+                Just _ -> return $ Left MsgAlreadyExists
+                Nothing -> return $ Right html
 
 
 getBusinessContactR :: BusinessId -> Handler Html
@@ -159,6 +272,9 @@ getBusinessContactR bid = do
 
     curr <- getCurrentRoute
     msgs <- getMessages
+    formContactUsDelete <- newIdent
+    dlgContactUsDelete <- newIdent
+    (fw,et) <- generateFormPost formDelete
     defaultLayout $ do
         setTitleI MsgContactUs
         $(widgetFile "admin/business/contact/contacts")
@@ -166,9 +282,19 @@ getBusinessContactR bid = do
 
 postBusinessAboutDeleteR :: BusinessId -> AboutUsId -> Handler Html
 postBusinessAboutDeleteR bid xid = do
-    runDB $ P.delete xid
-    addMessageI "info" MsgRecordDeleted
-    redirect $ AdminR $ BusinessAboutR bid
+    ((fr,_),_) <- runFormPost formDelete
+    case fr of
+      FormSuccess () -> do
+          runDB $ P.delete xid
+          addMessageI "info" MsgRecordDeleted
+          redirect $ AdminR $ BusinessAboutR bid
+      _ -> do
+          addMessageI "warn" MsgInvalidFormData
+          redirect $ AdminR $ BusinessAboutR bid
+
+
+formDelete :: Html -> MForm Handler (FormResult (),Widget)
+formDelete extra = return (FormSuccess (),[whamlet|#{extra}|])
 
 
 postBusinessAboutEditR :: BusinessId -> AboutUsId -> Handler Html
@@ -248,10 +374,10 @@ formAbout bid e extra = do
     return (r,v)
   where
       
-    uniqueField = checkM uniqueBusinessId htmlField
+    uniqueField = checkM uniqueAboutUs htmlField
 
-    uniqueBusinessId :: Html -> Handler (Either AppMessage Html)
-    uniqueBusinessId html = do
+    uniqueAboutUs :: Html -> Handler (Either AppMessage Html)
+    uniqueAboutUs html = do
         case e of
           Just _ -> return $ Right html
           Nothing -> do
@@ -277,6 +403,7 @@ getBusinessAboutR bid = do
     msgs <- getMessages
     formAboutUsDelete <- newIdent
     dlgAboutUsDelete <- newIdent
+    (fw,et) <- generateFormPost formDelete
     defaultLayout $ do
         setTitleI MsgContactUs
         $(widgetFile "admin/business/about/about")

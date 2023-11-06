@@ -39,7 +39,7 @@
               :curr == Just (AdminR $ BusinessHoursR bid):.mdc-tab--active
               :curr == Just (AdminR $ BusinessHoursR bid):aria-selected=true>
               <span.mdc-tab__content>
-                <span.mdc-tab__text-label>_{MsgBusinessHours}
+                <span.mdc-tab__text-label>_{MsgWorkSchedule}
               <span.mdc-tab-indicator :curr == Just (AdminR $ BusinessHoursR bid):.mdc-tab-indicator--active>
                 <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
               <span.mdc-tab__ripple>

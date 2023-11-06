@@ -24,8 +24,8 @@
           
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
-  $maybe Entity _ (Contents _ content) <- contacts
-    #{preEscapedToMarkup $ unTextarea content}
+  $maybe Entity _ (ContactUs _ html) <- contacts
+    ^{html}
   $nothing
     <figure style="text-align:center">
       <span style="font-size:5rem;line-height:1;color:var(--mdc-theme-primary)">&varnothing;

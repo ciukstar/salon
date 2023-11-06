@@ -23,41 +23,59 @@
           <i.material-symbols-outlined>login
       
 <main.mdc-top-app-bar--prominent-fixed-adjust>
-  <div.mdc-typography--headline4>_{MsgAppName}
-  <p>#{preEscapedToMarkup $ renderMessage app langs (MsgDoc001 $ rndr HomeR)}
-  <div.mdc-typography--headline4>_{MsgOverview}
-  <p>#{preEscapedToMarkup $ renderMessage app langs (MsgDoc002 (rndr $ AdminR $ AdmServicesR (Services []))) }
-  <p>_{MsgDoc003}
-  <p>#{preEscapedToMarkup $ renderMessage app langs (MsgDoc004 (rndr ServicesR) (rndr BookOffersR))}
-  
-  <div.mdc-typography--headline4>
-    _{MsgBasicEntities}
+  $with trans <- preEscapedToMarkup . renderMessage app langs
+    <div.mdc-typography--headline4>_{MsgAppName}
+    <p>#{trans $ MsgDoc001 (rndr HomeR)}
+    <div.mdc-typography--headline4>_{MsgOverview}
+    <p>#{trans $ MsgDoc002 (rndr $ AdminR $ AdmServicesR (Services []))}
+    <p>_{MsgDoc003}
+    <p>#{trans $ MsgDoc004 (rndr ServicesR) (rndr BookOffersR)}
+
+    <div.mdc-typography--headline4>
+      _{MsgBasicEntities}
+
+    <div.mdc-typography--headline5>_{MsgBusiness}
+    <p>#{trans $ MsgDoc005 (rndr $ AdminR BusinessR)}
+    <p>
+      $maybe Entity bid _ <- business
+        #{trans $ MsgDoc0061 (rndr $ AdminR $ BusinessHoursR bid) (rndr $ AdminR BusinessR)}
+      $nothing
+        #{trans $ MsgDoc0062 (rndr $ AdminR BusinessR)}
     
-  <div.mdc-typography--headline5>_{MsgBusiness}
-  <p>#{preEscapedToMarkup $ renderMessage app langs (MsgDoc005 (rndr $ AdminR BusinessR))}
-  <p>#{preEscapedToMarkup $ renderMessage app langs (MsgDoc006 (rndr $ AdminR BusinessR))}
-  <p>_{MsgDoc007}
-    
-  <div.mdc-typography--headline5>_{MsgUser}
-  <p>#{preEscapedToMarkup $ renderMessage app langs (MsgDoc008 (rndr $ AccountR))}
-  <p>#{preEscapedToMarkup $ renderMessage app langs (MsgDoc009 (rndr $ AdminR UsersR))}
+    <p>
+      $maybe Entity bid _ <- business
+        #{trans $ MsgDoc0063 (rndr $ AdminR $ BusinessAboutR bid) (rndr $ AdminR BusinessR)}
+      $nothing
+        #{trans $ MsgDoc0064 (rndr $ AdminR BusinessR)}
+        
+    <p>
+      $maybe Entity bid _ <- business
+        #{trans $ MsgDoc0065 (rndr $ AdminR $ BusinessContactR bid) (rndr $ AdminR BusinessR)}
+      $nothing
+        #{trans $ MsgDoc0066 (rndr $ AdminR BusinessR)}
+        
+    <p>_{MsgDoc007}
+
+    <div.mdc-typography--headline5>_{MsgUser}
+    <p>#{trans $ MsgDoc008 (rndr AccountR)}
+    <p>#{trans $ MsgDoc009 (rndr $ AdminR UsersR)}
 
 
-  
-    
-  <div.mdc-typography--headline4>
-    _{MsgErdDiagram}
-  <img #imgErdDiagram src=@{StaticR img_Salon_ERD_svg} alt=_{MsgErdDiagram} loading=lazy>
-  
-  <div.mdc-typography--headline4>
-    _{MsgBookingStateDiagram}
-  <img #imgBookingStateDiagram src=@{StaticR img_Booking_State_Diagram_svg} 
-    alt=_{MsgBookingStateDiagram} loading=lazy>
-  
-  <div.mdc-typography--headline4>
-    _{MsgAppointmentStateDiagram}
-  <img #imgAppointmentStateDiagram src=@{StaticR img_Appointment_State_Transition_svg} 
-    alt=_{MsgAppointmentStateDiagram} loading=lazy>
+
+
+    <div.mdc-typography--headline4>
+      _{MsgErdDiagram}
+    <img #imgErdDiagram src=@{StaticR img_Salon_ERD_svg} alt=_{MsgErdDiagram} loading=lazy>
+
+    <div.mdc-typography--headline4>
+      _{MsgBookingStateDiagram}
+    <img #imgBookingStateDiagram src=@{StaticR img_Booking_State_Diagram_svg} 
+      alt=_{MsgBookingStateDiagram} loading=lazy>
+
+    <div.mdc-typography--headline4>
+      _{MsgAppointmentStateDiagram}
+    <img #imgAppointmentStateDiagram src=@{StaticR img_Appointment_State_Transition_svg} 
+      alt=_{MsgAppointmentStateDiagram} loading=lazy>
 
 
 $forall (_,msg) <- msgs

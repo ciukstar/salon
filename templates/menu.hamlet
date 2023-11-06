@@ -110,7 +110,7 @@
             
       <hr.mdc-deprecated-list-divider role=separator>
       
-      <details :elem curr [Just (AdminR $ AdmServicesR (Services [])),Just (AdminR AdmStaffR),Just (AdminR AdmContactsR),Just (AdminR UsersR),Just (AdminR BrandR),Just (AdminR BusinessR),((AdminR . BusinessHoursR) . entityKey) <$> business,((AdminR . flip BusinessCalendarR month) . entityKey) <$> business,((AdminR . BusinessAboutR) . entityKey) <$> business,((AdminR . BusinessContactR) . entityKey) <$> business]:open
+      <details :elem curr [Just (AdminR $ AdmServicesR (Services [])),Just (AdminR AdmStaffR),Just (AdminR UsersR),Just (AdminR BrandR),Just (AdminR BusinessR),((AdminR . BusinessHoursR) . entityKey) <$> business,((AdminR . flip BusinessCalendarR month) . entityKey) <$> business,((AdminR . BusinessAboutR) . entityKey) <$> business,((AdminR . BusinessContactR) . entityKey) <$> business]:open
         ontoggle="document.getElementById('iconDataExpand').textContent = this.open ? 'expand_less' : 'expand_more'">
         <summary.mdc-deprecated-list>
           <li.mdc-deprecated-list-item>
@@ -133,14 +133,6 @@
             <span.mdc-deprecated-list-item__ripple>
             <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>edit_note
             <span.mdc-deprecated-list-item__text>_{MsgStaff}
-
-          <a.mdc-deprecated-list-item href=@{AdminR AdmContactsR}
-            :Just (AdminR AdmContactsR) /= curr:tabindex=-1
-            :Just (AdminR AdmContactsR) == curr:tabindex=0
-            :Just (AdminR AdmContactsR) == curr:.mdc-deprecated-list-item--activated>
-            <span.mdc-deprecated-list-item__ripple>
-            <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>edit_note
-            <span.mdc-deprecated-list-item__text>_{MsgContact}
 
           <a.mdc-deprecated-list-item href=@{AdminR UsersR}
             :Just (AdminR UsersR) /= curr:tabindex=-1

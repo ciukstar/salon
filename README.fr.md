@@ -23,7 +23,11 @@ Une fois le service et ses offres définis, le service peut être publié. La pr
 
 Des informations détaillées sur l'entreprise peuvent être fournies dans la section [« Entreprise »](https://salonfr-w3cpovaqka-de.a.run.app/admin/business) du groupe « Données » du menu principal.
 
-De plus, dans la section [« Entreprise »](https://salonfr-w3cpovaqka-de.a.run.app/admin/business), l'horaire de travail de l'organisation pour chaque jour peut être ajouté.
+De plus, à partir de l'onglet [« Horaire »](https://salonfr-w3cpovaqka-de.a.run.app/admin/business/1/hours) de la section [« Entreprise »](https://salonfr-w3cpovaqka-de.a.run.app/admin/business), l'horaire de travail de l'organisation pour chaque jour peut être ajouté.
+
+La page « À propos de nous » est personnalisable depuis l'onglet [« À propos de nous »](https://salonfr-w3cpovaqka-de.a.run.app/admin/about/business/1) du menu [« Entreprise »](https://salonfr-w3cpovaqka-de.a.run.app/admin/business) du groupe « Données ».
+
+La page « Contacts » est personnalisable depuis l'onglet [« Contactez-nous »](https://salonfr-w3cpovaqka-de.a.run.app/admin/contact/business/1) du menu [« Entreprise »](https://salonfr-w3cpovaqka-de.a.run.app/admin/business) du groupe « Données ».
 
 Actuellement, l'application ne prend en charge qu'une seule entreprise. Un support multi-métiers est prévu pour les futures versions de l'application.
 

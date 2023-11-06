@@ -1,9 +1,4 @@
 
-Contents
-  section Text
-  content Textarea
-  UniqueContents section
-
 Hist
   book BookId
   user UserId

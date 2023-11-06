@@ -107,7 +107,8 @@ import Admin.Business
   , postBusinessCalendarSlotDeleteR, getBusinessCalendarSlotR
   , getBusinessAboutR, postBusinessAboutR, getBusinessAboutCreateR
   , getBusinessAboutEditR, postBusinessAboutEditR, postBusinessAboutDeleteR
-  , getBusinessContactR
+  , getBusinessContactR, postBusinessContactR, getBusinessContactCreateR
+  , getBusinessContactEditR, postBusinessContactEditR, postBusinessContactDeleteR
   )
 
 import Admin.Brand
@@ -126,14 +127,6 @@ import Admin.Users
     , getUserPwdResetR
     , postUserPwdResetR
     , getUsersSearchR
-    )
-import Admin.Contacts
-    ( getAdmContactsR
-    , postAdmContactsR
-    , getAdmContactsCreateR
-    , getAdmContactsEditR
-    , postAdmContactsEditR
-    , postAdmContactsDeleteR
     )
 
 import Admin.Staff

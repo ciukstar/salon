@@ -7,7 +7,7 @@
 
 # Salon
 
-The application ["Salon"](https://salon-w3cpovaqka-de.a.run.app) provides the ability to publish and advertise the services of beauty salon owners on the web.
+The ["Salon"](https://salon-w3cpovaqka-de.a.run.app) application provides the opportunity to publish and advertise the services of beauty salon owners on the web.
 
 ## Overview
 
@@ -23,7 +23,11 @@ Once the service and its offerings are defined, the service can be published. Th
 
 Detailed information about the business can be provided in the section ["Business"](https://salon-w3cpovaqka-de.a.run.app/admin/business) of the group "Data" in the main menu.
 
-Additionally, in the section ["Business"](https://salon-w3cpovaqka-de.a.run.app/admin/business), the organization's work schedule for each day can be added.
+Additionally, from the tab ["Schedule"](https://salon-w3cpovaqka-de.a.run.app/admin/business/1/hours) in the section ["Business"](https://salon-w3cpovaqka-de.a.run.app/admin/business), the organization's work schedule for each day can be added.
+
+The "About Us" page can be customized from the ["About Us"](https://salon-w3cpovaqka-de.a.run.app/admin/about/business/1) tab in the menu ["Business"](https://salon-w3cpovaqka-de.a.run.app/admin/business) in the group "Data".
+
+The "Contacts" page can be customized from the ["Contact Us"](https://salon-w3cpovaqka-de.a.run.app/admin/contact/business/1) tab in the menu ["Business"](https://salon-w3cpovaqka-de.a.run.app/admin/business) in the group "Data".
 
 Currently, the app only supports one business. Multi-business support is planned for future versions of the application.
 
