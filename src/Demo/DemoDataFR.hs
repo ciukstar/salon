@@ -62,7 +62,7 @@ import Model
       , businessHoursClose, businessHoursDayType
       )
     , AboutUs (AboutUs, aboutUsBusiness, aboutUsHtml)
-    , ContactUs (ContactUs, contactUsBusiness, contactUsHtml)
+    , ContactUs (ContactUs, contactUsBusiness, contactUsShowSchedule, contactUsHtml)
     , DayType (Weekday, Holiday)
     )
 import Data.FileEmbed (embedFile)
@@ -130,6 +130,7 @@ populateFR = do
                       }
 
     insert_ $ ContactUs { contactUsBusiness = b
+                        , contactUsShowSchedule = True
                         , contactUsHtml = [shamlet|
 <section style="margin:0 1rem">
   <h3 style="color:gray">Appelez-nous

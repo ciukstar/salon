@@ -94,7 +94,7 @@
 <main.mdc-top-app-bar--fixed-adjust>
   <div.mdc-top-app-bar--fixed-adjust>
   
-  $maybe Entity _ (ContactUs _ html) <- info
+  $maybe Entity _ (ContactUs _ _ html) <- info
     ^{html}
   $nothing
     <figure style="text-align:center">

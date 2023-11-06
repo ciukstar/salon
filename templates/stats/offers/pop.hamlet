@@ -48,7 +48,7 @@
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>sort
-      
+
   $if null offers
     <figure style="text-align:center">
       <span style="font-size:4rem;line-eight:1;color:var(--mdc-theme-primary)">&varnothing;
@@ -63,7 +63,7 @@
               <th.mdc-data-table__header-cell role=columnheader scope=col>
                 _{MsgNumberSign}
               <th.mdc-data-table__header-cell role=columnheader scope=col>
-                _{MsgService}
+                _{MsgOffer}
               <th.mdc-data-table__header-cell.mdc-data-table__header-cell--numeric role=columnheader scope=col>
                 _{MsgBookings}
           <tbody.mdc-data-table__cotent>
@@ -84,7 +84,7 @@
           action=@{StatsR PopOffersR}>
           ^{fw}
           <input type=text name=sort value=#{pack $ show sort} hidden>
-              
+
       <div.mdc-dialog__actions>
         <button.mdc-button type=button data-mdc-dialog-action=cancel>
           <span.mdc-button__ripple>
@@ -94,5 +94,5 @@
           <span.mdc-button__ripple>
           <span.mdc-button__focus-ring>
           <span.mdc-button__label>_{MsgSelect}
-      
+
   <div.mdc-dialog__scrim>

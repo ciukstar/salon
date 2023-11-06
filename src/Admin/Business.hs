@@ -75,7 +75,7 @@ import Yesod.Core.Widget (setTitleI, whamlet)
 import Yesod.Form.Input (runInputGet, iopt)
 import Yesod.Form.Fields
     ( textField, emailField, textareaField, intField, dayField, timeField
-    , hiddenField, htmlField
+    , hiddenField, htmlField, checkBoxField
     )
 import Yesod.Form.Functions
     ( generateFormPost, mreq, mopt, runFormPost, checkM, check )
@@ -123,7 +123,7 @@ import Foundation
       , MsgList, MsgCalendar, MsgMon, MsgTue, MsgWed, MsgThu, MsgFri, MsgSat, MsgSun
       , MsgSymbolHour, MsgSymbolMinute, MsgToday, MsgBusinessDay, MsgSortAscending
       , MsgSortDescending, MsgAboutUs, MsgContactUs, MsgNoContentYet, MsgContent
-      , MsgAlreadyExists, MsgInvalidFormData, MsgWorkSchedule
+      , MsgAlreadyExists, MsgInvalidFormData, MsgWorkSchedule, MsgShowSchedule
       )
     )
 
@@ -139,7 +139,7 @@ import Model
       , businessHoursDayType
       )
     , AboutUsId, AboutUs (AboutUs, aboutUsHtml)
-    , ContactUsId, ContactUs (ContactUs, contactUsHtml)
+    , ContactUsId, ContactUs (ContactUs, contactUsHtml, contactUsShowSchedule)
     , EntityField
       ( BusinessName, BusinessFullName, BusinessAddr, BusinessPhone, BusinessMobile
       , BusinessEmail, BusinessId, BusinessTzo, BusinessTz, BusinessCurrency
@@ -221,14 +221,43 @@ getBusinessContactCreateR bid = do
 formContact :: BusinessId -> Maybe (Entity ContactUs)
             -> Html -> MForm Handler (FormResult ContactUs, Widget)
 formContact bid e extra = do
+    (showScheduleR,showScheduleV) <- mreq checkBoxField FieldSettings
+        { fsLabel = SomeMessage MsgShowSchedule
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-checkbox__native-control")]
+        } (contactUsShowSchedule . entityVal <$> e)
     (htmlR,htmlV) <- mreq uniqueField FieldSettings
         { fsLabel = SomeMessage MsgContent
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input"),("rows","12")]
         } ( contactUsHtml . entityVal <$> e)
-    let r = ContactUs bid <$> htmlR
+    let r = ContactUs bid <$> showScheduleR <*> htmlR
     let v = [whamlet|
 #{extra}
+
+<div.form-field.mdc-form-field data-mdc-auto-init=MDCFormField style="line-height:4;display:flex;flex-direction:row">
+  ^{fvInput showScheduleV}
+  $with selected <- fromMaybe False ((contactUsShowSchedule . entityVal) <$> e)
+    <button.mdc-switch type=button role=switch #switchShowSchedule data-mdc-auto-init=MDCSwitch
+      :selected:.mdc-switch--selected :selected:aria-checked=true
+      :not selected:.mdc-switch--unselected :not selected:aria-checked=false
+      onclick="document.getElementById('#{fvId showScheduleV}').checked = !this.MDCSwitch.selected">
+      <div.mdc-switch__track>
+      <div.mdc-switch__handle-track>
+        <div.mdc-switch__handle>
+          <div.mdc-switch__shadow>
+            <div.mdc-elevation-overlay>
+          <div.mdc-switch__ripple>
+          <div.mdc-switch__icons>
+            <svg.mdc-switch__icon.mdc-switch__icon--on viewBox="0 0 24 24">
+              <path d="M19.69,5.23L8.96,15.96l-4.23-4.23L2.96,13.5l6,6L21.46,7L19.69,5.23z">
+            <svg.mdc-switch__icon.mdc-switch__icon--off viewBox="0 0 24 24">
+              <path d="M20 13H4v-2h16v2z">
+
+    <span.mdc-switch__focus-ring-wrapper>
+      <span.mdc-switch__focus-ring>
+    <label for=switchShowSchedule>_{MsgShowSchedule}
+    
 <div.form-field>
   <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--textarea data-mdc-auto-init=MDCTextField
     :isJust (fvErrors htmlV):.mdc-text-field--invalid>

@@ -1,3 +1,4 @@
+ShowSchedule: Показать график работы
 NumberOfOrders: Количество заказов
 ValueOfOrders: Стоимость заказов
 TotalOrderValue: Общая стоимость заказов

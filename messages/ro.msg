@@ -1,3 +1,4 @@
+ShowSchedule: Afișează programul de lucru
 NumberOfOrders: Numărul de comenzi
 ValueOfOrders: Valoarea comenzilor
 TotalOrderValue: Valoarea totală a comenzilor

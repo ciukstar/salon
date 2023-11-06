@@ -68,7 +68,7 @@ import Foundation
       )
     , AppMessage
       ( MsgPopularOffers, MsgUserProfile, MsgPhoto, MsgNavigationMenu, MsgLogin
-      , MsgNoDataToDisplay, MsgService, MsgBookings, MsgNumberSign, MsgWorkload
+      , MsgNoDataToDisplay, MsgOffer, MsgBookings, MsgNumberSign, MsgWorkload
       , MsgSelect, MsgCancel, MsgPeriod, MsgBetweenFrom, MsgBetweenTo, MsgBack
       , MsgInvalidFormData, MsgInvalidTimeInterval, MsgNoDataFound, MsgMon
       , MsgTue, MsgWed, MsgThu, MsgFri, MsgSat, MsgSun, MsgTotalBookedTime

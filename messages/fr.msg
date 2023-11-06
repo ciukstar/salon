@@ -1,3 +1,4 @@
+ShowSchedule: Afficher l'horaire de travail
 NumberOfOrders: Nombre de commandes
 ValueOfOrders: Valeur des commandes
 TotalOrderValue: Valeur totale des commandes
