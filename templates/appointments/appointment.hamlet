@@ -146,7 +146,7 @@
                   <figcaption>
                     <small>(_{MsgUnassigned})
 
-          $maybe Entity _ (ContactUs _ _ html) <- location
+          $maybe Entity _ (ContactUs _ html _ _ _ _) <- location
             <details.mdc-list.mdc-card-wrapper__text-section
               ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
               <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line

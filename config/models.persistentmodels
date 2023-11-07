@@ -111,8 +111,11 @@ Brand
 
 ContactUs
   business BusinessId OnDeleteCascade
-  showSchedule Bool
   html Html
+  showSchedule Bool
+  showMap Bool
+  longitude Double Maybe
+  latitude Double Maybe
   UniqueContactUs business
 
 AboutUs

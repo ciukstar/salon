@@ -61,21 +61,22 @@ import Data.Time.LocalTime
     )
 import Data.Time.Format (formatTime, defaultTimeLocale)
 import Text.Hamlet (Html)
+import Text.Julius (julius, RawJS (rawJS))
 import Text.Shakespeare.I18N (renderMessage)
 import Text.Read (readMaybe)
 import Yesod.Auth (maybeAuth, Route (LoginR))
 import Yesod.Core
     ( Yesod(defaultLayout), getMessages, SomeMessage (SomeMessage)
-    , redirect, addMessageI, newIdent
+    , redirect, addMessageI, newIdent, addScriptRemote, addStylesheetRemote
     )
 import Yesod.Core.Handler
     ( setUltDestCurrent, getCurrentRoute, getYesod, languages
     )
-import Yesod.Core.Widget (setTitleI, whamlet)
+import Yesod.Core.Widget (setTitleI, whamlet, toWidget)
 import Yesod.Form.Input (runInputGet, iopt)
 import Yesod.Form.Fields
     ( textField, emailField, textareaField, intField, dayField, timeField
-    , hiddenField, htmlField, checkBoxField
+    , hiddenField, htmlField, checkBoxField, doubleField
     )
 import Yesod.Form.Functions
     ( generateFormPost, mreq, mopt, runFormPost, checkM, check )
@@ -123,7 +124,7 @@ import Foundation
       , MsgList, MsgCalendar, MsgMon, MsgTue, MsgWed, MsgThu, MsgFri, MsgSat, MsgSun
       , MsgSymbolHour, MsgSymbolMinute, MsgToday, MsgBusinessDay, MsgSortAscending
       , MsgSortDescending, MsgAboutUs, MsgContactUs, MsgNoContentYet, MsgContent
-      , MsgAlreadyExists, MsgInvalidFormData, MsgWorkSchedule, MsgShowSchedule
+      , MsgAlreadyExists, MsgInvalidFormData, MsgWorkSchedule, MsgShowSchedule, MsgShowMap, MsgLongitude, MsgLatitude
       )
     )
 
@@ -139,7 +140,7 @@ import Model
       , businessHoursDayType
       )
     , AboutUsId, AboutUs (AboutUs, aboutUsHtml)
-    , ContactUsId, ContactUs (ContactUs, contactUsHtml, contactUsShowSchedule)
+    , ContactUsId, ContactUs (ContactUs, contactUsHtml, contactUsShowSchedule, contactUsLongitude, contactUsLatitude, contactUsShowMap)
     , EntityField
       ( BusinessName, BusinessFullName, BusinessAddr, BusinessPhone, BusinessMobile
       , BusinessEmail, BusinessId, BusinessTzo, BusinessTz, BusinessCurrency
@@ -148,7 +149,7 @@ import Model
       , ContactUsId
       )
     , DayType (Weekday, Weekend, Holiday)
-    , SortOrder (SortOrderAsc, SortOrderDesc)
+    , SortOrder (SortOrderAsc, SortOrderDesc), mbat
     )
 
 import Settings (widgetFile)
@@ -221,43 +222,34 @@ getBusinessContactCreateR bid = do
 formContact :: BusinessId -> Maybe (Entity ContactUs)
             -> Html -> MForm Handler (FormResult ContactUs, Widget)
 formContact bid e extra = do
-    (showScheduleR,showScheduleV) <- mreq checkBoxField FieldSettings
-        { fsLabel = SomeMessage MsgShowSchedule
-        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
-        , fsAttrs = [("class","mdc-checkbox__native-control")]
-        } (contactUsShowSchedule . entityVal <$> e)
     (htmlR,htmlV) <- mreq uniqueField FieldSettings
         { fsLabel = SomeMessage MsgContent
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input"),("rows","12")]
         } ( contactUsHtml . entityVal <$> e)
-    let r = ContactUs bid <$> showScheduleR <*> htmlR
+    (showScheduleR,showScheduleV) <- mreq checkBoxField FieldSettings
+        { fsLabel = SomeMessage MsgShowSchedule
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-checkbox__native-control")]
+        } (contactUsShowSchedule . entityVal <$> e)
+    (showMapR,showMapV) <- mreq checkBoxField FieldSettings
+        { fsLabel = SomeMessage MsgShowMap
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-checkbox__native-control")]
+        } (contactUsShowSchedule . entityVal <$> e)
+    (lonR,lonV) <- mopt doubleField FieldSettings
+        { fsLabel = SomeMessage MsgLongitude
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (contactUsLongitude . entityVal <$> e)
+    (latR,latV) <- mopt doubleField FieldSettings
+        { fsLabel = SomeMessage MsgLatitude
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (contactUsLatitude . entityVal <$> e)
+    let r = ContactUs bid <$> htmlR <*> showScheduleR <*> showMapR <*> lonR <*> latR
     let v = [whamlet|
-#{extra}
-
-<div.form-field.mdc-form-field data-mdc-auto-init=MDCFormField style="line-height:4;display:flex;flex-direction:row">
-  ^{fvInput showScheduleV}
-  $with selected <- fromMaybe False ((contactUsShowSchedule . entityVal) <$> e)
-    <button.mdc-switch type=button role=switch #switchShowSchedule data-mdc-auto-init=MDCSwitch
-      :selected:.mdc-switch--selected :selected:aria-checked=true
-      :not selected:.mdc-switch--unselected :not selected:aria-checked=false
-      onclick="document.getElementById('#{fvId showScheduleV}').checked = !this.MDCSwitch.selected">
-      <div.mdc-switch__track>
-      <div.mdc-switch__handle-track>
-        <div.mdc-switch__handle>
-          <div.mdc-switch__shadow>
-            <div.mdc-elevation-overlay>
-          <div.mdc-switch__ripple>
-          <div.mdc-switch__icons>
-            <svg.mdc-switch__icon.mdc-switch__icon--on viewBox="0 0 24 24">
-              <path d="M19.69,5.23L8.96,15.96l-4.23-4.23L2.96,13.5l6,6L21.46,7L19.69,5.23z">
-            <svg.mdc-switch__icon.mdc-switch__icon--off viewBox="0 0 24 24">
-              <path d="M20 13H4v-2h16v2z">
-
-    <span.mdc-switch__focus-ring-wrapper>
-      <span.mdc-switch__focus-ring>
-    <label for=switchShowSchedule>_{MsgShowSchedule}
-    
+#{extra}    
 <div.form-field>
   <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--textarea data-mdc-auto-init=MDCTextField
     :isJust (fvErrors htmlV):.mdc-text-field--invalid>
@@ -270,6 +262,43 @@ formContact bid e extra = do
     <div.mdc-text-field-helper-line>
       <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
         #{errs}
+
+$forall (v,m) <- [(showScheduleV,contactUsShowSchedule),(showMapV,contactUsShowMap)]
+  <div.form-field.mdc-form-field data-mdc-auto-init=MDCFormField style="display:flex;flex-direction:row">
+    ^{fvInput v}
+    $with selected <- fromMaybe False ((m . entityVal) <$> e)
+      <button.mdc-switch type=button role=switch #switch#{fvId v} data-mdc-auto-init=MDCSwitch
+        :selected:.mdc-switch--selected :selected:aria-checked=true
+        :not selected:.mdc-switch--unselected :not selected:aria-checked=false
+        onclick="document.getElementById('#{fvId v}').checked = !this.MDCSwitch.selected">
+        <div.mdc-switch__track>
+        <div.mdc-switch__handle-track>
+          <div.mdc-switch__handle>
+            <div.mdc-switch__shadow>
+              <div.mdc-elevation-overlay>
+            <div.mdc-switch__ripple>
+            <div.mdc-switch__icons>
+              <svg.mdc-switch__icon.mdc-switch__icon--on viewBox="0 0 24 24">
+                <path d="M19.69,5.23L8.96,15.96l-4.23-4.23L2.96,13.5l6,6L21.46,7L19.69,5.23z">
+              <svg.mdc-switch__icon.mdc-switch__icon--off viewBox="0 0 24 24">
+                <path d="M20 13H4v-2h16v2z">
+
+      <span.mdc-switch__focus-ring-wrapper>
+        <span.mdc-switch__focus-ring>
+      <label for=switch#{fvId v}>#{fvLabel v}
+
+$forall v <- [lonV,latV]
+  <div.form-field>
+    <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
+      :isJust (fvErrors v):.mdc-text-field--invalid>
+      <span.mdc-text-field__ripple>
+      <span.mdc-floating-label>#{fvLabel v}
+      ^{fvInput v}
+      <spam.mdc-line-ripple>
+    $maybe errs <- fvErrors v
+      <div.mdc-text-field-helper-line>
+        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+          #{errs}
 |]
     return (r,v)
   where
@@ -306,6 +335,53 @@ getBusinessContactR bid = do
     (fw,et) <- generateFormPost formDelete
     defaultLayout $ do
         setTitleI MsgContactUs
+        case info of
+          Just (Entity _ (ContactUs _ _ _ True (Just lng) (Just lat))) -> do
+              addScriptRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"
+              addScriptRemote "https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-language/v1.0.0/mapbox-gl-language.js"
+              addStylesheetRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css"
+              toWidget [julius|
+const main = document.querySelector('main');
+const mapgl = document.createElement('div');
+mapgl.style.height = '300px';
+mapgl.style.width = '100%';
+main.appendChild(mapgl);
+const map = new mapboxgl.Map({
+  accessToken: #{mbat},
+  attributionControl: false,
+  container: mapgl,
+  style: 'mapbox://styles/mapbox/streets-v11',
+  center: [#{rawJS $ show lng}, #{rawJS $ show lat}],
+  zoom: 15
+});
+map.addControl(new MapboxLanguage());
+map.addControl(new mapboxgl.NavigationControl());
+const loc = new mapboxgl.Marker().setLngLat(
+  [#{rawJS $ show lng}, #{rawJS $ show lat}]
+).addTo(map);
+|]
+          Just (Entity _ (ContactUs _ _ _ True _ _)) -> do
+              addScriptRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"
+              addScriptRemote "https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-language/v1.0.0/mapbox-gl-language.js"
+              addStylesheetRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css"
+              toWidget [julius|
+const main = document.querySelector('main');
+const mapgl = document.createElement('div');
+mapgl.style.height = '300px';
+mapgl.style.width = '100%';
+main.appendChild(mapgl);
+const map = new mapboxgl.Map({
+  accessToken: #{mbat},
+  attributionControl: false,
+  container: mapgl,
+  style: 'mapbox://styles/mapbox/streets-v11',
+  center: [0, 0],
+  zoom: 0
+});
+map.addControl(new MapboxLanguage());
+map.addControl(new mapboxgl.NavigationControl());
+|]
+          _ -> return ()
         $(widgetFile "admin/business/contact/contacts")
 
 

@@ -62,7 +62,10 @@ import Model
       , businessHoursClose, businessHoursDayType
       )
     , AboutUs (AboutUs, aboutUsBusiness, aboutUsHtml)
-    , ContactUs (ContactUs, contactUsBusiness, contactUsShowSchedule, contactUsHtml)
+    , ContactUs
+      ( ContactUs, contactUsBusiness, contactUsShowSchedule, contactUsShowMap
+      , contactUsLongitude, contactUsLatitude, contactUsHtml
+      )
     , DayType (Weekday, Holiday)
     )
     
@@ -131,7 +134,6 @@ populateEN = do
                       }
 
     insert_ $ ContactUs { contactUsBusiness = b
-                        , contactUsShowSchedule = True
                         , contactUsHtml = [shamlet|
 <section style="margin:0 1rem">
   <h3 style="color:gray">Call Us
@@ -158,11 +160,21 @@ populateEN = do
   <h3 style="color:gray">Come see us
   <dl>
     <dt>
+      <i>Opening Times
+    <dd>
+      <ul>
+        <li>Mon – Fri: 10am – 8pm
+        <li>Saturday: 9am – 7pm
+        <li>Sunday: 11am – 5pm
+    <dt>
       <i>Address
     <dd>
       #{businessAddr business}
-<iframe width="100%" height="400px" loding="lazy" title="Salon" style="border:none" src="https://api.mapbox.com/styles/v1/mapbox/streets-v12.html?title=false&zoomwheel=false&access_token=pk.eyJ1IjoiY2l1a3N0YXIiLCJhIjoiY2o1enNibDNsMGNrNDJ3dDhxeTJuc3luMiJ9.Jgc5GdYUMbYwGq-zRWtzfw#15/51.5073/-0.12755">
 |]
+                        , contactUsShowSchedule = True
+                        , contactUsShowMap = True
+                        , contactUsLongitude = Just (-0.12755)
+                        , contactUsLatitude = Just 51.5073
                         }
 
     pass0 <- liftIO $ makePassword "root" 17

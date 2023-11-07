@@ -6,7 +6,7 @@ main
       flex-direction: column
       margin-bottom: 1rem
       .mdc-text-field .mdc-text-field__input
-        caret-color: var(--theme-accent)
+        caret-color: var(--mdc-theme-text-primary-on-light)
     div.form-actions
       display: flex
       flex-direction: row

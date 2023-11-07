@@ -62,7 +62,10 @@ import Model
       , businessHoursClose, businessHoursDayType
       )
     , AboutUs (AboutUs, aboutUsBusiness, aboutUsHtml)
-    , ContactUs (ContactUs, contactUsBusiness, contactUsShowSchedule, contactUsHtml)
+    , ContactUs
+      ( ContactUs, contactUsBusiness, contactUsShowSchedule, contactUsHtml
+      , contactUsShowMap, contactUsLongitude, contactUsLatitude
+      )
     , DayType (Weekday, Holiday)
     )
 import Data.FileEmbed (embedFile)
@@ -130,7 +133,6 @@ populateRO = do
                       }
 
     insert_ $ ContactUs { contactUsBusiness = b
-                        , contactUsShowSchedule = True
                         , contactUsHtml = [shamlet|
 <section style="margin:0 1rem">
   <h3 style="color:gray">Sunați-ne
@@ -160,8 +162,11 @@ populateRO = do
       <i>Adresa
     <dd>
       #{businessAddr business}
-<iframe width="100%" height="400px" loding="lazy" title="Salon" style="border:none" src="https://api.mapbox.com/styles/v1/mapbox/streets-v12.html?title=false&zoomwheel=false&access_token=pk.eyJ1IjoiY2l1a3N0YXIiLCJhIjoiY2o1enNibDNsMGNrNDJ3dDhxeTJuc3luMiJ9.Jgc5GdYUMbYwGq-zRWtzfw#15/44.4327417/26.1039028">
 |]
+                        , contactUsShowSchedule = True
+                        , contactUsShowMap = True
+                        , contactUsLongitude = Just 26.1039028
+                        , contactUsLatitude = Just 44.4327417
                         }
     
     pass <- liftIO $ makePassword "root" 17

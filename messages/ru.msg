@@ -1,3 +1,6 @@
+Latitude: Широта
+Longitude: Долгота
+ShowMap: Показать карту
 ShowSchedule: Показать график работы
 NumberOfOrders: Количество заказов
 ValueOfOrders: Стоимость заказов

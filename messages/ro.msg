@@ -1,3 +1,6 @@
+Latitude: Latitudine
+Longitude: Longitudine
+ShowMap: Arată harta
 ShowSchedule: Afișează programul de lucru
 NumberOfOrders: Numărul de comenzi
 ValueOfOrders: Valoarea comenzilor

@@ -1,3 +1,6 @@
+Latitude: Latitude
+Longitude: Longitude
+ShowMap: Show map
 ShowSchedule: Show schedule
 NumberOfOrders: Number of orders
 ValueOfOrders: Value of orders

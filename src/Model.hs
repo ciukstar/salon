@@ -27,7 +27,7 @@ import Data.Time
 import Data.Time.Calendar (Year, Day, DayOfWeek)
 import Data.Time.Calendar.Month (Month (MkMonth))
 import Data.Time.Clock (UTCTime, NominalDiffTime)
-import Prelude (Int, fromIntegral)
+import Prelude (Int, fromIntegral, Double)
 import Data.Either (Either (Left, Right))
 import Data.Bool (Bool)
 import Data.Fixed ( Centi ) 
@@ -219,6 +219,9 @@ data SortOrder = SortOrderAsc | SortOrderDesc
     
 instance SqlString Textarea
 
+
+mbat :: Text
+mbat = "pk.eyJ1IjoiY2l1a3N0YXIiLCJhIjoiY2o1enNibDNsMGNrNDJ3dDhxeTJuc3luMiJ9.Jgc5GdYUMbYwGq-zRWtzfw"
 
 ultDestKey :: Text
 ultDestKey = "_ULT"

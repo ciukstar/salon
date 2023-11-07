@@ -1,3 +1,6 @@
+Latitude: Latitude
+Longitude: Longitude
+ShowMap: Afficher la carte
 ShowSchedule: Afficher l'horaire de travail
 NumberOfOrders: Nombre de commandes
 ValueOfOrders: Valeur des commandes
