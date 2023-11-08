@@ -98,7 +98,7 @@ import Foundation
       , MsgOffer, MsgExperts, MsgNoExpertsYet, MsgAddExpert, MsgExpert
       , MsgValueNotInRange, MsgExpertAlreadyInTheList, MsgRating, MsgEmployee
       , MsgRole, MsgLogin, MsgUserProfile, MsgNavigationMenu, MsgEdit, MsgDel
-      , MsgCompletionTime
+      , MsgCompletionTime, MsgPatternHourMinute
       )
     )
 

@@ -135,7 +135,7 @@
                             #{formatTime defaultTimeLocale (unpack pat1) dur}
                           $else
                             #{formatTime defaultTimeLocale (unpack pat2) dur}
-                          <div style="border:2px solid var(--theme-accent)">
+                          <div style="border:1px solid var(--theme-accent)">
                     $nothing
                       $maybe dur <- M.lookup (day,Weekend) slots
                         <a href=@{AdminR $ BusinessCalendarSlotsR bid day} rel=nofollow>
@@ -146,7 +146,7 @@
                               #{formatTime defaultTimeLocale (unpack pat1) dur}
                             $else
                               #{formatTime defaultTimeLocale (unpack pat2) dur}
-                            <div style="border:2px solid var(--theme-warn)">
+                            <div style="border:1px solid var(--theme-warn)">
                       $nothing
                         $maybe dur <- M.lookup (day,Holiday) slots
                           <a href=@{AdminR $ BusinessCalendarSlotsR bid day} rel=nofollow>
@@ -157,7 +157,7 @@
                                 #{formatTime defaultTimeLocale (unpack pat1) dur}
                               $else
                                 #{formatTime defaultTimeLocale (unpack pat2) dur}
-                              <div style="border:2px solid var(--theme-success)">
+                              <div style="border:1px solid var(--theme-success)">
                         $nothing
                           <a href=@{AdminR $ BusinessCalendarSlotCreateR bid day} rel=nofollow>
                             <time.day-of-month datetime=#{show day}>

@@ -13,7 +13,7 @@ Aplicația [„Salon”](https://salonro-w3cpovaqka-de.a.run.app) oferă posibil
 
 Serviciile care vor fi promovate sunt definite și publicate în secțiunea [„Servicii”](https://salonro-w3cpovaqka-de.a.run.app/admin/services) din grupul „Date”. Dacă este necesar, serviciile pot fi definite ca o ierarhie de grupuri și subservicii.
 
-Fiecare serviciu poate avea mai multe oferte cu prețuri și valute corespunzătoare. Ofertele sunt definite pentru fiecare Serviciu în secțiunea „Servicii” din grupul „Date”.
+Fiecare serviciu poate avea mai multe oferte cu prețul corespunzător. Ofertele sunt definite pentru fiecare serviciu în secțiunea „Servicii” din grupul „Date”.
 
 Odată ce serviciul și ofertele sale sunt definite, serviciul poate fi publicat. Serviciul și ofertele vor fi afișate clientului în secțiunea [„Servicii”](https://salonro-w3cpovaqka-de.a.run.app/services) și disponibile pentru rezervare în secțiunea [„Rezervă o programare”](https://salonro-w3cpovaqka-de.a.run.app/book).
 

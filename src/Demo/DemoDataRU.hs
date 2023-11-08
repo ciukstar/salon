@@ -1,20 +1,25 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TemplateHaskell #-}
-
+{-# LANGUAGE PatternSynonyms #-}
 
 module Demo.DemoDataRU (populateRU) where
 
+import ClassyPrelude.Yesod (ReaderT)
+import Control.Monad (forM_)
 import Text.Hamlet (shamlet)
 import Text.Shakespeare.Text (st)
 import qualified Data.ByteString.Base64 as B64 (decode)
 import Data.Text.Encoding (decodeUtf8)
-import Data.Time.Calendar (addDays)
+import Data.Time.Calendar
+    ( DayOfWeek (Saturday, Sunday), DayPeriod (periodFirstDay, periodLastDay)
+    , addDays, dayOfWeek, toGregorian
+    )
+import Data.Time.Calendar.Month (pattern YearMonth)
 import Data.Time.Clock (getCurrentTime, UTCTime (utctDay,utctDayTime), DiffTime)
 import Data.Time.Format (parseTimeM, defaultTimeLocale)
 import Data.Time.LocalTime (TimeOfDay (TimeOfDay), timeToTimeOfDay, TimeZone (TimeZone))
 import Control.Monad.IO.Class (MonadIO (liftIO))
-import ClassyPrelude.Yesod (ReaderT)
 import Yesod.Form.Fields (Textarea (Textarea))
 import Yesod.Auth.Util.PasswordStore (makePassword)
 import Database.Persist.Sql (SqlBackend)
@@ -60,7 +65,7 @@ import Model
       ( ContactUs, contactUsBusiness, contactUsShowSchedule, contactUsHtml
       , contactUsShowMap, contactUsLongitude, contactUsLatitude
       )
-    , DayType (Weekday, Holiday)
+    , DayType (Weekday)
     )
 import Data.FileEmbed (embedFile)
 import Demo.DemoPhotos
@@ -71,8 +76,14 @@ import Demo.DemoPhotos
 
 populateRU :: MonadIO m => ReaderT SqlBackend m ()
 populateRU = do
-    
-    (now,today,time) <- liftIO $ getCurrentTime >>= \x -> return (x ,utctDay x,timeToTimeOfDay (utctDayTime x))
+
+    (now,today,time,month) <- liftIO $ do
+        t <- getCurrentTime
+        return ( t
+               , utctDay t
+               , timeToTimeOfDay (utctDayTime t)
+               , let (y,m,_) = toGregorian (utctDay t) in YearMonth y m
+               )
 
     let business = Business { businessName = "Салон"
                             , businessFullName = Just "ООО Салон"
@@ -87,33 +98,18 @@ populateRU = do
 
     b <- insert business
 
-    insert_ $ BusinessHours { businessHoursBusiness = b
-                            , businessHoursDay = addDays (-1) today
-                            , businessHoursOpen = TimeOfDay 9 0 0
-                            , businessHoursClose = TimeOfDay 17 45 0
-                            , businessHoursDayType = Holiday
-                            }
-
-    insert_ $ BusinessHours { businessHoursBusiness = b
-                            , businessHoursDay = today
-                            , businessHoursOpen = TimeOfDay 9 0 0
-                            , businessHoursClose = TimeOfDay 18 0 0
-                            , businessHoursDayType = Weekday
-                            }
-
-    insert_ $ BusinessHours { businessHoursBusiness = b
-                            , businessHoursDay = addDays 1 today
-                            , businessHoursOpen = TimeOfDay 9 0 0
-                            , businessHoursClose = TimeOfDay 18 0 0
-                            , businessHoursDayType = Weekday
-                            }
-
-    insert_ $ BusinessHours { businessHoursBusiness = b
-                            , businessHoursDay = addDays 2 today
-                            , businessHoursOpen = TimeOfDay 9 0 0
-                            , businessHoursClose = TimeOfDay 18 0 0
-                            , businessHoursDayType = Weekday
-                            }
+    forM_ [periodFirstDay month .. periodLastDay month] $ \d -> do
+        let (start,end) = case dayOfWeek d of
+              Saturday -> (TimeOfDay 9 0 0, TimeOfDay 19 0 0)
+              Sunday -> (TimeOfDay 11 0 0,TimeOfDay 17 0 0)
+              _ -> (TimeOfDay 10 0 0,TimeOfDay 20 0 0)
+        insert_ BusinessHours
+            { businessHoursBusiness = b
+            , businessHoursDay = d
+            , businessHoursOpen = start
+            , businessHoursClose = end
+            , businessHoursDayType = Weekday
+            }
 
     insert_ $ AboutUs { aboutUsBusiness = b
                       , aboutUsHtml = [shamlet|

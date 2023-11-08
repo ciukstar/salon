@@ -124,7 +124,8 @@ import Foundation
       , MsgList, MsgCalendar, MsgMon, MsgTue, MsgWed, MsgThu, MsgFri, MsgSat, MsgSun
       , MsgSymbolHour, MsgSymbolMinute, MsgToday, MsgBusinessDay, MsgSortAscending
       , MsgSortDescending, MsgAboutUs, MsgContactUs, MsgNoContentYet, MsgContent
-      , MsgAlreadyExists, MsgInvalidFormData, MsgWorkSchedule, MsgShowSchedule, MsgShowMap, MsgLongitude, MsgLatitude
+      , MsgAlreadyExists, MsgInvalidFormData, MsgWorkSchedule, MsgShowSchedule
+      , MsgShowMap, MsgLongitude, MsgLatitude
       )
     )
 
@@ -140,7 +141,11 @@ import Model
       , businessHoursDayType
       )
     , AboutUsId, AboutUs (AboutUs, aboutUsHtml)
-    , ContactUsId, ContactUs (ContactUs, contactUsHtml, contactUsShowSchedule, contactUsLongitude, contactUsLatitude, contactUsShowMap)
+    , ContactUsId
+    , ContactUs
+      ( ContactUs, contactUsHtml, contactUsShowSchedule, contactUsLongitude
+      , contactUsLatitude, contactUsShowMap
+      )
     , EntityField
       ( BusinessName, BusinessFullName, BusinessAddr, BusinessPhone, BusinessMobile
       , BusinessEmail, BusinessId, BusinessTzo, BusinessTz, BusinessCurrency
@@ -149,7 +154,8 @@ import Model
       , ContactUsId
       )
     , DayType (Weekday, Weekend, Holiday)
-    , SortOrder (SortOrderAsc, SortOrderDesc), mbat
+    , SortOrder (SortOrderAsc, SortOrderDesc)
+    , mbat
     )
 
 import Settings (widgetFile)

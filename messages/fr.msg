@@ -1,3 +1,4 @@
+PatternHourMinute: HH : MM
 Latitude: Latitude
 Longitude: Longitude
 ShowMap: Afficher la carte

@@ -1,3 +1,4 @@
+PatternHourMinute: ЧЧ:ММ
 Latitude: Широта
 Longitude: Долгота
 ShowMap: Показать карту

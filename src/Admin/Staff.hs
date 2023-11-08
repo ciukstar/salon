@@ -144,6 +144,7 @@ import Foundation
       , MsgInvalidTimeInterval, MsgMon, MsgTue, MsgWed, MsgThu, MsgFri, MsgSat
       , MsgSun, MsgSymbolHour, MsgSymbolMinute, MsgInvalidFormData, MsgAdd
       , MsgCompletionTime, MsgWorkday, MsgSortAscending, MsgSortDescending
+      , MsgPatternHourMinute
       )
     )
 
@@ -876,21 +877,56 @@ formRole eid role extra = do
     <div.mdc-select-helper-text.mdc-select-helper-text--validation-msg>
       #{errs}
 
-$forall v <- [nameV,durationV,ratingV]
-  <div.form-field>
-    <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
-      :isJust (fvErrors v):.mdc-text-field--invalid
-      :isJust (fvErrors v):.mdc-text-field--with-trailing-icon>
-      <span.mdc-text-field__ripple>
-      <span.mdc-floating-label>#{fvLabel v}
-      ^{fvInput v}
-      $maybe _ <- fvErrors v
-        <i.mdc-text-field__icon.mdc-text-field__icon--trailing.material-symbols-outlined>error
-      <span.mdc-line-ripple>
-    $maybe errs <- fvErrors v
-      <div.mdc-text-field-helper-line>
-        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
-          #{errs}
+
+<div.form-field>
+  <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
+    :isJust (fvErrors nameV):.mdc-text-field--invalid
+    :isJust (fvErrors nameV):.mdc-text-field--with-trailing-icon>
+    <span.mdc-text-field__ripple>
+    <span.mdc-floating-label>#{fvLabel nameV}
+    ^{fvInput nameV}
+    $maybe _ <- fvErrors nameV
+      <i.mdc-text-field__icon.mdc-text-field__icon--trailing.material-symbols-outlined>error
+    <span.mdc-line-ripple>
+  $maybe errs <- fvErrors nameV
+    <div.mdc-text-field-helper-line>
+      <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+        #{errs}
+
+
+<div.form-field>
+  <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
+    :isJust (fvErrors durationV):.mdc-text-field--invalid
+    :isJust (fvErrors durationV):.mdc-text-field--with-trailing-icon>
+    <span.mdc-text-field__ripple>
+    <span.mdc-floating-label>#{fvLabel durationV}
+    ^{fvInput durationV}
+    $maybe _ <- fvErrors durationV
+      <i.mdc-text-field__icon.mdc-text-field__icon--trailing.material-symbols-outlined>error
+    <span.mdc-line-ripple>
+  <div.mdc-text-field-helper-line>
+    $maybe errs <- fvErrors durationV
+      <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+        #{errs}
+    $nothing
+      <div.mdc-text-field-helper-text.mdc-text-field-helper-text--persistent aria-hidden=true>
+        _{MsgPatternHourMinute}
+
+
+<div.form-field>
+  <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
+    :isJust (fvErrors ratingV):.mdc-text-field--invalid
+    :isJust (fvErrors ratingV):.mdc-text-field--with-trailing-icon>
+    <span.mdc-text-field__ripple>
+    <span.mdc-floating-label>#{fvLabel ratingV}
+    ^{fvInput ratingV}
+    $maybe _ <- fvErrors ratingV
+      <i.mdc-text-field__icon.mdc-text-field__icon--trailing.material-symbols-outlined>error
+    <span.mdc-line-ripple>
+  $maybe errs <- fvErrors ratingV
+    <div.mdc-text-field-helper-line>
+      <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+        #{errs}
 |]
     return (r,w)
   where

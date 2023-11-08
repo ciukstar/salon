@@ -1,3 +1,4 @@
+PatternHourMinute: HH:MM
 Latitude: Latitudine
 Longitude: Longitudine
 ShowMap: Arată harta
