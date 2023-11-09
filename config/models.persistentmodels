@@ -112,6 +112,7 @@ Brand
 ContactUs
   business BusinessId OnDeleteCascade
   html Html
+  showAddress Bool
   showSchedule Bool
   showMap Bool
   longitude Double Maybe

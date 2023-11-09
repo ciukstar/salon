@@ -4,4 +4,8 @@ header.mdc-top-app-bar
     transition: height 0.3s ease-out
 
 main
-  margin: 0 1rem 1rem 1rem
+  margin-bottom: 1rem
+  ##{htmlContainer}
+    margin: 0 1rem
+  dl.address, dl.schedule
+    margin: 1rem

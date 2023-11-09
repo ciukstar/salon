@@ -24,8 +24,40 @@
           
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
-  $maybe Entity _ (ContactUs _ html _ _ _ _) <- contacts
-    ^{html}
+  $maybe Entity _ (ContactUs _ html showAddress showSchedule _ _ _) <- contacts
+    <div ##{htmlContainer}>
+      ^{html}
+    $if showAddress
+      <dl.address>
+        <dt>
+          <i>_{MsgAddress}
+        <dd>
+          $maybe addr <- address
+            #{addr}
+          $nothing
+            _{MsgNoBusinessAddressFound}
+      
+    $if showSchedule
+      <dl.schedule>
+        <dt>
+          <i>_{MsgBusinessHours}
+        <dd>
+          $if null schedule
+            _{MsgNoBusinessHoursFound}
+          $else
+            <table>
+              <tbody>
+                $with names <- M.fromList [(Monday,MsgMonday),(Tuesday,MsgTuesday),(Wednesday,MsgWednesday),(Thursday,MsgThursday),(Friday,MsgFriday),(Saturday,MsgSaturday),(Sunday,MsgSunday)]
+                  $forall ((dofw, (start,end)), _) <- schedule
+                    $with (d,s,e) <- (show today,show start,show end)
+                      <tr>
+                        <td style="text-align:right">
+                          $maybe name <- M.lookup dofw names
+                            _{name}:&nbsp;
+                        <td>
+                          <time.time-of-day datetime="#{d}T#{s}">#{s}
+                          &mdash;
+                          <time.time-of-day datetime="#{d}T#{e}">#{e}
         
   $nothing
     <figure style="text-align:center">

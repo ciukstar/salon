@@ -1,3 +1,13 @@
+NoBusinessAddressFound: No business address found
+ShowAddress: Show address
+NoBusinessHoursFound: No business hours found
+Sunday: Sunday
+Saturday: Saturday
+Friday: Friday
+Thursday: Thursday
+Wednesday: Wednesday
+Tuesday: Tuesday
+Monday: Monday
 PatternHourMinute: HH:MM
 Latitude: Latitude
 Longitude: Longitude

@@ -13,3 +13,10 @@ header
 @media (max-width: 599px)
   header .mdc-tab-bar .mdc-tab
     height: 56px
+
+main
+  margin-bottom: 1rem
+  ##{htmlContainer}
+    margin: 0 1rem
+  dl.address, dl.schedule
+    margin: 1rem

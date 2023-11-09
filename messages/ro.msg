@@ -1,3 +1,13 @@
+NoBusinessAddressFound: Nu a fost găsită nicio adresă
+ShowAddress: Arată adresa
+NoBusinessHoursFound: Nu a fost găsit niciun program de lucru
+Sunday: duminică
+Saturday: sâmbătă
+Friday: vineri
+Thursday: joi
+Wednesday: miercuri
+Tuesday: marţi
+Monday: luni
 PatternHourMinute: HH:MM
 Latitude: Latitudine
 Longitude: Longitudine

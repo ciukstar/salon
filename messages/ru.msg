@@ -1,3 +1,13 @@
+NoBusinessAddressFound: Адрес не найден
+ShowAddress: Показать адрес
+NoBusinessHoursFound: Часы работы не найдены
+Sunday: Воскресенье
+Saturday: Суббота
+Friday: Пятница
+Thursday: Четверг
+Wednesday: Среда
+Tuesday: Вторник
+Monday: Понедельник
 PatternHourMinute: ЧЧ:ММ
 Latitude: Широта
 Longitude: Долгота

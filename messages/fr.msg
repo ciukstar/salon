@@ -1,3 +1,13 @@
+NoBusinessAddressFound: Aucune adresse trouvée
+ShowAddress: Afficher l'adresse
+NoBusinessHoursFound: Aucune heure d'ouverture trouvée
+Sunday: Dimanche
+Saturday: Samedi
+Friday: Vendredi
+Thursday: Jeudi
+Wednesday: Wednesday
+Tuesday: Mardi
+Monday: Lundi
 PatternHourMinute: HH : MM
 Latitude: Latitude
 Longitude: Longitude

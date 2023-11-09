@@ -1,4 +1,15 @@
 
+Array.from(
+  document.querySelectorAll('time.time-of-day[datetime]')
+).forEach(function (x) {
+  x.textContent = new Date(x.getAttribute('datetime')).toLocaleTimeString(
+    navigator.language,
+    { hour: "numeric",
+      minute: "numeric"
+    }
+  );
+});
+
 window.mdc.autoInit();
 
 window.onscroll = function (e) {

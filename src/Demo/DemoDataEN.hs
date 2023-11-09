@@ -69,7 +69,7 @@ import Model
     , AboutUs (AboutUs, aboutUsBusiness, aboutUsHtml)
     , ContactUs
       ( ContactUs, contactUsBusiness, contactUsShowSchedule, contactUsShowMap
-      , contactUsLongitude, contactUsLatitude, contactUsHtml
+      , contactUsLongitude, contactUsLatitude, contactUsHtml, contactUsShowAddress
       )
     , DayType (Weekday)
     )
@@ -132,7 +132,7 @@ populateEN = do
 
     insert_ $ ContactUs { contactUsBusiness = b
                         , contactUsHtml = [shamlet|
-<section style="margin:0 1rem">
+<section>
   <h3 style="color:gray">Call Us
   <dl>
     <dt>
@@ -145,7 +145,7 @@ populateEN = do
     <dd>
       $maybe mobile <- businessMobile business
         #{mobile}
-<section style="margin:0 1rem">
+<section>
   <h3 style="color:gray">Email Us
   <dl>
     <dt>
@@ -153,21 +153,10 @@ populateEN = do
     <dd>
       $maybe email <- businessEmail business
         #{email}
-<section style="margin:0 1rem">
+<section>
   <h3 style="color:gray">Come see us
-  <dl>
-    <dt>
-      <i>Opening Times
-    <dd>
-      <ul>
-        <li>Mon – Fri: 10am – 8pm
-        <li>Saturday: 9am – 7pm
-        <li>Sunday: 11am – 5pm
-    <dt>
-      <i>Address
-    <dd>
-      #{businessAddr business}
 |]
+                        , contactUsShowAddress = True
                         , contactUsShowSchedule = True
                         , contactUsShowMap = True
                         , contactUsLongitude = Just (-0.12755)

@@ -45,14 +45,14 @@ import Control.Monad (void)
 import Control.Monad.IO.Class (liftIO)
 import Data.Bifunctor (first)
 import Data.Fixed (mod')
-import qualified Data.Map.Lazy as M (fromListWith, lookup)
+import qualified Data.Map.Lazy as M (Map, fromListWith, lookup, toList, fromList)
 import Data.Maybe (isNothing, isJust, fromMaybe)
 import Data.Text (Text, pack, unpack, intercalate)
 import Data.Time.Clock
     ( NominalDiffTime, getCurrentTime, utctDay, secondsToNominalDiffTime )
 import Data.Time.Calendar
-    ( Day, DayOfWeek (Monday), toGregorian, weekFirstDay, addDays
-    , periodFirstDay, periodLastDay
+    ( Day, DayOfWeek (Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday)
+    , toGregorian, weekFirstDay, addDays, periodFirstDay, periodLastDay, dayOfWeek
     )
 import Data.Time.Calendar.Month (Month, addMonths, pattern YearMonth)
 import Data.Time.LocalTime
@@ -94,7 +94,7 @@ import Database.Persist
 import Database.Esqueleto.Experimental
     ( select, selectOne, from, table, update, set, val, where_, delete
     , (=.), (^.), (==.)
-    , orderBy, desc, asc, between, Value (Value)
+    , orderBy, desc, asc, between, Value (Value, unValue), max_
     )
 
 import Foundation
@@ -125,7 +125,9 @@ import Foundation
       , MsgSymbolHour, MsgSymbolMinute, MsgToday, MsgBusinessDay, MsgSortAscending
       , MsgSortDescending, MsgAboutUs, MsgContactUs, MsgNoContentYet, MsgContent
       , MsgAlreadyExists, MsgInvalidFormData, MsgWorkSchedule, MsgShowSchedule
-      , MsgShowMap, MsgLongitude, MsgLatitude
+      , MsgShowMap, MsgLongitude, MsgLatitude, MsgMonday, MsgTuesday, MsgWednesday
+      , MsgThursday, MsgFriday, MsgSaturday, MsgSunday, MsgNoBusinessHoursFound
+      , MsgShowAddress, MsgAddress, MsgNoBusinessAddressFound
       )
     )
 
@@ -144,7 +146,7 @@ import Model
     , ContactUsId
     , ContactUs
       ( ContactUs, contactUsHtml, contactUsShowSchedule, contactUsLongitude
-      , contactUsLatitude, contactUsShowMap
+      , contactUsLatitude, contactUsShowMap, contactUsShowAddress
       )
     , EntityField
       ( BusinessName, BusinessFullName, BusinessAddr, BusinessPhone, BusinessMobile
@@ -231,8 +233,13 @@ formContact bid e extra = do
     (htmlR,htmlV) <- mreq uniqueField FieldSettings
         { fsLabel = SomeMessage MsgContent
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
-        , fsAttrs = [("class","mdc-text-field__input"),("rows","12")]
+        , fsAttrs = [("class","mdc-text-field__input"),("rows","8")]
         } ( contactUsHtml . entityVal <$> e)
+    (showAddrR,showAddrV) <- mreq checkBoxField FieldSettings
+        { fsLabel = SomeMessage MsgShowAddress
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-checkbox__native-control")]
+        } (contactUsShowAddress . entityVal <$> e)
     (showScheduleR,showScheduleV) <- mreq checkBoxField FieldSettings
         { fsLabel = SomeMessage MsgShowSchedule
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
@@ -253,7 +260,7 @@ formContact bid e extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (contactUsLatitude . entityVal <$> e)
-    let r = ContactUs bid <$> htmlR <*> showScheduleR <*> showMapR <*> lonR <*> latR
+    let r = ContactUs bid <$> htmlR <*> showAddrR <*> showScheduleR <*> showMapR <*> lonR <*> latR
     let v = [whamlet|
 #{extra}    
 <div.form-field>
@@ -269,7 +276,7 @@ formContact bid e extra = do
       <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
         #{errs}
 
-$forall (v,m) <- [(showScheduleV,contactUsShowSchedule),(showMapV,contactUsShowMap)]
+$forall (v,m) <- [(showAddrV,contactUsShowAddress),(showScheduleV,contactUsShowSchedule),(showMapV,contactUsShowMap)]
   <div.form-field.mdc-form-field data-mdc-auto-init=MDCFormField style="display:flex;flex-direction:row">
     ^{fvInput v}
     $with selected <- fromMaybe False ((m . entityVal) <$> e)
@@ -338,11 +345,42 @@ getBusinessContactR bid = do
     msgs <- getMessages
     formContactUsDelete <- newIdent
     dlgContactUsDelete <- newIdent
+    htmlContainer <- newIdent
     (fw,et) <- generateFormPost formDelete
+    today <- utctDay <$> liftIO getCurrentTime
+
+    address <- case info of
+      Just (Entity _ (ContactUs _ _ True _ _ _ _)) -> do
+         (unValue <$>) <$> runDB ( selectOne $ do
+                x <- from $ table @Business
+                return (x ^. BusinessAddr) )
+      _ -> return Nothing
+      
+    schedule <- case info of
+      Just (Entity _ (ContactUs _ _ _ True _ _ _)) -> do
+        let groupByKey :: (Ord k) => (v -> k) -> [v] -> M.Map k [v]
+            groupByKey key = M.fromListWith (++) . fmap (\x -> (key x,[x]))
+
+        M.toList . groupByKey (\(Entity _ (BusinessHours _ day s e _)) -> (dayOfWeek day,(s,e))) <$> do        
+            ymd <- (((toGregorian <$>) . unValue) =<<) <$> runDB ( selectOne ( do
+                x <- from $ table @BusinessHours
+                where_ $ x ^. BusinessHoursDayType ==. val Weekday
+                return (max_ (x ^. BusinessHoursDay)) ) )
+            case ymd of
+              Just (y,m,_) -> runDB $ select $ do
+                  x <- from $ table @BusinessHours
+                  where_ $ x ^. BusinessHoursDayType ==. val Weekday
+                  where_ $ x ^. BusinessHoursDay `between` ( val $ periodFirstDay (YearMonth y m)
+                                                           , val $ periodLastDay (YearMonth y m)
+                                                           )
+                  orderBy [asc (x ^. BusinessHoursDay), asc (x ^. BusinessHoursOpen)]
+                  return x
+              _ -> return []
+      _ -> return []
     defaultLayout $ do
-        setTitleI MsgContactUs
+        setTitleI MsgContactUs              
         case info of
-          Just (Entity _ (ContactUs _ _ _ True (Just lng) (Just lat))) -> do
+          Just (Entity _ (ContactUs _ _ _ _ True (Just lng) (Just lat))) -> do
               addScriptRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"
               addScriptRemote "https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-language/v1.0.0/mapbox-gl-language.js"
               addStylesheetRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css"
@@ -366,7 +404,7 @@ const loc = new mapboxgl.Marker().setLngLat(
   [#{rawJS $ show lng}, #{rawJS $ show lat}]
 ).addTo(map);
 |]
-          Just (Entity _ (ContactUs _ _ _ True _ _)) -> do
+          Just (Entity _ (ContactUs _ _ _ _ True _ _)) -> do
               addScriptRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"
               addScriptRemote "https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-language/v1.0.0/mapbox-gl-language.js"
               addStylesheetRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css"
