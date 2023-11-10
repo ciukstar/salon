@@ -10,10 +10,10 @@ import Text.Hamlet (Html)
 import Settings (widgetFile)
 import Yesod.Core
     ( Yesod(defaultLayout), setTitleI, setUltDestCurrent
-    , getMessages, preEscapedToMarkup
+    , getMessages
     )
 import Yesod.Auth (Route(LoginR), maybeAuth)
-import Yesod.Form.Fields (unTextarea)
+
 import Settings.StaticFiles (img_salon_svg)
 
 import Database.Persist (Entity (Entity))

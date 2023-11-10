@@ -80,7 +80,6 @@ import Yesod.Core
     , redirect, addMessageI, newIdent, addScriptRemote, addStylesheetRemote
     , FileInfo (fileContentType), TypedContent (TypedContent), typeSvg
     , emptyContent, ToContent (toContent), fileSourceByteString
-    , preEscapedToMarkup
     )
 import Yesod.Core.Handler
     ( setUltDestCurrent, getCurrentRoute, getYesod, languages
@@ -89,7 +88,7 @@ import Yesod.Core.Widget (setTitleI, whamlet, toWidget)
 import Yesod.Form.Input (runInputGet, iopt)
 import Yesod.Form.Fields
     ( textField, emailField, textareaField, intField, dayField, timeField
-    , hiddenField, htmlField, checkBoxField, doubleField, unTextarea, fileField
+    , hiddenField, htmlField, checkBoxField, doubleField, fileField
     )
 import Yesod.Form.Functions
     ( generateFormPost, mreq, mopt, runFormPost, checkM, check )
@@ -316,12 +315,12 @@ formBrand bid brand extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (brandMarkHeight . entityVal <$> brand)
-    (nameR,nameV) <- mopt textareaField FieldSettings
+    (nameR,nameV) <- mopt htmlField FieldSettings
         { fsLabel = SomeMessage MsgBrandName
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (brandName . entityVal <$> brand)
-    (strapR,strapV) <- mopt textareaField FieldSettings
+    (strapR,strapV) <- mopt htmlField FieldSettings
         { fsLabel = SomeMessage MsgBrandStrapline
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
@@ -331,7 +330,7 @@ formBrand bid brand extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("style","display:none"),("accept","image/ico,.ico")]
         } Nothing
-    (moreR,moreV) <- mopt textareaField FieldSettings
+    (moreR,moreV) <- mopt htmlField FieldSettings
         { fsLabel = SomeMessage MsgMore
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]

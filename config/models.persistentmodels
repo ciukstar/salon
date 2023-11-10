@@ -104,11 +104,11 @@ Brand
   markMime Text Maybe
   markWidth Text Maybe
   markHeight Text Maybe
-  name Textarea Maybe
-  strapline Textarea Maybe
+  name Html Maybe
+  strapline Html Maybe
   ico ByteString Maybe
   icoMime Text Maybe
-  more Textarea Maybe
+  more Html Maybe
 
 ContactUs
   business BusinessId OnDeleteCascade

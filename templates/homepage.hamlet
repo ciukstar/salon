@@ -39,18 +39,18 @@
               <img src=@{AdminR $ BrandMarkR bid rid} alt=_{MsgBrandMark} style="max-width:100%">
           <figcaption>
             $maybe name <- name
-              #{preEscapedToMarkup $ unTextarea name}
+              ^{name}
             $maybe strap <- strap
-              #{preEscapedToMarkup $ unTextarea strap}
+              ^{strap}
       $nothing
         <figure>
           <figcaption>
             $maybe name <- name
-              #{preEscapedToMarkup $ unTextarea name}
+              ^{name}
             $maybe strap <- strap
-              #{preEscapedToMarkup $ unTextarea strap}
+              ^{strap}
       $maybe more <- more
-        #{preEscapedToMarkup $ unTextarea more}
+        ^{more}
   $nothing
     <div #brandDefault>
       <figure>
