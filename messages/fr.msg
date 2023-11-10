@@ -346,6 +346,10 @@ Doc0065 hrefContactUs hrefBusiness: La page « Contacts » est personnalisable d
 
 Doc0066 hrefBusiness: La page « Contacts » est personnalisable depuis l'onglet « Contactez-nous » du menu <a href=#{hrefBusiness}>« Entreprise »</a> du groupe « Données ».
 
+Doc0067 hrefHome hrefBrand hrefBusiness: La page <a href=#{hrefHome}>« Accueil »</a> est personnalisable depuis l'onglet <a href=#{hrefBrand}>« Marque »</a> du menu <a href=#{hrefBusiness}>« Entreprise »</a> du groupe « Données ».
+
+Doc0068 hrefHome hrefBusiness: La page <a href=#{hrefHome}>« Accueil »</a> est personnalisable depuis l'onglet « Marque » du menu <a href=#{hrefBusiness}>« Entreprise »</a> du groupe « Données ».
+
 Doc007: Actuellement, l'application ne prend en charge qu'une seule entreprise. Un support multi-métiers est prévu pour les futures versions de l'application.
 
 Doc008 href: Les utilisateurs de l'application, y compris les clients, les employés et les administrateurs, peuvent être enregistrés via le formulaire <a href=#{href}>« Inscription »</a>.

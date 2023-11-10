@@ -346,6 +346,10 @@ Doc0065 hrefContactUs hrefBusiness: Pagina „Contacte” poate fi personalizat�
 
 Doc0066 hrefBusiness: Pagina „Contacte” poate fi personalizată din fila „Contactați-ne” din meniul <a href=#{hrefBusiness}>„Afacere”</a> din grupul „Date”.
 
+Doc0067 hrefHome hrefBrand hrefBusiness: Pagina <a href=#{hrefHome}>„Acasă”</a> este personalizabilă din fila <a href=#{hrefBrand}>„Marca”</a> din meniul <a href=#{hrefBusiness}>„Afacere”</a> din grupul „Date”.
+
+Doc0068 hrefHome hrefBusiness: Pagina <a href=#{hrefHome}>„Acasă”</a> este personalizabilă din fila „Marca” din meniul <a href=#{hrefBusiness}>„Afacere”</a> din grupul „Date”.
+
 Doc007: În prezent, aplicația acceptă o singură afacere. Asistența multi-business este planificată pentru versiunile viitoare ale aplicației.
 
 Doc008 href: Utilizatorii aplicației, inclusiv clienți, angajați și administratori, pot fi înregistrați prin intermediul formularului <a href=#{href}>„Înregistrare”</a>.

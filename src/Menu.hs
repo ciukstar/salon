@@ -32,11 +32,10 @@ import Foundation
       , BusinessContactR
       )
     , AppMessage
-      ( MsgSourceCode, MsgDocumentation, MsgBrand, MsgContactUs, MsgAboutUs
-      , MsgMyAppointments, MsgServices, MsgBookAppointment, MsgWelcome, MsgSalon
-      , MsgUsers, MsgStaff, MsgData, MsgResources, MsgRequests
-      , MsgBusiness, MsgClose, MsgAnalytics, MsgWorkload, MsgCustomerRanking
-      , MsgServiceRanking
+      ( MsgSourceCode, MsgDocumentation, MsgContactUs, MsgAboutUs, MsgSalon
+      , MsgMyAppointments, MsgServices, MsgBookAppointment, MsgWelcome, MsgUsers
+      , MsgStaff, MsgData, MsgResources, MsgRequests, MsgBusiness, MsgClose
+      , MsgAnalytics, MsgWorkload, MsgCustomerRanking, MsgServiceRanking
       )
     )
 

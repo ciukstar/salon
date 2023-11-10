@@ -22,7 +22,7 @@ import Foundation
       )
     , AdminR
       ( AdmServicesR, BusinessR, UsersR, BusinessAboutR, BusinessContactR
-      , BusinessHoursR
+      , BusinessHoursR, BrandR
       )
     , AppMessage
       ( MsgDocumentation, MsgPhoto, MsgNavigationMenu, MsgLogin, MsgUserProfile
@@ -30,7 +30,7 @@ import Foundation
       , MsgBasicEntities, MsgBusiness, MsgUser
       , MsgAppName, MsgOverview, MsgDoc001, MsgDoc002, MsgDoc003, MsgDoc004
       , MsgDoc005, MsgDoc0061, MsgDoc0062, MsgDoc0063, MsgDoc0064
-      , MsgDoc0065, MsgDoc0066
+      , MsgDoc0065, MsgDoc0066, MsgDoc0067, MsgDoc0068
       , MsgDoc007, MsgDoc008, MsgDoc009
       )
     )

@@ -59,7 +59,7 @@
     /aov 	 	   StatsAovR   GET
 
 /admin AdminR:
-
+    
     /delete/contact/business/#BusinessId/#ContactUsId BusinessContactDeleteR POST
     /form/contact/business/#BusinessId/#ContactUsId   BusinessContactEditR   GET POST
     /form/contact/business/#BusinessId		      BusinessContactCreateR GET
@@ -86,12 +86,12 @@
     /business/create            		 	      	   BusinessCreateR             GET
     /business                   		 	      	   BusinessR                   GET POST
 
-    /brand/#BrandId/ico    BrandIcoR    GET
-    /brand/#BrandId/mark   BrandMarkR   GET
-    /brand/delete          BrandDeleteR POST
-    /brand/#BrandId/edit   BrandEditR   GET POST
-    /brand/create          BrandCreateR GET
-    /brand                 BrandR       GET POST
+    /business/#BusinessId/brand/#BrandId/ico    BrandIcoR    GET
+    /business/#BusinessId/brand/#BrandId/mark   BrandMarkR   GET
+    /business/#BusinessId/brand/#BrandId/delete BrandDeleteR POST
+    /business/#BusinessId/brand/#BrandId/edit   BrandEditR   GET POST
+    /business/#BusinessId/brand/create          BrandCreateR GET
+    /business/#BusinessId/brand  		BrandR       GET POST
 
 
     /delete/experts/#RoleId/+Services AdmExpertDeleteR      POST

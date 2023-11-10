@@ -3,6 +3,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE PatternSynonyms #-}
+{-# LANGUAGE TupleSections #-}
 
 module Admin.Business
   ( getBusinessR
@@ -38,6 +39,14 @@ module Admin.Business
   , getBusinessContactEditR
   , postBusinessContactEditR
   , postBusinessContactDeleteR
+  , getBrandR
+  , postBrandR
+  , getBrandEditR
+  , postBrandEditR
+  , postBrandDeleteR
+  , getBrandMarkR
+  , getBrandIcoR
+  , getBrandCreateR
   ) where
 
 import Control.Applicative ((<|>))
@@ -48,6 +57,7 @@ import Data.Fixed (mod')
 import qualified Data.Map.Lazy as M (Map, fromListWith, lookup, toList, fromList)
 import Data.Maybe (isNothing, isJust, fromMaybe)
 import Data.Text (Text, pack, unpack, intercalate)
+import Data.Text.Encoding (encodeUtf8)
 import Data.Time.Clock
     ( NominalDiffTime, getCurrentTime, utctDay, secondsToNominalDiffTime )
 import Data.Time.Calendar
@@ -68,6 +78,9 @@ import Yesod.Auth (maybeAuth, Route (LoginR))
 import Yesod.Core
     ( Yesod(defaultLayout), getMessages, SomeMessage (SomeMessage)
     , redirect, addMessageI, newIdent, addScriptRemote, addStylesheetRemote
+    , FileInfo (fileContentType), TypedContent (TypedContent), typeSvg
+    , emptyContent, ToContent (toContent), fileSourceByteString
+    , preEscapedToMarkup
     )
 import Yesod.Core.Handler
     ( setUltDestCurrent, getCurrentRoute, getYesod, languages
@@ -76,7 +89,7 @@ import Yesod.Core.Widget (setTitleI, whamlet, toWidget)
 import Yesod.Form.Input (runInputGet, iopt)
 import Yesod.Form.Fields
     ( textField, emailField, textareaField, intField, dayField, timeField
-    , hiddenField, htmlField, checkBoxField, doubleField
+    , hiddenField, htmlField, checkBoxField, doubleField, unTextarea, fileField
     )
 import Yesod.Form.Functions
     ( generateFormPost, mreq, mopt, runFormPost, checkM, check )
@@ -99,7 +112,7 @@ import Database.Esqueleto.Experimental
 
 import Foundation
     ( Handler, Widget
-    , Route (ProfileR, AccountPhotoR, PhotoPlaceholderR, AuthR, AdminR)
+    , Route (ProfileR, AccountPhotoR, PhotoPlaceholderR, AuthR, AdminR, StaticR)
     , AdminR
       ( BusinessR, BusinessCreateR, BusinessEditR, BusinessDeleteR
       , BusinessHoursR, BusinessHoursCreateR, BusinessTimeSlotR
@@ -111,6 +124,7 @@ import Foundation
       , BusinessAboutDeleteR
       , BusinessContactR, BusinessContactCreateR, BusinessContactEditR
       , BusinessContactDeleteR
+      , BrandR, BrandCreateR, BrandMarkR, BrandDeleteR, BrandEditR, BrandIcoR
       )
     , AppMessage
       ( MsgBusiness, MsgPhoto, MsgNoBusinessYet, MsgTheName, MsgAddress, MsgAdd
@@ -127,7 +141,9 @@ import Foundation
       , MsgAlreadyExists, MsgInvalidFormData, MsgWorkSchedule, MsgShowSchedule
       , MsgShowMap, MsgLongitude, MsgLatitude, MsgMonday, MsgTuesday, MsgWednesday
       , MsgThursday, MsgFriday, MsgSaturday, MsgSunday, MsgNoBusinessHoursFound
-      , MsgShowAddress, MsgAddress, MsgNoBusinessAddressFound
+      , MsgShowAddress, MsgAddress, MsgNoBusinessAddressFound, MsgBrand, MsgNoBrandYet
+      , MsgBrandMark, MsgMarkWidth, MsgMarkHeight, MsgBrandName, MsgBrandStrapline
+      , MsgFavicon, MsgMore
       )
     )
 
@@ -153,15 +169,197 @@ import Model
       , BusinessEmail, BusinessId, BusinessTzo, BusinessTz, BusinessCurrency
       , BusinessHoursId, BusinessHoursDay, BusinessHoursOpen, BusinessHoursClose
       , BusinessHoursDayType, AboutUsBusiness, AboutUsId, ContactUsBusiness
-      , ContactUsId
+      , ContactUsId, BrandId, BrandBusiness, BrandMarkWidth, BrandMarkHeight
+      , BrandName, BrandStrapline, BrandMore, BrandMark, BrandMarkMime, BrandIco
+      , BrandIcoMime
       )
     , DayType (Weekday, Weekend, Holiday)
     , SortOrder (SortOrderAsc, SortOrderDesc)
     , mbat
+    , Brand
+      ( Brand, brandBusiness, brandMark, brandMarkMime, brandMarkWidth, brandMarkHeight
+      , brandName, brandStrapline, brandIco, brandIcoMime, brandMore
+      )
+    , BrandId
     )
-
+    
 import Settings (widgetFile)
+import Settings.StaticFiles (img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg)
 import Menu (menu)
+
+
+getBrandIcoR :: BusinessId -> BrandId -> Handler TypedContent
+getBrandIcoR bid rid = do
+    brand <- runDB $ selectOne $ do
+        x <- from $ table @Brand
+        where_ $ x ^. BrandBusiness ==. val bid
+        where_ $ x ^. BrandId ==. val rid
+        return x
+    return $ case brand of
+      Just (Entity _ (Brand _ _ _ _ _ _ _ (Just bs) (Just mime) _)) -> TypedContent (encodeUtf8 mime) (toContent bs)
+      _ -> TypedContent typeSvg emptyContent
+
+
+getBrandMarkR :: BusinessId -> BrandId -> Handler TypedContent
+getBrandMarkR bid rid = do
+    brand <- runDB $ selectOne $ do
+        x <- from $ table @Brand
+        where_ $ x ^. BrandBusiness ==. val bid
+        where_ $ x ^. BrandId ==. val rid
+        return x
+    return $ case brand of
+      Just (Entity _ (Brand _ (Just bs) (Just mime) _ _ _ _ _ _ _)) -> TypedContent (encodeUtf8 mime) (toContent bs)
+      _ -> TypedContent typeSvg emptyContent
+
+
+postBrandDeleteR :: BusinessId -> BrandId -> Handler Html
+postBrandDeleteR bid rid = do
+    runDB $ delete $ void $ do
+        x <- from (table @Brand)
+        where_ $ x ^. BrandId ==. val rid 
+    addMessageI "info" MsgRecordDeleted
+    redirect $ AdminR $ BrandR bid
+
+
+postBrandEditR :: BusinessId -> BrandId -> Handler Html
+postBrandEditR bid rid = do
+    ((fr,fw),et) <- runFormPost $ formBrand bid Nothing
+    case fr of
+      FormSuccess (r,mmark,mico) -> do
+          (mark,markMime) <- (,fileContentType <$> mmark) <$> mapM fileSourceByteString mmark
+          (ico,icoMime) <- (,fileContentType <$> mico) <$> mapM fileSourceByteString mico
+          runDB $ update $ \x -> do
+              set x [ BrandMarkWidth =. val (brandMarkWidth r)
+                    , BrandMarkHeight =. val (brandMarkHeight r) 
+                    , BrandName =. val (brandName r)
+                    , BrandStrapline =. val (brandStrapline r)
+                    , BrandMore =. val (brandMore r)
+                    ]
+              where_ $ x ^. BrandId ==. val rid
+          case mark of
+            Just x -> runDB $ update $ \y -> do
+              set y [ BrandMark =. val (Just x), BrandMarkMime =. val markMime ]
+              where_ $ y ^. BrandId ==. val rid
+            Nothing -> return ()
+          case ico of
+            Just x -> runDB $ update $ \y -> do
+              set y [ BrandIco =. val (Just x), BrandIcoMime =. val icoMime ]
+              where_ $ y ^. BrandId ==. val rid
+            Nothing -> return ()
+          addMessageI "info" MsgRecordEdited
+          redirect $ AdminR $ BrandR bid
+      _ -> defaultLayout $ do
+          setTitleI MsgBrand
+          $(widgetFile "admin/business/brand/edit")
+
+
+getBrandEditR :: BusinessId -> BrandId -> Handler Html
+getBrandEditR bid rid = do
+    brand <- runDB $ selectOne $ do
+        x <- from $ table @Brand
+        where_ $ x ^. BrandId ==. val rid
+        return x
+    (fw,et) <- generateFormPost $ formBrand bid brand
+    defaultLayout $ do
+        setTitleI MsgBrand
+        $(widgetFile "admin/business/brand/edit")
+
+
+postBrandR :: BusinessId -> Handler Html
+postBrandR bid = do
+    ((fr,fw),et) <- runFormPost $ formBrand bid Nothing
+    case fr of
+      FormSuccess (r,mmark,mico) -> do
+          (mark,markMime) <- (,fileContentType <$> mmark) <$> mapM fileSourceByteString mmark
+          (ico,icoMime) <- (,fileContentType <$> mico) <$> mapM fileSourceByteString mico
+          runDB $ insert_ $ Brand { brandBusiness = bid
+                                  , brandMark = mark
+                                  , brandMarkMime = markMime
+                                  , brandMarkWidth = brandMarkWidth r
+                                  , brandMarkHeight = brandMarkHeight r
+                                  , brandName = brandName r
+                                  , brandStrapline = brandStrapline r
+                                  , brandIco = ico
+                                  , brandIcoMime = icoMime
+                                  , brandMore = brandMore r
+                                  }
+          addMessageI "info" MsgRecordAdded
+          redirect $ AdminR $ BrandR bid
+      _ -> defaultLayout $ do
+          setTitleI MsgBrand
+          $(widgetFile "admin/business/brand/create")
+
+
+getBrandCreateR :: BusinessId -> Handler Html
+getBrandCreateR bid = do
+    (fw,et) <- generateFormPost $ formBrand bid Nothing
+    defaultLayout $ do
+        setTitleI MsgBrand
+        $(widgetFile "admin/business/brand/create")
+
+
+formBrand :: BusinessId -> Maybe (Entity Brand)
+          -> Html -> MForm Handler (FormResult (Brand,Maybe FileInfo, Maybe FileInfo),Widget)
+formBrand bid brand extra = do
+    (markR,markV) <- mopt fileField FieldSettings
+        { fsLabel = SomeMessage MsgBrandMark
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("style","display:none"),("accept","image/*")]
+        } Nothing
+    (widthR,widthV) <- mopt textField FieldSettings
+        { fsLabel = SomeMessage MsgMarkWidth
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (brandMarkWidth . entityVal <$> brand)
+    (heightR,heightV) <- mopt textField FieldSettings
+        { fsLabel = SomeMessage MsgMarkHeight
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (brandMarkHeight . entityVal <$> brand)
+    (nameR,nameV) <- mopt textareaField FieldSettings
+        { fsLabel = SomeMessage MsgBrandName
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (brandName . entityVal <$> brand)
+    (strapR,strapV) <- mopt textareaField FieldSettings
+        { fsLabel = SomeMessage MsgBrandStrapline
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (brandStrapline . entityVal <$> brand)
+    (icoR,icoV) <- mopt fileField FieldSettings
+        { fsLabel = SomeMessage MsgFavicon
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("style","display:none"),("accept","image/ico,.ico")]
+        } Nothing
+    (moreR,moreV) <- mopt textareaField FieldSettings
+        { fsLabel = SomeMessage MsgMore
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (brandMore . entityVal <$> brand)
+    let r = (,,) <$>
+            ( Brand bid Nothing Nothing
+              <$> widthR
+              <*> heightR
+              <*> nameR
+              <*> strapR
+              <*> pure Nothing
+              <*> pure Nothing
+              <*> moreR
+            ) <*> markR <*> icoR
+    let w = $(widgetFile "admin/business/brand/form")
+    return (r,w)
+
+
+getBrandR :: BusinessId -> Handler Html
+getBrandR bid = do
+    user <- maybeAuth
+    brand <- runDB $ selectOne $ from $ table @Brand
+    msgs <- getMessages
+    setUltDestCurrent
+    curr <- getCurrentRoute
+    defaultLayout $ do
+        setTitleI MsgBrand
+        $(widgetFile "admin/business/brand/brand")
 
 
 postBusinessContactDeleteR :: BusinessId -> ContactUsId -> Handler Html

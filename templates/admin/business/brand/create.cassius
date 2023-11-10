@@ -1,5 +1,5 @@
 main
-  margin: 0 1rem
+  margin: 0 1rem 1rem 1rem
   form
     div.form-field
       display: flex
@@ -18,7 +18,7 @@ main
         #figureMark
           text-align: center
       .mdc-text-field__input
-        caret-color: var(--theme-accent)
+        caret-color: var(--mdc-theme-on-primary)
     div.form-actions
       display: flex
       flex-direction: row

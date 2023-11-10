@@ -29,6 +29,8 @@ The "About Us" page can be customized from the ["About Us"](https://salon-w3cpov
 
 The "Contacts" page can be customized from the ["Contact Us"](https://salon-w3cpovaqka-de.a.run.app/admin/contact/business/1) tab in the menu ["Business"](https://salon-w3cpovaqka-de.a.run.app/admin/business) in the group "Data".
 
+The [“Home”](https://salon-w3cpovaqka-de.a.run.app) page is customizable from the [“Brand”](https://salon-w3cpovaqka-de.a.run.app/admin/business/1/brand) tab of the [“Business”](https://salon-w3cpovaqka-de.a.run.app/admin/business) menu in the “Data” group.
+
 Currently, the app only supports one business. Multi-business support is planned for future versions of the application.
 
 ## User

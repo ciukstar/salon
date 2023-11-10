@@ -346,6 +346,10 @@ Doc0065 hrefContactUs@Text hrefBusiness@Text: The "Contacts" page can be customi
 
 Doc0066 hrefBusiness@Text: The "Contacts" page can be customized from the "Contact Us" tab in the menu <a href=#{hrefBusiness}>"Business"</a> in the group "Data".
 
+Doc0067 hrefHome@Text hrefBrand@Text hrefBusiness@Text: The <a href=#{hrefHome}>“Home”</a> page is customizable from the <a href=#{hrefBrand}>“Brand”</a> tab of the <a href=#{hrefBusiness}>“Business”</a> menu in the “Data” group.
+
+Doc0068 hrefHome@Text hrefBusiness@Text: The <a href=#{hrefHome}>“Home”</a> page is customizable from the “Brand” tab of the <a href=#{hrefBusiness}>“Business”</a> menu in the “Data” group.
+
 Doc007: Currently, the app only supports one business. Multi-business support is planned for future versions of the application.
 
 Doc008 href@Text: Application users, including clients, employees and administrators, can be registered through the <a href=#{href}>"Registration"</a> form.

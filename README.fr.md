@@ -29,6 +29,8 @@ La page « À propos de nous » est personnalisable depuis l'onglet [« À propo
 
 La page « Contacts » est personnalisable depuis l'onglet [« Contactez-nous »](https://salonfr-w3cpovaqka-de.a.run.app/admin/contact/business/1) du menu [« Entreprise »](https://salonfr-w3cpovaqka-de.a.run.app/admin/business) du groupe « Données ».
 
+La page [« Accueil »](https://salon-w3cpovaqka-de.a.run.app) est personnalisable depuis l'onglet [« Marque »](https://salon-w3cpovaqka-de.a.run.app/admin/business/1/brand) du menu [« Entreprise »](https://salon-w3cpovaqka-de.a.run.app/admin/business) du groupe « Données ».
+
 Actuellement, l'application ne prend en charge qu'une seule entreprise. Un support multi-métiers est prévu pour les futures versions de l'application.
 
 ## Utilisateur

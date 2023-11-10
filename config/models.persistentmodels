@@ -99,6 +99,7 @@ User
   deriving Typeable
 
 Brand
+  business BusinessId OnDeleteCascade
   mark ByteString Maybe
   markMime Text Maybe
   markWidth Text Maybe

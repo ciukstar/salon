@@ -1,3 +1,4 @@
+
 ^{menu}
 <header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row>
@@ -9,6 +10,32 @@
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgBusiness}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end>
+      $maybe Entity rid _ <- brand
+        <button.mdc-top-app-bar__action-item.mdc-icon-button type=button title=_{MsgDel}
+          onclick="document.getElementById('dlgBrandDelete').MDCDialog.open()">
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>delete
+        <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{AdminR $ BrandEditR bid rid} role=button title=_{MsgEdit}>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>edit
+
+        <div.mdc-dialog #dlgBrandDelete data-mdc-auto-init=MDCDialog>
+          <div.mdc-dialog__container>
+            <div.mdc-dialog__surface role=alertdialog tabindex=-1>
+              <h4.mdc-dialog__title>_{MsgPleaseConfirm}
+              <div.mdc-dialog__content>_{MsgDeleteAreYouSure}
+              <div.mdc-dialog__actions style="display:flex;gap:0.5rem">
+                <button.mdc-dialog-button.mdc-button type=button data-mdc-dialog-action=cancel>
+                  <span.mdc-button__ripple>
+                  <span.mdc-button__label>_{MsgCancel}
+                <form method=post action=@{AdminR $ BrandDeleteR bid rid}>
+                  <button.mdc-dialog-button.mdc-button.mdc-button--raised type=submit>
+                    <span.mdc-button__ripple>
+                    <span.mdc-button__label>_{MsgYesDelete}
+          <div.mdc-dialog__scrim>
+          
       $maybe Entity uid _ <- user
         <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{ProfileR} role=button title=_{MsgUserProfile}>
           <span.mdc-icon-button__ripple>
@@ -26,7 +53,6 @@
       <div.mdc-tab-scroller>
         <div.mdc-tab-scroller__scroll-area>
           <div.mdc-tab-scroller__scroll-content>
-          
             <a.mdc-tab href=@{AdminR BusinessR} role=tab tabindex=0
               :curr == Just (AdminR BusinessR):.mdc-tab--active
               :curr == Just (AdminR BusinessR):aria-selected=true>
@@ -46,7 +72,7 @@
                 <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
               <span.mdc-tab__ripple>
               <span.mdc-tab__focus-ring>
-
+              
             <a.mdc-tab href=@{AdminR $ BusinessAboutR bid} role=tab tabindex=0
               :curr == Just (AdminR $ BusinessAboutR bid):.mdc-tab--active
               :curr == Just (AdminR $ BusinessAboutR bid):aria-selected=true>
@@ -56,7 +82,7 @@
                 <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
               <span.mdc-tab__ripple>
               <span.mdc-tab__focus-ring>
-
+              
             <a.mdc-tab href=@{AdminR $ BusinessContactR bid} role=tab tabindex=0
               :curr == Just (AdminR $ BusinessContactR bid):.mdc-tab--active
               :curr == Just (AdminR $ BusinessContactR bid):aria-selected=true>
@@ -79,95 +105,47 @@
     
 <main.mdc-top-app-bar--fixed-adjust>
   <div.mdc-top-app-bar--fixed-adjust>
+    $maybe Entity rid (Brand bid mark _ width height name strap _ _ more) <- brand
+      $maybe _ <- mark
+        <figure>
+            $case (width,height)
+              $of (Just w,Just h)
+                <img src=@{AdminR $ BrandMarkR bid rid} alt=_{MsgBrandMark} style="width:#{w};height:#{h};max-width:100%">
+              $of (Just w,Nothing)
+                <img src=@{AdminR $ BrandMarkR bid rid} alt=_{MsgBrandMark} style="width:#{w};max-width:100%">
+              $of (Nothing,Just h)
+                <img src=@{AdminR $ BrandMarkR bid rid} alt=_{MsgBrandMark} style="height:#{h};max-width:100%">
+              $of (Nothing,Nothing)
+                <img src=@{AdminR $ BrandMarkR bid rid} alt=_{MsgBrandMark} style="max-width:100%">
+          <figcaption>
+            $maybe name <- name
+              #{preEscapedToMarkup $ unTextarea name}
+            $maybe strap <- strap
+              #{preEscapedToMarkup $ unTextarea strap}
+      $nothing
+        <figure>
+          <figcaption>
+            $maybe name <- name
+              #{preEscapedToMarkup $ unTextarea name}
+            $maybe strap <- strap
+              #{preEscapedToMarkup $ unTextarea strap}
+      $maybe more <- more
+        #{preEscapedToMarkup $ unTextarea more}
+    $nothing
+      <figure style="text-align:center">
+        <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
+        <figcaption>
+          _{MsgNoBrandYet}.
+      <div.mdc-touch-target-wrapper #fabBrandCreate style="position:fixed;right:1rem;bottom:1rem">
+        <a.mdc-fab.mdc-fab--touch href=@{AdminR $ BrandCreateR bid}>
+          <span.mdc-fab__ripple>
+          <span.mdc-fab__focus-ring>
+          <span.mdc-fab__icon.material-symbols-outlined>add
+          <span.mdc-fab__touch>
 
-  $forall (_,msg) <- filter (((==) "warn" . fst)) msgs
-    <div.mdc-banner role=banner data-mdc-auto-init=MDCBanner>
-      <div.mdc-banner__content role=alertdialog aria-live=assertive>
-        <div.mdc-banner__graphic-text-wrapper>
-          <div.mdc-banner__graphic role=img style="background-color:var(--mdc-theme-error)">
-            <i.mdc-banner__icon.material-symbols-outlined>warning
-          <div.mdc-banner__text>
-            #{msg}
-        <div.mdc-banner__actions>
-          <button.mdc-banner__primary-action.mdc-icon-button type=button>
-            <span.mdc-icon-button__ripple>
-            <i.material-symbols-outlined>close
-
-  <div.toolbar role=toolbar ##{toolbarTop}>
-    <div.mdc-segmented-button.mdc-segmented-button--single-select role=radiogroup data-mdc-auto-init=MDCSegmentedButton>
-      <a.mdc-segmented-button__segment href=@{AdminR $ BusinessCalendarR bid month} role=radio
-        :curr == Just (AdminR $ BusinessCalendarR bid month):.mdc-segmented-button__segment--selected
-        :curr == Just (AdminR $ BusinessCalendarR bid month):aria-checked=true
-        :curr /= Just (AdminR $ BusinessCalendarR bid month):aria-checked=false>
-        <div.mdc-segmented-button__ripple>
-        <i.mdc-segmented-button__icon.material-symbols-outlined>calendar_month
-        <div.mdc-segmented-button__label>_{MsgCalendar}
-      <a.mdc-segmented-button__segment href=@{AdminR $ BusinessHoursR bid} role=radio 
-        :curr == Just (AdminR $ BusinessHoursR bid):.mdc-segmented-button__segment--selected
-        :curr == Just (AdminR $ BusinessHoursR bid):aria-checked=true
-        :curr /= Just (AdminR $ BusinessHoursR bid):aria-checked=false>
-        <div.mdc-segmented-button__ripple>
-        <i.mdc-segmented-button__icon.material-symbols-outlined>list
-        <div.mdc-segmented-button__label>_{MsgList}
-
-    $case sort
-      $of SortOrderAsc
-        <a.mdc-icon-button role=button title=_{MsgSortDescending}
-          href=@?{(AdminR $ BusinessHoursR bid,[("sort",pack $ show SortOrderDesc)])}>
-          <span.mdc-icon-button__ripple>
-          <span.mdc-icon-button__focus-ring>
-          <i.material-symbols-outlined style="transform:rotateX(180deg)">sort
-      $of SortOrderDesc
-        <a.mdc-icon-button role=button title=_{MsgSortAscending}
-          href=@?{(AdminR $ BusinessHoursR bid,[("sort",pack $ show SortOrderAsc)])}>
-          <span.mdc-icon-button__ripple>
-          <span.mdc-icon-button__focus-ring>
-          <i.material-symbols-outlined>sort
-
-  $if null slots
-    <figure style="text-align:center">
-      <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
-      <figcaption>
-        _{MsgNoBusinessScheduleYet}.
-
-  $else
-    <nav.mdc-list data-mdc-auto-init=MDCList>
-      $forall Entity sid (BusinessHours _ day open close dtype) <- slots
-        $with (d,o,c) <- (show day,show open,show close)
-          <a.mdc-list-item.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon
-            href=@{AdminR $ BusinessTimeSlotR bid sid}>
-            <span.mdc-list-item__ripple>
-            <span.mdc-list-item__content>
-              <div.mdc-list-item__primary-text>
-                <time.day datetime=#{d}>
-                  #{d}
-              <div.mdc-list-item__secondary-text>
-                <time.time-of-day datetime="#{d}T#{o}">
-                  #{o}
-                \ &mdash;
-                <time.time-of-day datetime="#{d}T#{c}">
-                  #{c}
-              <div.mdc-list-item__secondary-text>
-                $case dtype
-                  $of Weekday
-                    _{MsgWeekday}
-                  $of Weekend
-                    _{MsgWeekend}
-                  $of Holiday
-                    _{MsgHoliday}
-            <span.mdc-list-item__end>
-              <i.material-symbols-outlined>arrow_forward_ios
-          <div.mdc-list-divider role=separator>
-      
-  <div.mdc-touch-target-wrapper ##{fabBusinessHoursCreate}>
-    <a.mdc-fab.mdc-fab--touch href=@{AdminR $ BusinessHoursCreateR bid}>
-      <span.mdc-fab__ripple>
-      <span.mdc-fab__focus-ring>
-      <span.mdc-fab__icon.material-symbols-outlined>add
-      <span.mdc-fab__touch>
-
-$forall (_,msg) <- filter (((==) "info") . fst) msgs
-  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar style="bottom:5rem">
+$forall (_,msg) <- msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar
+    :isNothing brand:style="bottom:5rem">
     <div.mdc-snackbar__surface>
       <div.mdc-snackbar__label>#{msg}
       <div.mdc-snackbar__actions>

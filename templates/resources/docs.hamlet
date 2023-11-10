@@ -54,6 +54,12 @@
       $nothing
         #{trans $ MsgDoc0066 (rndr $ AdminR BusinessR)}
         
+    <p>
+      $maybe Entity bid _ <- business
+        #{trans $ MsgDoc0067 (rndr HomeR) (rndr $ AdminR $ BrandR bid) (rndr $ AdminR BusinessR)}
+      $nothing
+        #{trans $ MsgDoc0068 (rndr HomeR) (rndr $ AdminR BusinessR)}
+        
     <p>_{MsgDoc007}
 
     <div.mdc-typography--headline5>_{MsgUser}

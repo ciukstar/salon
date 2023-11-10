@@ -54,6 +54,7 @@
       <div.mdc-tab-scroller>
         <div.mdc-tab-scroller__scroll-area>
           <div.mdc-tab-scroller__scroll-content>
+          
             <a.mdc-tab href=@{AdminR BusinessR} role=tab tabindex=0
               :curr == Just (AdminR BusinessR):.mdc-tab--active
               :curr == Just (AdminR BusinessR):aria-selected=true>
@@ -63,6 +64,7 @@
                 <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
               <span.mdc-tab__ripple>
               <span.mdc-tab__focus-ring>
+              
             <a.mdc-tab href=@{AdminR $ BusinessHoursR bid} role=tab tabindex=0
               :curr == Just (AdminR $ BusinessHoursR bid):.mdc-tab--active
               :curr == Just (AdminR $ BusinessHoursR bid):aria-selected=true>
@@ -72,6 +74,7 @@
                 <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
               <span.mdc-tab__ripple>
               <span.mdc-tab__focus-ring>
+              
             <a.mdc-tab href=@{AdminR $ BusinessAboutR bid} role=tab tabindex=0
               :curr == Just (AdminR $ BusinessAboutR bid):.mdc-tab--active
               :curr == Just (AdminR $ BusinessAboutR bid):aria-selected=true>
@@ -81,6 +84,7 @@
                 <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
               <span.mdc-tab__ripple>
               <span.mdc-tab__focus-ring>
+              
             <a.mdc-tab href=@{AdminR $ BusinessContactR bid} role=tab tabindex=0
               :curr == Just (AdminR $ BusinessContactR bid):.mdc-tab--active
               :curr == Just (AdminR $ BusinessContactR bid):aria-selected=true>
@@ -89,7 +93,17 @@
               <span.mdc-tab-indicator :curr == Just (AdminR $ BusinessContactR bid):.mdc-tab-indicator--active>
                 <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
               <span.mdc-tab__ripple>
-              <span.mdc-tab__focus-ring>    
+              <span.mdc-tab__focus-ring>
+              
+            <a.mdc-tab href=@{AdminR $ BrandR bid} role=tab tabindex=0
+              :curr == Just (AdminR $ BrandR bid):.mdc-tab--active
+              :curr == Just (AdminR $ BrandR bid):aria-selected=true>
+              <span.mdc-tab__content>
+                <span.mdc-tab__text-label>_{MsgBrand}
+              <span.mdc-tab-indicator :curr == Just (AdminR $ BrandR bid):.mdc-tab-indicator--active>
+                <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
+              <span.mdc-tab__ripple>
+              <span.mdc-tab__focus-ring>
     
 <main.mdc-top-app-bar--fixed-adjust>
   <div.mdc-top-app-bar--fixed-adjust>

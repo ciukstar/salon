@@ -338,13 +338,17 @@ Doc0061 hrefSchedule hrefBusiness: Дополнительно в разделе 
 
 Doc0062 hrefBusiness: Дополнительно в разделе «Организация» на вкладке «График» можно добавить график работы организации на каждый день.
 
-Doc0063 hrefAboutUs hrefBusiness: Страницу «О нас» можно настроить на вкладке <a href=#{hrefAboutUs}>«О нас»</a> в меню <a href=#{hrefBusiness}>«Бизнес»</a> в группе «Данные».
+Doc0063 hrefAboutUs hrefBusiness: Страницу «О нас» можно настроить на вкладке <a href=#{hrefAboutUs}>«О нас»</a> в меню <a href=#{hrefBusiness}>«Организация»</a> в группе «Данные».
 
-Doc0064 hrefBusiness: Страницу «О нас» можно настроить на вкладке «О нас» в меню <a href=#{hrefBusiness}>«Бизнес»</a> в группе «Данные».
+Doc0064 hrefBusiness: Страницу «О нас» можно настроить на вкладке «О нас» в меню <a href=#{hrefBusiness}>«Организация»</a> в группе «Данные».
 
-Doc0065 hrefContactUs hrefBusiness: Страницу «Контакты» можно настроить на вкладке <a href=#{hrefContactUs}>«Контакты»</a> в меню <a href=#{hrefBusiness}>«Бизнес»</a> в группе «Данные».
+Doc0065 hrefContactUs hrefBusiness: Страницу «Контакты» можно настроить на вкладке <a href=#{hrefContactUs}>«Контакты»</a> в меню <a href=#{hrefBusiness}>«Организация»</a> в группе «Данные».
 
-Doc0066 hrefBusiness: Страницу «Контакты» можно настроить на вкладке «Контакты» в меню <a href=#{hrefBusiness}>«Бизнес»</a> в группе «Данные».
+Doc0066 hrefBusiness: Страницу «Контакты» можно настроить на вкладке «Контакты» в меню <a href=#{hrefBusiness}>«Организация»</a> в группе «Данные».
+
+Doc0067 hrefHome hrefBrand hrefBusiness: <a href=#{hrefHome}>«Главная»</a> страница настраивается на вкладке <a href=#{hrefBrand}>«Бренд»</a> меню <a href=#{hrefBusiness}>«Организация»</a> в группе «Данные».
+
+Doc0068 hrefHome hrefBusiness: <a href=#{hrefHome}>«Главная»</a> страница настраивается на вкладке «Бренд» меню <a href=#{hrefBusiness}>«Организация»</a> в группе «Данные».
 
 Doc007: В настоящее время приложение поддерживает только один бизнес. Поддержка нескольких организаций планируется в будущих версиях приложения.
 

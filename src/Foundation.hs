@@ -196,12 +196,12 @@ instance Yesod App where
     isAuthorized (AdminR (EmplCalendarSlotCreateR {})) _ = return Authorized
 
     
-    isAuthorized (AdminR BrandR) _ = return Authorized
-    isAuthorized (AdminR BrandDeleteR) _ = return Authorized
-    isAuthorized (AdminR (BrandEditR _)) _ = return Authorized
-    isAuthorized (AdminR (BrandMarkR _)) _ = return Authorized
-    isAuthorized (AdminR (BrandIcoR _)) _ = return Authorized
-    isAuthorized (AdminR BrandCreateR) _ = return Authorized
+    isAuthorized (AdminR (BrandR _)) _ = return Authorized
+    isAuthorized (AdminR (BrandDeleteR _ _)) _ = return Authorized
+    isAuthorized (AdminR (BrandEditR _ _)) _ = return Authorized
+    isAuthorized (AdminR (BrandMarkR _ _)) _ = return Authorized
+    isAuthorized (AdminR (BrandIcoR _ _)) _ = return Authorized
+    isAuthorized (AdminR (BrandCreateR _)) _ = return Authorized
 
     isAuthorized (AdminR BusinessR) _ = return Authorized
     isAuthorized (AdminR BusinessCreateR) _ = return Authorized

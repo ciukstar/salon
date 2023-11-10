@@ -29,6 +29,8 @@ Pagina „Despre noi” poate fi personalizată din fila [„Despre noi”](http
 
 Pagina „Contacte” poate fi personalizată din fila [„Contactați-ne”](https://salonro-w3cpovaqka-de.a.run.app/admin/contact/business/1) din meniul [„Afacere”](https://salonro-w3cpovaqka-de.a.run.app/admin/business) din grupul „Date”.
 
+Pagina [„Acasă”](https://salon-w3cpovaqka-de.a.run.app) este personalizabilă din fila [„Marca”](https://salon-w3cpovaqka-de.a.run.app/admin/business/1/brand) din meniul [„Afacere”](https://salon-w3cpovaqka-de.a.run.app/admin/business) din grupul „Date”.
+
 În prezent, aplicația acceptă o singură afacere. Asistența multi-business este planificată pentru versiunile viitoare ale aplicației.
 
 ## Utilizator

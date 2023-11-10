@@ -89,6 +89,15 @@
                   <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
                 <span.mdc-tab__ripple>
                 <span.mdc-tab__focus-ring>
+              <a.mdc-tab href=@{AdminR $ BrandR bid} role=tab tabindex=0
+                :curr == Just (AdminR $ BrandR bid):.mdc-tab--active
+                :curr == Just (AdminR $ BrandR bid):aria-selected=true>
+                <span.mdc-tab__content>
+                  <span.mdc-tab__text-label>_{MsgBrand}
+                <span.mdc-tab-indicator :curr == Just (AdminR $ BrandR bid):.mdc-tab-indicator--active>
+                  <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
+                <span.mdc-tab__ripple>
+                <span.mdc-tab__focus-ring>
     
     
 <main.mdc-top-app-bar--fixed-adjust>

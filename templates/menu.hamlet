@@ -110,7 +110,7 @@
             
       <hr.mdc-deprecated-list-divider role=separator>
       
-      <details :elem curr [Just (AdminR $ AdmServicesR (Services [])),Just (AdminR AdmStaffR),Just (AdminR UsersR),Just (AdminR BrandR),Just (AdminR BusinessR),((AdminR . BusinessHoursR) . entityKey) <$> business,((AdminR . flip BusinessCalendarR month) . entityKey) <$> business,((AdminR . BusinessAboutR) . entityKey) <$> business,((AdminR . BusinessContactR) . entityKey) <$> business]:open
+      <details :elem curr [Just (AdminR $ AdmServicesR (Services [])),Just (AdminR AdmStaffR),Just (AdminR UsersR),((AdminR . BrandR) . entityKey) <$> business,Just (AdminR BusinessR),((AdminR . BusinessHoursR) . entityKey) <$> business,((AdminR . flip BusinessCalendarR month) . entityKey) <$> business,((AdminR . BusinessAboutR) . entityKey) <$> business,((AdminR . BusinessContactR) . entityKey) <$> business]:open
         ontoggle="document.getElementById('iconDataExpand').textContent = this.open ? 'expand_less' : 'expand_more'">
         <summary.mdc-deprecated-list>
           <li.mdc-deprecated-list-item>
@@ -142,14 +142,6 @@
             <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>edit_note
             <span.mdc-deprecated-list-item__text>_{MsgUsers}
 
-          <a.mdc-deprecated-list-item href=@{AdminR BrandR}
-            :Just (AdminR BrandR) /= curr:tabindex=-1
-            :Just (AdminR BrandR) == curr:tabindex=0
-            :Just (AdminR BrandR) == curr:.mdc-deprecated-list-item--activated>
-            <span.mdc-deprecated-list-item__ripple>
-            <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>edit_note
-            <span.mdc-deprecated-list-item__text>_{MsgBrand}
-
           <a.mdc-deprecated-list-item href=@{AdminR BusinessR}
             :Just (AdminR BusinessR) /= curr:tabindex=-1
             :Just (AdminR BusinessR) == curr:tabindex=0
@@ -165,7 +157,10 @@
             :(((AdminR . BusinessAboutR) . entityKey) <$> business) == curr:.mdc-deprecated-list-item--activated
             :(((AdminR . BusinessContactR) . entityKey) <$> business) /= curr:tabindex=-1
             :(((AdminR . BusinessContactR) . entityKey) <$> business) == curr:tabindex=0
-            :(((AdminR . BusinessContactR) . entityKey) <$> business) == curr:.mdc-deprecated-list-item--activated>
+            :(((AdminR . BusinessContactR) . entityKey) <$> business) == curr:.mdc-deprecated-list-item--activated
+            :(((AdminR . BrandR) . entityKey) <$> business) /= curr:tabindex=-1
+            :(((AdminR . BrandR) . entityKey) <$> business) == curr:tabindex=0
+            :(((AdminR . BrandR) . entityKey) <$> business) == curr:.mdc-deprecated-list-item--activated>
             <span.mdc-deprecated-list-item__ripple>
             <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>edit_note
             <span.mdc-deprecated-list-item__text>_{MsgBusiness}

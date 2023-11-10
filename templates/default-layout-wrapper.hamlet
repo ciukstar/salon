@@ -11,10 +11,10 @@ $doctype 5
     <meta name="author" content="Sergiu Starciuc, ciukstar@gmail.com">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="theme-color" content="#FEDBD0">
-    $maybe Entity bid (Brand _ _ _ _ _ _ ico mime _) <- brand
+    $maybe Entity rid (Brand bid _ _ _ _ _ _ ico mime _) <- brand
       $maybe _ <- ico
         $maybe mime <- mime
-          <link rel=icon type=#{mime} href=@{AdminR $ BrandIcoR bid}>
+          <link rel=icon type=#{mime} href=@{AdminR $ BrandIcoR bid rid}>
     
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">

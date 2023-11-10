@@ -29,6 +29,8 @@
 
 Страницу «Контакты» можно настроить на вкладке [«Контакты»](https://salonru-w3cpovaqka-de.a.run.app/admin/contact/business/1) в меню [«Бизнес»](https://salonru-w3cpovaqka-de.a.run.app/admin/business) в группе «Данные».
 
+[«Главная»](https://salon-w3cpovaqka-de.a.run.app) страница настраивается на вкладке [«Бренд»](https://salon-w3cpovaqka-de.a.run.app/admin/business/1/brand) меню [«Организация»](https://salon-w3cpovaqka-de.a.run.app/admin/business) в группе «Данные».
+
 В настоящее время приложение поддерживает только один бизнес. Поддержка нескольких организаций планируется в будущих версиях приложения.
 
 ## Пользователь

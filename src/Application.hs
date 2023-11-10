@@ -109,12 +109,9 @@ import Admin.Business
   , getBusinessAboutEditR, postBusinessAboutEditR, postBusinessAboutDeleteR
   , getBusinessContactR, postBusinessContactR, getBusinessContactCreateR
   , getBusinessContactEditR, postBusinessContactEditR, postBusinessContactDeleteR
+  , getBrandR, getBrandMarkR, getBrandIcoR, postBrandR, getBrandEditR
+  , postBrandEditR, postBrandDeleteR, getBrandCreateR
   )
-
-import Admin.Brand
-    ( getBrandR, getBrandMarkR, getBrandIcoR, postBrandR, getBrandEditR
-    , postBrandEditR, postBrandDeleteR, getBrandCreateR
-    )
 
 import Admin.Users
     ( getUsersR
