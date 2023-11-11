@@ -31,10 +31,10 @@
 
   <div.toolbar role=toolbar>
     <div.mdc-segmented-button.mdc-segmented-button--single-select role=radiogroup data-mdc-auto-init=MDCSegmentedButton>
-      <a.mdc-segmented-button__segment href=@{BookingsCalendarR today} role=radio
-        :curr == Just (BookingsCalendarR today):.mdc-segmented-button__segment--selected
-        :curr == Just (BookingsCalendarR today):aria-checked=true
-        :curr /= Just (BookingsCalendarR today):aria-checked=false>
+      <a.mdc-segmented-button__segment href=@{BookingsCalendarR month} role=radio
+        :curr == Just (BookingsCalendarR month):.mdc-segmented-button__segment--selected
+        :curr == Just (BookingsCalendarR month):aria-checked=true
+        :curr /= Just (BookingsCalendarR month):aria-checked=false>
         <div.mdc-segmented-button__ripple>
         <i.mdc-segmented-button__icon.material-symbols-outlined>calendar_month
         <div.mdc-segmented-button__label>_{MsgCalendar}
@@ -45,36 +45,48 @@
         <div.mdc-segmented-button__ripple>
         <i.mdc-segmented-button__icon.material-symbols-outlined>list
         <div.mdc-segmented-button__label>_{MsgList}
-      
-  $if null books
-    <figure style="text-align:center">
-      <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
-      <figcaption>
-        _{MsgNoAppointmentsYet}.
-        <p>
-          <a.mdc-button.mdc-button--raised href=@{BookOffersR} role=button>
-            <span.mdc-button__ripple>
-            <span.mdc-button__focus-ring>
-            <span.mdc-button__label>_{MsgBookAppointment}
-  $else
-    <nav.mdc-list data-mdc-auto-init=MDCList>
-      $forall (Entity bid (Book _ _ _ date time _ _ _ status),Entity _ (Service sname _ _ _ _ _)) <- books
-        $with (color,icon,msg) <- resolveBookStatus status
-          <a.mdc-list-item href=@{AppointmentR bid}
-            .mdc-list-item--with-leading-icon.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon>
-            <span.mdc-list-item__ripple>
-            <span.mdc-list-item__start>
-              <i.material-symbols-outlined style="color:#{color}" title=_{msg}>#{icon}                
-            <span.mdc-list-item__content>
-              <div.appointment-time.mdc-list-item__primary-text>
-                #{show date} #{show time}
-              <div.mdc-list-item__secondary-text style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
-                #{sname}
-              <div.mdc-list-item__secondary-text style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
-                _{msg}
-            <span.mdc-list-item__end>
-              <i.material-symbols-outlined>arrow_forward_ios
-          <div.mdc-list-divider role=separator>
+
+    <a.mdc-icon-button href=@{BookingsCalendarR today} role=button title=_{MsgToday}
+      :today == month:style="visibility:hidden">
+      <span.mdc-icon-button__ripple>
+      <span.mdc-icon-button__focus-ring>
+      <i.material-symbols-outlined>today
+
+  <div.calendar>
+    <div.header>
+      <a.mdc-icon-button href=@{BookingsCalendarR prev} role=button rel=nofollow>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>arrow_back
+      $with m <- show month
+        <time.month-of-year datetime=#{m}>
+          #{m}
+      <a.mdc-icon-button href=@{BookingsCalendarR next} role=button rel=nofollow>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>arrow_forward
+    $forall wd <- [MsgMon,MsgTue,MsgWed,MsgThu,MsgFri,MsgSat,MsgSun]
+      <div.col-header>
+        _{wd}
+    $forall i <- [0,1,2,3,4,5]
+      $forall day <- take 7 (drop (i * 7) page)
+        <div.cell>
+          $with (y,m,d) <- toGregorian day
+            $if (==) month (YearMonth y m)
+              $maybe times <- ML.lookup day books
+                <a href=@{BookingsDayListR uid day} rel=nofollow>
+                  <time.day-of-month datetime=#{show day}>
+                    <small>#{d}
+                  <small>
+                    <div>#{show (length times)}
+                    <div style="border:1px solid var(--theme-accent)">
+              $nothing
+                <a href=# rel=nofollow>
+                  <time.day-of-month datetime=#{show day}>
+                    <small>#{d}
+            $else
+              <time.day-of-month datetime=#{show day} style="color:var(--theme-text-hint-on-light)">
+                <small>#{d}
 
 $forall (_,msg) <- msgs
   <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>

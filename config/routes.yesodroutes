@@ -10,6 +10,11 @@
 /requests/#BookId                   RequestR           GET POST
 /requests                           RequestsR          GET
 
+
+/bookings/#UserId/list/#Day/#BookId BookingItemR      GET
+/bookings/#UserId/list/#Day         BookingsDayListR  GET
+/bookings/calendar/#Month           BookingsCalendarR GET
+
 /search/appointments             AppointmentsSearchR    GET
 /appointments/#BookId/approve    AppointmentApproveR    POST
 /appointments/#BookId/reschedule AppointmentRescheduleR GET

@@ -1,0 +1,43 @@
+
+header.mdc-top-app-bar
+  div.mdc-top-app-bar__row
+    transition: height 0.3s ease-out
+
+main
+  div.toolbar
+    padding: 1rem 0 0.5rem 1rem
+    display: flex
+    flex-direction: row
+    justify-content: space-between
+    align-items: center
+    a.mdc-segmented-button__segment
+      border-width: 1px
+      border-style: solid
+
+  div.calendar
+    display: grid
+    gap: 0.5rem
+    padding: 0 0.5rem
+    grid-template-columns: repeat(7,1fr)
+    grid-template-rows: auto auto repeat(6,1fr)
+    grid-template-areas: "head head head head head head head"
+    div.header
+      grid-area: head
+      display: flex
+      flex-direction: row
+      justify-content: space-between
+      align-items: center
+    div.col-header
+      text-align: center
+      font-weight: 500
+    div.cell
+      text-align: center
+      vertical-align: text-top
+      > a
+        height: 100%
+        display: flex
+        flex-direction: column
+        justify-content: space-between
+        text-decoration: none
+        time.day-of-month
+          font-weight: 500

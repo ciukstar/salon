@@ -2,3 +2,14 @@
 header.mdc-top-app-bar
   div.mdc-top-app-bar__row
     transition: height 0.3s ease-out
+
+main
+  div.toolbar
+    padding: 1rem 0 0.5rem 1rem
+    display: flex
+    flex-direction: row
+    justify-content: space-between
+    align-items: center
+    a.mdc-segmented-button__segment
+      border-width: 1px
+      border-style: solid

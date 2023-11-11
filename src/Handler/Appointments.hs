@@ -2,6 +2,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE PatternSynonyms #-}
 
 module Handler.Appointments
   ( getAppointmentsR
@@ -13,14 +14,23 @@ module Handler.Appointments
   , postAppointmentApproveR
   , resolveBookStatus
   , getAppointmentsSearchR
+  , getBookingsCalendarR
+  , getBookingsDayListR
+  , getBookingItemR
   ) where
 
+import Data.Bifunctor (Bifunctor(bimap))
+import qualified Data.Map.Lazy as ML (fromListWith, lookup)
 import Control.Monad (unless)
 import Data.Maybe (isJust, mapMaybe)
 import Data.Text (unpack, intercalate, Text, pack)
 import Data.Time.Format (defaultTimeLocale, formatTime)
 import Data.Time.Clock (getCurrentTime, UTCTime (utctDay))
-import Data.Time.Calendar (Day)
+import Data.Time.Calendar
+    ( Day, toGregorian, weekFirstDay, DayOfWeek (Monday)
+    , DayPeriod (periodFirstDay, periodLastDay), addDays
+    )
+import Data.Time.Calendar.Month (Month, pattern YearMonth, addMonths)
 import Data.Time
     ( TimeOfDay, TimeZone (timeZoneMinutes), LocalTime (LocalTime)
     , utcToLocalTime, minutesToTimeZone
@@ -33,7 +43,7 @@ import Yesod.Auth (maybeAuth, Route (LoginR))
 import Yesod.Core
     ( Yesod(defaultLayout), getMessages, getYesod, languages
     , redirect, addMessageI, MonadIO (liftIO)
-    , whamlet, newIdent
+    , whamlet, newIdent, getCurrentRoute
     )
 import Yesod.Core.Handler (setUltDestCurrent, reqGetParams, getRequest)
 import Yesod.Core.Widget (setTitleI)
@@ -57,7 +67,7 @@ import Database.Esqueleto.Experimental
     ( select, selectOne, from, table, innerJoin, on, where_, val, like, in_, valList
     , (:&)((:&)), (^.), (==.), (?.), (=.), (||.), (%), (++.)
     , orderBy, desc, leftJoin, just, update, set, exists, upper_
-    , justList, unValue
+    , justList, unValue, between
     )
 
 import Foundation
@@ -66,7 +76,8 @@ import Foundation
       ( ProfileR, AppointmentsR, AppointmentR, BookOffersR, AuthR
       , PhotoPlaceholderR, AccountPhotoR, ServiceThumbnailR, AdminR
       , AppointmentCancelR, AppointmentHistR, AppointmentRescheduleR
-      , AppointmentApproveR, AppointmentsSearchR
+      , AppointmentApproveR, AppointmentsSearchR, BookingsCalendarR
+      , BookingsDayListR, BookingItemR
       )
     , AdminR (AdmStaffPhotoR)
     , AppMessage
@@ -82,7 +93,9 @@ import Foundation
       , MsgCancel, MsgApprove, MsgMissingForm, MsgAppointmentTimeIsInThePast
       , MsgAppointmentDayIsInThePast, MsgMinutes, MsgTimeZoneOffset, MsgLocation
       , MsgNavigationMenu, MsgUserProfile, MsgUnassigned, MsgAssignee, MsgSearch
-      , MsgSelect, MsgRequest, MsgShowAll, MsgNoAppointmentsFound
+      , MsgSelect, MsgRequest, MsgShowAll, MsgNoAppointmentsFound, MsgToday
+      , MsgList, MsgCalendar, MsgMon, MsgTue, MsgWed, MsgThu, MsgFri, MsgSat
+      , MsgSun
       )
     )
 
@@ -93,7 +106,7 @@ import Model
       )
     , BookId, Book (Book, bookDay, bookTz, bookTzo, bookTime, bookAddr)
     , Offer (Offer), Service (Service), Role (Role, roleName), Hist (Hist)
-    , Staff (Staff, staffName), Thumbnail (Thumbnail), User (User)
+    , Staff (Staff, staffName), Thumbnail (Thumbnail), UserId, User (User)
     , Business, ContactUs (ContactUs)
     , EntityField
       ( BookOffer, OfferId, BookCustomer, BookId, OfferService, ServiceId
@@ -107,6 +120,64 @@ import Model
     )
 
 import Menu (menu)
+
+
+getBookingItemR :: UserId -> Day -> BookId -> Handler Html
+getBookingItemR cid day bid = do
+    book <- runDB $ selectOne $ do
+        x <- from $ table @Book
+        where_ $ x ^. BookId ==. val bid
+        return x
+    defaultLayout $ do
+        setTitleI MsgAppointment
+        $(widgetFile "appointments/calendar/item")
+
+
+getBookingsDayListR :: UserId -> Day -> Handler Html
+getBookingsDayListR cid day = do
+    books <- runDB $ select $ do
+        x :& _ :& s <- from $ table @Book
+            `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
+            `innerJoin` table @Service `on` (\(_ :& o :& s) -> o ^. OfferService ==. s ^. ServiceId)
+        where_ $ x ^. BookCustomer ==. val cid
+        where_ $ x ^. BookDay ==. val day
+        orderBy [desc (x ^. BookDay), desc (x ^. BookTime)]
+        return (x,s)
+    let month = (\(y,m,_) -> YearMonth y m) . toGregorian
+    defaultLayout $ do
+        setTitleI MsgMyAppointments
+        $(widgetFile "appointments/calendar/list")
+
+
+getBookingsCalendarR :: Month -> Handler Html
+getBookingsCalendarR month = do
+    stati <- reqGetParams <$> getRequest
+    user <- maybeAuth
+    setUltDestCurrent
+    msgs <- getMessages
+    case user of
+      Nothing -> defaultLayout $ do
+          setTitleI MsgMyAppointments
+          $(widgetFile "appointments/login")
+      Just (Entity uid _) -> do
+          books <- ML.fromListWith (++) . (bimap unValue ((:[]) . unValue) <$>) <$> runDB ( select $ do
+              x <- from $ table @Book
+              where_ $ x ^. BookCustomer ==. val uid
+              where_ $ x ^. BookDay `between` (val (periodFirstDay month), val (periodLastDay month))
+              orderBy [desc (x ^. BookDay), desc (x ^. BookTime)]
+              return (x ^. BookDay, x ^. BookTime) )
+
+          let start = weekFirstDay Monday (periodFirstDay month)
+          let end = addDays 41 start
+          let page = [start .. end]
+          let next = addMonths 1 month
+          let prev = addMonths (-1) month
+              
+          today <- (\(y,m,_) -> YearMonth y m) . toGregorian . utctDay <$> liftIO getCurrentTime
+          curr <- getCurrentRoute
+          defaultLayout $ do
+              setTitleI MsgMyAppointments
+              $(widgetFile "appointments/calendar/page")
 
 
 getAppointmentsSearchR :: Handler Html
@@ -460,6 +531,8 @@ getAppointmentsR = do
               where_ $ x ^. BookCustomer ==. val uid
               orderBy [desc (x ^. BookDay), desc (x ^. BookTime)]
               return (x,s)
+          today <- (\(y,m,_) -> YearMonth y m) . toGregorian . utctDay <$> liftIO getCurrentTime
+          curr <- getCurrentRoute
           defaultLayout $ do
               setTitleI MsgMyAppointments
               $(widgetFile "appointments/appointments")
