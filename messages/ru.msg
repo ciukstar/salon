@@ -1,3 +1,5 @@
+Completed: Выполнена
+Pending: В ожидании
 NoBusinessAddressFound: Адрес не найден
 ShowAddress: Показать адрес
 NoBusinessHoursFound: Часы работы не найдены

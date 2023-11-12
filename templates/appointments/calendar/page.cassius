@@ -4,17 +4,17 @@ header.mdc-top-app-bar
     transition: height 0.3s ease-out
 
 main
-  div.toolbar
+  ##{toolbarTop}
+    position: relative
     padding: 1rem 0 0.5rem 1rem
     display: flex
     flex-direction: row
     justify-content: space-between
     align-items: center
     a.mdc-segmented-button__segment
-      border-width: 1px
       border-style: solid
 
-  div.calendar
+  ##{divCalendar}
     display: grid
     gap: 0.5rem
     padding: 0 0.5rem
@@ -41,3 +41,8 @@ main
         text-decoration: none
         time.day-of-month
           font-weight: 500
+        small.cell-container
+          display: flex
+          justify-content: center
+          flex-wrap: wrap-reverse
+          border-bottom: 1px solid var(--theme-accent)

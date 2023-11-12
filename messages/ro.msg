@@ -1,3 +1,5 @@
+Completed: Finalizată
+Pending: În așteptare
 NoBusinessAddressFound: Nu a fost găsită nicio adresă
 ShowAddress: Arată adresa
 NoBusinessHoursFound: Nu a fost găsit niciun program de lucru

@@ -1,3 +1,5 @@
+Completed: Completed
+Pending: Pending
 NoBusinessAddressFound: No business address found
 ShowAddress: Show address
 NoBusinessHoursFound: No business hours found

@@ -21,7 +21,6 @@ main
     justify-content: space-between
     align-items: center
     a.mdc-segmented-button__segment
-      border-width: 1px
       border-style: solid
 
   ##{calendarPage}

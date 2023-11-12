@@ -1,3 +1,5 @@
+Completed: Terminée
+Pending: En attente
 NoBusinessAddressFound: Aucune adresse trouvée
 ShowAddress: Afficher l'adresse
 NoBusinessHoursFound: Aucune heure d'ouverture trouvée

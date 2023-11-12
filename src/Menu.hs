@@ -24,6 +24,7 @@ import Foundation
     , Route
       ( ResourcesR, AdminR, ContactR, AboutUsR, AppointmentsR
       , BookOffersR, RequestsR, ServicesR, HomeR, StatsR
+      , BookingsCalendarR
       )
     , StatsR (PopOffersR, WorkloadsR, StatsAovR)
     , AdminR

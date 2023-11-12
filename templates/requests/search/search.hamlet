@@ -61,19 +61,19 @@
   $else
     <nav.mdc-list data-mdc-auto-init=MDCList>
       $forall (Entity bid (Book _ _ _ date time _ _ _ status),Entity _ (Service sname _ _ _ _ _)) <- requests
-        $with (color,icon,msg) <- resolveBookStatus status
+        $with (color,icon,label,title) <- resolveBookStatus status
           <a.mdc-list-item href=@?{(RequestR bid,stati ++ owners)}
             .mdc-list-item--with-leading-icon.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon>
             <span.mdc-list-item__ripple>
             <span.mdc-list-item__start>
-              <i.material-symbols-outlined style="color:#{color}" title=_{msg}>#{icon}                
+              <i.material-symbols-outlined style="color:#{color}" title=_{title}>#{icon}                
             <span.mdc-list-item__content>
               <div.appointment-time.mdc-list-item__primary-text>
                 #{show date} #{show time}
               <div.mdc-list-item__secondary-text>
                 #{sname}
-              <div.mdc-list-item__secondary-text>
-                _{msg}
+              <div.mdc-list-item__secondary-text title=_{title}>
+                _{label}
             <span.mdc-list-item__end>
               <i.material-symbols-outlined>arrow_forward_ios
           <div.mdc-list-divider role=separator>

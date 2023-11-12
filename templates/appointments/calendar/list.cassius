@@ -1,0 +1,4 @@
+
+main
+  ##{appointmentDay}
+    margin-left: 1rem

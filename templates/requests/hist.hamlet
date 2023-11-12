@@ -16,7 +16,7 @@
         _{MsgNoHistoryYet}.
   $else
     $forall (Entity _ (Hist _ _ logtime day time addr tzo tz status rname ename),Entity _ (User uname _ _ fname _)) <- hist
-      $with (color,icon,msg) <- resolveBookStatus status
+      $with (color,icon,label,title) <- resolveBookStatus status
         <details.mdc-list data-mdc-auto-init=MDCList
           ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
           <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-three-lines
@@ -33,8 +33,8 @@
                   #{fname}
                 $nothing
                   #{uname}
-              <div.mdc-list-item__secondary-text>
-                _{msg}
+              <div.mdc-list-item__secondary-text title=_{title}>
+                _{label}
             <span.mdc-list-item__end>
               <i.expand.material-symbols-outlined>expand_more
           <dl>

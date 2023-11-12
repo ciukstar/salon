@@ -22,7 +22,6 @@ main
     align-items: center
     margin: 1rem 0 0 1rem
     a.mdc-segmented-button__segment
-      border-width: 1px
       border-style: solid
   ##{fabBusinessHoursCreate}
     position: fixed

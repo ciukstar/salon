@@ -39,7 +39,10 @@
           <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>book_online
           <span.mdc-deprecated-list-item__text>_{MsgBookAppointment}
           
-        <a.mdc-deprecated-list-item href=@{AppointmentsR}
+        <a.mdc-deprecated-list-item href=@{BookingsCalendarR month}
+          :Just (BookingsCalendarR month) /= curr:tabindex=-1
+          :Just (BookingsCalendarR month) == curr:tabindex=0
+          :Just (BookingsCalendarR month) == curr:.mdc-deprecated-list-item--activated
           :Just AppointmentsR /= curr:tabindex=-1
           :Just AppointmentsR == curr:tabindex=0
           :Just AppointmentsR == curr:.mdc-deprecated-list-item--activated>

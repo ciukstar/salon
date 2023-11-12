@@ -3,6 +3,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE PatternSynonyms #-}
+{-# LANGUAGE TupleSections #-}
 
 module Handler.Appointments
   ( getAppointmentsR
@@ -19,8 +20,8 @@ module Handler.Appointments
   , getBookingItemR
   ) where
 
-import Data.Bifunctor (Bifunctor(bimap))
-import qualified Data.Map.Lazy as ML (fromListWith, lookup)
+import Data.Bifunctor (Bifunctor(bimap, second))
+import qualified Data.Map.Lazy as ML (fromListWith, lookup, toList)
 import Control.Monad (unless)
 import Data.Maybe (isJust, mapMaybe)
 import Data.Text (unpack, intercalate, Text, pack)
@@ -95,7 +96,7 @@ import Foundation
       , MsgNavigationMenu, MsgUserProfile, MsgUnassigned, MsgAssignee, MsgSearch
       , MsgSelect, MsgRequest, MsgShowAll, MsgNoAppointmentsFound, MsgToday
       , MsgList, MsgCalendar, MsgMon, MsgTue, MsgWed, MsgThu, MsgFri, MsgSat
-      , MsgSun
+      , MsgSun, MsgPending, MsgCompleted
       )
     )
 
@@ -135,15 +136,19 @@ getBookingItemR cid day bid = do
 
 getBookingsDayListR :: UserId -> Day -> Handler Html
 getBookingsDayListR cid day = do
+    stati <- reqGetParams <$> getRequest
+    let statuses = mapMaybe (readMaybe . unpack . snd) . filter ((== "status") . fst) $ stati
     books <- runDB $ select $ do
         x :& _ :& s <- from $ table @Book
             `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
             `innerJoin` table @Service `on` (\(_ :& o :& s) -> o ^. OfferService ==. s ^. ServiceId)
         where_ $ x ^. BookCustomer ==. val cid
         where_ $ x ^. BookDay ==. val day
+        unless (null statuses) $ where_ $ x ^. BookStatus `in_` valList statuses
         orderBy [desc (x ^. BookDay), desc (x ^. BookTime)]
         return (x,s)
     let month = (\(y,m,_) -> YearMonth y m) . toGregorian
+    appointmentDay <- newIdent
     defaultLayout $ do
         setTitleI MsgMyAppointments
         $(widgetFile "appointments/calendar/list")
@@ -160,21 +165,29 @@ getBookingsCalendarR month = do
           setTitleI MsgMyAppointments
           $(widgetFile "appointments/login")
       Just (Entity uid _) -> do
-          books <- ML.fromListWith (++) . (bimap unValue ((:[]) . unValue) <$>) <$> runDB ( select $ do
+          let statuses = mapMaybe (readMaybe . unpack . snd) . filter ((== "status") . fst) $ stati
+          -- ML.fromListWith (++) . (bimap (bimap unValue unValue) ((:[]) . unValue) <$>) <$> 
+          booksX <- (bimap unValue ((:[]) . bimap unValue unValue) <$>) <$> runDB ( select $ do
               x <- from $ table @Book
               where_ $ x ^. BookCustomer ==. val uid
               where_ $ x ^. BookDay `between` (val (periodFirstDay month), val (periodLastDay month))
+              unless (null statuses) $ where_ $ x ^. BookStatus `in_` valList statuses
               orderBy [desc (x ^. BookDay), desc (x ^. BookTime)]
-              return (x ^. BookDay, x ^. BookTime) )
+              return (x ^. BookDay, (x ^. BookStatus, x ^. BookTime)) )
+
+          let booksY = ML.fromListWith (++) booksX
+          let books = ML.fromListWith (++) . (second (:[]) <$>) <$> booksY
 
           let start = weekFirstDay Monday (periodFirstDay month)
           let end = addDays 41 start
           let page = [start .. end]
           let next = addMonths 1 month
           let prev = addMonths (-1) month
-              
+
           today <- (\(y,m,_) -> YearMonth y m) . toGregorian . utctDay <$> liftIO getCurrentTime
           curr <- getCurrentRoute
+          toolbarTop <- newIdent
+          divCalendar <- newIdent
           defaultLayout $ do
               setTitleI MsgMyAppointments
               $(widgetFile "appointments/calendar/page")
@@ -195,7 +208,7 @@ getAppointmentsSearchR = do
           let states = mapMaybe (readMaybe . unpack . snd) stati
           assignees <- filter ((== "assignee") . fst) . reqGetParams <$> getRequest
           let eids = mapMaybe ( (toSqlKey <$>) . readMaybe . unpack . snd ) assignees
-          
+
           employees <- runDB $ select $ do
               e <- from $ table @Staff
               where_ $ exists $ do
@@ -203,7 +216,7 @@ getAppointmentsSearchR = do
                       `innerJoin` table @Role `on` (\(b :& r) -> b ^. BookRole ==. just (r ^. RoleId))
                   where_ $ b ^. BookCustomer ==. val uid
               return e
-          
+
           appointments <- runDB $ select $ do
               x :& o :& s :& r :& e :& c <- from $ table @Book
                   `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
@@ -240,7 +253,7 @@ getAppointmentsSearchR = do
 
               orderBy [desc (x ^. BookDay), desc (x ^. BookTime)]
               return (x,s)
-              
+
           formSearch <- newIdent
           dlgStatusList <- newIdent
           dlgAssignee <- newIdent
@@ -478,13 +491,13 @@ getAppointmentR bid = do
     app <- getYesod
     langs <- languages
     user <- maybeAuth
-    
+
     currency <- (unValue <$>) <$> runDB ( selectOne $ do
         x <- from $ table @Business
         return $ x ^. BusinessCurrency )
-        
+
     location <- runDB $ selectOne $ from $ table @ContactUs
-        
+
     book <- runDB $ selectOne $ do
         x :& o :& s :& t :& r :& e <- from $ table @Book
             `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
@@ -524,26 +537,33 @@ getAppointmentsR = do
           setTitleI MsgMyAppointments
           $(widgetFile "appointments/login")
       Just (Entity uid _) -> do
+          let statuses = mapMaybe (readMaybe . unpack . snd) . filter ((== "status") . fst) $ stati
           books <- runDB $ select $ do
               x :& _ :& s <- from $ table @Book
                   `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
                   `innerJoin` table @Service `on` (\(_ :& o :& s) -> o ^. OfferService ==. s ^. ServiceId)
               where_ $ x ^. BookCustomer ==. val uid
+              unless (null statuses) $ where_ $ x ^. BookStatus `in_` valList statuses
               orderBy [desc (x ^. BookDay), desc (x ^. BookTime)]
               return (x,s)
           today <- (\(y,m,_) -> YearMonth y m) . toGregorian . utctDay <$> liftIO getCurrentTime
           curr <- getCurrentRoute
+          toolbarTop <- newIdent
           defaultLayout $ do
               setTitleI MsgMyAppointments
               $(widgetFile "appointments/appointments")
 
 
-resolveBookStatus :: BookStatus -> (Text, Text, AppMessage)
-resolveBookStatus BookStatusRequest = ("orange", "hourglass_top", MsgAwaitingApproval)
-resolveBookStatus BookStatusAdjusted = ("blue", "reply_all", MsgAdjusted)
-resolveBookStatus BookStatusApproved = ("green", "verified", MsgApproved)
-resolveBookStatus BookStatusCancelled = ("red", "block", MsgCancelled)
-resolveBookStatus BookStatusPaid = ("green", "paid", MsgPaid)
+fstsec :: a -> b -> (a,b)
+fstsec x = (x,)
+
+
+resolveBookStatus :: BookStatus -> (Text, Text, AppMessage, AppMessage)
+resolveBookStatus BookStatusRequest = ("orange", "hourglass_top", MsgPending, MsgAwaitingApproval)
+resolveBookStatus BookStatusAdjusted = ("blue", "reply_all", MsgAdjusted, MsgAdjusted)
+resolveBookStatus BookStatusApproved = ("green", "verified", MsgApproved, MsgApproved)
+resolveBookStatus BookStatusCancelled = ("red", "block", MsgCancelled, MsgCancelled)
+resolveBookStatus BookStatusPaid = ("green", "paid", MsgPaid, MsgCompleted)
 
 
 statusList :: [(BookStatus, AppMessage)]

@@ -71,7 +71,7 @@
                       <small>
                         _{MsgDuration}:&nbsp;#{duration}
 
-          $with (color,icon,msg) <- resolveBookStatus status
+          $with (color,icon,label,title) <- resolveBookStatus status
             <details.mdc-list.mdc-card-wrapper__text-section open
               ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
               <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line
@@ -85,8 +85,8 @@
                     _{MsgAppoinmentStatus}
                 <span.mdc-list-item__end>
                  <i.expand.material-symbols-outlined>expand_less
-              <section.mdc-card-wrapper__text-section>
-                _{msg}
+              <section.mdc-card-wrapper__text-section title=_{title}>
+                _{label}
 
           <details.mdc-list.mdc-card-wrapper__text-section open
             ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">

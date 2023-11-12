@@ -48,7 +48,7 @@ import Model
       )
     , StaffPhoto (StaffPhoto, staffPhotoPhoto, staffPhotoMime, staffPhotoStaff)
     , Role (Role, roleStaff, roleService, roleName, roleDuration, roleRating)
-    , BookStatus (BookStatusRequest)
+    , BookStatus (BookStatusRequest, BookStatusCancelled, BookStatusApproved)
     , Book
       ( Book, bookCustomer, bookOffer, bookRole, bookDay, bookTime, bookTzo
       , bookTz, bookStatus, bookAddr
@@ -2965,7 +2965,7 @@ Mise en forme du corps : Abdomen et taille, hanches et cuisses, jambes et bras
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
                      , bookTz = businessTz business
-                     , bookStatus = BookStatusRequest
+                     , bookStatus = BookStatusCancelled
                      }
 
     b4 <- insert book4
@@ -2978,7 +2978,7 @@ Mise en forme du corps : Abdomen et taille, hanches et cuisses, jambes et bras
                    , histAddr = bookAddr book4
                    , histTzo = bookTzo book4
                    , histTz = bookTz book4
-                   , histStatus = BookStatusRequest
+                   , histStatus = BookStatusCancelled
                    , histRoleName = Just $ roleName role925
                    , histStaffName = Just $ staffName empl9
                    }
@@ -2991,7 +2991,7 @@ Mise en forme du corps : Abdomen et taille, hanches et cuisses, jambes et bras
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
                      , bookTz = businessTz business
-                     , bookStatus = BookStatusRequest
+                     , bookStatus = BookStatusApproved
                      }
 
     b5 <- insert book5
@@ -3004,7 +3004,7 @@ Mise en forme du corps : Abdomen et taille, hanches et cuisses, jambes et bras
                    , histAddr = bookAddr book5
                    , histTzo = bookTzo book5
                    , histTz = bookTz book5
-                   , histStatus = BookStatusRequest
+                   , histStatus = BookStatusApproved
                    , histRoleName = Just $ roleName role925
                    , histStaffName = Just $ staffName empl9
                    }
@@ -3017,7 +3017,7 @@ Mise en forme du corps : Abdomen et taille, hanches et cuisses, jambes et bras
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
                      , bookTz = businessTz business
-                     , bookStatus = BookStatusRequest
+                     , bookStatus = BookStatusCancelled
                      }
 
     b6 <- insert book6
@@ -3030,7 +3030,7 @@ Mise en forme du corps : Abdomen et taille, hanches et cuisses, jambes et bras
                    , histAddr = bookAddr book6
                    , histTzo = bookTzo book6
                    , histTz = bookTz book6
-                   , histStatus = BookStatusRequest
+                   , histStatus = BookStatusCancelled
                    , histRoleName = Just $ roleName role925
                    , histStaffName = Just $ staffName empl9
                    }

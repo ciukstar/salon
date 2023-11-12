@@ -29,7 +29,7 @@
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
 
-  <div.toolbar role=toolbar>
+  <div role=toolbar ##{toolbarTop}>
     <div.mdc-segmented-button.mdc-segmented-button--single-select role=radiogroup data-mdc-auto-init=MDCSegmentedButton>
       <a.mdc-segmented-button__segment href=@{BookingsCalendarR today} role=radio
         :curr == Just (BookingsCalendarR today):.mdc-segmented-button__segment--selected
@@ -45,6 +45,32 @@
         <div.mdc-segmented-button__ripple>
         <i.mdc-segmented-button__icon.material-symbols-outlined>list
         <div.mdc-segmented-button__label>_{MsgList}
+
+  <div.mdc-chip-set.mdc-chip-set--filter role=grid data-mdc-auto-init=MDCChipSet>
+    $forall (status,_) <- statusList
+      $with ((color,icon,label,title),checked) <- (resolveBookStatus status,elem status statuses)
+        $if checked
+          $with params <- map ((fstsec "status" . pack) . show) (filter ((/=) status) statuses)
+            <a.mdc-chip.mdc-chip--selected role=row href=@?{(AppointmentsR,params)}>
+              <div.mdc-chip__ripple>
+              <span.mdc-chip__checkmark>
+                <svg.mdc-chip__checkmark-svg viewBox="-2 -3 30 30">
+                  <path.mdc-chip__checkmark-path fill=none stroke=black d="M1.73,12.91 8.1,19.28 22.79,4.59">
+              <span role=gridcell>
+                <span.mdc-chip__primary-action role=checkbox tabindex=0 aria-checked=true>
+                  <span.mdc-chip__text title=_{title}>_{label}
+        $else
+          $with params <- map ((fstsec "status" . pack) . show) ((:) status statuses) 
+            <a.mdc-chip role=row href=@?{(AppointmentsR,params)}>
+              <div.mdc-chip__ripple>
+              <i.mdc-chip__icon.mdc-chip__icon--leading.material-symbols-outlined style="color:#{color}">
+                #{icon}
+              <span.mdc-chip__checkmark>
+                <svg.mdc-chip__checkmark-svg viewBox="-2 -3 30 30">
+                  <path.mdc-chip__checkmark-path fill=none stroke=black d="M1.73,12.91 8.1,19.28 22.79,4.59">
+              <span role=gridcell>
+                <span.mdc-chip__primary-action role=checkbox tabindex=-1 aria-checked=false>
+                  <span.mdc-chip__text title=_{title}>_{label}
       
   $if null books
     <figure style="text-align:center">
@@ -59,19 +85,20 @@
   $else
     <nav.mdc-list data-mdc-auto-init=MDCList>
       $forall (Entity bid (Book _ _ _ date time _ _ _ status),Entity _ (Service sname _ _ _ _ _)) <- books
-        $with (color,icon,msg) <- resolveBookStatus status
+        $with (color,icon,label,title) <- resolveBookStatus status
           <a.mdc-list-item href=@{AppointmentR bid}
             .mdc-list-item--with-leading-icon.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon>
             <span.mdc-list-item__ripple>
             <span.mdc-list-item__start>
-              <i.material-symbols-outlined style="color:#{color}" title=_{msg}>#{icon}                
+              <i.material-symbols-outlined style="color:#{color}" title=_{title}>#{icon}                
             <span.mdc-list-item__content>
               <div.appointment-time.mdc-list-item__primary-text>
                 #{show date} #{show time}
               <div.mdc-list-item__secondary-text style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
                 #{sname}
-              <div.mdc-list-item__secondary-text style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
-                _{msg}
+              <div.mdc-list-item__secondary-text title=_{title}
+                style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                _{label}
             <span.mdc-list-item__end>
               <i.material-symbols-outlined>arrow_forward_ios
           <div.mdc-list-divider role=separator>

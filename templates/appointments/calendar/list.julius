@@ -1,0 +1,22 @@
+
+[document.getElementById(#{appointmentDay})].forEach(function (x) {
+  x.textContent = new Date(x.getAttribute('datetime')).toLocaleDateString(
+    navigator.language,
+    { weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    }
+  );
+});
+
+Array.from(
+  document.querySelectorAll('time.appointment-time[datetime]')
+).forEach(function (x) {
+  x.textContent = new Date(x.getAttribute('datetime')).toLocaleTimeString(
+    navigator.language,
+    { hour: "numeric",
+      minute: "numeric"
+    }
+  );
+});
