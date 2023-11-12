@@ -28,6 +28,8 @@ main
             clip-path: circle(50%)
           figcaption
             line-height: 1
+      ##{locationHtmlContainer}
+        padding: 0 1rem
 
 @media screen and (min-width: 0) and (max-width: 767px)
   main div.mdc-card

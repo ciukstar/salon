@@ -31,14 +31,16 @@
 
   <div role=toolbar ##{toolbarTop}>
     <div.mdc-segmented-button.mdc-segmented-button--single-select role=radiogroup data-mdc-auto-init=MDCSegmentedButton>
-      <a.mdc-segmented-button__segment href=@{BookingsCalendarR today} role=radio
+      <a.mdc-segmented-button__segment role=radio
+        href=@?{(BookingsCalendarR today,fmap ((fstsec "status" . pack) . show) statuses)}
         :curr == Just (BookingsCalendarR today):.mdc-segmented-button__segment--selected
         :curr == Just (BookingsCalendarR today):aria-checked=true
         :curr /= Just (BookingsCalendarR today):aria-checked=false>
         <div.mdc-segmented-button__ripple>
         <i.mdc-segmented-button__icon.material-symbols-outlined>calendar_month
         <div.mdc-segmented-button__label>_{MsgCalendar}
-      <a.mdc-segmented-button__segment href=@{AppointmentsR} role=radio
+      <a.mdc-segmented-button__segment role=radio
+        href=@?{(AppointmentsR,fmap ((fstsec "status" . pack) . show) statuses)}
         :curr == Just (AppointmentsR):.mdc-segmented-button__segment--selected
         :curr == Just (AppointmentsR):aria-checked=true
         :curr /= Just (AppointmentsR):aria-checked=false>
@@ -46,31 +48,48 @@
         <i.mdc-segmented-button__icon.material-symbols-outlined>list
         <div.mdc-segmented-button__label>_{MsgList}
 
+    $with states <- map ((fstsec "status" . pack) . show) statuses
+      $case sort
+        $of SortOrderAsc
+          <a.mdc-icon-button role=button title=_{MsgSortDescending} ##{buttonSort}
+            href=@?{(AppointmentsR,(++) [("sort",pack $ show SortOrderDesc)] states)}>
+            <span.mdc-icon-button__ripple>
+            <span.mdc-icon-button__focus-ring>
+            <i.material-symbols-outlined style="transform:rotateX(180deg)">sort
+        $of SortOrderDesc
+          <a.mdc-icon-button role=button title=_{MsgSortAscending} ##{buttonSort}
+            href=@?{(AppointmentsR,(++) [("sort",pack $ show SortOrderAsc)] states)}>
+            <span.mdc-icon-button__ripple>
+            <span.mdc-icon-button__focus-ring>
+            <i.material-symbols-outlined>sort
+
   <div.mdc-chip-set.mdc-chip-set--filter role=grid data-mdc-auto-init=MDCChipSet>
     $forall (status,_) <- statusList
       $with ((color,icon,label,title),checked) <- (resolveBookStatus status,elem status statuses)
         $if checked
           $with params <- map ((fstsec "status" . pack) . show) (filter ((/=) status) statuses)
-            <a.mdc-chip.mdc-chip--selected role=row href=@?{(AppointmentsR,params)}>
-              <div.mdc-chip__ripple>
-              <span.mdc-chip__checkmark>
-                <svg.mdc-chip__checkmark-svg viewBox="-2 -3 30 30">
-                  <path.mdc-chip__checkmark-path fill=none stroke=black d="M1.73,12.91 8.1,19.28 22.79,4.59">
-              <span role=gridcell>
-                <span.mdc-chip__primary-action role=checkbox tabindex=0 aria-checked=true>
-                  <span.mdc-chip__text title=_{title}>_{label}
+            $with params <- (:) ("sort",pack $ show sort) params
+              <a.mdc-chip.mdc-chip--selected role=row href=@?{(AppointmentsR,params)}>
+                <div.mdc-chip__ripple>
+                <span.mdc-chip__checkmark>
+                  <svg.mdc-chip__checkmark-svg viewBox="-2 -3 30 30">
+                    <path.mdc-chip__checkmark-path fill=none stroke=black d="M1.73,12.91 8.1,19.28 22.79,4.59">
+                <span role=gridcell>
+                  <span.mdc-chip__primary-action role=checkbox tabindex=0 aria-checked=true>
+                    <span.mdc-chip__text title=_{title}>_{label}
         $else
-          $with params <- map ((fstsec "status" . pack) . show) ((:) status statuses) 
-            <a.mdc-chip role=row href=@?{(AppointmentsR,params)}>
-              <div.mdc-chip__ripple>
-              <i.mdc-chip__icon.mdc-chip__icon--leading.material-symbols-outlined style="color:#{color}">
-                #{icon}
-              <span.mdc-chip__checkmark>
-                <svg.mdc-chip__checkmark-svg viewBox="-2 -3 30 30">
-                  <path.mdc-chip__checkmark-path fill=none stroke=black d="M1.73,12.91 8.1,19.28 22.79,4.59">
-              <span role=gridcell>
-                <span.mdc-chip__primary-action role=checkbox tabindex=-1 aria-checked=false>
-                  <span.mdc-chip__text title=_{title}>_{label}
+          $with params <- map ((fstsec "status" . pack) . show) ((:) status statuses)
+            $with params <- (:) ("sort",pack $ show sort) params
+              <a.mdc-chip role=row href=@?{(AppointmentsR,params)}>
+                <div.mdc-chip__ripple>
+                <i.mdc-chip__icon.mdc-chip__icon--leading.material-symbols-outlined style="color:#{color}">
+                  #{icon}
+                <span.mdc-chip__checkmark>
+                  <svg.mdc-chip__checkmark-svg viewBox="-2 -3 30 30">
+                    <path.mdc-chip__checkmark-path fill=none stroke=black d="M1.73,12.91 8.1,19.28 22.79,4.59">
+                <span role=gridcell>
+                  <span.mdc-chip__primary-action role=checkbox tabindex=-1 aria-checked=false>
+                    <span.mdc-chip__text title=_{title}>_{label}
       
   $if null books
     <figure style="text-align:center">
@@ -86,7 +105,7 @@
     <nav.mdc-list data-mdc-auto-init=MDCList>
       $forall (Entity bid (Book _ _ _ date time _ _ _ status),Entity _ (Service sname _ _ _ _ _)) <- books
         $with (color,icon,label,title) <- resolveBookStatus status
-          <a.mdc-list-item href=@{AppointmentR bid}
+          <a.mdc-list-item href=@?{(AppointmentR bid,stati)}
             .mdc-list-item--with-leading-icon.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon>
             <span.mdc-list-item__ripple>
             <span.mdc-list-item__start>

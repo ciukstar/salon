@@ -23,7 +23,7 @@ module Handler.Appointments
 import Data.Bifunctor (Bifunctor(bimap, second))
 import qualified Data.Map.Lazy as ML (fromListWith, lookup, toList)
 import Control.Monad (unless)
-import Data.Maybe (isJust, mapMaybe)
+import Data.Maybe (isJust, mapMaybe, fromMaybe)
 import Data.Text (unpack, intercalate, Text, pack)
 import Data.Time.Format (defaultTimeLocale, formatTime)
 import Data.Time.Clock (getCurrentTime, UTCTime (utctDay))
@@ -37,6 +37,7 @@ import Data.Time
     , utcToLocalTime, minutesToTimeZone
     )
 import Text.Hamlet (Html)
+import Text.Julius (julius, rawJS)
 import Text.Read (readMaybe)
 import Text.Shakespeare.I18N (renderMessage, SomeMessage (SomeMessage))
 
@@ -44,10 +45,11 @@ import Yesod.Auth (maybeAuth, Route (LoginR))
 import Yesod.Core
     ( Yesod(defaultLayout), getMessages, getYesod, languages
     , redirect, addMessageI, MonadIO (liftIO)
-    , whamlet, newIdent, getCurrentRoute
+    , whamlet, newIdent, getCurrentRoute, redirectUltDest
     )
 import Yesod.Core.Handler (setUltDestCurrent, reqGetParams, getRequest)
-import Yesod.Core.Widget (setTitleI)
+import Yesod.Core.Widget
+    ( setTitleI, addScriptRemote, addStylesheetRemote, toWidget )
 import Yesod.Form.Input (runInputGet, iopt)
 import Yesod.Form.Types
     ( MForm, FormResult (FormSuccess, FormFailure, FormMissing)
@@ -68,7 +70,7 @@ import Database.Esqueleto.Experimental
     ( select, selectOne, from, table, innerJoin, on, where_, val, like, in_, valList
     , (:&)((:&)), (^.), (==.), (?.), (=.), (||.), (%), (++.)
     , orderBy, desc, leftJoin, just, update, set, exists, upper_
-    , justList, unValue, between
+    , justList, unValue, between, asc
     )
 
 import Foundation
@@ -96,7 +98,8 @@ import Foundation
       , MsgNavigationMenu, MsgUserProfile, MsgUnassigned, MsgAssignee, MsgSearch
       , MsgSelect, MsgRequest, MsgShowAll, MsgNoAppointmentsFound, MsgToday
       , MsgList, MsgCalendar, MsgMon, MsgTue, MsgWed, MsgThu, MsgFri, MsgSat
-      , MsgSun, MsgPending, MsgCompleted
+      , MsgSun, MsgPending, MsgCompleted, MsgSortAscending, MsgSortDescending
+      , MsgNoBusinessAddressFound, MsgAddress
       )
     )
 
@@ -116,8 +119,10 @@ import Model
       , UserId, BookTzo, BookAddr, StaffUser, ServiceName, ServiceOverview, ServiceDescr
       , RoleName, OfferName, OfferPrefix, OfferSuffix, OfferDescr, StaffName, StaffPhone
       , StaffMobile, StaffEmail, UserName, UserFullName, UserEmail, BookStatus
-      , BusinessCurrency
+      , BusinessCurrency, BusinessAddr
       )
+    , SortOrder (SortOrderAsc, SortOrderDesc)
+    , mbat
     )
 
 import Menu (menu)
@@ -125,12 +130,95 @@ import Menu (menu)
 
 getBookingItemR :: UserId -> Day -> BookId -> Handler Html
 getBookingItemR cid day bid = do
+    setUltDestCurrent
+    stati <- reqGetParams <$> getRequest
+    app <- getYesod
+    langs <- languages
+    user <- maybeAuth
+
+    currency <- (unValue <$>) <$> runDB ( selectOne $ do
+        x <- from $ table @Business
+        return $ x ^. BusinessCurrency )
+
+    location <- runDB $ selectOne $ from $ table @ContactUs
+
+    address <- case location of
+      Just (Entity _ (ContactUs _ _ True _ _ _ _)) -> do
+         (unValue <$>) <$> runDB ( selectOne $ do
+                x <- from $ table @Business
+                return (x ^. BusinessAddr) )
+      _ -> return Nothing
+
     book <- runDB $ selectOne $ do
-        x <- from $ table @Book
+        x :& o :& s :& t :& r :& e <- from $ table @Book
+            `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
+            `innerJoin` table @Service `on` (\(_ :& o :& s) -> o ^. OfferService ==. s ^. ServiceId)
+            `leftJoin` table @Thumbnail `on` (\(_ :& _ :& s :& t) -> just (s ^. ServiceId) ==. t ?. ThumbnailService)
+            `leftJoin` table @Role `on` (\(x :& _ :& _ :& _ :& r) -> x ^. BookRole ==. r ?. RoleId)
+            `leftJoin` table @Staff `on` (\(_ :& _ :& _ :& _ :& r :& e) -> r ?. RoleStaff ==. e ?. StaffId)
         where_ $ x ^. BookId ==. val bid
-        return x
+        case user of
+          Just (Entity uid _) -> where_ $ x ^. BookCustomer ==. val uid
+          Nothing -> where_ $ val False
+        orderBy [desc (x ^. BookDay), desc (x ^. BookTime)]
+        return (x,o,s,t,r,e)
+    dlgCancelAppointment <- newIdent
+    formAppoitmentCancel <- newIdent
+    formGetAppointmentApprove <- newIdent
+    detailsLocation <- newIdent
+    locationHtmlContainer <- newIdent
+    msgs <- getMessages
+    (fwCancel,etCancel) <- generateFormPost formCancel
+    (fwApprove,etApprove) <- generateFormPost formApprove
     defaultLayout $ do
         setTitleI MsgAppointment
+        case location of
+          Just (Entity _ (ContactUs _ _ _ _ True (Just lng) (Just lat))) -> do
+              addScriptRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"
+              addScriptRemote "https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-language/v1.0.0/mapbox-gl-language.js"
+              addStylesheetRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css"
+              toWidget [julius|
+const main = document.getElementById(#{detailsLocation});
+const mapgl = document.createElement('div');
+mapgl.style.height = '300px';
+mapgl.style.width = '100%';
+main.appendChild(mapgl);
+const map = new mapboxgl.Map({
+  accessToken: #{mbat},
+  attributionControl: false,
+  container: mapgl,
+  style: 'mapbox://styles/mapbox/streets-v11',
+  center: [#{rawJS $ show lng}, #{rawJS $ show lat}],
+  zoom: 15
+});
+map.addControl(new MapboxLanguage());
+map.addControl(new mapboxgl.NavigationControl());
+const loc = new mapboxgl.Marker().setLngLat(
+  [#{rawJS $ show lng}, #{rawJS $ show lat}]
+).addTo(map);
+|]
+          Just (Entity _ (ContactUs _ _ _ _ True _ _)) -> do
+              addScriptRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"
+              addScriptRemote "https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-language/v1.0.0/mapbox-gl-language.js"
+              addStylesheetRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css"
+              toWidget [julius|
+const main = document.getElementById(#{detailsLocation});
+const mapgl = document.createElement('div');
+mapgl.style.height = '300px';
+mapgl.style.width = '100%';
+main.appendChild(mapgl);
+const map = new mapboxgl.Map({
+  accessToken: #{mbat},
+  attributionControl: false,
+  container: mapgl,
+  style: 'mapbox://styles/mapbox/streets-v11',
+  center: [0, 0],
+  zoom: 0
+});
+map.addControl(new MapboxLanguage());
+map.addControl(new mapboxgl.NavigationControl());
+|]
+          _ -> return ()
         $(widgetFile "appointments/calendar/item")
 
 
@@ -166,17 +254,16 @@ getBookingsCalendarR month = do
           $(widgetFile "appointments/login")
       Just (Entity uid _) -> do
           let statuses = mapMaybe (readMaybe . unpack . snd) . filter ((== "status") . fst) $ stati
-          -- ML.fromListWith (++) . (bimap (bimap unValue unValue) ((:[]) . unValue) <$>) <$> 
-          booksX <- (bimap unValue ((:[]) . bimap unValue unValue) <$>) <$> runDB ( select $ do
-              x <- from $ table @Book
-              where_ $ x ^. BookCustomer ==. val uid
-              where_ $ x ^. BookDay `between` (val (periodFirstDay month), val (periodLastDay month))
-              unless (null statuses) $ where_ $ x ^. BookStatus `in_` valList statuses
-              orderBy [desc (x ^. BookDay), desc (x ^. BookTime)]
-              return (x ^. BookDay, (x ^. BookStatus, x ^. BookTime)) )
 
-          let booksY = ML.fromListWith (++) booksX
-          let books = ML.fromListWith (++) . (second (:[]) <$>) <$> booksY
+          books <- do
+              xs <- (bimap unValue ((:[]) . bimap unValue unValue) <$>) <$> runDB ( select $ do
+                  x <- from $ table @Book
+                  where_ $ x ^. BookCustomer ==. val uid
+                  where_ $ x ^. BookDay `between` (val (periodFirstDay month), val (periodLastDay month))
+                  unless (null statuses) $ where_ $ x ^. BookStatus `in_` valList statuses
+                  orderBy [desc (x ^. BookDay), desc (x ^. BookTime)]
+                  return (x ^. BookDay, (x ^. BookStatus, x ^. BookTime)) )
+              return $ ML.fromListWith (++) . (second (:[]) <$>) <$> ML.fromListWith (++) xs
 
           let start = weekFirstDay Monday (periodFirstDay month)
           let end = addDays 41 start
@@ -284,20 +371,20 @@ postAppointmentApproveR bid = do
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusApproved
                     (roleName . entityVal <$> role) (staffName . entityVal <$> empl)
-                redirect $ AppointmentR bid
+                redirectUltDest $ AppointmentR bid
 
             Nothing -> do
                 addMessageI "warn" MsgEntityNotFound
-                redirect $ AppointmentR bid
+                redirectUltDest $ AppointmentR bid
       (FormFailure _, _) -> do
           addMessageI "warn" MsgInvalidFormData
-          redirect $ AppointmentR bid
+          redirectUltDest $ AppointmentR bid
       (FormMissing, _) -> do
           addMessageI "warn" MsgMissingForm
-          redirect $ AppointmentR bid
+          redirectUltDest $ AppointmentR bid
       (_, Nothing) -> do
           addMessageI "warn" MsgLoginToPerformAction
-          redirect $ AppointmentR bid
+          redirectUltDest $ AppointmentR bid
 
 
 formApprove :: Html -> MForm Handler (FormResult (), Widget)
@@ -426,20 +513,20 @@ postAppointmentCancelR bid = do
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusCancelled
                     (roleName . entityVal <$> role) (staffName . entityVal <$> empl)
-                redirect $ AppointmentR bid
+                redirectUltDest $ AppointmentR bid
 
             Nothing -> do
                 addMessageI "warn" MsgEntityNotFound
-                redirect $ AppointmentR bid
+                redirectUltDest $ AppointmentR bid
       (FormFailure _, _) -> do
           addMessageI "warn" MsgInvalidFormData
-          redirect $ AppointmentR bid
+          redirectUltDest $ AppointmentR bid
       (FormMissing, _) -> do
           addMessageI "warn" MsgMissingForm
-          redirect $ AppointmentR bid
+          redirectUltDest $ AppointmentR bid
       (_, Nothing) -> do
           addMessageI "warn" MsgLoginToPerformAction
-          redirect $ AppointmentR bid
+          redirectUltDest $ AppointmentR bid
 
 
 postAppointmentR :: BookId -> Handler Html
@@ -470,17 +557,17 @@ postAppointmentR bid = do
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusRequest
                     (roleName . entityVal <$> role) (staffName . entityVal <$> empl)
-                redirect $ AppointmentR bid
+                redirectUltDest $ AppointmentR bid
 
             Nothing -> do
                 addMessageI "warn" MsgEntityNotFound
-                redirect $ AppointmentR bid
+                redirectUltDest $ AppointmentR bid
       (FormMissing, _) -> do
           addMessageI "warn" MsgMissingForm
-          redirect $ AppointmentR bid
+          redirectUltDest $ AppointmentR bid
       (_, Nothing) -> do
           addMessageI "warn" MsgLoginToPerformAction
-          redirect $ AppointmentR bid
+          redirectUltDest $ AppointmentR bid
       (FormFailure _, _) -> defaultLayout $ do
           setTitleI MsgReschedule
           $(widgetFile "appointments/reschedule/reschedule")
@@ -488,6 +575,8 @@ postAppointmentR bid = do
 
 getAppointmentR :: BookId -> Handler Html
 getAppointmentR bid = do
+    setUltDestCurrent
+    stati <- reqGetParams <$> getRequest
     app <- getYesod
     langs <- languages
     user <- maybeAuth
@@ -497,6 +586,13 @@ getAppointmentR bid = do
         return $ x ^. BusinessCurrency )
 
     location <- runDB $ selectOne $ from $ table @ContactUs
+
+    address <- case location of
+      Just (Entity _ (ContactUs _ _ True _ _ _ _)) -> do
+         (unValue <$>) <$> runDB ( selectOne $ do
+                x <- from $ table @Business
+                return (x ^. BusinessAddr) )
+      _ -> return Nothing
 
     book <- runDB $ selectOne $ do
         x :& o :& s :& t :& r :& e <- from $ table @Book
@@ -514,11 +610,60 @@ getAppointmentR bid = do
     dlgCancelAppointment <- newIdent
     formAppoitmentCancel <- newIdent
     formGetAppointmentApprove <- newIdent
+    detailsLocation <- newIdent
+    locationHtmlContainer <- newIdent
     msgs <- getMessages
     (fwCancel,etCancel) <- generateFormPost formCancel
     (fwApprove,etApprove) <- generateFormPost formApprove
     defaultLayout $ do
         setTitleI MsgAppointment
+        case location of
+          Just (Entity _ (ContactUs _ _ _ _ True (Just lng) (Just lat))) -> do
+              addScriptRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"
+              addScriptRemote "https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-language/v1.0.0/mapbox-gl-language.js"
+              addStylesheetRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css"
+              toWidget [julius|
+const main = document.getElementById(#{detailsLocation});
+const mapgl = document.createElement('div');
+mapgl.style.height = '300px';
+mapgl.style.width = '100%';
+main.appendChild(mapgl);
+const map = new mapboxgl.Map({
+  accessToken: #{mbat},
+  attributionControl: false,
+  container: mapgl,
+  style: 'mapbox://styles/mapbox/streets-v11',
+  center: [#{rawJS $ show lng}, #{rawJS $ show lat}],
+  zoom: 15
+});
+map.addControl(new MapboxLanguage());
+map.addControl(new mapboxgl.NavigationControl());
+const loc = new mapboxgl.Marker().setLngLat(
+  [#{rawJS $ show lng}, #{rawJS $ show lat}]
+).addTo(map);
+|]
+          Just (Entity _ (ContactUs _ _ _ _ True _ _)) -> do
+              addScriptRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"
+              addScriptRemote "https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-language/v1.0.0/mapbox-gl-language.js"
+              addStylesheetRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css"
+              toWidget [julius|
+const main = document.getElementById(#{detailsLocation});
+const mapgl = document.createElement('div');
+mapgl.style.height = '300px';
+mapgl.style.width = '100%';
+main.appendChild(mapgl);
+const map = new mapboxgl.Map({
+  accessToken: #{mbat},
+  attributionControl: false,
+  container: mapgl,
+  style: 'mapbox://styles/mapbox/streets-v11',
+  center: [0, 0],
+  zoom: 0
+});
+map.addControl(new MapboxLanguage());
+map.addControl(new mapboxgl.NavigationControl());
+|]
+          _ -> return ()
         $(widgetFile "appointments/appointment")
 
 
@@ -538,17 +683,21 @@ getAppointmentsR = do
           $(widgetFile "appointments/login")
       Just (Entity uid _) -> do
           let statuses = mapMaybe (readMaybe . unpack . snd) . filter ((== "status") . fst) $ stati
+          sort <- fromMaybe SortOrderDesc . (readMaybe . unpack =<<) <$> runInputGet (iopt textField "sort")
           books <- runDB $ select $ do
               x :& _ :& s <- from $ table @Book
                   `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
                   `innerJoin` table @Service `on` (\(_ :& o :& s) -> o ^. OfferService ==. s ^. ServiceId)
               where_ $ x ^. BookCustomer ==. val uid
               unless (null statuses) $ where_ $ x ^. BookStatus `in_` valList statuses
-              orderBy [desc (x ^. BookDay), desc (x ^. BookTime)]
+              case sort of
+                SortOrderAsc -> orderBy [asc (x ^. BookDay), asc (x ^. BookTime)]
+                _ -> orderBy [desc (x ^. BookDay), desc (x ^. BookTime)]
               return (x,s)
           today <- (\(y,m,_) -> YearMonth y m) . toGregorian . utctDay <$> liftIO getCurrentTime
           curr <- getCurrentRoute
           toolbarTop <- newIdent
+          buttonSort <- newIdent
           defaultLayout $ do
               setTitleI MsgMyAppointments
               $(widgetFile "appointments/appointments")

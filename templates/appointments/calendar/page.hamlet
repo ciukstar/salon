@@ -31,14 +31,16 @@
 
   <div role=toolbar ##{toolbarTop}>
     <div.mdc-segmented-button.mdc-segmented-button--single-select role=radiogroup data-mdc-auto-init=MDCSegmentedButton>
-      <a.mdc-segmented-button__segment href=@{BookingsCalendarR month} role=radio
+      <a.mdc-segmented-button__segment role=radio
+        href=@?{(BookingsCalendarR month,fmap ((fstsec "status" . pack) . show) statuses)}
         :curr == Just (BookingsCalendarR month):.mdc-segmented-button__segment--selected
         :curr == Just (BookingsCalendarR month):aria-checked=true
         :curr /= Just (BookingsCalendarR month):aria-checked=false>
         <div.mdc-segmented-button__ripple>
         <i.mdc-segmented-button__icon.material-symbols-outlined>calendar_month
         <div.mdc-segmented-button__label>_{MsgCalendar}
-      <a.mdc-segmented-button__segment href=@{AppointmentsR} role=radio
+      <a.mdc-segmented-button__segment role=radio
+        href=@?{(AppointmentsR,fmap ((fstsec "status" . pack) . show) statuses)}
         :curr == Just (AppointmentsR):.mdc-segmented-button__segment--selected
         :curr == Just (AppointmentsR):aria-checked=true
         :curr /= Just (AppointmentsR):aria-checked=false>

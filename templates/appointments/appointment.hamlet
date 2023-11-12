@@ -1,7 +1,8 @@
 <header.mdc-top-app-bar.mdc-top-app-bar--fixed mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=@{AppointmentsR} role=button title=_{MsgBack}>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
+        href=@?{(AppointmentsR,stati)}>
         <span.mdc-icon-button__ripple>
         <spam.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
@@ -118,7 +119,7 @@
             <div #acquaintanceContent>
               $maybe Entity uid (User uname _ _ fname _) <- user
                 <figure>
-                  <img src=@{AccountPhotoR uid} width=56 height=56 alt=_{MsgPhoto}
+                  <img src=@{AccountPhotoR uid} width=56 height=56 alt=_{MsgPhoto} loading=lazy
                     onerror="this.src = '@{PhotoPlaceholderR}'">
                   <figcaption>
                     <small>
@@ -146,8 +147,8 @@
                   <figcaption>
                     <small>(_{MsgUnassigned})
 
-          $maybe Entity _ (ContactUs _ html _ _ _ _ _) <- location
-            <details.mdc-list.mdc-card-wrapper__text-section
+          $maybe Entity _ (ContactUs _ html showAddress _ _ _ _) <- location
+            <details.mdc-list.mdc-card-wrapper__text-section ##{detailsLocation}
               ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
               <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line
                 .mdc-list-item--with-trailing-icon>
@@ -159,7 +160,17 @@
                     _{MsgMeetingLocation}
                 <span.mdc-list-item__end>
                  <i.expand.material-symbols-outlined>expand_more
-              ^{html}
+              <div ##{locationHtmlContainer}>
+                ^{html}
+              $if showAddress
+                <dl.address style="margin:0 1rem">
+                  <dt>
+                    <i>_{MsgAddress}
+                  <dd>
+                    $maybe addr <- address
+                      #{addr}
+                    $nothing
+                      _{MsgNoBusinessAddressFound}
 
           <div.mdc-card__actions>
             <div.mdc-card__action-buttons>

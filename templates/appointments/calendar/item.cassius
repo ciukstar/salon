@@ -1,0 +1,38 @@
+
+main
+  padding: 1rem 0
+  .mdc-card
+    .mdc-card__media-content h6
+      position: absolute
+      bottom: 0
+      left: 0
+      line-height: 1.2
+      padding: 0.5rem 1rem
+      color: var(--mdc-theme-text-primary-on-light)
+      background-color: var(--mdc-theme-primary)
+    details.mdc-list
+      padding: 0
+      section.mdc-card-wrapper__text-section
+        margin: 0 1rem
+      #acquaintanceContent
+        margin: 0.5rem 0
+        display: flex
+        flex-direction: row
+        align-items: flex-start
+        justify-content: space-around
+        figure
+          margin: 0
+          padding: 0
+          text-align: center
+          img
+            clip-path: circle(50%)
+          figcaption
+            line-height: 1
+      ##{locationHtmlContainer}
+        padding: 0 1rem
+
+@media screen and (min-width: 0) and (max-width: 767px)
+  main div.mdc-card
+    box-shadow: none
+    border-radius: 0
+    background: none

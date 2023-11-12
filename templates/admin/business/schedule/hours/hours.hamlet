@@ -93,7 +93,7 @@
             <span.mdc-icon-button__ripple>
             <i.material-symbols-outlined>close
 
-  <div.toolbar role=toolbar ##{toolbarTop}>
+  <div role=toolbar ##{toolbarTop}>
     <div.mdc-segmented-button.mdc-segmented-button--single-select role=radiogroup data-mdc-auto-init=MDCSegmentedButton>
       <a.mdc-segmented-button__segment href=@{AdminR $ BusinessCalendarR bid month} role=radio
         :curr == Just (AdminR $ BusinessCalendarR bid month):.mdc-segmented-button__segment--selected

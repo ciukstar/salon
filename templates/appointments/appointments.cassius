@@ -13,3 +13,7 @@ main
     align-items: center
     a.mdc-segmented-button__segment
       border-style: solid
+
+    ##{buttonSort}
+      position: absolute
+      right: 0

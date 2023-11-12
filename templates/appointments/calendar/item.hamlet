@@ -2,7 +2,7 @@
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
       <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
-        href=@{BookingsDayListR cid day}>
+        href=@?{(BookingsDayListR cid day,stati)}>
         <span.mdc-icon-button__ripple>
         <spam.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
@@ -10,5 +10,220 @@
         _{MsgAppointment}
 
 <main.mdc-top-app-bar--fixed-adjust>
-  $maybe Entity _ (Book _ _ _ date time _ _ _ status) <- book
-    #{show date}, #{show time}
+
+  $forall (_,msg) <- filter (((==) "warn") . fst) msgs
+    <div.mdc-banner role=banner data-mdc-auto-init=MDCBanner>
+      <div.mdc-banner__content role=alertdialog aria-live=assertive>
+        <div.mdc-banner__graphic-text-wrapper>
+          <div.mdc-banner__graphic role=img style="background-color:var(--mdc-theme-error)">
+            <i.mdc-banner__icon.material-symbols-outlined>warning
+          <div.mdc-banner__text>
+            #{msg}
+        <div.mdc-banner__actions>
+          <button.mdc-banner__primary-action.mdc-icon-button type=button>
+            <span.mdc-icon-button__ripple>
+            <i.material-symbols-outlined>close
+
+  $maybe (Entity _ (Book _ _ _ date time _ _ _ status),offer,service,thumbnail,role,staff) <- book
+    $with Entity _ (Offer _ oname price pref suff _) <- offer
+      $with Entity sid (Service sname _ _ dur _ _) <- service
+        <div.mdc-card>
+          <div.mdc-card__primary-action>
+            <div.mdc-card__media.mdc-card__media--16-9 style="background-image:url('@{ServiceThumbnailR sid}')">
+              <div.mdc-card__media-content>
+                <h6.mdc-typography--headline6>#{sname}
+                $maybe Entity _ (Thumbnail _ _ _ attrib) <- thumbnail
+                  $maybe attribution <- attrib
+                    <div style="text-align:end;font-size:0.5rem;position:absolute;bottom:0;right:0;padding-right:4px">
+                      ^{attribution}
+            <div.mdc-card__ripple>
+
+          <details.mdc-list.mdc-card-wrapper__text-section
+            ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+            <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line
+              .mdc-list-item--with-trailing-icon>
+              <span.mdc-list-item__ripple>
+              <span.mdc-list-item__start>
+               <i.material-symbols-outlined>volunteer_activism
+              <span.mdc-list-item__content>
+                <div.mdc-list-item__primary-text style="color:var(--mdc-theme-text-hint-on-light)">
+                  _{MsgService}
+              <span.mdc-list-item__end>
+               <i.expand.material-symbols-outlined>expand_more
+            <section.mdc-card-wrapper__text-section>
+              <div>#{sname}
+              <div style="line-height:1">
+                <small>
+                  #{oname}:&nbsp;
+                  $maybe x <- pref
+                    #{x}
+                  $with x <- show price
+                    $maybe c <- currency
+                      <span.currency data-value=#{x} data-currency=#{c}>#{x}
+                    $nothing
+                      <span.currency data-value=#{x}>#{x}
+                  $maybe x <- suff
+                    #{x}
+
+              $maybe duration <- dur
+                $with translate <- renderMessage app langs
+                  $with pat <- intercalate "" ["%H",translate MsgSymbolHour," %M",translate MsgSymbolMinute]
+                    $with duration <- formatTime defaultTimeLocale (unpack pat) duration
+                      <small>
+                        _{MsgDuration}:&nbsp;#{duration}
+
+          $with (color,icon,label,title) <- resolveBookStatus status
+            <details.mdc-list.mdc-card-wrapper__text-section open
+              ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+              <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line
+                .mdc-list-item--with-trailing-icon>
+                <span.mdc-list-item__ripple>
+                <span.mdc-list-item__start>
+                 <i.material-symbols-outlined style="color:#{color}">
+                    #{icon}
+                <span.mdc-list-item__content>
+                  <div.mdc-list-item__primary-text style="color:var(--mdc-theme-text-hint-on-light)">
+                    _{MsgAppoinmentStatus}
+                <span.mdc-list-item__end>
+                 <i.expand.material-symbols-outlined>expand_less
+              <section.mdc-card-wrapper__text-section title=_{title}>
+                _{label}
+
+          <details.mdc-list.mdc-card-wrapper__text-section open
+            ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+            <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line
+              .mdc-list-item--with-trailing-icon>
+              <span.mdc-list-item__ripple>
+              <span.mdc-list-item__start>
+               <i.material-symbols-outlined>schedule
+              <span.mdc-list-item__content>
+                <div.mdc-list-item__primary-text style="color:var(--mdc-theme-text-hint-on-light)">
+                  _{MsgMeetingTime}
+              <span.mdc-list-item__end>
+               <i.expand.material-symbols-outlined>expand_less
+            <section.mdc-card-wrapper__text-section #appointmentFullLongTime>
+              #{show date} #{show time}
+
+          <details.mdc-list.mdc-card-wrapper__text-section
+            ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+            <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line
+              .mdc-list-item--with-trailing-icon>
+              <span.mdc-list-item__ripple>
+              <span.mdc-list-item__start>
+               <i.material-symbols-outlined>emoji_people
+              <span.mdc-list-item__content>
+                <div.mdc-list-item__primary-text style="color:var(--mdc-theme-text-hint-on-light)">
+                  _{MsgAcquaintance}
+              <span.mdc-list-item__end>
+               <i.expand.material-symbols-outlined>expand_more
+            <div #acquaintanceContent>
+              $maybe Entity uid (User uname _ _ fname _) <- user
+                <figure>
+                  <img src=@{AccountPhotoR uid} width=56 height=56 alt=_{MsgPhoto} loading=lazy
+                    onerror="this.src = '@{PhotoPlaceholderR}'">
+                  <figcaption>
+                    <small>
+                      $maybe fname <- fname
+                        #{fname}
+                      $nothing
+                        #{uname}
+                    <div>
+                      <small>(_{MsgCustomer})
+
+                <i.material-symbols-outlined style="align-self:center;color:var(--mdc-theme-text-icon-on-background)">
+                  handshake
+
+              $maybe Entity eid (Staff ename _ _ _ _ _) <- staff
+                <figure>
+                  <img src=@{AdminR $ AdmStaffPhotoR eid} width=56 height=56 alt=_{MsgPhoto} loading=lazy>
+                  <figcaption>
+                    <small>#{ename}
+                    $maybe Entity _ (Role _ _ rname _ _) <- role
+                      <div>
+                        <small>(#{rname})
+              $nothing
+                <figure>
+                  <i.material-symbols-outlined style="font-size:3rem">indeterminate_question_box
+                  <figcaption>
+                    <small>(_{MsgUnassigned})
+
+          $maybe Entity _ (ContactUs _ html showAddress _ _ _ _) <- location
+            <details.mdc-list.mdc-card-wrapper__text-section ##{detailsLocation}
+              ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+              <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line
+                .mdc-list-item--with-trailing-icon>
+                <span.mdc-list-item__ripple>
+                <span.mdc-list-item__start>
+                 <i.material-symbols-outlined>location_on
+                <span.mdc-list-item__content>
+                  <div.mdc-list-item__primary-text style="color:var(--mdc-theme-text-hint-on-light)">
+                    _{MsgMeetingLocation}
+                <span.mdc-list-item__end>
+                 <i.expand.material-symbols-outlined>expand_more
+              <div ##{locationHtmlContainer}>
+                ^{html}
+              $if showAddress
+                <dl.address style="margin:0 1rem">
+                  <dt>
+                    <i>_{MsgAddress}
+                  <dd>
+                    $maybe addr <- address
+                      #{addr}
+                    $nothing
+                      _{MsgNoBusinessAddressFound}
+
+          <div.mdc-card__actions>
+            <div.mdc-card__action-buttons>
+
+              $if status == BookStatusRequest
+                <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--outlined type=button
+                  onclick="document.getElementById('#{dlgCancelAppointment}').MDCDialog.open()">
+                  <span.mdc-button__ripple>
+                  <span.mdc-button__focus-ring>
+                  <span.mdc-button__label>_{MsgCancelAppointment}
+
+                <form method=post action=@{AppointmentCancelR bid} ##{formAppoitmentCancel} enctype=#{etCancel}>
+                  ^{fwCancel}
+
+                <div.mdc-dialog ##{dlgCancelAppointment} data-mdc-auto-init=MDCDialog>
+                  <div.mdc-dialog__container>
+                    <div.mdc-dialog__surface tabindex=-1 role=alertdialog aria-modal=true>
+                      <h4.mdc-dialog__title>_{MsgPleaseConfirm}
+                      <div.mdc-dialog__content>
+                        _{MsgCancelAppointmentReally}
+
+                      <div.mdc-dialog__actions>
+                        <button.mdc-dialog__button.mdc-button type=button data-mdc-dialog-action=close>
+                          <span.mdc-button__ripple>
+                          <span.mdc-button__focus-ring>
+                          <span.mdc-button__label>_{MsgNo}
+
+                        <button.mdc-dialog__button.mdc-button.mdc-button--raised type=submit form=#{formAppoitmentCancel}>
+                          <span.mdc-button__ripple>
+                          <span.mdc-button__focus-ring>
+                          <span.mdc-button__label>_{MsgYes}
+
+                  <div.mdc-dialog__scrim>
+
+              $if elem status [BookStatusRequest,BookStatusApproved,BookStatusAdjusted]
+                <a.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--unelevated
+                  href=@{AppointmentRescheduleR bid} role=button>
+                  <span.mdc-button__ripple>
+                  <span.mdc-button__focus-ring>
+                  <span.mdc-button__label>_{MsgReschedule}
+
+              $if status == BookStatusAdjusted
+                <form method=post action=@{AppointmentApproveR bid} ##{formGetAppointmentApprove} enctype=#{etApprove}>
+                  ^{fwApprove}
+                <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--unelevated
+                  type=submit name=tz form=#{formGetAppointmentApprove}>
+                  <span.mdc-button__ripple>
+                  <span.mdc-button__focus-ring>
+                  <span.mdc-button__label>_{MsgApprove}
+
+            <div.mdc-card__action-icons>
+              <a.mdc-card__action.mdc-card__action-icon.mdc-icon-button role=button title=_{MsgHistory}
+                href=@{AppointmentHistR bid}>
+                <span.mdc-icon-button__ripple>
+                <span.mdc-icon-button__focus-ring>
+                <i.material-symbols-outlined>history

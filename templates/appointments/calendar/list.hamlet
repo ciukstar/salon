@@ -27,9 +27,9 @@
         <time ##{appointmentDay} datetime=#{d}>#{d}
         
     <nav.mdc-list data-mdc-auto-init=MDCList>
-      $forall (Entity bid (Book _ _ _ date time _ _ _ status),Entity _ (Service sname _ _ _ _ _)) <- books
+      $forall (Entity bid (Book _ _ _ _ time _ _ _ status),Entity _ (Service sname _ _ _ _ _)) <- books
         $with (color,icon,label,title) <- resolveBookStatus status
-          <a.mdc-list-item href=@{BookingItemR cid day bid}
+          <a.mdc-list-item href=@?{(BookingItemR cid day bid,stati)}
             .mdc-list-item--with-leading-icon.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon>
             <span.mdc-list-item__ripple>
             <span.mdc-list-item__start>
