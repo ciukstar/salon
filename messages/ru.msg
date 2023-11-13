@@ -1,3 +1,4 @@
+NoAppointmentsForThisDay: У вас нет записи на этот день
 Completed: Выполнена
 Pending: В ожидании
 NoBusinessAddressFound: Адрес не найден

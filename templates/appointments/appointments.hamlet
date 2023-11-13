@@ -63,31 +63,31 @@
             <span.mdc-icon-button__focus-ring>
             <i.material-symbols-outlined>sort
 
-  <div.mdc-chip-set.mdc-chip-set--filter role=grid data-mdc-auto-init=MDCChipSet>
+  <div.mdc-chip-set.mdc-chip-set--filter role=menu data-mdc-auto-init=MDCChipSet>
     $forall (status,_) <- statusList
       $with ((color,icon,label,title),checked) <- (resolveBookStatus status,elem status statuses)
         $if checked
           $with params <- map ((fstsec "status" . pack) . show) (filter ((/=) status) statuses)
             $with params <- (:) ("sort",pack $ show sort) params
-              <a.mdc-chip.mdc-chip--selected role=row href=@?{(AppointmentsR,params)}>
+              <a.mdc-chip.mdc-chip--selected role=menuitem href=@?{(AppointmentsR,params)}>
                 <div.mdc-chip__ripple>
                 <span.mdc-chip__checkmark>
                   <svg.mdc-chip__checkmark-svg viewBox="-2 -3 30 30">
                     <path.mdc-chip__checkmark-path fill=none stroke=black d="M1.73,12.91 8.1,19.28 22.79,4.59">
-                <span role=gridcell>
+                <span>
                   <span.mdc-chip__primary-action role=checkbox tabindex=0 aria-checked=true>
                     <span.mdc-chip__text title=_{title}>_{label}
         $else
           $with params <- map ((fstsec "status" . pack) . show) ((:) status statuses)
             $with params <- (:) ("sort",pack $ show sort) params
-              <a.mdc-chip role=row href=@?{(AppointmentsR,params)}>
+              <a.mdc-chip role=menuitem href=@?{(AppointmentsR,params)}>
                 <div.mdc-chip__ripple>
                 <i.mdc-chip__icon.mdc-chip__icon--leading.material-symbols-outlined style="color:#{color}">
                   #{icon}
                 <span.mdc-chip__checkmark>
                   <svg.mdc-chip__checkmark-svg viewBox="-2 -3 30 30">
                     <path.mdc-chip__checkmark-path fill=none stroke=black d="M1.73,12.91 8.1,19.28 22.79,4.59">
-                <span role=gridcell>
+                <span>
                   <span.mdc-chip__primary-action role=checkbox tabindex=-1 aria-checked=false>
                     <span.mdc-chip__text title=_{title}>_{label}
       
@@ -122,8 +122,15 @@
               <i.material-symbols-outlined>arrow_forward_ios
           <div.mdc-list-divider role=separator>
 
+    <div.mdc-touch-target-wrapper style="position:fixed;right:1rem;bottom:1rem">
+      <a.mdc-fab.mdc-fab--extended.mdc-fab--touch href=@{BookOffersR} role=button>
+        <span.mdc-fab__ripple>
+        <i.mdc-fab__icon.material-symbols-outlined>add
+        <span.mdc-fab__focus-ring>
+        <span.mdc-fab__label>_{MsgBookAppointment}
+
 $forall (_,msg) <- msgs
-  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar style="bottom:5rem">
     <div.mdc-snackbar__surface>
       <div.mdc-snackbar__label>#{msg}
       <div.mdc-snackbar__actions>

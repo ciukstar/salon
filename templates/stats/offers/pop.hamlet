@@ -67,7 +67,7 @@
               <th.mdc-data-table__header-cell.mdc-data-table__header-cell--numeric role=columnheader scope=col>
                 _{MsgBookings}
           <tbody.mdc-data-table__cotent>
-            $forall (i,(Entity _ (Service sname _ _ _ _ _),Entity _ (Offer _ _ _ _ _ _),Value n)) <- report
+            $forall (i,(Entity _ (Service sname _ _ _ _ _),Entity _ (Offer _ _ _ _ _ _ _),Value n)) <- report
               <tr.mdc-data-table__row>
                 <th.mdc-data-table__cell scope=row>#{i}
                 <th.mdc-data-table__cell scope=row>#{sname}

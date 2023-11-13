@@ -83,7 +83,7 @@ import Model
     , EntityField
       ( ServiceId, ThumbnailService, ServiceGroup, OfferService, ServiceDescr
       , OfferId, ServicePublished, ServiceName, BusinessCurrency
-      , ServiceOverview, ThumbnailAttribution
+      , ServiceOverview, ThumbnailAttribution, OfferPublished
       )
     )
 
@@ -118,6 +118,7 @@ getServiceOffersR (Services sids) = do
             `innerJoin` table @Service `on` (\(x :& s) -> x ^. OfferService ==. s ^. ServiceId)
             `leftJoin` table @Thumbnail  `on` (\(_ :& s :& t) -> just (s ^. ServiceId) ==. t ?. ThumbnailService)
         where_ $ s ^. ServicePublished
+        where_ $ x ^. OfferPublished
         where_ $ x ^. OfferService `in_` subSelectList
               ( do
                     cte <- withRecursive
@@ -153,6 +154,7 @@ getOfferSearchR oid (Services sids) = do
             `on` (\(x :& s) -> x ^. OfferService ==. s ^. ServiceId)
             `leftJoin` table @Thumbnail `on` (\(_ :& s :& t) -> just (s ^. ServiceId) ==. t ?. ThumbnailService)
         where_ $ x ^. OfferId ==. val oid
+        where_ $ x ^. OfferPublished
         where_ $ s ^. ServicePublished
         return ((s,x),t ?. ThumbnailAttribution) )
 
@@ -189,6 +191,7 @@ getServiceSearchOffersR (Services sids) = do
             `innerJoin` table @Service `on` (\(x :& s) -> x ^. OfferService ==. s ^. ServiceId)
             `leftJoin` table @Thumbnail  `on` (\(_ :& s :& t) -> just (s ^. ServiceId) ==. t ?. ThumbnailService)
         where_ $ s ^. ServicePublished
+        where_ $ x ^. OfferPublished
         where_ $ x ^. OfferService `in_` subSelectList
               ( do
                     cte <- withRecursive
@@ -226,6 +229,7 @@ getServiceSearchR (Services sids) = do
             `on` (\(x :& s) -> x ^. OfferService ==. s ^. ServiceId)
             `leftJoin` table @Thumbnail `on` (\(_ :& s :& t) -> just (s ^. ServiceId) ==. t ?. ThumbnailService)
         where_ $ x ^. OfferService ==. val sid
+        where_ $ x ^. OfferPublished
         where_ $ s ^. ServicePublished
         return ((s,x),t ?. ThumbnailAttribution) )
 
@@ -290,6 +294,7 @@ getOfferR oid (Services sids) = do
             `on` (\(x :& s) -> x ^. OfferService ==. s ^. ServiceId)
             `leftJoin` table @Thumbnail `on` (\(_ :& s :& t) -> just (s ^. ServiceId) ==. t ?. ThumbnailService)
         where_ $ x ^. OfferId ==. val oid
+        where_ $ x ^. OfferPublished
         where_ $ s ^. ServicePublished
         return ((s,x),t ?. ThumbnailAttribution) )
 
@@ -310,6 +315,7 @@ postServiceR (Services sids) = do
             `on` (\(x :& s) -> x ^. OfferService ==. s ^. ServiceId)
             `leftJoin` table @Thumbnail `on` (\(_ :& s :& t) -> just (s ^. ServiceId) ==. t ?. ThumbnailService)
         where_ $ x ^. OfferService ==. val sid
+        where_ $ x ^. OfferPublished
         where_ $ s ^. ServicePublished
         return ((s,x),t ?. ThumbnailAttribution) )
 
@@ -334,6 +340,7 @@ getServiceR (Services sids) = do
             `on` (\(x :& s) -> x ^. OfferService ==. s ^. ServiceId)
             `leftJoin` table @Thumbnail `on` (\(_ :& s :& t) -> just (s ^. ServiceId) ==. t ?. ThumbnailService)
         where_ $ x ^. OfferService ==. val sid
+        where_ $ x ^. OfferPublished
         where_ $ s ^. ServicePublished
         return ((s,x),t ?. ThumbnailAttribution) )
 
@@ -446,7 +453,7 @@ buildSnippet currency open msid (Services sids) (Srvs services) = [whamlet|
             <div.mdc-list-item__primary-text>
               #{sname}
             $if noffers == 1
-              $forall Entity _ (Offer _ oname price prefix suffix _) <- take 1 offers
+              $forall Entity _ (Offer _ oname _ price prefix suffix _) <- take 1 offers
                 <div.mdc-list-item__secondary-text style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
                   #{oname}:&nbsp;
                   $maybe x <- prefix
@@ -475,7 +482,7 @@ fetchServices gid = do
     categories <- (second (join . unValue) <$>) <$> runDB ( select $ do
         x :& t <- from $ table @Service `leftJoin` table @Thumbnail
             `on` (\(x :& t) -> just (x ^. ServiceId) ==. t ?. ThumbnailService)
-        where_ $ x ^. ServicePublished ==. val True
+        where_ $ x ^. ServicePublished
         where_ $ case gid of
           Nothing -> isNothing $ x ^. ServiceGroup
           Just sid -> x ^. ServiceGroup ==. just (val sid)
@@ -485,6 +492,7 @@ fetchServices gid = do
     groups <- forM categories $ \e@(Entity sid _,_) -> (e,) <$> runDB ( select $ do
         x <- from $ table @Offer
         where_ $ x ^. OfferService ==. val sid
+        where_ $ x ^. OfferPublished
         orderBy [asc (x ^. OfferId)]
         return x )
 

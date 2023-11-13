@@ -55,31 +55,29 @@
       <span.mdc-icon-button__focus-ring>
       <i.material-symbols-outlined>today
 
-  <div.mdc-chip-set.mdc-chip-set--filter role=grid data-mdc-auto-init=MDCChipSet>
+  <div.mdc-chip-set.mdc-chip-set--filter role=menu data-mdc-auto-init=MDCChipSet>
     $forall (status,_) <- statusList
       $with ((color,icon,label,title),checked) <- (resolveBookStatus status,elem status statuses)
         $if checked
           $with params <- map ((fstsec "status" . pack) . show) (filter ((/=) status) statuses)
-            <a.mdc-chip.mdc-chip--selected role=row href=@?{(BookingsCalendarR month,params)}>
+            <a.mdc-chip.mdc-chip--selected role=menuitem href=@?{(BookingsCalendarR month,params)}>
               <div.mdc-chip__ripple>
               <span.mdc-chip__checkmark>
                 <svg.mdc-chip__checkmark-svg viewBox="-2 -3 30 30">
                   <path.mdc-chip__checkmark-path fill=none stroke=black d="M1.73,12.91 8.1,19.28 22.79,4.59">
-              <span role=gridcell>
-                <span.mdc-chip__primary-action role=checkbox tabindex=0 aria-checked=true>
-                  <span.mdc-chip__text title=_{title}>_{label}
+              <span.mdc-chip__primary-action role=checkbox tabindex=0 aria-checked=true>
+                <span.mdc-chip__text title=_{title}>_{label}
         $else
           $with params <- map ((fstsec "status" . pack) . show) ((:) status statuses) 
-            <a.mdc-chip role=row href=@?{(BookingsCalendarR month,params)}>
+            <a.mdc-chip role=menuitem href=@?{(BookingsCalendarR month,params)}>
               <div.mdc-chip__ripple>
               <i.mdc-chip__icon.mdc-chip__icon--leading.material-symbols-outlined style="color:#{color}">
                 #{icon}
               <span.mdc-chip__checkmark>
                 <svg.mdc-chip__checkmark-svg viewBox="-2 -3 30 30">
                   <path.mdc-chip__checkmark-path fill=none stroke=black d="M1.73,12.91 8.1,19.28 22.79,4.59">
-              <span role=gridcell>
-                <span.mdc-chip__primary-action role=checkbox tabindex=-1 aria-checked=false>
-                  <span.mdc-chip__text title=_{title}>_{label}
+              <span.mdc-chip__primary-action role=checkbox tabindex=-1 aria-checked=false>
+                <span.mdc-chip__text title=_{title}>_{label}
 
   <div ##{divCalendar}>
     <div.header>

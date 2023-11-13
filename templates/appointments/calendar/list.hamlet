@@ -11,21 +11,21 @@
 
 <main.mdc-top-app-bar--fixed-adjust>
 
+  <div.mdc-typography.mdc-typography--headline6>
+    $with d <- show day
+      <time ##{appointmentDay} datetime=#{d}>#{d}
+
   $if null books
     <figure style="text-align:center">
       <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
       <figcaption>
-        _{MsgNoAppointmentsYet}.
+        _{MsgNoAppointmentsForThisDay}.
         <p>
           <a.mdc-button.mdc-button--raised href=@{BookOffersR} role=button>
             <span.mdc-button__ripple>
             <span.mdc-button__focus-ring>
             <span.mdc-button__label>_{MsgBookAppointment}
   $else
-    <div.mdc-typography.mdc-typography--headline6>
-      $with d <- show day
-        <time ##{appointmentDay} datetime=#{d}>#{d}
-        
     <nav.mdc-list data-mdc-auto-init=MDCList>
       $forall (Entity bid (Book _ _ _ _ time _ _ _ status),Entity _ (Service sname _ _ _ _ _)) <- books
         $with (color,icon,label,title) <- resolveBookStatus status
@@ -46,3 +46,10 @@
             <span.mdc-list-item__end>
               <i.material-symbols-outlined>arrow_forward_ios
           <div.mdc-list-divider role=separator>
+
+    <div.mdc-touch-target-wrapper style="position:fixed;right:1rem;bottom:1rem">
+      <a.mdc-fab.mdc-fab--extended.mdc-fab--touch href=@{BookOffersR} role=button>
+        <span.mdc-fab__ripple>
+        <i.mdc-fab__icon.material-symbols-outlined>add
+        <span.mdc-fab__focus-ring>
+        <span.mdc-fab__label>_{MsgBookAppointment}

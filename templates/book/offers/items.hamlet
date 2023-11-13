@@ -1,6 +1,6 @@
  
 <ul.mdc-list ##{theId} role=listbox aria-label=_{MsgOffers} aria-multiselectable=true tabindex=-1 data-mdc-auto-init=MDCList>
-  $forall e@((Entity sid (Service sname _ _ duration _ _),Entity oid (Offer _ pname price pref suff _)),attrib) <- options
+  $forall e@((Entity sid (Service sname _ _ duration _ _),Entity oid (Offer _ pname _ price pref suff _)),attrib) <- options
     $with checked <- isChecked vals e
       <li.mdc-list-item tabindex=-1 role=option data-amount=#{show price}
         .mdc-list-item--with-leading-image.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-checkbox

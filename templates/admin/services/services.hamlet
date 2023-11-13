@@ -145,10 +145,10 @@ $if null sids
             _{MsgNoPriceSetYet}.
       $else
         <nav.mdc-list data-mdc-auto-init=MDCList>
-          $forall Entity pid (Offer _ name price prefix suffix _) <- offer
+          $forall Entity pid (Offer _ name published price prefix suffix _) <- offer
             <a.mdc-list-item href=@?{(AdminR $ AdmPriceR pid (Services sids),[("o","offer")])}
               :Just pid == mpid:.mdc-list-item--activated
-              .mdc-list-item--with-two-lines.mdc-list-item--with-trailing-icon>
+              .mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon>
               <span.mdc-list-item__ripple>
               <span.mdc-list-item__content>
                 <div.mdc-list-item__primary-text>#{name}
@@ -162,6 +162,11 @@ $if null sids
                       <span.currency data-value=#{x}>#{x}
                   $maybe x <- suffix
                     #{x}
+                <div.mdc-list-item__secondary-text>
+                  $if published
+                    _{MsgPublished}
+                  $else
+                    _{MsgUnpublished}
                     
               <span.mdc-list-item__end>
                 <i.material-symbols-outlined>arrow_forward_ios

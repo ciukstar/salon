@@ -1,3 +1,4 @@
+NoAppointmentsForThisDay: Nu aveți programări pentru această zi
 Completed: Finalizată
 Pending: În așteptare
 NoBusinessAddressFound: Nu a fost găsită nicio adresă

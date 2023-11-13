@@ -8,6 +8,11 @@ main
     display: flex
     flex-direction: column
     gap: 1rem
+
+    .mdc-radio .mdc-radio__native-control:enabled:checked+.mdc-radio__background
+      .mdc-radio__outer-circle, .mdc-radio__inner-circle
+        border-color: var(--theme-accent,#018786)
+        
     div.form-field
       display: flex
       flex-direction: column

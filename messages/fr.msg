@@ -1,3 +1,4 @@
+NoAppointmentsForThisDay: Vous n'avez pas de rendez-vous pour ce jour
 Completed: Terminée
 Pending: En attente
 NoBusinessAddressFound: Aucune adresse trouvée

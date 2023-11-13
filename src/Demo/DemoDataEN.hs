@@ -17,7 +17,8 @@ import Data.Time.Calendar
     ( DayPeriod (periodFirstDay, periodLastDay), DayOfWeek (Saturday, Sunday)
     , dayOfWeek, addDays, toGregorian
     )
-import Data.Time.Clock (getCurrentTime, UTCTime (utctDay,utctDayTime), DiffTime)
+import Data.Time.Clock
+    ( getCurrentTime, UTCTime (utctDay,utctDayTime), DiffTime, addUTCTime )
 import Data.Time.Format (parseTimeM, defaultTimeLocale)
 import Data.Time.LocalTime (TimeOfDay (TimeOfDay), timeToTimeOfDay, utc)
 import Yesod.Form.Fields (Textarea (Textarea))
@@ -37,7 +38,7 @@ import Model
       , thumbnailAttribution
       )
     , Offer
-      ( Offer, offerName, offerPrice, offerPrefix
+      ( Offer, offerName, offerPublished, offerPrice, offerPrefix
       , offerSuffix, offerDescr, offerService
       )
     , EmplStatus (EmplStatusAvailable, EmplStatusUnavailable)
@@ -375,20 +376,36 @@ populateEN = do
                                       , staffPhotoMime = "image/avif"
                                       }
 
-    e8 <- insert $ Staff { staffName = "Barbara Young"
-                         , staffStatus = EmplStatusAvailable
-                         , staffPhone = businessPhone business
-                         , staffMobile = businessMobile business
-                         , staffEmail = Just "byoung@mail.uk"
-                         , staffUser = Nothing
-                         }
+    pass8 <- liftIO $ makePassword "byoung" 17
+    let user8 = User { userName = "byoung"
+                     , userPassword = decodeUtf8 pass8
+                     , userAdmin = False
+                     , userFullName = Just "Barbara Young"
+                     , userEmail = Just "byoung@mail.uk"
+                     }
+    u8 <- insert user8
+
+    let empl8 = Staff { staffName = case userFullName user8 of Just name -> name; Nothing -> userName user8
+                      , staffStatus = EmplStatusAvailable
+                      , staffPhone = businessPhone business
+                      , staffMobile = businessMobile business
+                      , staffEmail = userEmail user8
+                      , staffUser = Just u8
+                      }
+
+    e8 <- insert empl8
 
     case B64.decode woman04 of
       Left _ -> return ()
-      Right x -> insert_ $ StaffPhoto { staffPhotoStaff = e8
-                                      , staffPhotoPhoto = x
-                                      , staffPhotoMime = "image/avif"
-                                      }
+      Right x -> do
+          insert_ $ StaffPhoto { staffPhotoStaff = e8
+                               , staffPhotoPhoto = x
+                               , staffPhotoMime = "image/avif"
+                               }
+          insert_ $ UserPhoto { userPhotoUser = u8
+                              , userPhotoPhoto = x
+                              , userPhotoMime = "image/avif"
+                              }
 
     let empl9 = Staff { staffName = "Jorge Walker"
                       , staffStatus = EmplStatusAvailable
@@ -535,6 +552,7 @@ populateEN = do
 
     o111 <- insert $ Offer { offerService = s11
                            , offerName = "Price"
+                           , offerPublished = True
                            , offerPrice = 26
                            , offerPrefix = Nothing
                            , offerSuffix = Nothing
@@ -558,6 +576,7 @@ populateEN = do
 
     insert_ $ Offer { offerService = s12
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 28
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -602,6 +621,7 @@ populateEN = do
 
     o131 <- insert $ Offer { offerService = s13
                            , offerName = "Price"
+                           , offerPublished = True
                            , offerPrice = 35
                            , offerPrefix = Nothing
                            , offerSuffix = Nothing
@@ -641,6 +661,7 @@ populateEN = do
 
     o141 <- insert $ Offer { offerService = s14
                            , offerName = "Price"
+                           , offerPublished = True
                            , offerPrice = 16
                            , offerPrefix = Nothing
                            , offerSuffix = Just "- £20 (depending on the length of their hair)"
@@ -701,6 +722,7 @@ populateEN = do
 
     insert_ $ Offer { offerService = s1511
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 99
                     , offerPrefix = Nothing
                     , offerSuffix = Just " & up"
@@ -745,6 +767,7 @@ populateEN = do
 
     insert_ $ Offer { offerService = s1512
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 110
                     , offerPrefix = Nothing
                     , offerSuffix = Just " & up"
@@ -804,6 +827,7 @@ populateEN = do
 
     insert_ $ Offer { offerService = s1521
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 130
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -848,6 +872,7 @@ populateEN = do
 
     insert_ $ Offer { offerService = s1522
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 68
                     , offerPrefix = Nothing
                     , offerSuffix = Just " & up"
@@ -885,6 +910,7 @@ populateEN = do
 
     insert_ $ Offer { offerService = s1523
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 68
                     , offerPrefix = Nothing
                     , offerSuffix = Just " & up"
@@ -944,6 +970,7 @@ populateEN = do
 
     insert_ $ Offer { offerService = s1531
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 79
                     , offerPrefix = Nothing
                     , offerSuffix = Just " & up"
@@ -988,6 +1015,7 @@ populateEN = do
 
     insert_ $ Offer { offerService = s1532
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 89
                     , offerPrefix = Nothing
                     , offerSuffix = Just " & up"
@@ -1032,6 +1060,7 @@ populateEN = do
 
     insert_ $ Offer { offerService = s1533
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 250
                     , offerPrefix = Nothing
                     , offerSuffix = Just " & up"
@@ -1096,6 +1125,7 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
 
     insert_ $ Offer { offerService = s21
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 55
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1104,6 +1134,7 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
 
     insert_ $ Offer { offerService = s21
                     , offerName = "Package"
+                    , offerPublished = True
                     , offerPrice = 250
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 sessions"
@@ -1148,6 +1179,7 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
 
     insert_ $ Offer { offerService = s22
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 75
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1156,6 +1188,7 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
 
     insert_ $ Offer { offerService = s22
                     , offerName = "Package"
+                    , offerPublished = True
                     , offerPrice = 350
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 sessions"
@@ -1200,6 +1233,7 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
 
     insert_ $ Offer { offerService = s23
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 90
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1208,6 +1242,7 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
 
     insert_ $ Offer { offerService = s23
                     , offerName = "Package"
+                    , offerPublished = True
                     , offerPrice = 400
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 sessions"
@@ -1259,6 +1294,7 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
 
     insert_ $ Offer { offerService = s24
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 95
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1267,6 +1303,7 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
 
     insert_ $ Offer { offerService = s24
                     , offerName = "Package"
+                    , offerPublished = True
                     , offerPrice = 600
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/7 sessions"
@@ -1311,6 +1348,7 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
 
     o251 <- insert $ Offer { offerService = s25
                            , offerName = "Price"
+                           , offerPublished = True
                            , offerPrice = 100
                            , offerPrefix = Nothing
                            , offerSuffix = Nothing
@@ -1319,6 +1357,7 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
 
     insert_ $ Offer { offerService = s25
                     , offerName = "Package"
+                    , offerPublished = True
                     , offerPrice = 460
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 sessions"
@@ -1410,6 +1449,7 @@ As a result, the milk peel is a powerful skin resurfacing process with substanti
 
     insert_ $ Offer { offerService = s31
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 330
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1460,6 +1500,7 @@ The Scientia Derma Roller is an incredible device which naturally increases the 
 
     o321 <- insert $ Offer { offerService = s32
                            , offerName = "Price"
+                           , offerPublished = True
                            , offerPrice = 330
                            , offerPrefix = Nothing
                            , offerSuffix = Nothing
@@ -1508,6 +1549,7 @@ A painless procedure, it helps to remove acne scars, enlarged pores, facial line
 
     insert_ $ Offer { offerService = s33
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 70
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1554,6 +1596,7 @@ A painless procedure, it helps to remove acne scars, enlarged pores, facial line
 
     insert_ $ Offer { offerService = s34
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 95
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1562,6 +1605,7 @@ A painless procedure, it helps to remove acne scars, enlarged pores, facial line
 
     insert_ $ Offer { offerService = s34
                     , offerName = "Package"
+                    , offerPublished = True
                     , offerPrice = 600
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/7 sessions"
@@ -1635,6 +1679,7 @@ This treatment reduces the appearance of lines and wrinkles Evens out skin tone 
 
     insert_ $ Offer { offerService = s41
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 95
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1643,6 +1688,7 @@ This treatment reduces the appearance of lines and wrinkles Evens out skin tone 
 
     insert_ $ Offer { offerService = s41
                     , offerName = "Package"
+                    , offerPublished = True
                     , offerPrice = 430
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 sessions"
@@ -1691,6 +1737,7 @@ After just one treatment, expression lines appear relaxed Lines and wrinkles are
 
     insert_ $ Offer { offerService = s42
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 170
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1699,6 +1746,7 @@ After just one treatment, expression lines appear relaxed Lines and wrinkles are
 
     insert_ $ Offer { offerService = s42
                     , offerName = "Package"
+                    , offerPublished = True
                     , offerPrice = 780
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 sessions"
@@ -1750,6 +1798,7 @@ This treatment improves the overall complexion by minimizing the appearance of f
 
     insert_ $ Offer { offerService = s43
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 160
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1758,6 +1807,7 @@ This treatment improves the overall complexion by minimizing the appearance of f
 
     insert_ $ Offer { offerService = s43
                     , offerName = "Package"
+                    , offerPublished = True
                     , offerPrice = 730
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 sessions"
@@ -1799,6 +1849,7 @@ It promotes collagen production, tightens and firms skin tissues, hydrates & rej
 
     insert_ $ Offer { offerService = s44
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 180
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1857,6 +1908,7 @@ Similar to a regular hair perm, try to avoid wetting your eyelashes for 4 hours 
 
     insert_ $ Offer { offerService = s51
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 45
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1913,6 +1965,7 @@ Similar to a regular hair perm, try to avoid wetting your eyelashes for 4 hours 
 
     insert_ $ Offer { offerService = s52
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 130
                     , offerPrefix = Nothing
                     , offerSuffix = Just " & up"
@@ -1950,6 +2003,7 @@ Similar to a regular hair perm, try to avoid wetting your eyelashes for 4 hours 
 
     insert_ $ Offer { offerService = s53
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 25
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2001,6 +2055,7 @@ Treatments can be performed every week or every other week, depending upon skin 
 
     insert_ $ Offer { offerService = s54
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 40
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2038,6 +2093,7 @@ Treatments can be performed every week or every other week, depending upon skin 
 
     insert_ $ Offer { offerService = s55
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 40
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2094,6 +2150,7 @@ Swedish massage therapy is the modality that comes to mind when most people thin
 
     insert_ $ Offer { offerService = s61
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 60
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2142,6 +2199,7 @@ Chair massage is a 15-20 minute massage focused on the back, shoulders, neck, ar
 
     insert_ $ Offer { offerService = s62
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 60
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2187,6 +2245,7 @@ During a foot massage, various techniques may be used, including kneading, strok
 
     insert_ $ Offer { offerService = s63
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 30
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2243,6 +2302,7 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
 
     insert_ $ Offer { offerService = s71
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 200
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2287,6 +2347,7 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
 
     insert_ $ Offer { offerService = s72
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 85
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2324,6 +2385,7 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
 
     insert_ $ Offer { offerService = s73
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 60
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2361,6 +2423,7 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
 
     insert_ $ Offer { offerService = s74
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 100
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2413,6 +2476,7 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
 
     insert_ $ Offer { offerService = s81
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 50
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2457,6 +2521,7 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
 
     insert_ $ Offer { offerService = s82
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 45
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2502,18 +2567,19 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
     s91 <- insert $ Service { serviceName = "Manicure"
                             , servicePublished = True
                             , serviceOverview = Just "Manicure"
-                            , serviceDescr = Just $ Textarea [st|Manicure|]
+                            , serviceDescr = Just $ Textarea [st|Get a new look for your nails|]
                             , serviceDuration = duration "00:20"
                             , serviceGroup = Just s9
                             }
 
-    insert_ $ Offer { offerService = s91
-                    , offerName = "Price"
-                    , offerPrice = 15
-                    , offerPrefix = Nothing
-                    , offerSuffix = Nothing
-                    , offerDescr = Nothing
-                    }
+    o911 <- insert $ Offer { offerService = s91
+                           , offerName = "Price"
+                           , offerPublished = True
+                           , offerPrice = 15
+                           , offerPrefix = Nothing
+                           , offerSuffix = Nothing
+                           , offerDescr = Nothing
+                           }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s91
@@ -2522,12 +2588,14 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
                    , roleRating = Just 5
                    }
 
-    insert_ $ Role { roleStaff = e8
-                   , roleService = s91
-                   , roleName = "Nail technician"
-                   , roleDuration = 60 * (0 * 60 + 20)
-                   , roleRating = Just 5
-                   }
+    let role891 = Role { roleStaff = e8
+                       , roleService = s91
+                       , roleName = "Nail technician"
+                       , roleDuration = 60 * (0 * 60 + 20)
+                       , roleRating = Just 5
+                       }
+
+    r891 <- insert role891
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s91
@@ -2553,6 +2621,7 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
 
     insert_ $ Offer { offerService = s92
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 32
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2590,6 +2659,7 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
 
     insert_ $ Offer { offerService = s93
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 35
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2627,6 +2697,7 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
 
     insert_ $ Offer { offerService = s94
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 55
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2664,6 +2735,7 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
 
     insert_ $ Offer { offerService = s95
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 38
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2701,6 +2773,7 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
 
     insert_ $ Offer { offerService = s96
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 10
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2738,6 +2811,7 @@ Package include: Bridal Make-up, Up-do, Facial Treatment and Manicure
 
     insert_ $ Offer { offerService = s97
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 5
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2794,6 +2868,7 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
 
     insert_ $ Offer { offerService = s101
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 350
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2831,6 +2906,7 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
 
     insert_ $ Offer { offerService = s102
                     , offerName = "Price"
+                    , offerPublished = True
                     , offerPrice = 300
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -3066,6 +3142,45 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
                    , histStatus = BookStatusRequest
                    , histRoleName = Just $ roleName role925
                    , histStaffName = Just $ staffName empl9
+                   }
+
+    let book8 = Book { bookOffer = o911
+                     , bookRole = Just r891
+                     , bookCustomer = c2
+                     , bookDay = addDays 3 today
+                     , bookTime = time
+                     , bookAddr = businessAddr business
+                     , bookTzo = businessTzo business
+                     , bookTz = businessTz business
+                     , bookStatus = BookStatusApproved
+                     }
+
+    b8 <- insert book8
+
+    insert_ $ Hist { histBook = b8
+                   , histUser = c2
+                   , histLogtime = now
+                   , histDay = bookDay book8
+                   , histTime = bookTime book8
+                   , histAddr = bookAddr book8
+                   , histTzo = bookTzo book8
+                   , histTz = bookTz book8
+                   , histStatus = BookStatusRequest
+                   , histRoleName = Just $ roleName role891
+                   , histStaffName = Just $ staffName empl8
+                   }
+
+    insert_ $ Hist { histBook = b8
+                   , histUser = u8
+                   , histLogtime = addUTCTime (30 * 60) now
+                   , histDay = bookDay book8
+                   , histTime = bookTime book8
+                   , histAddr = bookAddr book8
+                   , histTzo = bookTzo book8
+                   , histTz = bookTz book8
+                   , histStatus = BookStatusApproved
+                   , histRoleName = Just $ roleName role891
+                   , histStaffName = Just $ staffName empl8
                    }
 
     return ()

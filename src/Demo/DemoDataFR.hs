@@ -17,9 +17,11 @@ import Data.Time.Calendar
     ( DayOfWeek (Saturday, Sunday), DayPeriod (periodFirstDay, periodLastDay)
     , addDays, dayOfWeek
     )
-import Data.Time.Clock (getCurrentTime, UTCTime (utctDay,utctDayTime), DiffTime)
+import Data.Time.Clock
+    ( getCurrentTime, UTCTime (utctDay,utctDayTime), DiffTime, addUTCTime )
 import Data.Time.Format (parseTimeM, defaultTimeLocale)
-import Data.Time.LocalTime (TimeOfDay (TimeOfDay), timeToTimeOfDay, TimeZone (TimeZone))
+import Data.Time.LocalTime
+    ( TimeOfDay (TimeOfDay), timeToTimeOfDay, TimeZone (TimeZone) )
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Yesod.Form.Fields (Textarea (Textarea))
 import Yesod.Auth.Util.PasswordStore (makePassword)
@@ -38,7 +40,7 @@ import Model
       , thumbnailAttribution
       )
     , Offer
-      ( Offer, offerName, offerPrice, offerPrefix
+      ( Offer, offerName, offerPublished, offerPrice, offerPrefix
       , offerSuffix, offerDescr, offerService
       )
     , EmplStatus (EmplStatusAvailable, EmplStatusUnavailable)
@@ -161,7 +163,7 @@ populateFR = do
                         , contactUsLongitude = Just 2.2945
                         , contactUsLatitude = Just 48.858222
                         }
-    
+
     pass <- liftIO $ makePassword "root" 17
     insert_ $ User { userName = "root"
                    , userPassword = decodeUtf8 pass
@@ -177,7 +179,7 @@ populateFR = do
                      , userFullName = Just "Martin Léo"
                      , userEmail = Just "martinl@mail.fr"
                      }
-                
+
     u1 <- insert user1
 
     let empl1 = Staff { staffName = case userFullName user1 of Just name -> name; Nothing -> userName user1
@@ -262,7 +264,7 @@ populateFR = do
                      , userFullName = Just "Thomas Gabriel Raphaël"
                      , userEmail = Just "thomasgr@mail.fr"
                      }
-                
+
     u3 <- insert user3
 
     e3 <- insert $ Staff { staffName = case userFullName user3 of Just name -> name; Nothing -> userName user3
@@ -292,7 +294,7 @@ populateFR = do
                      , userFullName = Just "Robert Louise Emma"
                      , userEmail = Just "robertle@mail.fr"
                      }
-                
+
     u4 <- insert user4
 
     e4 <- insert $ Staff { staffName = case userFullName user4 of Just name -> name; Nothing -> userName user4
@@ -374,20 +376,36 @@ populateFR = do
                                       , staffPhotoMime = "image/avif"
                                       }
 
-    e8 <- insert $ Staff { staffName = "Moreau Lina"
-                         , staffStatus = EmplStatusAvailable
-                         , staffPhone = businessPhone business
-                         , staffMobile = businessMobile business
-                         , staffEmail = Just "moreaul@mail.fr"
-                         , staffUser = Nothing
-                         }
+    pass8 <- liftIO $ makePassword "moreaul" 17
+    let user8 = User { userName = "moreaul"
+                     , userPassword = decodeUtf8 pass8
+                     , userAdmin = False
+                     , userFullName = Just "Moreau Lina"
+                     , userEmail = Just "moreaul@mail.fr"
+                     }
+    u8 <- insert user8
+
+    let empl8 = Staff { staffName = case userFullName user8 of Just name -> name; Nothing -> userName user8
+                      , staffStatus = EmplStatusAvailable
+                      , staffPhone = businessPhone business
+                      , staffMobile = businessMobile business
+                      , staffEmail = userEmail user8
+                      , staffUser = Just u8
+                      }
+
+    e8 <- insert empl8
 
     case B64.decode woman04 of
       Left _ -> return ()
-      Right x -> insert_ $ StaffPhoto { staffPhotoStaff = e8
-                                      , staffPhotoPhoto = x
-                                      , staffPhotoMime = "image/avif"
-                                      }
+      Right x -> do
+          insert_ $ StaffPhoto { staffPhotoStaff = e8
+                               , staffPhotoPhoto = x
+                               , staffPhotoMime = "image/avif"
+                               }
+          insert_ $ UserPhoto { userPhotoUser = u8
+                              , userPhotoPhoto = x
+                              , userPhotoMime = "image/avif"
+                              }
 
     let empl9 = Staff { staffName = "Laurent Adam"
                       , staffStatus = EmplStatusAvailable
@@ -464,7 +482,7 @@ populateFR = do
                       , userFullName = Just "Michel Rose Chloé"
                       , userEmail = Just "michelrc@mail.fr"
                       }
-                 
+
     u11 <- insert user11
 
     let empl11 = Staff { staffName = case userFullName user11 of Just name -> name; Nothing -> userName user11
@@ -488,7 +506,7 @@ populateFR = do
                               , userPhotoPhoto = x
                               , userPhotoMime = "image/avif"
                               }
-              
+
     s1 <- insert $ Service { serviceName = "Soin des cheveux"
                            , serviceOverview = Just "Services de soins capillaires"
                            , servicePublished = True
@@ -517,7 +535,7 @@ populateFR = do
                         , roleName = "Coiffeur"
                         , roleDuration = 60 * (1 * 60 + 0)
                         , roleRating = Just 5
-                        } 
+                        }
 
     r111 <- insert role111
 
@@ -530,6 +548,7 @@ populateFR = do
 
     o111 <- insert $ Offer { offerService = s11
                            , offerName = "Prix"
+                           , offerPublished = True
                            , offerPrice = 26
                            , offerPrefix = Nothing
                            , offerSuffix = Nothing
@@ -553,6 +572,7 @@ populateFR = do
 
     insert_ $ Offer { offerService = s12
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 28
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -597,6 +617,7 @@ populateFR = do
 
     o131 <- insert $ Offer { offerService = s13
                            , offerName = "Prix"
+                           , offerPublished = True
                            , offerPrice = 35
                            , offerPrefix = Nothing
                            , offerSuffix = Nothing
@@ -636,6 +657,7 @@ populateFR = do
 
     o141 <- insert $ Offer { offerService = s14
                            , offerName = "Prix"
+                           , offerPublished = True
                            , offerPrice = 16
                            , offerPrefix = Nothing
                            , offerSuffix = Just "-20 € (en fonction de la longueur de leurs cheveux)"
@@ -696,6 +718,7 @@ populateFR = do
 
     insert_ $ Offer { offerService = s1511
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 99
                     , offerPrefix = Nothing
                     , offerSuffix = Just " et plus"
@@ -740,6 +763,7 @@ populateFR = do
 
     insert_ $ Offer { offerService = s1512
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 110
                     , offerPrefix = Nothing
                     , offerSuffix = Just " et plus"
@@ -799,6 +823,7 @@ populateFR = do
 
     insert_ $ Offer { offerService = s1521
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 130
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -843,6 +868,7 @@ populateFR = do
 
     insert_ $ Offer { offerService = s1522
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 68
                     , offerPrefix = Nothing
                     , offerSuffix = Just " et plus"
@@ -880,6 +906,7 @@ populateFR = do
 
     insert_ $ Offer { offerService = s1523
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 68
                     , offerPrefix = Nothing
                     , offerSuffix = Just " et plus"
@@ -939,6 +966,7 @@ populateFR = do
 
     insert_ $ Offer { offerService = s1531
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 79
                     , offerPrefix = Nothing
                     , offerSuffix = Just " et plus"
@@ -983,6 +1011,7 @@ populateFR = do
 
     insert_ $ Offer { offerService = s1532
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 89
                     , offerPrefix = Nothing
                     , offerSuffix = Just " et plus"
@@ -1027,6 +1056,7 @@ populateFR = do
 
     insert_ $ Offer { offerService = s1533
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 250
                     , offerPrefix = Nothing
                     , offerSuffix = Just " et plus"
@@ -1091,6 +1121,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
 
     insert_ $ Offer { offerService = s21
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 55
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1099,6 +1130,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
 
     insert_ $ Offer { offerService = s21
                     , offerName = "Forfait"
+                    , offerPublished = True
                     , offerPrice = 250
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 séances"
@@ -1143,6 +1175,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
 
     insert_ $ Offer { offerService = s22
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 75
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1151,6 +1184,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
 
     insert_ $ Offer { offerService = s22
                     , offerName = "Forfait"
+                    , offerPublished = True
                     , offerPrice = 350
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 séances"
@@ -1195,6 +1229,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
 
     insert_ $ Offer { offerService = s23
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 90
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1203,6 +1238,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
 
     insert_ $ Offer { offerService = s23
                     , offerName = "Forfait"
+                    , offerPublished = True
                     , offerPrice = 400
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 séances"
@@ -1254,6 +1290,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
 
     insert_ $ Offer { offerService = s24
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 95
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1262,6 +1299,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
 
     insert_ $ Offer { offerService = s24
                     , offerName = "Forfait"
+                    , offerPublished = True
                     , offerPrice = 600
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/7 séances"
@@ -1306,6 +1344,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
 
     o251 <- insert $ Offer { offerService = s25
                            , offerName = "Prix"
+                           , offerPublished = True
                            , offerPrice = 100
                            , offerPrefix = Nothing
                            , offerSuffix = Nothing
@@ -1314,6 +1353,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
 
     insert_ $ Offer { offerService = s25
                     , offerName = "Forfait"
+                    , offerPublished = True
                     , offerPrice = 460
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 séances"
@@ -1405,6 +1445,7 @@ En conséquence, le peeling au lait est un puissant processus de resurfaçage de
 
     insert_ $ Offer { offerService = s31
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 330
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1455,6 +1496,7 @@ Le Scientia Derma Roller est un appareil incroyable qui augmente naturellement l
 
     o321 <- insert $ Offer { offerService = s32
                            , offerName = "Prix"
+                           , offerPublished = True
                            , offerPrice = 330
                            , offerPrefix = Nothing
                            , offerSuffix = Nothing
@@ -1503,6 +1545,7 @@ Procédure indolore, elle aide à éliminer les cicatrices d'acné, les pores di
 
     insert_ $ Offer { offerService = s33
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 70
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1549,6 +1592,7 @@ Procédure indolore, elle aide à éliminer les cicatrices d'acné, les pores di
 
     insert_ $ Offer { offerService = s34
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 95
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1557,6 +1601,7 @@ Procédure indolore, elle aide à éliminer les cicatrices d'acné, les pores di
 
     insert_ $ Offer { offerService = s34
                     , offerName = "Forfait"
+                    , offerPublished = True
                     , offerPrice = 600
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/7 séances"
@@ -1630,6 +1675,7 @@ Ce soin réduit l'apparence des rides et ridules. Unifie le teint et illumine la
 
     insert_ $ Offer { offerService = s41
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 95
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1638,6 +1684,7 @@ Ce soin réduit l'apparence des rides et ridules. Unifie le teint et illumine la
 
     insert_ $ Offer { offerService = s41
                     , offerName = "Forfait"
+                    , offerPublished = True
                     , offerPrice = 430
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 séances"
@@ -1686,6 +1733,7 @@ Après un seul traitement, les rides d'expression semblent détendues. Les rides
 
     insert_ $ Offer { offerService = s42
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 170
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1694,6 +1742,7 @@ Après un seul traitement, les rides d'expression semblent détendues. Les rides
 
     insert_ $ Offer { offerService = s42
                     , offerName = "Forfait"
+                    , offerPublished = True
                     , offerPrice = 780
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 séances"
@@ -1745,6 +1794,7 @@ Ce traitement améliore le teint global en minimisant l'apparence des rides et r
 
     insert_ $ Offer { offerService = s43
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 160
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1753,6 +1803,7 @@ Ce traitement améliore le teint global en minimisant l'apparence des rides et r
 
     insert_ $ Offer { offerService = s43
                     , offerName = "Forfait"
+                    , offerPublished = True
                     , offerPrice = 730
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 séances"
@@ -1794,6 +1845,7 @@ Il favorise la production de collagène, resserre et raffermit les tissus cutan�
 
     insert_ $ Offer { offerService = s44
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 180
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1852,6 +1904,7 @@ Semblable à une permanente, essayez d’éviter de mouiller vos cils pendant 4 
 
     insert_ $ Offer { offerService = s51
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 45
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1908,6 +1961,7 @@ Semblable à une permanente, essayez d’éviter de mouiller vos cils pendant 4 
 
     insert_ $ Offer { offerService = s52
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 130
                     , offerPrefix = Nothing
                     , offerSuffix = Just " et plus"
@@ -1945,6 +1999,7 @@ Semblable à une permanente, essayez d’éviter de mouiller vos cils pendant 4 
 
     insert_ $ Offer { offerService = s53
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 25
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1996,6 +2051,7 @@ Les traitements peuvent être effectués toutes les semaines ou toutes les deux 
 
     insert_ $ Offer { offerService = s54
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 40
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2033,6 +2089,7 @@ Les traitements peuvent être effectués toutes les semaines ou toutes les deux 
 
     insert_ $ Offer { offerService = s55
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 40
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2089,6 +2146,7 @@ La massothérapie suédoise est la modalité qui vient à l’esprit lorsque la 
 
     insert_ $ Offer { offerService = s61
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 60
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2137,6 +2195,7 @@ Le massage sur chaise est un massage de 15 à 20 minutes axé sur le dos, les é
 
     insert_ $ Offer { offerService = s62
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 60
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2182,6 +2241,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
 
     insert_ $ Offer { offerService = s63
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 30
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2236,6 +2296,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
 
     insert_ $ Offer { offerService = s71
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 200
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2280,6 +2341,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
 
     insert_ $ Offer { offerService = s72
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 85
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2317,6 +2379,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
 
     insert_ $ Offer { offerService = s73
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 60
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2354,6 +2417,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
 
     insert_ $ Offer { offerService = s74
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 100
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2406,6 +2470,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
 
     insert_ $ Offer { offerService = s81
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 50
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2450,6 +2515,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
 
     insert_ $ Offer { offerService = s82
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 45
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2500,13 +2566,14 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
                             , serviceGroup = Just s9
                             }
 
-    insert_ $ Offer { offerService = s91
-                    , offerName = "Prix"
-                    , offerPrice = 15
-                    , offerPrefix = Nothing
-                    , offerSuffix = Nothing
-                    , offerDescr = Nothing
-                    }
+    o911 <- insert $ Offer { offerService = s91
+                           , offerName = "Prix"
+                           , offerPublished = True
+                           , offerPrice = 15
+                           , offerPrefix = Nothing
+                           , offerSuffix = Nothing
+                           , offerDescr = Nothing
+                           }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s91
@@ -2515,12 +2582,14 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
                    , roleRating = Just 5
                    }
 
-    insert_ $ Role { roleStaff = e8
-                   , roleService = s91
-                   , roleName = "Technicienne en manucure"
-                   , roleDuration = 60 * (0 * 60 + 20)
-                   , roleRating = Just 5
-                   }
+    let role891 = Role { roleStaff = e8
+                       , roleService = s91
+                       , roleName = "Technicienne en manucure"
+                       , roleDuration = 60 * (0 * 60 + 20)
+                       , roleRating = Just 5
+                       }
+
+    r891 <- insert role891
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s91
@@ -2546,6 +2615,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
 
     insert_ $ Offer { offerService = s92
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 32
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2583,6 +2653,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
 
     insert_ $ Offer { offerService = s93
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 35
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2620,6 +2691,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
 
     insert_ $ Offer { offerService = s94
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 55
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2657,6 +2729,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
 
     insert_ $ Offer { offerService = s95
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 38
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2694,6 +2767,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
 
     insert_ $ Offer { offerService = s96
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 10
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2731,6 +2805,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
 
     insert_ $ Offer { offerService = s97
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 5
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2787,6 +2862,7 @@ Mise en forme du corps : Abdomen et taille, hanches et cuisses, jambes et bras
 
     insert_ $ Offer { offerService = s101
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 350
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2824,6 +2900,7 @@ Mise en forme du corps : Abdomen et taille, hanches et cuisses, jambes et bras
 
     insert_ $ Offer { offerService = s102
                     , offerName = "Prix"
+                    , offerPublished = True
                     , offerPrice = 300
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -3059,6 +3136,45 @@ Mise en forme du corps : Abdomen et taille, hanches et cuisses, jambes et bras
                    , histStatus = BookStatusRequest
                    , histRoleName = Just $ roleName role925
                    , histStaffName = Just $ staffName empl9
+                   }
+
+    let book8 = Book { bookOffer = o911
+                     , bookRole = Just r891
+                     , bookCustomer = c2
+                     , bookDay = addDays 3 today
+                     , bookTime = time
+                     , bookAddr = businessAddr business
+                     , bookTzo = businessTzo business
+                     , bookTz = businessTz business
+                     , bookStatus = BookStatusApproved
+                     }
+
+    b8 <- insert book8
+
+    insert_ $ Hist { histBook = b8
+                   , histUser = c2
+                   , histLogtime = now
+                   , histDay = bookDay book8
+                   , histTime = bookTime book8
+                   , histAddr = bookAddr book8
+                   , histTzo = bookTzo book8
+                   , histTz = bookTz book8
+                   , histStatus = BookStatusRequest
+                   , histRoleName = Just $ roleName role891
+                   , histStaffName = Just $ staffName empl8
+                   }
+
+    insert_ $ Hist { histBook = b8
+                   , histUser = u8
+                   , histLogtime = addUTCTime (30 * 60) now
+                   , histDay = bookDay book8
+                   , histTime = bookTime book8
+                   , histAddr = bookAddr book8
+                   , histTzo = bookTzo book8
+                   , histTz = bookTz book8
+                   , histStatus = BookStatusApproved
+                   , histRoleName = Just $ roleName role891
+                   , histStaffName = Just $ staffName empl8
                    }
     return ()
   where

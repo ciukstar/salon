@@ -1,3 +1,4 @@
+NoAppointmentsForThisDay: You have no appointments for this day
 Completed: Completed
 Pending: Pending
 NoBusinessAddressFound: No business address found

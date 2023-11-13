@@ -16,7 +16,7 @@ import Data.Time.Calendar
     , addDays, dayOfWeek, toGregorian
     )
 import Data.Time.Calendar.Month (pattern YearMonth)
-import Data.Time.Clock (getCurrentTime, UTCTime (utctDay,utctDayTime), DiffTime)
+import Data.Time.Clock (getCurrentTime, UTCTime (utctDay,utctDayTime), DiffTime, addUTCTime)
 import Data.Time.Format (parseTimeM, defaultTimeLocale)
 import Data.Time.LocalTime (TimeOfDay (TimeOfDay), timeToTimeOfDay, TimeZone (TimeZone))
 import Control.Monad.IO.Class (MonadIO (liftIO))
@@ -34,7 +34,7 @@ import Model
       )
     , Thumbnail (Thumbnail, thumbnailService, thumbnailPhoto, thumbnailMime, thumbnailAttribution)
     , Offer
-      ( Offer, offerName, offerPrice, offerPrefix
+      ( Offer, offerName, offerPublished, offerPrice, offerPrefix
       , offerSuffix, offerDescr, offerService
       )
     , EmplStatus (EmplStatusAvailable, EmplStatusUnavailable)
@@ -369,20 +369,37 @@ populateRU = do
                                       , staffPhotoMime = "image/avif"
                                       }
 
-    e8 <- insert $ Staff { staffName = "Степанова Татьяна Николаевна"
-                         , staffStatus = EmplStatusAvailable
-                         , staffPhone = businessPhone business
-                         , staffMobile = businessMobile business
-                         , staffEmail = Just "stepanovatn@mail.ru"
-                         , staffUser = Nothing
-                         }
+    pass8 <- liftIO $ makePassword "stepanovatn" 17
+    let user8 = User { userName = "stepanovatn"
+                     , userPassword = decodeUtf8 pass8
+                     , userAdmin = False
+                     , userFullName = Just "Степанова Татьяна Николаевна"
+                     , userEmail = Just "stepanovatn@mail.ru"
+                     }
+    u8 <- insert user8
+
+    let empl8 = Staff { staffName = case userFullName user8 of Just name -> name; Nothing -> userName user8
+                      , staffStatus = EmplStatusAvailable
+                      , staffPhone = businessPhone business
+                      , staffMobile = businessMobile business
+                      , staffEmail = userEmail user8
+                      , staffUser = Just u8
+                      }
+
+    e8 <- insert empl8
 
     case B64.decode woman04 of
       Left _ -> return ()
-      Right x -> insert_ $ StaffPhoto { staffPhotoStaff = e8
-                                      , staffPhotoPhoto = x
-                                      , staffPhotoMime = "image/avif"
-                                      }
+      Right x -> do
+          insert_ $ StaffPhoto { staffPhotoStaff = e8
+                               , staffPhotoPhoto = x
+                               , staffPhotoMime = "image/avif"
+                               }
+          insert_ $ UserPhoto { userPhotoUser = u8
+                              , userPhotoPhoto = x
+                              , userPhotoMime = "image/avif"
+                              }
+                 
     let empl9 = Staff { staffName = "Кузнецов Артем Сергеевич"
                       , staffStatus = EmplStatusAvailable
                       , staffPhone = businessPhone business
@@ -528,6 +545,7 @@ populateRU = do
 
     o111 <- insert $ Offer { offerService = s11
                            , offerName = "Цена"
+                           , offerPublished = True
                            , offerPrice = 800
                            , offerPrefix = Nothing
                            , offerSuffix = Nothing
@@ -551,6 +569,7 @@ populateRU = do
 
     insert_ $ Offer { offerService = s12
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 2800
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -595,6 +614,7 @@ populateRU = do
 
     o131 <- insert $ Offer { offerService = s13
                            , offerName = "Цена"
+                           , offerPublished = True
                            , offerPrice = 3500
                            , offerPrefix = Nothing
                            , offerSuffix = Nothing
@@ -634,6 +654,7 @@ populateRU = do
 
     o141 <- insert $ Offer { offerService = s14
                            , offerName = "Цена"
+                           , offerPublished = True
                            , offerPrice = 1600
                            , offerPrefix = Nothing
                            , offerSuffix = Just "-2 000 ₽ (в зависимости от длины волос)"
@@ -694,6 +715,7 @@ populateRU = do
 
     insert_ $ Offer { offerService = s1511
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 9900
                     , offerPrefix = Nothing
                     , offerSuffix = Just " и выше"
@@ -738,6 +760,7 @@ populateRU = do
 
     insert_ $ Offer { offerService = s1512
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 11000
                     , offerPrefix = Nothing
                     , offerSuffix = Just " и выше"
@@ -797,6 +820,7 @@ populateRU = do
 
     insert_ $ Offer { offerService = s1521
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 13000
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -841,6 +865,7 @@ populateRU = do
 
     insert_ $ Offer { offerService = s1522
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 6800
                     , offerPrefix = Nothing
                     , offerSuffix = Just " и выше"
@@ -878,6 +903,7 @@ populateRU = do
 
     insert_ $ Offer { offerService = s1523
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 6800
                     , offerPrefix = Nothing
                     , offerSuffix = Just " и выше"
@@ -937,6 +963,7 @@ populateRU = do
 
     insert_ $ Offer { offerService = s1531
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 7900
                     , offerPrefix = Nothing
                     , offerSuffix = Just " и выше"
@@ -981,6 +1008,7 @@ populateRU = do
 
     insert_ $ Offer { offerService = s1532
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 8900
                     , offerPrefix = Nothing
                     , offerSuffix = Just " и выше"
@@ -1025,6 +1053,7 @@ populateRU = do
 
     insert_ $ Offer { offerService = s1533
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 25000
                     , offerPrefix = Nothing
                     , offerSuffix = Just " и выше"
@@ -1091,6 +1120,7 @@ populateRU = do
 
     insert_ $ Offer { offerService = s21
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 5500
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1099,6 +1129,7 @@ populateRU = do
 
     insert_ $ Offer { offerService = s21
                     , offerName = "Пакет"
+                    , offerPublished = True
                     , offerPrice = 25000
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 сеансов"
@@ -1143,6 +1174,7 @@ populateRU = do
 
     insert_ $ Offer { offerService = s22
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 7500
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1151,6 +1183,7 @@ populateRU = do
 
     insert_ $ Offer { offerService = s22
                     , offerName = "Пакет"
+                    , offerPublished = True
                     , offerPrice = 35000
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 сеансов"
@@ -1195,6 +1228,7 @@ populateRU = do
 
     insert_ $ Offer { offerService = s23
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 9000
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1203,6 +1237,7 @@ populateRU = do
 
     insert_ $ Offer { offerService = s23
                     , offerName = "Пакет"
+                    , offerPublished = True
                     , offerPrice = 40000
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 сеансов"
@@ -1254,6 +1289,7 @@ populateRU = do
 
     insert_ $ Offer { offerService = s24
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 9500
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1262,6 +1298,7 @@ populateRU = do
 
     insert_ $ Offer { offerService = s24
                     , offerName = "Пакет"
+                    , offerPublished = True
                     , offerPrice = 60000
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/7 сеансов"
@@ -1306,6 +1343,7 @@ populateRU = do
 
     o251 <- insert $ Offer { offerService = s25
                            , offerName = "Цена"
+                           , offerPublished = True
                            , offerPrice = 10000
                            , offerPrefix = Nothing
                            , offerSuffix = Nothing
@@ -1314,6 +1352,7 @@ populateRU = do
 
     insert_ $ Offer { offerService = s25
                     , offerName = "Пакет"
+                    , offerPublished = True
                     , offerPrice = 46000
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 сеансов"
@@ -1404,6 +1443,7 @@ Milk Peel включает в себя натуральный экстракт �
 
     insert_ $ Offer { offerService = s31
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 33000
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1454,6 +1494,7 @@ Milk Peel включает в себя натуральный экстракт �
 
     o321 <- insert $ Offer { offerService = s32
                            , offerName = "Цена"
+                           , offerPublished = True
                            , offerPrice = 33000
                            , offerPrefix = Nothing
                            , offerSuffix = Nothing
@@ -1502,6 +1543,7 @@ Milk Peel включает в себя натуральный экстракт �
 
     insert_ $ Offer { offerService = s33
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 7000
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1550,6 +1592,7 @@ Milk Peel включает в себя натуральный экстракт �
            
     insert_ $ Offer { offerService = s34
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 9500
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1558,6 +1601,7 @@ Milk Peel включает в себя натуральный экстракт �
 
     insert_ $ Offer { offerService = s34
                     , offerName = "Пакет"
+                    , offerPublished = True
                     , offerPrice = 60000
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/7 сеансов"
@@ -1631,6 +1675,7 @@ Milk Peel включает в себя натуральный экстракт �
 
     insert_ $ Offer { offerService = s41
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 9500
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1639,6 +1684,7 @@ Milk Peel включает в себя натуральный экстракт �
 
     insert_ $ Offer { offerService = s41
                     , offerName = "Пакет"
+                    , offerPublished = True
                     , offerPrice = 43000
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 сеансов"
@@ -1687,6 +1733,7 @@ Milk Peel включает в себя натуральный экстракт �
            
     insert_ $ Offer { offerService = s42
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 17000
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1695,6 +1742,7 @@ Milk Peel включает в себя натуральный экстракт �
 
     insert_ $ Offer { offerService = s42
                     , offerName = "Пакет"
+                    , offerPublished = True
                     , offerPrice = 78000
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 сеансов"
@@ -1746,6 +1794,7 @@ Collagen 90-II — это уважаемое и востребованное а�
            
     insert_ $ Offer { offerService = s43
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 16000
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1754,6 +1803,7 @@ Collagen 90-II — это уважаемое и востребованное а�
 
     insert_ $ Offer { offerService = s43
                     , offerName = "Пакет"
+                    , offerPublished = True
                     , offerPrice = 73000
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 sessions"
@@ -1795,6 +1845,7 @@ Collagen 90-II — это уважаемое и востребованное а�
 
     insert_ $ Offer { offerService = s44
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 18000
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1853,6 +1904,7 @@ Collagen 90-II — это уважаемое и востребованное а�
 
     insert_ $ Offer { offerService = s51
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 4500
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1909,6 +1961,7 @@ Collagen 90-II — это уважаемое и востребованное а�
            
     insert_ $ Offer { offerService = s52
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 13000
                     , offerPrefix = Nothing
                     , offerSuffix = Just " и выше"
@@ -1946,6 +1999,7 @@ Collagen 90-II — это уважаемое и востребованное а�
 
     insert_ $ Offer { offerService = s53
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 2500
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1997,6 +2051,7 @@ Collagen 90-II — это уважаемое и востребованное а�
 
     insert_ $ Offer { offerService = s54
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 4000
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2034,6 +2089,7 @@ Collagen 90-II — это уважаемое и востребованное а�
 
     insert_ $ Offer { offerService = s55
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 4000
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2090,6 +2146,7 @@ Collagen 90-II — это уважаемое и востребованное а�
 
     insert_ $ Offer { offerService = s61
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 6000
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2138,6 +2195,7 @@ Collagen 90-II — это уважаемое и востребованное а�
 
     insert_ $ Offer { offerService = s62
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 6000
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2183,6 +2241,7 @@ Collagen 90-II — это уважаемое и востребованное а�
 
     insert_ $ Offer { offerService = s63
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 3000
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2237,6 +2296,7 @@ Collagen 90-II — это уважаемое и востребованное а�
 
     insert_ $ Offer { offerService = s71
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 20000
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2281,6 +2341,7 @@ Collagen 90-II — это уважаемое и востребованное а�
 
     insert_ $ Offer { offerService = s72
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 8500
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2318,6 +2379,7 @@ Collagen 90-II — это уважаемое и востребованное а�
 
     insert_ $ Offer { offerService = s73
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 6000
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2355,6 +2417,7 @@ Collagen 90-II — это уважаемое и востребованное а�
 
     insert_ $ Offer { offerService = s74
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 100
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2407,6 +2470,7 @@ Collagen 90-II — это уважаемое и востребованное а�
 
     insert_ $ Offer { offerService = s81
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 5000
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2451,6 +2515,7 @@ Collagen 90-II — это уважаемое и востребованное а�
 
     insert_ $ Offer { offerService = s82
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 4500
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2501,13 +2566,14 @@ Collagen 90-II — это уважаемое и востребованное а�
                             , serviceGroup = Just s9
                             }
 
-    insert_ $ Offer { offerService = s91
-                    , offerName = "Цена"
-                    , offerPrice = 1500
-                    , offerPrefix = Nothing
-                    , offerSuffix = Nothing
-                    , offerDescr = Nothing
-                    }
+    o911 <- insert $ Offer { offerService = s91
+                           , offerName = "Цена"
+                           , offerPublished = True
+                           , offerPrice = 1500
+                           , offerPrefix = Nothing
+                           , offerSuffix = Nothing
+                           , offerDescr = Nothing
+                           }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s91
@@ -2516,12 +2582,14 @@ Collagen 90-II — это уважаемое и востребованное а�
                    , roleRating = Just 5
                    }
 
-    insert_ $ Role { roleStaff = e8
-                   , roleService = s91
-                   , roleName = "Мастера маникюра"
-                   , roleDuration = 60 * (0 * 60 + 20)
-                   , roleRating = Just 5
-                   }
+    let role891 = Role { roleStaff = e8
+                       , roleService = s91
+                       , roleName = "Мастера маникюра"
+                       , roleDuration = 60 * (0 * 60 + 20)
+                       , roleRating = Just 5
+                       }
+
+    r891 <- insert role891
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s91
@@ -2547,6 +2615,7 @@ Collagen 90-II — это уважаемое и востребованное а�
 
     insert_ $ Offer { offerService = s92
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 3200
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2584,6 +2653,7 @@ Collagen 90-II — это уважаемое и востребованное а�
 
     insert_ $ Offer { offerService = s93
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 3500
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2621,6 +2691,7 @@ Collagen 90-II — это уважаемое и востребованное а�
 
     insert_ $ Offer { offerService = s94
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 5500
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2658,6 +2729,7 @@ Collagen 90-II — это уважаемое и востребованное а�
 
     insert_ $ Offer { offerService = s95
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 3800
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2695,6 +2767,7 @@ Collagen 90-II — это уважаемое и востребованное а�
 
     insert_ $ Offer { offerService = s96
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 1000
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2732,6 +2805,7 @@ Collagen 90-II — это уважаемое и востребованное а�
 
     insert_ $ Offer { offerService = s97
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 500
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2786,6 +2860,7 @@ Collagen 90-II — это уважаемое и востребованное а�
 
     insert_ $ Offer { offerService = s101
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 35000
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2823,6 +2898,7 @@ Collagen 90-II — это уважаемое и востребованное а�
 
     insert_ $ Offer { offerService = s102
                     , offerName = "Цена"
+                    , offerPublished = True
                     , offerPrice = 30000
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -3058,6 +3134,45 @@ Collagen 90-II — это уважаемое и востребованное а�
                    , histStatus = BookStatusRequest
                    , histRoleName = Just $ roleName role925
                    , histStaffName = Just $ staffName empl9
+                   }
+
+    let book8 = Book { bookOffer = o911
+                     , bookRole = Just r891
+                     , bookCustomer = c2
+                     , bookDay = addDays 3 today
+                     , bookTime = time
+                     , bookAddr = businessAddr business
+                     , bookTzo = businessTzo business
+                     , bookTz = businessTz business
+                     , bookStatus = BookStatusApproved
+                     }
+
+    b8 <- insert book8
+
+    insert_ $ Hist { histBook = b8
+                   , histUser = c2
+                   , histLogtime = now
+                   , histDay = bookDay book8
+                   , histTime = bookTime book8
+                   , histAddr = bookAddr book8
+                   , histTzo = bookTzo book8
+                   , histTz = bookTz book8
+                   , histStatus = BookStatusRequest
+                   , histRoleName = Just $ roleName role891
+                   , histStaffName = Just $ staffName empl8
+                   }
+
+    insert_ $ Hist { histBook = b8
+                   , histUser = u8
+                   , histLogtime = addUTCTime (30 * 60) now
+                   , histDay = bookDay book8
+                   , histTime = bookTime book8
+                   , histAddr = bookAddr book8
+                   , histTzo = bookTzo book8
+                   , histTz = bookTz book8
+                   , histStatus = BookStatusApproved
+                   , histRoleName = Just $ roleName role891
+                   , histStaffName = Just $ staffName empl8
                    }
         
     return ()

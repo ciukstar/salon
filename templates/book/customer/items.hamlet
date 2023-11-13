@@ -1,6 +1,6 @@
  
 <ul.mdc-list ##{theId} role=listbox aria-multiselectable=true tabindex=-1 data-mdc-auto-init=MDCList>
-  $forall e@((Entity sid (Service sname _ _ duration _ _),Entity oid (Offer _ pname price prefix suffix _)),attrib) <- options
+  $forall e@((Entity sid (Service sname _ _ duration _ _),Entity oid (Offer _ pname _ price prefix suffix _)),attrib) <- options
     $with checked <- isChecked vals e
       <input type=checkbox name=#{name} value=#{fromSqlKey oid} *{attrs} :checked:checked hidden>
       <li.mdc-list-item tabindex=-1 role=option

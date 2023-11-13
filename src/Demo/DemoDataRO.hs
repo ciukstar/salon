@@ -17,7 +17,7 @@ import Data.Time.Calendar
     , dayOfWeek, addDays, toGregorian
     )
 import Data.Time.Calendar.Month (pattern YearMonth)
-import Data.Time.Clock (getCurrentTime, UTCTime (utctDay,utctDayTime), DiffTime)
+import Data.Time.Clock (getCurrentTime, UTCTime (utctDay,utctDayTime), DiffTime, addUTCTime)
 import Data.Time.Format (parseTimeM, defaultTimeLocale)
 import Data.Time.LocalTime (TimeOfDay (TimeOfDay), timeToTimeOfDay, TimeZone (TimeZone))
 import Control.Monad.IO.Class (MonadIO (liftIO))
@@ -38,7 +38,7 @@ import Model
       , thumbnailAttribution
       )
     , Offer
-      ( Offer, offerName, offerPrice, offerPrefix
+      ( Offer, offerName, offerPublished, offerPrice, offerPrefix
       , offerSuffix, offerDescr, offerService
       )
     , EmplStatus (EmplStatusAvailable, EmplStatusUnavailable)
@@ -374,20 +374,36 @@ populateRO = do
                                       , staffPhotoMime = "image/avif"
                                       }
 
-    e8 <- insert $ Staff { staffName = "Marin Ioana"
-                         , staffStatus = EmplStatusAvailable
-                         , staffPhone = businessPhone business
-                         , staffMobile = businessMobile business
-                         , staffEmail = Just "marini@mail.ro"
-                         , staffUser = Nothing
-                         }
+    pass8 <- liftIO $ makePassword "marini" 17
+    let user8 = User { userName = "marini"
+                     , userPassword = decodeUtf8 pass8
+                     , userAdmin = False
+                     , userFullName = Just "Marin Ioana"
+                     , userEmail = Just "marini@mail.ro"
+                     }
+    u8 <- insert user8
+
+    let empl8 = Staff { staffName = case userFullName user8 of Just name -> name; Nothing -> userName user8
+                      , staffStatus = EmplStatusAvailable
+                      , staffPhone = businessPhone business
+                      , staffMobile = businessMobile business
+                      , staffEmail = userEmail user8
+                      , staffUser = Just u8
+                      }
+
+    e8 <- insert empl8
 
     case B64.decode woman04 of
       Left _ -> return ()
-      Right x -> insert_ $ StaffPhoto { staffPhotoStaff = e8
-                                      , staffPhotoPhoto = x
-                                      , staffPhotoMime = "image/avif"
-                                      }
+      Right x -> do
+          insert_ $ StaffPhoto { staffPhotoStaff = e8
+                               , staffPhotoPhoto = x
+                               , staffPhotoMime = "image/avif"
+                               }
+          insert_ $ UserPhoto { userPhotoUser = u8
+                              , userPhotoPhoto = x
+                              , userPhotoMime = "image/avif"
+                              }
 
     let empl9 = Staff { staffName = "Lazar Mihai"
                       , staffStatus = EmplStatusAvailable
@@ -532,6 +548,7 @@ populateRO = do
 
     o111 <- insert $ Offer { offerService = s11
                            , offerName = "Preț"
+                           , offerPublished = True
                            , offerPrice = 26
                            , offerPrefix = Nothing
                            , offerSuffix = Nothing
@@ -555,6 +572,7 @@ populateRO = do
 
     insert_ $ Offer { offerService = s12
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 28
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -599,6 +617,7 @@ populateRO = do
 
     o131 <- insert $ Offer { offerService = s13
                            , offerName = "Preț"
+                           , offerPublished = True
                            , offerPrice = 35
                            , offerPrefix = Nothing
                            , offerSuffix = Nothing
@@ -638,6 +657,7 @@ populateRO = do
 
     o141 <- insert $ Offer { offerService = s14
                            , offerName = "Preț"
+                           , offerPublished = True
                            , offerPrice = 16
                            , offerPrefix = Nothing
                            , offerSuffix = Just "-20 RON (în funcție de lungimea părului)"
@@ -698,6 +718,7 @@ populateRO = do
 
     insert_ $ Offer { offerService = s1511
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 99
                     , offerPrefix = Nothing
                     , offerSuffix = Just " și mai mult"
@@ -742,6 +763,7 @@ populateRO = do
 
     insert_ $ Offer { offerService = s1512
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 110
                     , offerPrefix = Nothing
                     , offerSuffix = Just " și mai mult"
@@ -801,6 +823,7 @@ populateRO = do
 
     insert_ $ Offer { offerService = s1521
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 130
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -845,6 +868,7 @@ populateRO = do
 
     insert_ $ Offer { offerService = s1522
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 68
                     , offerPrefix = Nothing
                     , offerSuffix = Just " și mai mult"
@@ -882,6 +906,7 @@ populateRO = do
 
     insert_ $ Offer { offerService = s1523
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 68
                     , offerPrefix = Nothing
                     , offerSuffix = Just " și mai mult"
@@ -941,6 +966,7 @@ populateRO = do
 
     insert_ $ Offer { offerService = s1531
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 79
                     , offerPrefix = Nothing
                     , offerSuffix = Just " și mai mult"
@@ -985,6 +1011,7 @@ populateRO = do
 
     insert_ $ Offer { offerService = s1532
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 89
                     , offerPrefix = Nothing
                     , offerSuffix = Just " și mai mult"
@@ -1029,6 +1056,7 @@ populateRO = do
 
     insert_ $ Offer { offerService = s1533
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 250
                     , offerPrefix = Nothing
                     , offerSuffix = Just " și mai mult"
@@ -1093,6 +1121,7 @@ Fața ta este o pânză expresivă care arată experiența și emoția. Într-un
 
     insert_ $ Offer { offerService = s21
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 55
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1101,6 +1130,7 @@ Fața ta este o pânză expresivă care arată experiența și emoția. Într-un
 
     insert_ $ Offer { offerService = s21
                     , offerName = "Pachet"
+                    , offerPublished = True
                     , offerPrice = 250
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 sesiuni"
@@ -1145,6 +1175,7 @@ Fața ta este o pânză expresivă care arată experiența și emoția. Într-un
 
     insert_ $ Offer { offerService = s22
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 75
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1153,6 +1184,7 @@ Fața ta este o pânză expresivă care arată experiența și emoția. Într-un
 
     insert_ $ Offer { offerService = s22
                     , offerName = "Pachet"
+                    , offerPublished = True
                     , offerPrice = 350
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 sesiuni"
@@ -1197,6 +1229,7 @@ Fața ta este o pânză expresivă care arată experiența și emoția. Într-un
 
     insert_ $ Offer { offerService = s23
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 90
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1205,6 +1238,7 @@ Fața ta este o pânză expresivă care arată experiența și emoția. Într-un
 
     insert_ $ Offer { offerService = s23
                     , offerName = "Pachet"
+                    , offerPublished = True
                     , offerPrice = 400
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 sesiuni"
@@ -1256,6 +1290,7 @@ Fața ta este o pânză expresivă care arată experiența și emoția. Într-un
 
     insert_ $ Offer { offerService = s24
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 95
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1264,6 +1299,7 @@ Fața ta este o pânză expresivă care arată experiența și emoția. Într-un
 
     insert_ $ Offer { offerService = s24
                     , offerName = "Pachet"
+                    , offerPublished = True
                     , offerPrice = 600
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/7 sesiuni"
@@ -1308,6 +1344,7 @@ Fața ta este o pânză expresivă care arată experiența și emoția. Într-un
 
     o251 <- insert $ Offer { offerService = s25
                            , offerName = "Preț"
+                           , offerPublished = True
                            , offerPrice = 100
                            , offerPrefix = Nothing
                            , offerSuffix = Nothing
@@ -1316,6 +1353,7 @@ Fața ta este o pânză expresivă care arată experiența și emoția. Într-un
 
     insert_ $ Offer { offerService = s25
                     , offerName = "Pachet"
+                    , offerPublished = True
                     , offerPrice = 460
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 sesiuni"
@@ -1407,6 +1445,7 @@ Ca rezultat, peelingul cu lapte este un proces puternic de refacere a pielii cu 
 
     insert_ $ Offer { offerService = s31
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 330
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1457,6 +1496,7 @@ Scientia Derma Roller este un dispozitiv incredibil care crește în mod natural
 
     o321 <- insert $ Offer { offerService = s32
                            , offerName = "Preț"
+                           , offerPublished = True
                            , offerPrice = 330
                            , offerPrefix = Nothing
                            , offerSuffix = Nothing
@@ -1505,6 +1545,7 @@ O procedură nedureroasă, ajută la îndepărtarea cicatricilor de acnee, a por
 
     insert_ $ Offer { offerService = s33
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 70
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1551,6 +1592,7 @@ O procedură nedureroasă, ajută la îndepărtarea cicatricilor de acnee, a por
 
     insert_ $ Offer { offerService = s34
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 95
                     , offerPrefix = Nothing
                     , offerSuffix = Just "ROL"
@@ -1559,6 +1601,7 @@ O procedură nedureroasă, ajută la îndepărtarea cicatricilor de acnee, a por
 
     insert_ $ Offer { offerService = s34
                     , offerName = "Pachet"
+                    , offerPublished = True
                     , offerPrice = 600
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/7 sesiuni"
@@ -1632,6 +1675,7 @@ Acest tratament reduce aspectul liniilor fine și al ridurilor. Uniformizează t
 
     insert_ $ Offer { offerService = s41
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 95
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1640,6 +1684,7 @@ Acest tratament reduce aspectul liniilor fine și al ridurilor. Uniformizează t
 
     insert_ $ Offer { offerService = s41
                     , offerName = "Pachet"
+                    , offerPublished = True
                     , offerPrice = 430
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 sesiuni"
@@ -1688,6 +1733,7 @@ După doar un tratament, liniile de expresie par relaxate. Ridurile fine și rid
 
     insert_ $ Offer { offerService = s42
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 170
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1696,6 +1742,7 @@ După doar un tratament, liniile de expresie par relaxate. Ridurile fine și rid
 
     insert_ $ Offer { offerService = s42
                     , offerName = "Pachet"
+                    , offerPublished = True
                     , offerPrice = 780
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 sesiuni"
@@ -1747,6 +1794,7 @@ Acest tratament îmbunătățește tenul general reducând la minimum aspectul l
 
     insert_ $ Offer { offerService = s43
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 160
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1755,6 +1803,7 @@ Acest tratament îmbunătățește tenul general reducând la minimum aspectul l
 
     insert_ $ Offer { offerService = s43
                     , offerName = "Pachet"
+                    , offerPublished = True
                     , offerPrice = 730
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 sesiuni"
@@ -1796,6 +1845,7 @@ Promovează producerea de colagen, strânge și fermește țesuturile pielii, hi
 
     insert_ $ Offer { offerService = s44
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 180
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1854,6 +1904,7 @@ Similar cu o permanentă, încercați să evitați să vă umeziți genele timp 
 
     insert_ $ Offer { offerService = s51
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 45
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1910,6 +1961,7 @@ Similar cu o permanentă, încercați să evitați să vă umeziți genele timp 
 
     insert_ $ Offer { offerService = s52
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 130
                     , offerPrefix = Nothing
                     , offerSuffix = Just " și mai mult"
@@ -1947,6 +1999,7 @@ Similar cu o permanentă, încercați să evitați să vă umeziți genele timp 
 
     insert_ $ Offer { offerService = s53
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 25
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1998,6 +2051,7 @@ Tratamentele pot fi efectuate în fiecare săptămână sau la două săptămân
 
     insert_ $ Offer { offerService = s54
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 40
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2035,6 +2089,7 @@ Tratamentele pot fi efectuate în fiecare săptămână sau la două săptămân
 
     insert_ $ Offer { offerService = s55
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 40
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2091,6 +2146,7 @@ Terapia de masaj suedez este modalitatea care vine în minte atunci când majori
 
     insert_ $ Offer { offerService = s61
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 60
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2139,6 +2195,7 @@ Masajul pe scaun este un masaj de 15-20 de minute care se concentrează pe spate
 
     insert_ $ Offer { offerService = s62
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 60
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2184,6 +2241,7 @@ Masajul picioarelor este o practică terapeutică care implică manipularea pici
 
     insert_ $ Offer { offerService = s63
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 30
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2240,6 +2298,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
 
     insert_ $ Offer { offerService = s71
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 200
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2284,6 +2343,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
 
     insert_ $ Offer { offerService = s72
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 85
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2321,6 +2381,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
 
     insert_ $ Offer { offerService = s73
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 60
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2358,6 +2419,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
 
     insert_ $ Offer { offerService = s74
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 100
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2410,6 +2472,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
 
     insert_ $ Offer { offerService = s81
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 50
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2454,6 +2517,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
 
     insert_ $ Offer { offerService = s82
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 45
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2504,13 +2568,14 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
                             , serviceGroup = Just s9
                             }
 
-    insert_ $ Offer { offerService = s91
-                    , offerName = "Preț"
-                    , offerPrice = 15
-                    , offerPrefix = Nothing
-                    , offerSuffix = Nothing
-                    , offerDescr = Nothing
-                    }
+    o911 <- insert $ Offer { offerService = s91
+                           , offerName = "Preț"
+                           , offerPublished = True
+                           , offerPrice = 15
+                           , offerPrefix = Nothing
+                           , offerSuffix = Nothing
+                           , offerDescr = Nothing
+                           }
 
     insert_ $ Role { roleStaff = e9
                    , roleService = s91
@@ -2519,12 +2584,14 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
                    , roleRating = Just 5
                    }
 
-    insert_ $ Role { roleStaff = e8
-                   , roleService = s91
-                   , roleName = "Manichiurista"
-                   , roleDuration = 60 * (0 * 60 + 20)
-                   , roleRating = Just 5
-                   }
+    let role891 =  Role { roleStaff = e8
+                        , roleService = s91
+                        , roleName = "Manichiurista"
+                        , roleDuration = 60 * (0 * 60 + 20)
+                        , roleRating = Just 5
+                        }
+
+    r891 <- insert role891
 
     insert_ $ Role { roleStaff = e7
                    , roleService = s91
@@ -2550,6 +2617,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
 
     insert_ $ Offer { offerService = s92
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 32
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2587,6 +2655,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
 
     insert_ $ Offer { offerService = s93
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 35
                     , offerPrefix = Nothing
                     , offerSuffix = Just "$"
@@ -2624,6 +2693,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
 
     insert_ $ Offer { offerService = s94
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 55
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2661,6 +2731,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
 
     insert_ $ Offer { offerService = s95
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 38
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2698,6 +2769,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
 
     insert_ $ Offer { offerService = s96
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 10
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2735,6 +2807,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
 
     insert_ $ Offer { offerService = s97
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 5
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2789,6 +2862,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
 
     insert_ $ Offer { offerService = s101
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 350
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2826,6 +2900,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
 
     insert_ $ Offer { offerService = s102
                     , offerName = "Preț"
+                    , offerPublished = True
                     , offerPrice = 300
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -3061,6 +3136,45 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
                    , histStatus = BookStatusRequest
                    , histRoleName = Just $ roleName role925
                    , histStaffName = Just $ staffName empl9
+                   }
+
+    let book8 = Book { bookOffer = o911
+                     , bookRole = Just r891
+                     , bookCustomer = c2
+                     , bookDay = addDays 3 today
+                     , bookTime = time
+                     , bookAddr = businessAddr business
+                     , bookTzo = businessTzo business
+                     , bookTz = businessTz business
+                     , bookStatus = BookStatusApproved
+                     }
+
+    b8 <- insert book8
+
+    insert_ $ Hist { histBook = b8
+                   , histUser = c2
+                   , histLogtime = now
+                   , histDay = bookDay book8
+                   , histTime = bookTime book8
+                   , histAddr = bookAddr book8
+                   , histTzo = bookTzo book8
+                   , histTz = bookTz book8
+                   , histStatus = BookStatusRequest
+                   , histRoleName = Just $ roleName role891
+                   , histStaffName = Just $ staffName empl8
+                   }
+
+    insert_ $ Hist { histBook = b8
+                   , histUser = u8
+                   , histLogtime = addUTCTime (30 * 60) now
+                   , histDay = bookDay book8
+                   , histTime = bookTime book8
+                   , histAddr = bookAddr book8
+                   , histTzo = bookTzo book8
+                   , histTz = bookTz book8
+                   , histStatus = BookStatusApproved
+                   , histRoleName = Just $ roleName role891
+                   , histStaffName = Just $ staffName empl8
                    }
     return ()
   where

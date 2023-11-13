@@ -99,7 +99,7 @@ import Foundation
       , MsgSelect, MsgRequest, MsgShowAll, MsgNoAppointmentsFound, MsgToday
       , MsgList, MsgCalendar, MsgMon, MsgTue, MsgWed, MsgThu, MsgFri, MsgSat
       , MsgSun, MsgPending, MsgCompleted, MsgSortAscending, MsgSortDescending
-      , MsgNoBusinessAddressFound, MsgAddress
+      , MsgNoBusinessAddressFound, MsgAddress, MsgNoAppointmentsForThisDay
       )
     )
 

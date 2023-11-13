@@ -123,7 +123,7 @@ import Model
       , ServiceDescr, ServicePublished, ThumbnailAttribution, RoleStaff, StaffId
       , RoleService, RoleName, RoleId, BusinessCurrency
       )
-    , Offer (Offer, offerName, offerPrice, offerPrefix, offerSuffix, offerDescr)
+    , Offer (Offer, offerName, offerPrice, offerPrefix, offerSuffix, offerDescr, offerPublished)
     , OfferId
     , ServiceStatus (ServiceStatusPulished, ServiceStatusUnpublished)
     , Role (Role, roleStaff, roleName, roleDuration, roleRating), StaffId
@@ -428,6 +428,11 @@ formOffer sid offer extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (offerName . entityVal <$> offer)
+    (publishedR,publishedV) <- mreq (mdcBoolField (optionsPairs [(MsgYes,True),(MsgNo,False)])) FieldSettings
+        { fsLabel = SomeMessage MsgPublished
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-radio__native-control")]
+        } (offerPublished . entityVal <$> offer)
     (priceR,priceV) <- mreq doubleField FieldSettings
         { fsLabel = SomeMessage MsgPrice
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
@@ -449,9 +454,20 @@ formOffer sid offer extra = do
         , fsAttrs = [("class","mdc-text-field__input")]
         } (offerDescr . entityVal <$> offer)
 
-    let r = Offer sid <$> nameR <*> (realToFrac <$> priceR) <*> prefR <*> suffR <*> descrR
+    let r = Offer sid <$> nameR <*> publishedR <*> (realToFrac <$> priceR) <*> prefR <*> suffR <*> descrR
     let w = [whamlet|
 #{extra}
+
+<div.form-field>
+  <div style="padding-left:1rem;display:flex;align-items:center">
+    <small style="padding;opacity:0.6">
+      _{MsgPublished}<sup>* 
+    ^{fvInput publishedV}
+  $maybe errs <- fvErrors publishedV
+    <label.mdc-text-field.mdc-text-field--invalid>
+    <div.mdc-text-field-helper-line>
+      <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+        #{errs}
 
 $forall v <- [nameV,priceV,prefV,suffV]
   <div.form-field>
@@ -500,6 +516,21 @@ $forall v <- [nameV,priceV,prefV,suffV]
               Nothing -> Left MsgPriceAlreadyInTheList
               Just (Entity pid' _) | pid == pid' -> Right name
                                    | otherwise -> Left MsgPriceAlreadyInTheList
+
+      mdcBoolField :: Handler (OptionList Bool) -> Field Handler Bool
+      mdcBoolField = withRadioField
+          (\_ _ -> [whamlet||])
+          (\theId value _isSel text optionW -> [whamlet|
+<div.mdc-form-field.mdc-touch-target-wrapper>
+  <div.mdc-radio.mdc-radio--touch>
+    ^{optionW}
+    <div.mdc-radio__background>
+      <div.mdc-radio__outer-circle>
+      <div.mdc-radio__inner-circle>
+    <div.mdc-radio__ripple>
+    <div.mdc-radio__focus-ring>
+  <label for=#{theId}-#{value}>#{text}
+|])
 
 
 getAdmServiceImageR :: ServiceId -> Handler TypedContent

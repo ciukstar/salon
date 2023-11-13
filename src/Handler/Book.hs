@@ -851,7 +851,7 @@ queryOffers categs mq oids = (second (join . unValue) <$>) <$> ( select $ do
 
 
 amount :: [((Entity Service,Entity Offer),Maybe Html)] -> Centi
-amount oids = sum $ (\((_,Entity _ (Offer _ _ price _ _ _)),_) -> price) <$> oids
+amount oids = sum $ (\((_,Entity _ (Offer _ _ _ price _ _ _)),_) -> price) <$> oids
 
 
 sessKeyBooking :: Text
