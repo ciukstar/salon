@@ -1,4 +1,4 @@
-<form method=get action=@{RequestsR uid eid} ##{formSearch}>
+<form method=get action=@{TasksCalendarR uid eid month} ##{formSearch}>
 
 ^{menu}
 <header.mdc-top-app-bar.mdc-top-app-bar--prominent.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
@@ -13,7 +13,7 @@
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end>
       <a.mdc-top-app-bar__action-item.mdc-icon-button role=button title=_{MsgSearch}
-        href=@?{(RequestsSearchR uid eid,stati ++ owners)}>
+        href=@?{(RequestsSearchR uid eid,stati)}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>search
@@ -24,7 +24,7 @@
           <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" alt=_{MsgPhoto}
             onerror="this.src = '@{PhotoPlaceholderR}'">
       $nothing
-        <a.mdc-top-app-bar__action-item.mdc-icon-button role=button href=@{AuthR LoginR} title=_{MsgLogin}>
+        <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{AuthR LoginR} role=button title=_{MsgLogin}>
           <span.mdc-icon-button__ripple>
           <i.material-symbols-outlined>login
           
@@ -64,19 +64,12 @@
         $else
           <i.mdc-button__icon.material-symbols-outlined>counter_#{show (length assignees)}
 
-    $case sort
-      $of SortOrderAsc
-        <a.mdc-icon-button role=button title=_{MsgSortDescending} ##{sortButton}
-          href=@?{(RequestsR uid eid,[("sort",pack $ show SortOrderDesc)])}>
-          <span.mdc-icon-button__ripple>
-          <span.mdc-icon-button__focus-ring>
-          <i.material-symbols-outlined style="transform:rotateX(180deg)">sort
-      $of SortOrderDesc
-        <a.mdc-icon-button role=button title=_{MsgSortAscending} ##{sortButton}
-          href=@?{(RequestsR uid eid,[("sort",pack $ show SortOrderAsc)])}>
-          <span.mdc-icon-button__ripple>
-          <span.mdc-icon-button__focus-ring>
-          <i.material-symbols-outlined>sort
+    <a.mdc-icon-button href=@{TasksCalendarR uid eid today} role=button title=_{MsgToday}
+      :today == month:style="visibility:hidden;position:absolute;right:0"
+      :today /= month:style="position:absolute;right:0">
+      <span.mdc-icon-button__ripple>
+      <span.mdc-icon-button__focus-ring>
+      <i.material-symbols-outlined>today
 
   <div.mdc-chip-set.mdc-chip-set--filter role=menu data-mdc-auto-init=MDCChipSet>
     $forall (status,_) <- statusList
@@ -85,7 +78,7 @@
           $with q1 <- fmap ((fstsec "status" . pack) . show) (filter ((/=) status) statuses)
             $with q2 <- fmap ((fstsec "assignee" . pack) . show) assignees
               $with q <- (++) q1 q2
-                <a.mdc-chip.mdc-chip--selected role=menuitem href=@?{(RequestsR uid eid,q)}>
+                <a.mdc-chip.mdc-chip--selected role=menuitem href=@?{(TasksCalendarR uid eid month,q)}>
                   <div.mdc-chip__ripple>
                   <span.mdc-chip__checkmark>
                     <svg.mdc-chip__checkmark-svg viewBox="-2 -3 30 30">
@@ -96,7 +89,7 @@
           $with q1 <- fmap ((fstsec "status" . pack) . show) ((:) status statuses)
             $with q2 <- fmap ((fstsec "assignee" . pack) . show) assignees
               $with q <- (++) q1 q2
-                <a.mdc-chip role=menuitem href=@?{(RequestsR uid eid,q)}>
+                <a.mdc-chip role=menuitem href=@?{(TasksCalendarR uid eid month,q)}>
                   <div.mdc-chip__ripple>
                   <i.mdc-chip__icon.mdc-chip__icon--leading.material-symbols-outlined style="color:#{color}">
                     #{icon}
@@ -106,37 +99,45 @@
                   <span.mdc-chip__primary-action role=checkbox tabindex=-1 aria-checked=false>
                     <span.mdc-chip__text title=_{title}>_{label}
 
-
-  $if null requests
-    <figure style="text-align:center">
-      <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
-      <figcaption>
-        <p>_{MsgNoPendingRequestsYet}.
-        <a.mdc-button.mdc-button--outlined role=button 
-          href=@?{(RequestsR uid eid,[("status",pack $ show BookStatusRequest),("assignee",pack $ show AssigneesMe)])}>
-          <span.mdc-button__ripple>
-          <span.mdc-button__focus-ring>
-          <span.mdc-button__label>_{MsgShowAll}
-  $else
-    <nav.mdc-list data-mdc-auto-init=MDCList>
-      $forall (Entity bid (Book _ _ _ date time _ _ _ status),Entity _ (Service sname _ _ _ _ _)) <- requests
-        $with (color,icon,label,title) <- resolveBookStatus status
-          <a.mdc-list-item href=@?{(RequestR uid eid bid,stati ++ owners)}
-            :mbid == Just bid:.mdc-list-item--activated
-            .mdc-list-item--with-leading-icon.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon>
-            <span.mdc-list-item__ripple>
-            <span.mdc-list-item__start>
-              <i.material-symbols-outlined style="color:#{color}" title=_{title}>#{icon}                
-            <span.mdc-list-item__content>
-              <div.appointment-time.mdc-list-item__primary-text>
-                #{show date} #{show time}
-              <div.mdc-list-item__secondary-text>
-                #{sname}
-              <div.mdc-list-item__secondary-text title=_{title}>
-                _{label}
-            <span.mdc-list-item__end>
-              <i.material-symbols-outlined>arrow_forward_ios
-          <div.mdc-list-divider role=separator>
+  <div ##{divCalendar}>
+    <div.header>
+      <a.mdc-icon-button href=@{TasksCalendarR uid eid prev} role=button rel=nofollow>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>arrow_back
+      $with m <- show month
+        <time.month-of-year datetime=#{m}>
+          #{m}
+      <a.mdc-icon-button href=@{TasksCalendarR uid eid next} role=button rel=nofollow>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>arrow_forward
+    $forall wd <- [MsgMon,MsgTue,MsgWed,MsgThu,MsgFri,MsgSat,MsgSun]
+      <div.col-header>
+        _{wd}
+    $forall i <- [0,1,2,3,4,5]
+      $forall day <- take 7 (drop (i * 7) page)
+        <div.cell>
+          $with (y,m,d) <- toGregorian day
+            $if (==) month (YearMonth y m)
+              $maybe bsmap <- ML.lookup day requests
+                <a href=@?{(TasksDayListR uid eid day,stati)} rel=nofollow>
+                  <time.day-of-month datetime=#{show day}>
+                    <small>#{d}
+                  <small.cell-container>
+                    $forall (status,times) <- ML.toList bsmap
+                      $with (color,_,_,title) <- resolveBookStatus status
+                        <span title=_{title}
+                          style="padding:0 4px;border-radius:50%;color:white;background-color:#{color}">
+                          #{show (length times)}
+                    
+              $nothing
+                <a href=@?{(TasksDayListR uid eid day,stati)} rel=nofollow>
+                  <time.day-of-month datetime=#{show day}>
+                    <small>#{d}
+            $else
+              <time.day-of-month datetime=#{show day} style="color:var(--theme-text-hint-on-light)">
+                <small>#{d}
 
 $forall (_,msg) <- msgs
   <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
@@ -147,8 +148,7 @@ $forall (_,msg) <- msgs
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>close
-
-
+          
 <div.mdc-dialog.mdc-dialog--fullscreen ##{dlgAssignee} data-mdc-auto-init=MDCDialog>
   <div.mdc-dialog__container>
     <div.mdc-dialog__surface role=dialog aria-modal=true tabindex=-1>

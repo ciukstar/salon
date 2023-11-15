@@ -1,3 +1,6 @@
+LoginAsEmployeeToContinue: Vă rugăm să vă autentificați ca angajat pentru a continua
+LoginToContinue: Vă rugăm să vă conectați pentru a continua
+AuthenticationRequired: Este necesară autentificarea
 NoAppointmentsForThisDay: Nu aveți programări pentru această zi
 Completed: Finalizată
 Pending: În așteptare

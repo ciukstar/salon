@@ -372,7 +372,7 @@ populateRU = do
     pass8 <- liftIO $ makePassword "stepanovatn" 17
     let user8 = User { userName = "stepanovatn"
                      , userPassword = decodeUtf8 pass8
-                     , userAdmin = False
+                     , userAdmin = True
                      , userFullName = Just "Степанова Татьяна Николаевна"
                      , userEmail = Just "stepanovatn@mail.ru"
                      }

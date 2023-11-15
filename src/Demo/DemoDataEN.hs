@@ -379,7 +379,7 @@ populateEN = do
     pass8 <- liftIO $ makePassword "byoung" 17
     let user8 = User { userName = "byoung"
                      , userPassword = decodeUtf8 pass8
-                     , userAdmin = False
+                     , userAdmin = True
                      , userFullName = Just "Barbara Young"
                      , userEmail = Just "byoung@mail.uk"
                      }

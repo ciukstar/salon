@@ -37,9 +37,9 @@ import qualified Data.List.Safe as LS
 import Database.Persist.Sql (ConnectionPool, runSqlPool, fromSqlKey)
 import qualified Database.Esqueleto.Experimental as E ((==.), exists)
 import Database.Esqueleto.Experimental
-    ( select, selectOne, from, table, Value (Value), where_
+    ( select, selectOne, from, table, Value (unValue), where_
     , (^.), (:&) ((:&))
-    , just, orderBy, asc, unionAll_, not_, val
+    , just, orderBy, asc, unionAll_, not_, val, isNothing_
     )
 
 -- | The foundation datatype for your application. This can be a good place to
@@ -250,19 +250,23 @@ instance Yesod App where
     isAuthorized (BookingItemR {}) _ = return Authorized
     
 
-    isAuthorized RequestsR _ = return Authorized
-    isAuthorized (RequestR _) _ = return Authorized
-    isAuthorized RequestsSearchR _ = return Authorized
-    isAuthorized (RequestApproveR _) _ = return Authorized
-    isAuthorized (RequestFinishR _) _ = return Authorized
-    isAuthorized (RequestAssignR _ _) _ = return Authorized
-    isAuthorized (RequestRescheduleR _) _ = return Authorized
-    isAuthorized (RequestHistR _) _ = return Authorized
+    isAuthorized (RequestsR {}) _ = isEmployee
+    isAuthorized (RequestR {}) _ = isEmployee
+    isAuthorized (RequestsSearchR {}) _ = isEmployee
+    isAuthorized (RequestApproveR {}) _ = isEmployee
+    isAuthorized (RequestFinishR {}) _ = isEmployee
+    isAuthorized (RequestAssignR {}) _ = isEmployee
+    isAuthorized (RequestRescheduleR {}) _ = isEmployee
+    isAuthorized (RequestHistR {}) _ = isEmployee
+    isAuthorized (TasksCalendarR {}) _ = isEmployee
+    isAuthorized (TasksDayListR {}) _ = isEmployee
+    isAuthorized (TaskItemR {}) _ = isEmployee
+        
 
 
     isAuthorized AccountR _ = return Authorized
     isAuthorized (AccountPhotoR _) _ = return Authorized
-    isAuthorized ProfileR _ = return Authorized
+    isAuthorized ProfileR _ = isAuthenticated
 
     isAuthorized ServicesR _ = return Authorized
     isAuthorized (ServiceR _) _ = return Authorized
@@ -360,20 +364,45 @@ instance YesodAuth App where
     renderAuthMessage app (_:xs) = renderAuthMessage app xs
 
 
--- | Access function to determine if a user is logged in.
 isAuthenticated :: Handler AuthResult
 isAuthenticated = do
-    muid <- maybeAuthId
-    return $ case muid of
-        Nothing -> Unauthorized "You must login to access this page"
-        Just _ -> Authorized
+    user <- maybeAuth
+    ult <- getUrlRender >>= \r -> fromMaybe (r HomeR) <$> lookupSession ultDestKey
+    msgs <- getMessages
+    case user of
+        Nothing -> do
+            r <- defaultLayout $(widgetFile "auth/403")
+            sendResponseStatus status403 r
+        Just _ -> return Authorized
+
+
+isEmployee :: Handler AuthResult
+isEmployee = do
+    user <- maybeAuth
+    ult <- getUrlRender >>= \r -> fromMaybe (r HomeR) <$> lookupSession ultDestKey
+    msgs <- getMessages
+    case user of
+      Nothing -> do
+          r <- defaultLayout $(widgetFile "auth/403")
+          sendResponseStatus status403 r
+      Just (Entity uid _) -> do
+          empl <- runDB $ selectOne $ do
+              x <- from $ table @Staff
+              where_ $ not_ $ isNothing_ $ x ^. StaffUser
+              where_ $ x ^. StaffUser E.==. just (val uid)
+              return x
+          case empl of
+            Nothing -> do
+                r <- defaultLayout $(widgetFile "auth/403empl")
+                sendResponseStatus status403 r
+            _ -> return Authorized
 
 
 formLogin :: Route App -> Widget
 formLogin route = do
     ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$>  lookupSession ultDestKey
     msgs <- getMessages
-    users <- liftHandler $ runDB $ select $ do
+    users <- liftHandler $ unval <$> runDB (select $ do
         x :& y <- from $
             do x <- from $ table @User
                where_ $ not_ $ E.exists $ do
@@ -392,12 +421,14 @@ formLogin route = do
                return $ x :& val True
 
         orderBy [asc y, asc (x ^. UserName)]
-        return (x ^. UserId, x ^. UserName, y)
+        return (((x ^. UserId, x ^. UserName), x ^. UserAdmin), y) )
     loginFormWrapper <- newIdent
     loginForm <- newIdent
     pCreateAccount <- newIdent
     dlgSampleCreds <- newIdent
-    $(widgetFile "login")
+    $(widgetFile "auth/form")
+  where
+      unval = (bimap (bimap (bimap unValue unValue) unValue) unValue <$>)
 
 
 instance YesodAuthPersist App

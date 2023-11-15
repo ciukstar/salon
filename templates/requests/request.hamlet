@@ -2,7 +2,7 @@
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
       $with stati <- stati ++ [("bid",pack $ show $ fromSqlKey bid)]
-        <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=@?{(RequestsR,stati)} role=button title=_{MsgBack}>
+        <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=@?{(RequestsR uid eid,stati)} role=button title=_{MsgBack}>
           <span.mdc-icon-button__ripple>
           <spam.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>arrow_back
@@ -169,7 +169,7 @@
                 $if (elem status [BookStatusRequest,BookStatusApproved])
 
                   <a.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--outlined
-                    href=@{RequestRescheduleR bid} role=button>
+                    href=@{RequestRescheduleR uid eid bid} role=button>
                     <span.mdc-button__ripple>
                     <span.mdc-button__focus-ring>
                     <span.mdc-button__label>_{MsgReschedule}
@@ -182,7 +182,7 @@
                       <span.mdc-button__focus-ring>
                       <span.mdc-button__label>_{MsgApprove}
 
-                    <form method=post action=@{RequestApproveR bid} ##{formRequestApprove} enctype=#{et}>
+                    <form method=post action=@{RequestApproveR uid eid bid} ##{formRequestApprove} enctype=#{et}>
                       ^{fw}
 
                     <div.mdc-dialog ##{dlgConfirmApprove} data-mdc-auto-init=MDCDialog>
@@ -232,7 +232,7 @@
                       <span.mdc-button__focus-ring>
                       <span.mdc-button__label>_{MsgRequestFinish}
 
-                    <form method=post action=@{RequestFinishR bid} ##{formAppoitmentFinish} enctype=#{et}>
+                    <form method=post action=@{RequestFinishR uid eid bid} ##{formAppoitmentFinish} enctype=#{et}>
                       ^{fw}
 
                     <div.mdc-dialog ##{dlgConfirmFinish} data-mdc-auto-init=MDCDialog>
@@ -276,7 +276,7 @@
                           <span.mdc-button__focus-ring>
                           <span.mdc-button__label>_{MsgCancel}
 
-                        <form method=post action=@{RequestAssignR bid sid} enctype=#{eta} ##{formAssignToMe}>
+                        <form method=post action=@{RequestAssignR uid eid bid sid} enctype=#{eta} ##{formAssignToMe}>
                           ^{fwa}
                         <button.mdc-dialog__button.mdc-button.mdc-button--raised type=submit form=#{formAssignToMe}>
                           <span.mdc-button__ripple>
@@ -287,7 +287,7 @@
 
             <div.mdc-card__action-icons>
               <a.mdc-card__action.mdc-card__action-icon.mdc-icon-button role=button title=_{MsgHistory}
-                href=@{RequestHistR bid}>
+                href=@{RequestHistR uid eid bid}>
                 <span.mdc-icon-button__ripple>
                 <span.mdc-icon-button__focus-ring>
                 <i.material-symbols-outlined>history

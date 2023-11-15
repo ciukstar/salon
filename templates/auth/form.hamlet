@@ -68,10 +68,11 @@
       <div.mdc-dialog__content>
         <form name=formUserOptions>
           <ul.mdc-list data-mdc-auto-init=MDCList>
-            $forall (Value uid,Value uname,Value staff) <- users
+            $forall (((uid,uname),admin),staff) <- users
               $with ident <- T.pack $ show $ fromSqlKey uid
                 <li.mdc-list-item.mdc-list-item--with-leading-image
-                  .mdc-list-item--with-two-lines.mdc-list-item--with-trailing-radio>
+                  .mdc-list-item--with-trailing-radio
+                  :admin:.mdc-list-item--with-three-lines :not admin:.mdc-list-item--with-two-lines>
                   <span.mdc-list-item__ripple>
                   <span.mdc-list-item__start>
                     <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" width=48 height=48 alt=_{MsgPhoto}
@@ -83,6 +84,9 @@
                         _{MsgEmployee}
                       $else
                         _{MsgCustomer}
+                    $if admin
+                      <div.mdc-list-item__secondary-text>
+                        _{MsgAdministrator}
                   <span.mdc-list-item__end>
                     <div.mdc-radio tabindex=-1 data-mdc-auto-init=MDCRadio>
                       <input.mdc-radio__native-control type=radio name=uname value=#{uname} #radio#{ident}>

@@ -2,6 +2,8 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE PatternSynonyms #-}
+{-# LANGUAGE TupleSections #-}
 
 module Handler.Requests
   ( getRequestsR
@@ -13,12 +15,21 @@ module Handler.Requests
   , postRequestAssignR
   , getRequestRescheduleR
   , getRequestHistR
+  , getTasksCalendarR
+  , getTasksDayListR
+  , getTaskItemR
   ) where
 
 import Control.Monad (unless)
-import Data.Maybe (mapMaybe, isJust, isNothing)
+import Data.Bifunctor (Bifunctor(bimap, second))
+import qualified Data.Map.Lazy as ML (fromListWith, toList, lookup)
+import Data.Maybe (mapMaybe, isJust, isNothing, fromMaybe)
 import Data.Text (intercalate, unpack, Text, pack)
-import Data.Time.Calendar (Day)
+import Data.Time.Calendar
+    ( Day, DayPeriod (periodFirstDay, periodLastDay), weekFirstDay
+    , DayOfWeek (Monday), addDays, toGregorian
+    )
+import Data.Time.Calendar.Month (Month, addMonths, pattern YearMonth)
 import Data.Time.Clock (getCurrentTime, UTCTime (utctDay))
 import Data.Time.Format (defaultTimeLocale, formatTime)
 import Data.Time.LocalTime
@@ -30,9 +41,9 @@ import Text.Read (readMaybe)
 import Text.Shakespeare.I18N (renderMessage, SomeMessage (SomeMessage))
 import Yesod.Core
     ( Yesod(defaultLayout), setUltDestCurrent, getMessages
-    , getYesod, languages, preEscapedToMarkup, whamlet, getRequest
+    , getYesod, languages, whamlet, getRequest
     , YesodRequest (reqGetParams), newIdent, MonadIO (liftIO), redirect
-    , addMessageI, getUrlRender
+    , addMessageI, getCurrentRoute
     )
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Auth ( Route(LoginR), maybeAuth )
@@ -55,25 +66,25 @@ import Foundation
       ( AuthR, PhotoPlaceholderR, AccountPhotoR, ProfileR, RequestsR, RequestR
       , AdminR, ServiceThumbnailR, RequestsSearchR, RequestsSearchR
       , RequestApproveR, RequestFinishR, RequestRescheduleR, RequestHistR
-      , RequestAssignR
+      , RequestAssignR, TasksCalendarR, TasksDayListR, TaskItemR
       )
     , AdminR (AdmStaffPhotoR)
     , AppMessage
       ( MsgRequests, MsgPhoto, MsgLogin, MsgSymbolHour, MsgBack
       , MsgSymbolMinute, MsgApproved, MsgCancelled, MsgPaid, MsgAssignee
-      , MsgLoginToSeeTheRequests, MsgRequest, MsgStatus, MsgMeetingLocation
+      , MsgRequest, MsgStatus, MsgMeetingLocation, MsgSortDescending
       , MsgPleaseConfirm, MsgHistory, MsgReschedule, MsgService, MsgMeetingTime
       , MsgCustomer, MsgSelect, MsgCancel, MsgAcquaintance, MsgAppoinmentStatus
       , MsgNoPendingRequestsYet, MsgShowAll, MsgAssignedToMe, MsgWithoutAssignee
       , MsgSearch, MsgNoRequestsFound, MsgFromCoworkers, MsgApproveAppointmentConfirm
       , MsgDate, MsgTime, MsgLocation, MsgEntityNotFound, MsgInvalidFormData
-      , MsgMissingForm, MsgLoginToPerformAction, MsgBook, MsgRequestFinish, MsgDuration
-      , MsgFinishAppointmentConfirm, MsgDay, MsgTimeZone, MsgMinutes, MsgSave
-      , MsgAppointmentTimeIsInThePast, MsgAppointmentDayIsInThePast, MsgNoHistoryYet
-      , MsgLoginBanner, MsgNoAssigneeRequestApprove, MsgTimeZoneOffset, MsgNavigationMenu
-      , MsgYouAreNotAnEmployeeOfFacility, MsgOnlyEmployeesMaySeeRequests, MsgUserProfile
-      , MsgNonexpert, MsgAssignToMe, MsgAreYouSureYouWantToTakeOnThisTask, MsgApprove
-      , MsgUnassigned
+      , MsgMissingForm, MsgBook, MsgRequestFinish, MsgDuration, MsgDay, MsgTimeZone
+      , MsgMinutes, MsgSave, MsgFinishAppointmentConfirm, MsgNoHistoryYet
+      , MsgAppointmentTimeIsInThePast, MsgAppointmentDayIsInThePast, MsgAssignToMe
+      , MsgNoAssigneeRequestApprove, MsgTimeZoneOffset, MsgNavigationMenu
+      , MsgUserProfile, MsgNonexpert, MsgAreYouSureYouWantToTakeOnThisTask
+      , MsgApprove, MsgUnassigned, MsgList, MsgCalendar, MsgMon, MsgTue, MsgWed
+      , MsgThu, MsgFri, MsgSat, MsgSun, MsgToday, MsgSortAscending
       )
     )
 
@@ -84,14 +95,14 @@ import Database.Esqueleto.Experimental
     ( select, from, table, innerJoin, leftJoin, on, where_, val
     , (:&)((:&)), (==.), (^.), (?.), (%), (++.), (||.), (&&.), (=.)
     , orderBy, desc, just, selectOne, valList, in_, upper_, like, isNothing_
-    , not_, update, set, exists, unValue
+    , not_, update, set, exists, unValue, between, asc
     )
 
 import Model
     ( Book (Book, bookDay, bookTz, bookTzo, bookTime, bookAddr)
     , BookId, Offer, ServiceId, Service (Service), Role (Role, roleName)
-    , Staff (Staff, staffName), Offer (Offer), Thumbnail (Thumbnail)
-    , User (User)
+    , StaffId, Staff (Staff, staffName), Offer (Offer), Thumbnail (Thumbnail)
+    , UserId, User (User)
     , BookStatus
       ( BookStatusRequest, BookStatusApproved, BookStatusCancelled
       , BookStatusPaid, BookStatusAdjusted
@@ -106,22 +117,91 @@ import Model
       , OfferSuffix, OfferDescr, StaffName, StaffPhone, StaffMobile, StaffEmail
       , UserName, UserFullName, UserEmail, BookTz, HistBook, HistLogtime
       , RoleService, HistUser, BookTzo, BookAddr, BusinessCurrency
-      )
+      ), SortOrder (SortOrderDesc, SortOrderAsc)
     )
 
 import Menu (menu)
 import Handler.Appointments (resolveBookStatus)
 
 
-postRequestAssignR :: BookId -> ServiceId -> Handler Html
-postRequestAssignR bid sid = do
+getTaskItemR ::  UserId -> StaffId -> Day -> BookId -> Handler Html
+getTaskItemR uid eid day bid = undefined
+
+
+getTasksDayListR ::  UserId -> StaffId -> Day -> Handler Html
+getTasksDayListR uid eid day = do
+    stati <- reqGetParams <$> getRequest
+    requestDay <- newIdent
+    let month = (\(y,m,_) -> YearMonth y m) . toGregorian
+    let requests = [] 
+    defaultLayout $ do
+        setTitleI MsgRequests
+        $(widgetFile "requests/calendar/list")
+
+
+getTasksCalendarR :: UserId -> StaffId -> Month -> Handler Html
+getTasksCalendarR uid eid month = do
+    stati <- reqGetParams <$> getRequest
     user <- maybeAuth
+    setUltDestCurrent
+    msgs <- getMessages
+    let statuses = mapMaybe (readMaybe . unpack . snd) . filter ((== "status") . fst) $ stati
+    owners <- filter ((== "assignee") . fst) . reqGetParams <$> getRequest
+    let assignees = mapMaybe (readMaybe . unpack . snd) owners
+
+    requests <- do
+        xs <- (bimap unValue ((:[]) . bimap unValue unValue) <$>) <$> runDB ( select $ do
+            x :& _ :& _ :& e <- from $ table @Book
+                `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
+                `leftJoin` table @Role `on` (\(x :& _ :& r) -> x ^. BookRole ==. r ?. RoleId)
+                `leftJoin` table @Staff `on` (\(_ :& _ :& r :& e) -> r ?. RoleStaff ==. e ?. StaffId)
+
+            let ors = [ ( AssigneesMe `elem` assignees
+                        , e ?. StaffUser ==. just (just (val uid))
+                        )
+                      , ( AssigneesNone `elem` assignees
+                        , isNothing_ $ e ?. StaffUser
+                        )
+                      , ( AssigneesOthers `elem` assignees
+                        , not_ (isNothing_ $ e ?. StaffUser) &&. not_ (e ?. StaffUser ==. just (just (val uid)))
+                        )
+                      ]
+
+            case snd <$> filter fst ors of
+              [] -> return ()
+              xs -> where_ $ foldr (||.) (val False) xs
+
+            unless (null statuses) $ where_ $ x ^. BookStatus `in_` valList statuses
+            orderBy [desc (x ^. BookDay), desc (x ^. BookTime)]
+            return (x ^. BookDay, (x ^. BookStatus, x ^. BookTime)) )
+            
+        return $ ML.fromListWith (++) . (second (:[]) <$>) <$> ML.fromListWith (++) xs
+
+    let start = weekFirstDay Monday (periodFirstDay month)
+    let end = addDays 41 start
+    let page = [start .. end]
+    let next = addMonths 1 month
+    let prev = addMonths (-1) month
+
+    today <- (\(y,m,_) -> YearMonth y m) . toGregorian . utctDay <$> liftIO getCurrentTime
+    curr <- getCurrentRoute
+    toolbarTop <- newIdent
+    divCalendar <- newIdent
+    formSearch <- newIdent
+    dlgAssignee <- newIdent
+    defaultLayout $ do
+        setTitleI MsgRequests
+        $(widgetFile "requests/calendar/page")
+
+
+postRequestAssignR :: UserId -> StaffId -> BookId -> ServiceId -> Handler Html
+postRequestAssignR uid eid bid sid = do
     book <- runDB $ selectOne $ do
         b <- from $ table @Book
         where_ $ b ^. BookId ==. val bid
         return b
-    case (user,book) of
-      (Just (Entity uid _), Just (Entity bid' (Book _ _ _ day' time' addr' tzo' tz' status'))) -> do
+    case book of
+      Just (Entity bid' (Book _ _ _ day' time' addr' tzo' tz' status')) -> do
 
           role <- runDB $ selectOne $ do
               r :& e <- from $ table @Role `innerJoin` table @Staff
@@ -138,58 +218,34 @@ postRequestAssignR bid sid = do
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid uid now day' time' addr' tzo' tz' status'
                     (Just rname) (Just ename)
-                redirect $ RequestR bid
+                redirect $ RequestR uid eid bid
             Nothing -> do
                 addMessageI "warn" MsgNonexpert
-                redirect $ RequestR bid
+                redirect $ RequestR uid eid bid
 
-      (Nothing, _) -> do
-          addMessageI "warn" MsgLoginToPerformAction
-          redirect $ RequestR bid
-      (_, Nothing) -> do
-          addMessageI "warn" MsgEntityNotFound
-          redirect $ RequestR bid
-
-
-getRequestHistR :: BookId -> Handler Html
-getRequestHistR bid = do
-    user <- maybeAuth
-    empl <- runDB $ selectOne $ do
-        x <- from $ table @Staff
-        where_ $ case user of
-          Nothing -> val False
-          Just (Entity uid _) -> x ^. StaffUser ==. just (val uid)
-        return x
-    unless (isJust empl) $ redirect RequestsR
-    case user of
-      Just _ -> do
-          hist <- runDB $ select $ do
-              h :& u <- from $ table @Hist `innerJoin` table @User
-                  `on` (\(h :& u) -> h ^. HistUser ==. u ^. UserId)
-              where_ $ h ^. HistBook ==. val bid
-              where_ $ exists $ do
-                  b <- from $ table @Book
-                  where_ $ b ^. BookId ==. h ^. HistBook
-              orderBy [desc (h ^. HistLogtime)]
-              return (h, u)
-          defaultLayout $ do
-              setTitleI MsgHistory
-              $(widgetFile "requests/hist")
       Nothing -> do
-          addMessageI "warn" MsgLoginToPerformAction
-          redirect $ RequestR bid
+          addMessageI "warn" MsgEntityNotFound
+          redirect $ RequestR uid eid bid
 
 
-getRequestRescheduleR :: BookId -> Handler Html
-getRequestRescheduleR bid = do
-    user <- maybeAuth
-    unless (isJust user) $ redirect RequestsR
-    empls <- runDB $ selectOne $ do
-        x <- from $ table @Staff
-        where_ $ case user of
-          Nothing -> val False
-          Just (Entity uid _) -> x ^. StaffUser ==. just (val uid)
-    unless (isJust empls) $ redirect RequestsR
+getRequestHistR :: UserId -> StaffId -> BookId -> Handler Html
+getRequestHistR uid eid bid = do
+    hist <- runDB $ select $ do
+        h :& u <- from $ table @Hist `innerJoin` table @User
+            `on` (\(h :& u) -> h ^. HistUser ==. u ^. UserId)
+        where_ $ h ^. HistBook ==. val bid
+        where_ $ exists $ do
+            b <- from $ table @Book
+            where_ $ b ^. BookId ==. h ^. HistBook
+        orderBy [desc (h ^. HistLogtime)]
+        return (h, u)
+    defaultLayout $ do
+        setTitleI MsgHistory
+        $(widgetFile "requests/hist")
+
+
+getRequestRescheduleR :: UserId -> StaffId -> BookId -> Handler Html
+getRequestRescheduleR uid eid bid = do
     book <- runDB $ selectOne $ do
         x <- from $ table @Book
         where_ $ x ^. BookId ==. val bid
@@ -263,12 +319,11 @@ formReschedule book extra = do
               else Right d
 
 
-postRequestFinishR :: BookId -> Handler Html
-postRequestFinishR bid = do
+postRequestFinishR :: UserId -> StaffId -> BookId -> Handler Html
+postRequestFinishR uid eid bid = do
     ((fr,_),_) <- runFormPost $ formApprove Nothing
-    user <- maybeAuth
-    case (fr, user) of
-      (FormSuccess _bid, Just (Entity uid _)) -> do
+    case fr of
+      FormSuccess _bid -> do
           book <- runDB $ selectOne $ do
               b :& r :& e <- from $ table @Book
                   `leftJoin` table @Role `on` (\(b :& r) -> b ^. BookRole ==. r ?. RoleId)
@@ -283,29 +338,25 @@ postRequestFinishR bid = do
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusPaid
                     (roleName . entityVal <$> role') (staffName . entityVal <$> empl')
-                redirect $ RequestR bid
+                redirect $ RequestR uid eid bid
 
             Nothing -> do
                 addMessageI "warn" MsgEntityNotFound
-                redirect $ RequestR bid
+                redirect $ RequestR uid eid bid
 
-      (FormSuccess _, Nothing) -> do
-          addMessageI "warn" MsgLoginToPerformAction
-          redirect $ RequestR bid
-      (FormFailure _, _) -> do
+      FormFailure _ -> do
           addMessageI "warn" MsgInvalidFormData
-          redirect $ RequestR bid
-      (FormMissing, _) -> do
+          redirect $ RequestR uid eid bid
+      FormMissing -> do
           addMessageI "warn" MsgMissingForm
-          redirect $ RequestR bid
+          redirect $ RequestR uid eid bid
 
 
-postRequestApproveR :: BookId -> Handler Html
-postRequestApproveR bid = do
+postRequestApproveR :: UserId -> StaffId -> BookId -> Handler Html
+postRequestApproveR uid eid bid = do
     ((fr,_),_) <- runFormPost $ formApprove Nothing
-    user <- maybeAuth
-    case (fr, user) of
-      (FormSuccess _bid, Just (Entity uid _)) -> do
+    case fr of
+      FormSuccess _bid -> do
           book <- runDB $ selectOne $ do
               x :& o :& r :& e <- from $ table @Book
                   `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
@@ -332,105 +383,89 @@ postRequestApproveR bid = do
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusApproved
                     (roleName . entityVal <$> role') (staffName . entityVal <$> empl')
-                redirect $ RequestR bid
+                redirect $ RequestR uid eid bid
 
             (Nothing,_) -> do
                 addMessageI "warn" MsgEntityNotFound
-                redirect $ RequestR bid
+                redirect $ RequestR uid eid bid
             (_,Nothing) -> do
                 addMessageI "warn" MsgNonexpert
-                redirect $ RequestR bid
+                redirect $ RequestR uid eid bid
 
-      (FormSuccess _, Nothing) -> do
-          addMessageI "warn" MsgLoginToPerformAction
-          redirect $ RequestR bid
-      (FormFailure _, _) -> do
+      FormFailure _ -> do
           addMessageI "warn" MsgInvalidFormData
-          redirect $ RequestR bid
-      (FormMissing, _) -> do
+          redirect $ RequestR uid eid bid
+      FormMissing -> do
           addMessageI "warn" MsgMissingForm
-          redirect $ RequestR bid
+          redirect $ RequestR uid eid bid
 
 
-getRequestsSearchR :: Handler Html
-getRequestsSearchR = do
-    user <- maybeAuth
-    empl <- runDB $ selectOne $ do
-        x <- from $ table @Staff
-        where_ $ case user of
-          Nothing -> val False
-          Just (Entity uid _) -> x ^. StaffUser ==. just (val uid)
-    unless (isJust empl) $ redirect RequestsR
+getRequestsSearchR :: UserId -> StaffId -> Handler Html
+getRequestsSearchR uid eid = do
     setUltDestCurrent
     msgs <- getMessages
-    case user of
-      Nothing -> defaultLayout $ do
-          setTitleI MsgLogin
-          $(widgetFile "requests/login")
-      Just (Entity uid _) -> do
-          formSearch <- newIdent
-          dlgStatusList <- newIdent
-          q <- runInputGet $ iopt (searchField True) "q"
-          stati <- filter ((== "status") . fst) . reqGetParams <$> getRequest
-          let states = mapMaybe (readMaybe . unpack . snd) stati
-          owners <- filter ((== "assignee") . fst) . reqGetParams <$> getRequest
-          let assignees = mapMaybe (readMaybe . unpack . snd) owners
-          dlgAssignee <- newIdent
-          requests <- runDB $ select $ do
-              x :& o :& s :& r :& e :& c <- from $ table @Book
-                  `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
-                  `innerJoin` table @Service `on` (\(_ :& o :& s) -> o ^. OfferService ==. s ^. ServiceId)
-                  `leftJoin` table @Role `on` (\(x :& _ :& _ :& r) -> x ^. BookRole ==. r ?. RoleId)
-                  `leftJoin` table @Staff `on` (\(_ :& _ :& _ :& r :& e) -> r ?. RoleStaff ==. e ?. StaffId)
-                  `leftJoin` table @User `on` (\(_ :& _ :& _ :& _ :& e :& c) -> e ?. StaffUser ==. just (c ?. UserId))
+    formSearch <- newIdent
+    dlgStatusList <- newIdent
+    q <- runInputGet $ iopt (searchField True) "q"
+    stati <- filter ((== "status") . fst) . reqGetParams <$> getRequest
+    let states = mapMaybe (readMaybe . unpack . snd) stati
+    owners <- filter ((== "assignee") . fst) . reqGetParams <$> getRequest
+    let assignees = mapMaybe (readMaybe . unpack . snd) owners
+    dlgAssignee <- newIdent
+    requests <- runDB $ select $ do
+        x :& o :& s :& r :& e :& c <- from $ table @Book
+            `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
+            `innerJoin` table @Service `on` (\(_ :& o :& s) -> o ^. OfferService ==. s ^. ServiceId)
+            `leftJoin` table @Role `on` (\(x :& _ :& _ :& r) -> x ^. BookRole ==. r ?. RoleId)
+            `leftJoin` table @Staff `on` (\(_ :& _ :& _ :& r :& e) -> r ?. RoleStaff ==. e ?. StaffId)
+            `leftJoin` table @User `on` (\(_ :& _ :& _ :& _ :& e :& c) -> e ?. StaffUser ==. just (c ?. UserId))
 
-              case q of
-                Just query -> where_ $ (upper_ (s ^. ServiceName) `like` ((%) ++. upper_ (val query) ++. (%)))
-                  ||. (upper_ (s ^. ServiceOverview) `like` ((%) ++. upper_ (just (val query)) ++. (%)))
-                  ||. (upper_ (s ^. ServiceDescr) `like` ((%) ++. upper_ (just (val (Textarea query))) ++. (%)))
-                  ||. (upper_ (r ?. RoleName) `like` ((%) ++. upper_ (just (val query)) ++. (%)))
-                  ||. (upper_ (o ^. OfferName) `like` ((%) ++. upper_ (val query) ++. (%)))
-                  ||. (upper_ (o ^. OfferPrefix) `like` ((%) ++. upper_ (just (val query)) ++. (%)))
-                  ||. (upper_ (o ^. OfferSuffix) `like` ((%) ++. upper_ (just (val query)) ++. (%)))
-                  ||. (upper_ (o ^. OfferDescr) `like` ((%) ++. upper_ (just (val (Textarea query))) ++. (%)))
-                  ||. (upper_ (e ?. StaffName) `like` ((%) ++. upper_ (just (val query)) ++. (%)))
-                  ||. (upper_ (e ?. StaffPhone) `like` ((%) ++. upper_ (just (just (val query))) ++. (%)))
-                  ||. (upper_ (e ?. StaffMobile) `like` ((%) ++. upper_ (just (just (val query))) ++. (%)))
-                  ||. (upper_ (e ?. StaffEmail) `like` ((%) ++. upper_ (just (just (val query))) ++. (%)))
-                  ||. (upper_ (c ?. UserName) `like` ((%) ++. upper_ (just (val query)) ++. (%)))
-                  ||. (upper_ (c ?. UserFullName) `like` ((%) ++. upper_ (just (just (val query))) ++. (%)))
-                  ||. (upper_ (c ?. UserEmail) `like` ((%) ++. upper_ (just (just (val query))) ++. (%)))
-                Nothing -> return ()
+        case q of
+          Just query -> where_ $ (upper_ (s ^. ServiceName) `like` ((%) ++. upper_ (val query) ++. (%)))
+            ||. (upper_ (s ^. ServiceOverview) `like` ((%) ++. upper_ (just (val query)) ++. (%)))
+            ||. (upper_ (s ^. ServiceDescr) `like` ((%) ++. upper_ (just (val (Textarea query))) ++. (%)))
+            ||. (upper_ (r ?. RoleName) `like` ((%) ++. upper_ (just (val query)) ++. (%)))
+            ||. (upper_ (o ^. OfferName) `like` ((%) ++. upper_ (val query) ++. (%)))
+            ||. (upper_ (o ^. OfferPrefix) `like` ((%) ++. upper_ (just (val query)) ++. (%)))
+            ||. (upper_ (o ^. OfferSuffix) `like` ((%) ++. upper_ (just (val query)) ++. (%)))
+            ||. (upper_ (o ^. OfferDescr) `like` ((%) ++. upper_ (just (val (Textarea query))) ++. (%)))
+            ||. (upper_ (e ?. StaffName) `like` ((%) ++. upper_ (just (val query)) ++. (%)))
+            ||. (upper_ (e ?. StaffPhone) `like` ((%) ++. upper_ (just (just (val query))) ++. (%)))
+            ||. (upper_ (e ?. StaffMobile) `like` ((%) ++. upper_ (just (just (val query))) ++. (%)))
+            ||. (upper_ (e ?. StaffEmail) `like` ((%) ++. upper_ (just (just (val query))) ++. (%)))
+            ||. (upper_ (c ?. UserName) `like` ((%) ++. upper_ (just (val query)) ++. (%)))
+            ||. (upper_ (c ?. UserFullName) `like` ((%) ++. upper_ (just (just (val query))) ++. (%)))
+            ||. (upper_ (c ?. UserEmail) `like` ((%) ++. upper_ (just (just (val query))) ++. (%)))
+          Nothing -> return ()
 
-              case states of
-                [] -> return ()
-                xs -> where_ $ x ^. BookStatus `in_` valList xs
+        case states of
+          [] -> return ()
+          xs -> where_ $ x ^. BookStatus `in_` valList xs
 
-              let ors = [ ( AssigneesMe `elem` assignees
-                          , e ?. StaffUser ==. just (just (val uid))
-                          )
-                        , ( AssigneesNone `elem` assignees
-                          , isNothing_ $ e ?. StaffUser
-                          )
-                        , ( AssigneesOthers `elem` assignees
-                          , not_ (isNothing_ $ e ?. StaffUser) &&. not_ (e ?. StaffUser ==. just (just (val uid)))
-                          )
-                        ]
+        let ors = [ ( AssigneesMe `elem` assignees
+                    , e ?. StaffUser ==. just (just (val uid))
+                    )
+                  , ( AssigneesNone `elem` assignees
+                    , isNothing_ $ e ?. StaffUser
+                    )
+                  , ( AssigneesOthers `elem` assignees
+                    , not_ (isNothing_ $ e ?. StaffUser) &&. not_ (e ?. StaffUser ==. just (just (val uid)))
+                    )
+                  ]
 
-              case snd <$> filter fst ors of
-                [] -> return ()
-                xs -> where_ $ foldr (||.) (val False) xs
+        case snd <$> filter fst ors of
+          [] -> return ()
+          xs -> where_ $ foldr (||.) (val False) xs
 
-              orderBy [desc (x ^. BookDay), desc (x ^. BookTime)]
-              return (x,s)
-          defaultLayout $ do
-              setTitleI MsgSearch
-              $(widgetFile "requests/search/search")
+        orderBy [desc (x ^. BookDay), desc (x ^. BookTime)]
+        return (x,s)
+    defaultLayout $ do
+        setTitleI MsgSearch
+        $(widgetFile "requests/search/search")
 
 
-postRequestR :: BookId -> Handler Html
-postRequestR bid = do
-    user <- maybeAuth
+postRequestR :: UserId -> StaffId -> BookId -> Handler Html
+postRequestR uid eid bid = do
     book <- runDB $ selectOne $ do
         b :& o :& r :& e <- from $ table @Book
             `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
@@ -439,8 +474,8 @@ postRequestR bid = do
         where_ $ b ^. BookId ==. val bid
         return ((b,o),(r,e))
     ((fr,fw),et) <- runFormPost $ formReschedule (fst . fst <$> book)
-    case (fr,user) of
-      (FormSuccess (day,time,_,_,_), Just (Entity uid _)) -> do
+    case fr of
+      FormSuccess (day,time,_,_,_) -> do
           role <- runDB $ selectOne $ do
               r :& _ :& u :& s <- from $ table @Role
                   `innerJoin` table @Staff `on` (\(r :& e) -> r ^. RoleStaff ==. e ^. StaffId)
@@ -467,47 +502,33 @@ postRequestR bid = do
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusAdjusted
                     (roleName . entityVal <$> role') (staffName . entityVal <$> empl')
-                redirect $ RequestR bid
+                redirect $ RequestR uid eid bid
             (Nothing,_) -> do
                 addMessageI "warn" MsgEntityNotFound
-                redirect $ RequestR bid
+                redirect $ RequestR uid eid bid
 
             (_,Nothing) -> do
                 addMessageI "warn" MsgNonexpert
-                redirect $ RequestR bid
+                redirect $ RequestR uid eid bid
 
-      (FormSuccess _, Nothing) -> do
-          app <- getYesod
-          langs <- languages
-          rndr <- getUrlRender
-          setUltDestCurrent
-          defaultLayout $ do
-              setTitleI MsgReschedule
-              $(widgetFile "requests/reschedule/banner")
-      (FormMissing, _) -> do
+      FormMissing -> do
           addMessageI "warn" MsgMissingForm
-          redirect $ RequestR bid
-      (FormFailure _, _) -> defaultLayout $ do
+          redirect $ RequestR uid eid bid
+      FormFailure _ -> defaultLayout $ do
           setTitleI MsgReschedule
           $(widgetFile "requests/reschedule/reschedule")
 
 
-getRequestR :: BookId -> Handler Html
-getRequestR bid = do
+getRequestR :: UserId -> StaffId -> BookId -> Handler Html
+getRequestR uid eid bid = do
     stati <- reqGetParams <$> getRequest
     user <- maybeAuth
-    unless (isJust user) $ redirect (RequestsR, stati)
+    unless (isJust user) $ redirect (RequestsR uid eid, stati)
 
     currency <- (unValue <$>) <$> runDB ( selectOne $ do
         x <- from $ table @Business
         return $ x ^. BusinessCurrency )
-    
-    empl <- runDB $ selectOne $ do
-        x <- from $ table @Staff
-        where_ $ case user of
-          Nothing -> val False
-          Just (Entity uid _) -> x ^. StaffUser ==. just (val uid)
-    unless (isJust empl) $ redirect (RequestsR, stati)
+
     app <- getYesod
     langs <- languages
     business <- runDB $ selectOne $ from $ table @Business
@@ -550,61 +571,61 @@ formApprove book extra = do
     return (toSqlKey <$> r,[whamlet|#{extra}^{fvInput v}|])
 
 
-getRequestsR :: Handler Html
-getRequestsR = do
+getRequestsR :: UserId -> StaffId -> Handler Html
+getRequestsR uid eid = do
     mbid <- (toSqlKey <$>) <$> runInputGet (iopt intField "bid")
-    stati <- filter ((== "status") . fst) . reqGetParams <$> getRequest
+    stati <- reqGetParams <$> getRequest
     user <- maybeAuth
     setUltDestCurrent
     msgs <- getMessages
-    case user of
-      Nothing -> defaultLayout $ do
-          setTitleI MsgLogin
-          $(widgetFile "requests/login")
-      Just (Entity uid _) -> do
-          formSearch <- newIdent
-          dlgStatusList <- newIdent
-          let states = mapMaybe (readMaybe . unpack . snd) stati
-          owners <- filter ((== "assignee") . fst) . reqGetParams <$> getRequest
-          let assignees = mapMaybe (readMaybe . unpack . snd) owners
-          dlgAssignee <- newIdent
-          empl <- runDB $ selectOne $ do
-              x <- from $ table @Staff
-              where_ $ x ^. StaffUser ==. just (val uid)
-              return x
-          requests <- case empl of
-            Nothing -> return []
-            Just _ -> runDB $ select $ do
-                x :& _ :& s :& _ :& e <- from $ table @Book
-                    `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
-                    `innerJoin` table @Service `on` (\(_ :& o :& s) -> o ^. OfferService ==. s ^. ServiceId)
-                    `leftJoin` table @Role `on` (\(x :& _ :& _ :& r) -> x ^. BookRole ==. r ?. RoleId)
-                    `leftJoin` table @Staff `on` (\(_ :& _ :& _ :& r :& e) -> r ?. RoleStaff ==. e ?. StaffId)
+    formSearch <- newIdent
+    let statuses = mapMaybe (readMaybe . unpack . snd) . filter ((== "status") . fst) $ stati
+    owners <- filter ((== "assignee") . fst) . reqGetParams <$> getRequest
+    let assignees = mapMaybe (readMaybe . unpack . snd) owners
+    dlgAssignee <- newIdent
+    sort <- fromMaybe SortOrderDesc . (readMaybe . unpack =<<) <$> runInputGet (iopt textField "sort")
+    requests <- runDB $ select $ do
+        x :& _ :& s :& _ :& e <- from $ table @Book
+            `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
+            `innerJoin` table @Service `on` (\(_ :& o :& s) -> o ^. OfferService ==. s ^. ServiceId)
+            `leftJoin` table @Role `on` (\(x :& _ :& _ :& r) -> x ^. BookRole ==. r ?. RoleId)
+            `leftJoin` table @Staff `on` (\(_ :& _ :& _ :& r :& e) -> r ?. RoleStaff ==. e ?. StaffId)
 
-                case states of
-                  [] -> return ()
-                  xs -> where_ $ x ^. BookStatus `in_` valList xs
+        case statuses of
+          [] -> return ()
+          xs -> where_ $ x ^. BookStatus `in_` valList xs
 
-                let ors = [ ( AssigneesMe `elem` assignees
-                            , e ?. StaffUser ==. just (just (val uid))
-                            )
-                          , ( AssigneesNone `elem` assignees
-                            , isNothing_ $ e ?. StaffUser
-                            )
-                          , ( AssigneesOthers `elem` assignees
-                            , not_ (isNothing_ $ e ?. StaffUser) &&. not_ (e ?. StaffUser ==. just (just (val uid)))
-                            )
-                          ]
+        let ors = [ ( AssigneesMe `elem` assignees
+                    , e ?. StaffUser ==. just (just (val uid))
+                    )
+                  , ( AssigneesNone `elem` assignees
+                    , isNothing_ $ e ?. StaffUser
+                    )
+                  , ( AssigneesOthers `elem` assignees
+                    , not_ (isNothing_ $ e ?. StaffUser) &&. not_ (e ?. StaffUser ==. just (just (val uid)))
+                    )
+                  ]
 
-                case snd <$> filter fst ors of
-                  [] -> return ()
-                  xs -> where_ $ foldr (||.) (val False) xs
+        case snd <$> filter fst ors of
+          [] -> return ()
+          xs -> where_ $ foldr (||.) (val False) xs
 
-                orderBy [desc (x ^. BookDay), desc (x ^. BookTime)]
-                return (x,s)
-          defaultLayout $ do
-              setTitleI MsgRequests
-              $(widgetFile "requests/requests")
+        orderBy $ case sort of
+          SortOrderAsc -> [asc (x ^. BookDay), asc (x ^. BookTime)]
+          _ -> [desc (x ^. BookDay), desc (x ^. BookTime)]
+
+        return (x,s)
+    curr <- getCurrentRoute
+    month <- (\(y,m,_) -> YearMonth y m) . toGregorian . utctDay <$> liftIO getCurrentTime
+    toolbarTop <- newIdent
+    sortButton <- newIdent
+    defaultLayout $ do
+        setTitleI MsgRequests
+        $(widgetFile "requests/requests")
+
+
+fstsec :: a -> b -> (a, b)
+fstsec x = (x,)
 
 
 statusList :: [(BookStatus, AppMessage)]

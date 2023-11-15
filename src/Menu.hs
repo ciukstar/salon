@@ -10,21 +10,24 @@ import Data.Text (pack)
 import Data.Time.Calendar (toGregorian, periodLastDay, periodFirstDay)
 import Data.Time.Calendar.Month (pattern YearMonth)
 import Data.Time.Clock (utctDay, getCurrentTime)
+import Yesod.Auth (maybeAuth)
 import Yesod.Core (liftHandler)
 import Yesod.Core.Handler (getCurrentRoute)
 import Yesod.Persist.Core (YesodPersist(runDB))
 import Database.Persist (Entity (Entity), entityKey)
 
 import Database.Esqueleto.Experimental
-    ( selectOne, from, table )
+    ( selectOne, from, table, val, where_, isNothing_, not_
+    , (^.), (==.)
+    )
     
 import Foundation
     ( Widget
     , ResourcesR (DocsR)
     , Route
       ( ResourcesR, AdminR, ContactR, AboutUsR, AppointmentsR
-      , BookOffersR, RequestsR, ServicesR, HomeR, StatsR
-      , BookingsCalendarR
+      , BookOffersR, ServicesR, HomeR, StatsR
+      , BookingsCalendarR, TasksCalendarR
       )
     , StatsR (PopOffersR, WorkloadsR, StatsAovR)
     , AdminR
@@ -42,13 +45,21 @@ import Foundation
 
 import Model
     ( BookStatus (BookStatusRequest), Services (Services), Business (Business)
-    , Assignees (AssigneesMe)    
+    , Assignees (AssigneesMe), EntityField (StaffUser), Staff (Staff)
     )
 
 import Settings (widgetFile)
 
 menu :: Widget
 menu = do
+    user <- maybeAuth
+
+    empl <- liftHandler $ runDB $ selectOne $ do
+        x <- from $ table @Staff
+        where_ $ not_ $ isNothing_ $ x ^. StaffUser
+        where_ $ x ^. StaffUser ==. val (entityKey <$> user)
+        return x
+    
     business <- liftHandler $ runDB $ selectOne $ from $ table @Business
     today <- utctDay <$> liftIO getCurrentTime
     

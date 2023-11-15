@@ -377,7 +377,7 @@ populateRO = do
     pass8 <- liftIO $ makePassword "marini" 17
     let user8 = User { userName = "marini"
                      , userPassword = decodeUtf8 pass8
-                     , userAdmin = False
+                     , userAdmin = True
                      , userFullName = Just "Marin Ioana"
                      , userEmail = Just "marini@mail.ro"
                      }

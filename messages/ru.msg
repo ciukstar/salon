@@ -1,3 +1,6 @@
+LoginAsEmployeeToContinue: Пожалуйста, войдите в систему как сотрудник, чтобы продолжить
+LoginToContinue: Пожалуйста, войдите, чтобы продолжить
+AuthenticationRequired: Необходима аутентификация
 NoAppointmentsForThisDay: У вас нет записи на этот день
 Completed: Выполнена
 Pending: В ожидании

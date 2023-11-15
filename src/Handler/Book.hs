@@ -111,7 +111,7 @@ import Model
       ( StaffId, RoleId, ServiceId, OfferService, ServicePublished, BookId
       , ServiceName, RoleStaff, RoleRating, RoleService, OfferId, BookOffer
       , BookCustomer, ThumbnailService, ThumbnailAttribution, BusinessCurrency
-      , ServiceOverview, ServiceDescr, ServiceGroup, StaffStatus
+      , ServiceOverview, ServiceDescr, ServiceGroup, StaffStatus, OfferPublished
       )
     )
 
@@ -190,6 +190,7 @@ getBookEndR = do
             `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
             `innerJoin` table @Service `on` (\(_ :& o :& s) -> o ^. OfferService ==. s ^. ServiceId)
         where_ $ s ^. ServicePublished
+        where_ $ o ^. OfferPublished
         case user of
           Nothing -> where_ $ val False
           Just (Entity uid _) -> where_ $ x ^. BookCustomer ==. val uid
@@ -815,6 +816,7 @@ queryItems categs mq oids = (second (join . unValue) <$>) <$> ( select $ do
         `on` (\(x :& o) -> x ^. ServiceId ==. o ^. OfferService)
         `leftJoin` table @Thumbnail `on` (\(x :& _ :& t) -> just (x ^. ServiceId) ==. t ?. ThumbnailService)
     where_ $ x ^. ServicePublished
+    where_ $ o ^. OfferPublished
     case mq of
       Just q -> where_ $ ( upper_ (x ^. ServiceName) `like` (%) ++. upper_ (val q) ++. (%) )
           ||. ( upper_ (x ^. ServiceOverview) `like` (%) ++. upper_ (just (val q)) ++. (%) )
@@ -836,6 +838,7 @@ queryOffers categs mq oids = (second (join . unValue) <$>) <$> ( select $ do
         `on` (\(x :& o) -> x ^. ServiceId ==. o ^. OfferService)
         `leftJoin` table @Thumbnail `on` (\(x :& _ :& t) -> just (x ^. ServiceId) ==. t ?. ThumbnailService)
     where_ $ x ^. ServicePublished
+    where_ $ o ^. OfferPublished
     case mq of
       Just q -> where_ $ ( upper_ (x ^. ServiceName) `like` (%) ++. upper_ (val q) ++. (%) )
           ||. ( upper_ (x ^. ServiceOverview) `like` (%) ++. upper_ (just (val q)) ++. (%) )

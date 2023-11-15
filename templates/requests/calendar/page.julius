@@ -10,5 +10,16 @@ window.onscroll = function (e) {
 };
 
 Array.from(
+  document.querySelectorAll('time.month-of-year[datetime]')
+).forEach(function (x) {
+  x.textContent = new Date(x.getAttribute('datetime')).toLocaleDateString(
+    navigator.language,
+    { year: 'numeric',
+      month: 'long'
+    }
+  );
+});
+
+Array.from(
   document.querySelectorAll('aside.mdc-snackbar')
 ).forEach(function (x) { x.MDCSnackbar.open(); });

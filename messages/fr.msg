@@ -1,3 +1,6 @@
+LoginAsEmployeeToContinue: Veuillez vous connecter en tant qu'employé pour continuer
+LoginToContinue: Veuillez vous connecter pour continuer
+AuthenticationRequired: Authentification requise
 NoAppointmentsForThisDay: Vous n'avez pas de rendez-vous pour ce jour
 Completed: Terminée
 Pending: En attente

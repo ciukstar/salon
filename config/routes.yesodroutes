@@ -1,14 +1,18 @@
 
 /contact ContactR GET
 
-/search/requests                    RequestsSearchR    GET
-/requests/#BookId/reschedule        RequestRescheduleR GET
-/requests/#BookId/#ServiceId/assign RequestAssignR     POST
-/requests/#BookId/finish            RequestFinishR     POST
-/requests/#BookId/approve           RequestApproveR    POST
-/requests/#BookId/hist              RequestHistR       GET
-/requests/#BookId                   RequestR           GET POST
-/requests                           RequestsR          GET
+/tasks/#UserId/#StaffId/list/#Day/#BookId TaskItemR      GET
+/tasks/#UserId/#StaffId/list/#Day         TasksDayListR  GET
+/tasks/#UserId/#StaffId/calendar/#Month   TasksCalendarR GET
+
+/search/requests/#UserId/#StaffId                    RequestsSearchR    GET
+/requests/#UserId/#StaffId/#BookId/reschedule        RequestRescheduleR GET
+/requests/#UserId/#StaffId/#BookId/#ServiceId/assign RequestAssignR     POST
+/requests/#UserId/#StaffId/#BookId/finish            RequestFinishR     POST
+/requests/#UserId/#StaffId/#BookId/approve           RequestApproveR    POST
+/requests/#UserId/#StaffId/#BookId/hist              RequestHistR       GET
+/requests/#UserId/#StaffId/#BookId                   RequestR           GET POST
+/requests/#UserId/#StaffId          		     RequestsR          GET
 
 
 /bookings/#UserId/list/#Day/#BookId BookingItemR      GET

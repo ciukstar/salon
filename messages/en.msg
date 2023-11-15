@@ -1,3 +1,6 @@
+LoginAsEmployeeToContinue: Please login as employee to continue
+LoginToContinue: Please login to continue
+AuthenticationRequired: Authentication required
 NoAppointmentsForThisDay: You have no appointments for this day
 Completed: Completed
 Pending: Pending

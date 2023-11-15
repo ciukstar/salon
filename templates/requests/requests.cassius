@@ -1,10 +1,25 @@
 
 main
-  div[role=toolbar]
-    padding: 1rem
+  ##{toolbarTop}
+    position: relative
+    padding: 1rem 0 0.5rem 1rem
     display: flex
     flex-direction: row
-    gap: 0.5rem
+    justify-content: space-between
+    align-items: center
+    section.left
+      display: flex
+      flex-irection: row
+      justify-content: flex-start
+      align-items: center
+      gap: 0.5rem
+      a.mdc-segmented-button__segment
+        box-sizing: border-box
+        text-align: center
+        border-style: solid
+    ##{sortButton}
+      position: absolute
+      right: 0
 
   nav.mdc-list
     .mdc-list-item
@@ -16,8 +31,8 @@ main
     .mdc-list-item--activated .mdc-list-item__primary-text
       color: var(--theme-accent)
 
-div.mdc-dialog
-  div.mdc-dialog__content
+##{dlgAssignee}
+  .mdc-dialog__content
     display: flex
     flex-direction: column
   div.mdc-dialog__actions

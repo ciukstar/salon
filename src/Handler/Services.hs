@@ -111,6 +111,7 @@ getServiceOffersR (Services sids) = do
         where_ $ x ^. ServicePublished
         where_ $ x ^. ServiceId ==. val sid
         return (x,t ?. ThumbnailAttribution) )
+        
     offers <- case service of
       Nothing -> return []
       Just (Entity serid _,_) -> (second (join . unValue) <$>) <$> runDB ( select $ do
@@ -393,7 +394,7 @@ getServicesR = do
         return $ x ^. BusinessCurrency )
         
     srvs <- fetchServices Nothing
-    let Srvs offer = srvs
+    let Srvs offers = srvs
     user <- maybeAuth
     msgs <- getMessages
     setUltDestCurrent
@@ -483,6 +484,16 @@ fetchServices gid = do
         x :& t <- from $ table @Service `leftJoin` table @Thumbnail
             `on` (\(x :& t) -> just (x ^. ServiceId) ==. t ?. ThumbnailService)
         where_ $ x ^. ServicePublished
+        where_ $ exists ( do
+                              y <- from $ table @Service
+                              where_ $ y ^. ServiceGroup ==. just (x ^. ServiceId)
+                              where_ $ y ^. ServicePublished
+                        )
+            ||. exists ( do
+                             y <- from $ table @Offer
+                             where_ $ y ^. OfferService ==. x ^. ServiceId
+                             where_ $ y ^. OfferPublished
+                       )
         where_ $ case gid of
           Nothing -> isNothing $ x ^. ServiceGroup
           Just sid -> x ^. ServiceGroup ==. just (val sid)
