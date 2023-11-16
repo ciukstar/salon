@@ -1,3 +1,4 @@
+NoRequestsFoundForThisDay: No requests found for this day
 LoginAsEmployeeToContinue: Please login as employee to continue
 LoginToContinue: Please login to continue
 AuthenticationRequired: Authentication required

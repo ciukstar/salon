@@ -1,3 +1,4 @@
+NoRequestsFoundForThisDay: Aucune demande trouvée pour ce jour
 LoginAsEmployeeToContinue: Veuillez vous connecter en tant qu'employé pour continuer
 LoginToContinue: Veuillez vous connecter pour continuer
 AuthenticationRequired: Authentification requise

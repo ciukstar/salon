@@ -13,10 +13,6 @@ main
       justify-content: flex-start
       align-items: center
       gap: 0.5rem
-      a.mdc-segmented-button__segment
-        box-sizing: border-box
-        text-align: center
-        border-style: solid
     ##{sortButton}
       position: absolute
       right: 0

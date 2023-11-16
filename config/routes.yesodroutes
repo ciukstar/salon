@@ -1,9 +1,10 @@
 
 /contact ContactR GET
 
-/tasks/#UserId/#StaffId/list/#Day/#BookId TaskItemR      GET
-/tasks/#UserId/#StaffId/list/#Day         TasksDayListR  GET
-/tasks/#UserId/#StaffId/calendar/#Month   TasksCalendarR GET
+/tasks/#UserId/#StaffId/list/#Day/#BookId/hist TaskHistR      GET
+/tasks/#UserId/#StaffId/list/#Day/#BookId      TaskItemR      GET
+/tasks/#UserId/#StaffId/list/#Day              TasksDayListR  GET
+/tasks/#UserId/#StaffId/calendar/#Month        TasksCalendarR GET
 
 /search/requests/#UserId/#StaffId                    RequestsSearchR    GET
 /requests/#UserId/#StaffId/#BookId/reschedule        RequestRescheduleR GET

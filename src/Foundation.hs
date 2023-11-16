@@ -261,6 +261,7 @@ instance Yesod App where
     isAuthorized (TasksCalendarR {}) _ = isEmployee
     isAuthorized (TasksDayListR {}) _ = isEmployee
     isAuthorized (TaskItemR {}) _ = isEmployee
+    isAuthorized (TaskHistR {}) _ = isEmployee
         
 
 
@@ -368,7 +369,7 @@ isAuthenticated :: Handler AuthResult
 isAuthenticated = do
     user <- maybeAuth
     ult <- getUrlRender >>= \r -> fromMaybe (r HomeR) <$> lookupSession ultDestKey
-    msgs <- getMessages
+    -- msgs <- getMessages
     case user of
         Nothing -> do
             r <- defaultLayout $(widgetFile "auth/403")
@@ -380,7 +381,7 @@ isEmployee :: Handler AuthResult
 isEmployee = do
     user <- maybeAuth
     ult <- getUrlRender >>= \r -> fromMaybe (r HomeR) <$> lookupSession ultDestKey
-    msgs <- getMessages
+    -- msgs <- getMessages
     case user of
       Nothing -> do
           r <- defaultLayout $(widgetFile "auth/403")

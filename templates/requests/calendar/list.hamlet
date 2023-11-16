@@ -19,7 +19,7 @@
     <figure style="text-align:center">
       <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
       <figcaption>
-        MsgNoRequestsForThisDay.
+        _{MsgNoRequestsFoundForThisDay}.
   $else
     <nav.mdc-list data-mdc-auto-init=MDCList>
       $forall (Entity bid (Book _ _ _ _ time _ _ _ status),Entity _ (Service sname _ _ _ _ _)) <- requests

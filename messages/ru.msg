@@ -1,3 +1,4 @@
+NoRequestsFoundForThisDay: Запросов на этот день не найдено
 LoginAsEmployeeToContinue: Пожалуйста, войдите в систему как сотрудник, чтобы продолжить
 LoginToContinue: Пожалуйста, войдите, чтобы продолжить
 AuthenticationRequired: Необходима аутентификация

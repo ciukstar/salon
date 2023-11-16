@@ -64,7 +64,7 @@ import Handler.Requests
     , postRequestFinishR, postRequestAssignR
     , getRequestRescheduleR, getRequestHistR
     , getTasksCalendarR, getTasksDayListR
-    , getTaskItemR
+    , getTaskItemR, getTaskHistR
     )
 
 import Handler.Appointments

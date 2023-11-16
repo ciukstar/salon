@@ -1,3 +1,4 @@
+NoRequestsFoundForThisDay: Nu au fost găsite solicitări pentru această zi
 LoginAsEmployeeToContinue: Vă rugăm să vă autentificați ca angajat pentru a continua
 LoginToContinue: Vă rugăm să vă conectați pentru a continua
 AuthenticationRequired: Este necesară autentificarea

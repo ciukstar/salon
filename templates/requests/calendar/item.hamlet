@@ -1,7 +1,8 @@
 <header.mdc-top-app-bar.mdc-top-app-bar--fixed mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=@?{(RequestsR uid eid,stati)} role=button title=_{MsgBack}>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
+        href=@?{(TasksDayListR uid eid day,stati)}>
         <span.mdc-icon-button__ripple>
         <spam.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
@@ -147,7 +148,6 @@
                     <div>
                       <small>(_{MsgCustomer})
 
-          
           $maybe Entity _ (ContactUs _ html showAddress _ _ _ _) <- location
             <details.mdc-list.mdc-card-wrapper__text-section ##{detailsLocation}
               ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
@@ -279,7 +279,7 @@
                       <h4.mdc-dialog__title>_{MsgPleaseConfirm}
                       <div.mdc-dialog__content>
                         _{MsgAreYouSureYouWantToTakeOnThisTask}
-
+                        
                       <div.mdc-dialog__actions>
                         <button.mdc-dialog__button.mdc-button type=button data-mdc-dialog-action=cancel>
                           <span.mdc-button__ripple>
@@ -297,7 +297,7 @@
 
             <div.mdc-card__action-icons>
               <a.mdc-card__action.mdc-card__action-icon.mdc-icon-button role=button title=_{MsgHistory}
-                href=@?{(RequestHistR uid eid bid,stati)}>
+                href=@?{(TaskHistR uid eid day bid,stati)}>
                 <span.mdc-icon-button__ripple>
                 <span.mdc-icon-button__focus-ring>
                 <i.material-symbols-outlined>history

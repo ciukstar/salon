@@ -18,6 +18,7 @@ module Handler.Requests
   , getTasksCalendarR
   , getTasksDayListR
   , getTaskItemR
+  , getTaskHistR
   ) where
 
 import Control.Monad (unless)
@@ -26,7 +27,7 @@ import qualified Data.Map.Lazy as ML (fromListWith, toList, lookup)
 import Data.Maybe (mapMaybe, isJust, isNothing, fromMaybe)
 import Data.Text (intercalate, unpack, Text, pack)
 import Data.Time.Calendar
-    ( Day, DayPeriod (periodFirstDay, periodLastDay), weekFirstDay
+    ( Day, DayPeriod (periodFirstDay), weekFirstDay
     , DayOfWeek (Monday), addDays, toGregorian
     )
 import Data.Time.Calendar.Month (Month, addMonths, pattern YearMonth)
@@ -37,15 +38,17 @@ import Data.Time.LocalTime
     , minutesToTimeZone, utcToLocalTime
     )
 import Text.Hamlet (Html)
+import Text.Julius (julius, RawJS (rawJS))
 import Text.Read (readMaybe)
 import Text.Shakespeare.I18N (renderMessage, SomeMessage (SomeMessage))
 import Yesod.Core
     ( Yesod(defaultLayout), setUltDestCurrent, getMessages
     , getYesod, languages, whamlet, getRequest
-    , YesodRequest (reqGetParams), newIdent, MonadIO (liftIO), redirect
-    , addMessageI, getCurrentRoute
+    , YesodRequest (reqGetParams), newIdent, MonadIO (liftIO)
+    , addMessageI, getCurrentRoute, redirectUltDest
     )
-import Yesod.Core.Widget (setTitleI)
+import Yesod.Core.Widget
+    ( setTitleI, addScriptRemote, addStylesheetRemote, toWidget )
 import Yesod.Auth ( Route(LoginR), maybeAuth )
 import Yesod.Form.Fields
     ( Textarea(Textarea), searchField, intField, timeField
@@ -66,7 +69,7 @@ import Foundation
       ( AuthR, PhotoPlaceholderR, AccountPhotoR, ProfileR, RequestsR, RequestR
       , AdminR, ServiceThumbnailR, RequestsSearchR, RequestsSearchR
       , RequestApproveR, RequestFinishR, RequestRescheduleR, RequestHistR
-      , RequestAssignR, TasksCalendarR, TasksDayListR, TaskItemR
+      , RequestAssignR, TasksCalendarR, TasksDayListR, TaskItemR, TaskHistR
       )
     , AdminR (AdmStaffPhotoR)
     , AppMessage
@@ -84,7 +87,8 @@ import Foundation
       , MsgNoAssigneeRequestApprove, MsgTimeZoneOffset, MsgNavigationMenu
       , MsgUserProfile, MsgNonexpert, MsgAreYouSureYouWantToTakeOnThisTask
       , MsgApprove, MsgUnassigned, MsgList, MsgCalendar, MsgMon, MsgTue, MsgWed
-      , MsgThu, MsgFri, MsgSat, MsgSun, MsgToday, MsgSortAscending
+      , MsgThu, MsgFri, MsgSat, MsgSun, MsgToday, MsgSortAscending, MsgAddress
+      , MsgNoRequestsFoundForThisDay, MsgNoBusinessAddressFound, MsgRecordEdited
       )
     )
 
@@ -95,7 +99,7 @@ import Database.Esqueleto.Experimental
     ( select, from, table, innerJoin, leftJoin, on, where_, val
     , (:&)((:&)), (==.), (^.), (?.), (%), (++.), (||.), (&&.), (=.)
     , orderBy, desc, just, selectOne, valList, in_, upper_, like, isNothing_
-    , not_, update, set, exists, unValue, between, asc
+    , not_, update, set, exists, unValue, asc
     )
 
 import Model
@@ -116,16 +120,124 @@ import Model
       , ServiceDescr, ServiceOverview, RoleName, OfferName, OfferPrefix
       , OfferSuffix, OfferDescr, StaffName, StaffPhone, StaffMobile, StaffEmail
       , UserName, UserFullName, UserEmail, BookTz, HistBook, HistLogtime
-      , RoleService, HistUser, BookTzo, BookAddr, BusinessCurrency
-      ), SortOrder (SortOrderDesc, SortOrderAsc)
+      , RoleService, HistUser, BookTzo, BookAddr, BusinessCurrency, BusinessAddr
+      ), SortOrder (SortOrderDesc, SortOrderAsc), mbat
     )
 
 import Menu (menu)
 import Handler.Appointments (resolveBookStatus)
 
 
+getTaskHistR ::  UserId -> StaffId -> Day -> BookId -> Handler Html
+getTaskHistR uid eid day bid = do
+    stati <- reqGetParams <$> getRequest
+    hist <- runDB $ select $ do
+        h :& u <- from $ table @Hist `innerJoin` table @User
+            `on` (\(h :& u) -> h ^. HistUser ==. u ^. UserId)
+        where_ $ h ^. HistBook ==. val bid
+        where_ $ exists $ do
+            b <- from $ table @Book
+            where_ $ b ^. BookId ==. h ^. HistBook
+        orderBy [desc (h ^. HistLogtime)]
+        return (h, u)
+    defaultLayout $ do
+        setTitleI MsgHistory
+        $(widgetFile "requests/calendar/hist")
+
+
 getTaskItemR ::  UserId -> StaffId -> Day -> BookId -> Handler Html
-getTaskItemR uid eid day bid = undefined
+getTaskItemR uid eid day bid = do
+    stati <- reqGetParams <$> getRequest
+
+    currency <- (unValue <$>) <$> runDB ( selectOne $ do
+        x <- from $ table @Business
+        return $ x ^. BusinessCurrency )
+
+    app <- getYesod
+    langs <- languages
+    business <- runDB $ selectOne $ from $ table @Business
+    location <- runDB $ selectOne $ from $ table @ContactUs
+
+    address <- case location of
+      Just (Entity _ (ContactUs _ _ True _ _ _ _)) -> do
+         (unValue <$>) <$> runDB ( selectOne $ do
+                x <- from $ table @Business
+                return (x ^. BusinessAddr) )
+      _ -> return Nothing
+
+    request <- runDB $ selectOne $ do
+        x :& o :& s :& t :& r :& e :& c <- from $ table @Book
+            `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
+            `innerJoin` table @Service `on` (\(_ :& o :& s) -> o ^. OfferService ==. s ^. ServiceId)
+            `leftJoin` table @Thumbnail `on` (\(_ :& _ :& s :& t) -> just (s ^. ServiceId) ==. t ?. ThumbnailService)
+            `leftJoin` table @Role `on` (\(x :& _ :& _ :& _ :& r) -> x ^. BookRole ==. r ?. RoleId)
+            `leftJoin` table @Staff `on` (\(_ :& _ :& _ :& _ :& r :& e) -> r ?. RoleStaff ==. e ?. StaffId)
+            `innerJoin` table @User `on` (\(x :& _ :& _ :& _ :& _ :& _ :& c) -> x ^. BookCustomer ==. c ^. UserId)
+        where_ $ x ^. BookId ==. val bid
+        where_ $ x ^. BookDay ==. val day
+        return (x,(o,s,t,r,e,c))
+    msgs <- getMessages
+    dlgConfirmApprove <- newIdent
+    formRequestApprove <- newIdent
+    dlgConfirmFinish <- newIdent
+    formAppoitmentFinish <- newIdent
+    formAssignToMe <- newIdent
+    (fwa,eta) <- generateFormPost formAssign
+    (fw,et) <- generateFormPost $ formApprove (fst <$> request)
+    dlgAssignToMeConfirm <- newIdent
+    detailsLocation <- newIdent
+    locationHtmlContainer <- newIdent
+    setUltDestCurrent
+    defaultLayout $ do
+        setTitleI MsgRequest
+        case location of
+          Just (Entity _ (ContactUs _ _ _ _ True (Just lng) (Just lat))) -> do
+              addScriptRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"
+              addScriptRemote "https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-language/v1.0.0/mapbox-gl-language.js"
+              addStylesheetRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css"
+              toWidget [julius|
+const main = document.getElementById(#{detailsLocation});
+const mapgl = document.createElement('div');
+mapgl.style.height = '300px';
+mapgl.style.width = '100%';
+main.appendChild(mapgl);
+const map = new mapboxgl.Map({
+  accessToken: #{mbat},
+  attributionControl: false,
+  container: mapgl,
+  style: 'mapbox://styles/mapbox/streets-v11',
+  center: [#{rawJS $ show lng}, #{rawJS $ show lat}],
+  zoom: 15
+});
+map.addControl(new MapboxLanguage());
+map.addControl(new mapboxgl.NavigationControl());
+const loc = new mapboxgl.Marker().setLngLat(
+  [#{rawJS $ show lng}, #{rawJS $ show lat}]
+).addTo(map);
+|]
+          Just (Entity _ (ContactUs _ _ _ _ True _ _)) -> do
+              addScriptRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"
+              addScriptRemote "https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-language/v1.0.0/mapbox-gl-language.js"
+              addStylesheetRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css"
+              toWidget [julius|
+const main = document.getElementById(#{detailsLocation});
+const mapgl = document.createElement('div');
+mapgl.style.height = '300px';
+mapgl.style.width = '100%';
+main.appendChild(mapgl);
+const map = new mapboxgl.Map({
+  accessToken: #{mbat},
+  attributionControl: false,
+  container: mapgl,
+  style: 'mapbox://styles/mapbox/streets-v11',
+  center: [0, 0],
+  zoom: 0
+});
+map.addControl(new MapboxLanguage());
+map.addControl(new mapboxgl.NavigationControl());
+|]
+          _ -> return ()
+        $(widgetFile "requests/calendar/item")
 
 
 getTasksDayListR ::  UserId -> StaffId -> Day -> Handler Html
@@ -133,7 +245,43 @@ getTasksDayListR uid eid day = do
     stati <- reqGetParams <$> getRequest
     requestDay <- newIdent
     let month = (\(y,m,_) -> YearMonth y m) . toGregorian
-    let requests = [] 
+    let statuses = mapMaybe (readMaybe . unpack . snd) . filter ((== "status") . fst) $ stati
+    owners <- filter ((== "assignee") . fst) . reqGetParams <$> getRequest
+    let assignees = mapMaybe (readMaybe . unpack . snd) owners
+    sort <- fromMaybe SortOrderDesc . (readMaybe . unpack =<<) <$> runInputGet (iopt textField "sort")
+    requests <- runDB $ select $ do
+        x :& _ :& s :& _ :& e <- from $ table @Book
+            `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
+            `innerJoin` table @Service `on` (\(_ :& o :& s) -> o ^. OfferService ==. s ^. ServiceId)
+            `leftJoin` table @Role `on` (\(x :& _ :& _ :& r) -> x ^. BookRole ==. r ?. RoleId)
+            `leftJoin` table @Staff `on` (\(_ :& _ :& _ :& r :& e) -> r ?. RoleStaff ==. e ?. StaffId)
+
+        where_ $ x ^. BookDay ==. val day
+
+        case statuses of
+          [] -> return ()
+          xs -> where_ $ x ^. BookStatus `in_` valList xs
+
+        let ors = [ ( AssigneesMe `elem` assignees
+                    , e ?. StaffUser ==. just (just (val uid))
+                    )
+                  , ( AssigneesNone `elem` assignees
+                    , isNothing_ $ x ^. BookRole
+                    )
+                  , ( AssigneesOthers `elem` assignees
+                    , not_ (isNothing_ $ e ?. StaffUser) &&. not_ (e ?. StaffUser ==. just (just (val uid)))
+                    )
+                  ]
+
+        case snd <$> filter fst ors of
+          [] -> return ()
+          xs -> where_ $ foldr (||.) (val False) xs
+
+        orderBy $ case sort of
+          SortOrderAsc -> [asc (x ^. BookDay), asc (x ^. BookTime)]
+          _ -> [desc (x ^. BookDay), desc (x ^. BookTime)]
+
+        return (x,s)
     defaultLayout $ do
         setTitleI MsgRequests
         $(widgetFile "requests/calendar/list")
@@ -160,7 +308,7 @@ getTasksCalendarR uid eid month = do
                         , e ?. StaffUser ==. just (just (val uid))
                         )
                       , ( AssigneesNone `elem` assignees
-                        , isNothing_ $ e ?. StaffUser
+                        , isNothing_ $ x ^. BookRole
                         )
                       , ( AssigneesOthers `elem` assignees
                         , not_ (isNothing_ $ e ?. StaffUser) &&. not_ (e ?. StaffUser ==. just (just (val uid)))
@@ -174,7 +322,7 @@ getTasksCalendarR uid eid month = do
             unless (null statuses) $ where_ $ x ^. BookStatus `in_` valList statuses
             orderBy [desc (x ^. BookDay), desc (x ^. BookTime)]
             return (x ^. BookDay, (x ^. BookStatus, x ^. BookTime)) )
-            
+
         return $ ML.fromListWith (++) . (second (:[]) <$>) <$> ML.fromListWith (++) xs
 
     let start = weekFirstDay Monday (periodFirstDay month)
@@ -218,18 +366,20 @@ postRequestAssignR uid eid bid sid = do
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid uid now day' time' addr' tzo' tz' status'
                     (Just rname) (Just ename)
-                redirect $ RequestR uid eid bid
+                addMessageI info MsgRecordEdited
+                redirectUltDest $ RequestR uid eid bid
             Nothing -> do
-                addMessageI "warn" MsgNonexpert
-                redirect $ RequestR uid eid bid
+                addMessageI warn MsgNonexpert
+                redirectUltDest $ RequestR uid eid bid
 
       Nothing -> do
-          addMessageI "warn" MsgEntityNotFound
-          redirect $ RequestR uid eid bid
+          addMessageI warn MsgEntityNotFound
+          redirectUltDest $ RequestR uid eid bid
 
 
 getRequestHistR :: UserId -> StaffId -> BookId -> Handler Html
 getRequestHistR uid eid bid = do
+    stati <- reqGetParams <$> getRequest
     hist <- runDB $ select $ do
         h :& u <- from $ table @Hist `innerJoin` table @User
             `on` (\(h :& u) -> h ^. HistUser ==. u ^. UserId)
@@ -338,18 +488,18 @@ postRequestFinishR uid eid bid = do
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusPaid
                     (roleName . entityVal <$> role') (staffName . entityVal <$> empl')
-                redirect $ RequestR uid eid bid
+                redirectUltDest $ RequestR uid eid bid
 
             Nothing -> do
-                addMessageI "warn" MsgEntityNotFound
-                redirect $ RequestR uid eid bid
+                addMessageI warn MsgEntityNotFound
+                redirectUltDest $ RequestR uid eid bid
 
       FormFailure _ -> do
-          addMessageI "warn" MsgInvalidFormData
-          redirect $ RequestR uid eid bid
+          addMessageI warn MsgInvalidFormData
+          redirectUltDest $ RequestR uid eid bid
       FormMissing -> do
-          addMessageI "warn" MsgMissingForm
-          redirect $ RequestR uid eid bid
+          addMessageI warn MsgMissingForm
+          redirectUltDest $ RequestR uid eid bid
 
 
 postRequestApproveR :: UserId -> StaffId -> BookId -> Handler Html
@@ -383,21 +533,21 @@ postRequestApproveR uid eid bid = do
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusApproved
                     (roleName . entityVal <$> role') (staffName . entityVal <$> empl')
-                redirect $ RequestR uid eid bid
+                redirectUltDest $ RequestR uid eid bid
 
             (Nothing,_) -> do
-                addMessageI "warn" MsgEntityNotFound
-                redirect $ RequestR uid eid bid
+                addMessageI warn MsgEntityNotFound
+                redirectUltDest $ RequestR uid eid bid
             (_,Nothing) -> do
-                addMessageI "warn" MsgNonexpert
-                redirect $ RequestR uid eid bid
+                addMessageI warn MsgNonexpert
+                redirectUltDest $ RequestR uid eid bid
 
       FormFailure _ -> do
-          addMessageI "warn" MsgInvalidFormData
-          redirect $ RequestR uid eid bid
+          addMessageI warn MsgInvalidFormData
+          redirectUltDest $ RequestR uid eid bid
       FormMissing -> do
-          addMessageI "warn" MsgMissingForm
-          redirect $ RequestR uid eid bid
+          addMessageI warn MsgMissingForm
+          redirectUltDest $ RequestR uid eid bid
 
 
 getRequestsSearchR :: UserId -> StaffId -> Handler Html
@@ -446,7 +596,7 @@ getRequestsSearchR uid eid = do
                     , e ?. StaffUser ==. just (just (val uid))
                     )
                   , ( AssigneesNone `elem` assignees
-                    , isNothing_ $ e ?. StaffUser
+                    , isNothing_ $ x ^. BookRole
                     )
                   , ( AssigneesOthers `elem` assignees
                     , not_ (isNothing_ $ e ?. StaffUser) &&. not_ (e ?. StaffUser ==. just (just (val uid)))
@@ -502,18 +652,18 @@ postRequestR uid eid bid = do
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusAdjusted
                     (roleName . entityVal <$> role') (staffName . entityVal <$> empl')
-                redirect $ RequestR uid eid bid
+                redirectUltDest $ RequestR uid eid bid
             (Nothing,_) -> do
-                addMessageI "warn" MsgEntityNotFound
-                redirect $ RequestR uid eid bid
+                addMessageI warn MsgEntityNotFound
+                redirectUltDest $ RequestR uid eid bid
 
             (_,Nothing) -> do
-                addMessageI "warn" MsgNonexpert
-                redirect $ RequestR uid eid bid
+                addMessageI warn MsgNonexpert
+                redirectUltDest $ RequestR uid eid bid
 
       FormMissing -> do
-          addMessageI "warn" MsgMissingForm
-          redirect $ RequestR uid eid bid
+          addMessageI warn MsgMissingForm
+          redirectUltDest $ RequestR uid eid bid
       FormFailure _ -> defaultLayout $ do
           setTitleI MsgReschedule
           $(widgetFile "requests/reschedule/reschedule")
@@ -522,8 +672,6 @@ postRequestR uid eid bid = do
 getRequestR :: UserId -> StaffId -> BookId -> Handler Html
 getRequestR uid eid bid = do
     stati <- reqGetParams <$> getRequest
-    user <- maybeAuth
-    unless (isJust user) $ redirect (RequestsR uid eid, stati)
 
     currency <- (unValue <$>) <$> runDB ( selectOne $ do
         x <- from $ table @Business
@@ -533,6 +681,14 @@ getRequestR uid eid bid = do
     langs <- languages
     business <- runDB $ selectOne $ from $ table @Business
     location <- runDB $ selectOne $ from $ table @ContactUs
+
+    address <- case location of
+      Just (Entity _ (ContactUs _ _ True _ _ _ _)) -> do
+         (unValue <$>) <$> runDB ( selectOne $ do
+                x <- from $ table @Business
+                return (x ^. BusinessAddr) )
+      _ -> return Nothing
+
     request <- runDB $ selectOne $ do
         x :& o :& s :& t :& r :& e :& c <- from $ table @Book
             `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
@@ -552,8 +708,58 @@ getRequestR uid eid bid = do
     (fwa,eta) <- generateFormPost formAssign
     (fw,et) <- generateFormPost $ formApprove (fst <$> request)
     dlgAssignToMeConfirm <- newIdent
+    detailsLocation <- newIdent
+    locationHtmlContainer <- newIdent
+    setUltDestCurrent
     defaultLayout $ do
         setTitleI MsgRequest
+        case location of
+          Just (Entity _ (ContactUs _ _ _ _ True (Just lng) (Just lat))) -> do
+              addScriptRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"
+              addScriptRemote "https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-language/v1.0.0/mapbox-gl-language.js"
+              addStylesheetRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css"
+              toWidget [julius|
+const main = document.getElementById(#{detailsLocation});
+const mapgl = document.createElement('div');
+mapgl.style.height = '300px';
+mapgl.style.width = '100%';
+main.appendChild(mapgl);
+const map = new mapboxgl.Map({
+  accessToken: #{mbat},
+  attributionControl: false,
+  container: mapgl,
+  style: 'mapbox://styles/mapbox/streets-v11',
+  center: [#{rawJS $ show lng}, #{rawJS $ show lat}],
+  zoom: 15
+});
+map.addControl(new MapboxLanguage());
+map.addControl(new mapboxgl.NavigationControl());
+const loc = new mapboxgl.Marker().setLngLat(
+  [#{rawJS $ show lng}, #{rawJS $ show lat}]
+).addTo(map);
+|]
+          Just (Entity _ (ContactUs _ _ _ _ True _ _)) -> do
+              addScriptRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"
+              addScriptRemote "https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-language/v1.0.0/mapbox-gl-language.js"
+              addStylesheetRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css"
+              toWidget [julius|
+const main = document.getElementById(#{detailsLocation});
+const mapgl = document.createElement('div');
+mapgl.style.height = '300px';
+mapgl.style.width = '100%';
+main.appendChild(mapgl);
+const map = new mapboxgl.Map({
+  accessToken: #{mbat},
+  attributionControl: false,
+  container: mapgl,
+  style: 'mapbox://styles/mapbox/streets-v11',
+  center: [0, 0],
+  zoom: 0
+});
+map.addControl(new MapboxLanguage());
+map.addControl(new mapboxgl.NavigationControl());
+|]
+          _ -> return ()
         $(widgetFile "requests/request")
 
 
@@ -599,7 +805,7 @@ getRequestsR uid eid = do
                     , e ?. StaffUser ==. just (just (val uid))
                     )
                   , ( AssigneesNone `elem` assignees
-                    , isNothing_ $ e ?. StaffUser
+                    , isNothing_ $ x ^. BookRole
                     )
                   , ( AssigneesOthers `elem` assignees
                     , not_ (isNothing_ $ e ?. StaffUser) &&. not_ (e ?. StaffUser ==. just (just (val uid)))
@@ -624,10 +830,6 @@ getRequestsR uid eid = do
         $(widgetFile "requests/requests")
 
 
-fstsec :: a -> b -> (a, b)
-fstsec x = (x,)
-
-
 statusList :: [(BookStatus, AppMessage)]
 statusList = [ (BookStatusRequest, MsgRequest)
              , (BookStatusApproved, MsgApproved)
@@ -640,3 +842,9 @@ assigneeList = [ (AssigneesMe,MsgAssignedToMe)
                , (AssigneesNone,MsgWithoutAssignee)
                , (AssigneesOthers,MsgFromCoworkers)
                ]
+
+info :: Text
+info = "info"
+
+warn :: Text
+warn = "warn"

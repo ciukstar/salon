@@ -34,24 +34,21 @@
   <div role=toolbar ##{toolbarTop}>
     <section.left>
       <div.mdc-segmented-button.mdc-segmented-button--single-select role=radiogroup data-mdc-auto-init=MDCSegmentedButton>
-        $with q1 <- fmap ((fstsec "status" . pack) . show) statuses
-          $with q2 <- fmap ((fstsec "assignee" . pack) . show) assignees
-            $with q <- (++) q1 q2
-              <a.mdc-segmented-button__segment role=radio title=_{MsgCalendar}
-                href=@?{(TasksCalendarR uid eid month,q)}
-                :curr == Just (TasksCalendarR uid eid month):.mdc-segmented-button__segment--selected
-                :curr == Just (TasksCalendarR uid eid month):aria-checked=true
-                :curr /= Just (TasksCalendarR uid eid month):aria-checked=false>
-                <div.mdc-segmented-button__ripple>
-                <i.mdc-segmented-button__icon.material-symbols-outlined>calendar_month
+        <button.mdc-segmented-button__segment role=radio title=_{MsgCalendar} type=submit
+          form=#{formSearch} formaction=@{TasksCalendarR uid eid month}
+          :curr == Just (TasksCalendarR uid eid month):.mdc-segmented-button__segment--selected
+          :curr == Just (TasksCalendarR uid eid month):aria-checked=true
+          :curr /= Just (TasksCalendarR uid eid month):aria-checked=false>
+          <div.mdc-segmented-button__ripple>
+          <i.mdc-segmented-button__icon.material-symbols-outlined>calendar_month
 
-              <a.mdc-segmented-button__segment role=radio title=_{MsgList}
-                href=@?{(RequestsR uid eid,q)}
-                :curr == Just (RequestsR uid eid):.mdc-segmented-button__segment--selected
-                :curr == Just (RequestsR uid eid):aria-checked=true
-                :curr /= Just (RequestsR uid eid):aria-checked=false>
-                <div.mdc-segmented-button__ripple>
-                <i.mdc-segmented-button__icon.material-symbols-outlined>list
+        <button.mdc-segmented-button__segment role=radio title=_{MsgList} type=submit
+          form=#{formSearch} formaction=@{RequestsR uid eid}
+          :curr == Just (RequestsR uid eid):.mdc-segmented-button__segment--selected
+          :curr == Just (RequestsR uid eid):aria-checked=true
+          :curr /= Just (RequestsR uid eid):aria-checked=false>
+          <div.mdc-segmented-button__ripple>
+          <i.mdc-segmented-button__icon.material-symbols-outlined>list
 
       <button.mdc-button.mdc-button--outlined.mdc-button--icon-trailing type=button
         :not (null assignees):style="color:var(--theme-accent)"
@@ -64,7 +61,8 @@
         $else
           <i.mdc-button__icon.material-symbols-outlined>counter_#{show (length assignees)}
 
-    <a.mdc-icon-button href=@{TasksCalendarR uid eid today} role=button title=_{MsgToday}
+    <button.mdc-icon-button type=submit title=_{MsgToday}
+      form=#{formSearch} formaction=@{TasksCalendarR uid eid today}
       :today == month:style="visibility:hidden;position:absolute;right:0"
       :today /= month:style="position:absolute;right:0">
       <span.mdc-icon-button__ripple>
@@ -73,42 +71,44 @@
 
   <div.mdc-chip-set.mdc-chip-set--filter role=menu data-mdc-auto-init=MDCChipSet>
     $forall (status,_) <- statusList
-      $with ((color,icon,label,title),checked) <- (resolveBookStatus status,elem status statuses)
-        $if checked
-          $with q1 <- fmap ((fstsec "status" . pack) . show) (filter ((/=) status) statuses)
-            $with q2 <- fmap ((fstsec "assignee" . pack) . show) assignees
-              $with q <- (++) q1 q2
-                <a.mdc-chip.mdc-chip--selected role=menuitem href=@?{(TasksCalendarR uid eid month,q)}>
-                  <div.mdc-chip__ripple>
-                  <span.mdc-chip__checkmark>
-                    <svg.mdc-chip__checkmark-svg viewBox="-2 -3 30 30">
-                      <path.mdc-chip__checkmark-path fill=none stroke=black d="M1.73,12.91 8.1,19.28 22.79,4.59">
-                  <span.mdc-chip__primary-action role=checkbox tabindex=0 aria-checked=true>
-                    <span.mdc-chip__text title=_{title}>_{label}
-        $else
-          $with q1 <- fmap ((fstsec "status" . pack) . show) ((:) status statuses)
-            $with q2 <- fmap ((fstsec "assignee" . pack) . show) assignees
-              $with q <- (++) q1 q2
-                <a.mdc-chip role=menuitem href=@?{(TasksCalendarR uid eid month,q)}>
-                  <div.mdc-chip__ripple>
-                  <i.mdc-chip__icon.mdc-chip__icon--leading.material-symbols-outlined style="color:#{color}">
-                    #{icon}
-                  <span.mdc-chip__checkmark>
-                    <svg.mdc-chip__checkmark-svg viewBox="-2 -3 30 30">
-                      <path.mdc-chip__checkmark-path fill=none stroke=black d="M1.73,12.91 8.1,19.28 22.79,4.59">
-                  <span.mdc-chip__primary-action role=checkbox tabindex=-1 aria-checked=false>
-                    <span.mdc-chip__text title=_{title}>_{label}
+      $with ident <- pack $ show status
+        $with ((color,icon,label,title),checked) <- (resolveBookStatus status,elem status statuses)
+          $if checked
+            <input type=text name=status value=#{ident} form=#{formSearch} hidden ##{ident}>
+            <button.mdc-chip.mdc-chip--selected role=menuitem type=submit
+              form=#{formSearch} formaction=@{TasksCalendarR uid eid month}
+              onclick="document.getElementById('#{ident}').remove()">
+              <div.mdc-chip__ripple>
+              <span.mdc-chip__checkmark>
+                <svg.mdc-chip__checkmark-svg viewBox="-2 -3 30 30">
+                  <path.mdc-chip__checkmark-path fill=none stroke=black d="M1.73,12.91 8.1,19.28 22.79,4.59">
+              <span.mdc-chip__primary-action role=checkbox tabindex=0 aria-checked=true>
+                <span.mdc-chip__text title=_{title}>_{label}
+          $else
+            <button.mdc-chip role=menuitem type=submit
+              form=#{formSearch} formaction=@{TasksCalendarR uid eid month}
+              name=status value=#{ident}>
+              <div.mdc-chip__ripple>
+              <i.mdc-chip__icon.mdc-chip__icon--leading.material-symbols-outlined style="color:#{color}">
+                #{icon}
+              <span.mdc-chip__checkmark>
+                <svg.mdc-chip__checkmark-svg viewBox="-2 -3 30 30">
+                  <path.mdc-chip__checkmark-path fill=none stroke=black d="M1.73,12.91 8.1,19.28 22.79,4.59">
+              <span.mdc-chip__primary-action role=checkbox tabindex=-1 aria-checked=false>
+                <span.mdc-chip__text title=_{title}>_{label}
 
   <div ##{divCalendar}>
     <div.header>
-      <a.mdc-icon-button href=@{TasksCalendarR uid eid prev} role=button rel=nofollow>
+      <button.mdc-icon-button type=submit
+        form=#{formSearch} formaction=@{TasksCalendarR uid eid prev}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
       $with m <- show month
         <time.month-of-year datetime=#{m}>
           #{m}
-      <a.mdc-icon-button href=@{TasksCalendarR uid eid next} role=button rel=nofollow>
+      <button.mdc-icon-button type=submit
+        form=#{formSearch} formaction=@{TasksCalendarR uid eid next}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_forward
