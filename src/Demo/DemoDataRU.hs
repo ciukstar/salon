@@ -26,7 +26,10 @@ import Database.Persist.Sql (SqlBackend)
 import Database.Persist ( PersistStoreWrite(insert_, insert) )
 
 import Model
-    ( User (User, userName, userPassword, userAdmin, userEmail, userFullName)
+    ( User
+      ( User, userName, userPassword, userAdmin, userAnalyst, userEmail
+      , userFullName
+      )
     , UserPhoto (UserPhoto, userPhotoUser, userPhotoPhoto, userPhotoMime)
     , Service
       ( Service, serviceName, serviceDescr, serviceGroup, serviceOverview
@@ -160,6 +163,7 @@ populateRU = do
     insert_ $ User { userName = "root"
                    , userPassword = decodeUtf8 pass
                    , userAdmin = True
+                   , userAnalyst = True
                    , userFullName = Just "Админов Админ Админовичь"
                    , userEmail = Just "adminovaa@mail.ru"
                    }
@@ -168,6 +172,7 @@ populateRU = do
     let user1 = User { userName = "ivanoviv"
                      , userPassword = decodeUtf8 pass1
                      , userAdmin = False
+                     , userAnalyst = False
                      , userFullName = Just "Иванов Игорь Васильевич"
                      , userEmail = Just "ivanoviv@mail.ru"
                      }
@@ -223,6 +228,7 @@ populateRU = do
     let user2 = User { userName = "bulanovalm"
                      , userPassword = decodeUtf8 pass2
                      , userAdmin = False
+                     , userAnalyst = False
                      , userFullName = Just "Буланова Любовь Михайловна"
                      , userEmail = Just "bulanovalm@mail.ru"
                      }
@@ -253,6 +259,7 @@ populateRU = do
     let user3 = User { userName = "petrovia"
                      , userPassword = decodeUtf8 pass3
                      , userAdmin = False
+                     , userAnalyst = False
                      , userFullName = Just "Петров Иван Александрович"
                      , userEmail = Just "petrovia@mail.ru"
                      }
@@ -283,6 +290,7 @@ populateRU = do
     let user4 = User { userName = "lebedevamv"
                      , userPassword = decodeUtf8 pass4
                      , userAdmin = False
+                     , userAnalyst = False
                      , userFullName = Just "Лебедева Марина Викторовна"
                      , userEmail = Just "lebedevamv@mail.ru"
                      }
@@ -313,6 +321,7 @@ populateRU = do
     let user5 = User { userName = "smirnovav"
                      , userPassword = decodeUtf8 pass5
                      , userAdmin = False
+                     , userAnalyst = False
                      , userFullName = Just "Смирнов Андрей Васильевич"
                      , userEmail = Just "smirnovav@mail.ru"
                      }
@@ -373,6 +382,7 @@ populateRU = do
     let user8 = User { userName = "stepanovatn"
                      , userPassword = decodeUtf8 pass8
                      , userAdmin = True
+                     , userAnalyst = True
                      , userFullName = Just "Степанова Татьяна Николаевна"
                      , userEmail = Just "stepanovatn@mail.ru"
                      }
@@ -472,6 +482,7 @@ populateRU = do
     let user11 = User { userName = "baranovaag"
                       , userPassword = decodeUtf8 pass11
                       , userAdmin = False
+                      , userAnalyst = False
                       , userFullName = Just "Баранова Алиса Григорьевна"
                       , userEmail = Just "baranovaag@mail.ru"
                       }
@@ -2931,6 +2942,7 @@ Collagen 90-II — это уважаемое и востребованное а�
     c1 <- insert $ User { userName = "ivanovata"
                         , userPassword = decodeUtf8 pass6
                         , userAdmin = False
+                        , userAnalyst = False
                         , userFullName = Just "Иванова Тамара Александровна"
                         , userEmail = Just "ivanovata@mail.ru"
                         }
@@ -2971,6 +2983,7 @@ Collagen 90-II — это уважаемое и востребованное а�
     c2 <- insert $ User { userName = "danilovip"
                         , userPassword = decodeUtf8 pass7
                         , userAdmin = False
+                        , userAnalyst = False
                         , userFullName = Just "Данилов Илья Петрович"
                         , userEmail = Just "danilovip@mail.org"
                         }

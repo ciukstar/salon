@@ -16,13 +16,16 @@ header
 
 main
   ##{toolbarTop}
+    position: relative
     display: flex
     flex-direction: row
     justify-content: space-between
     align-items: center
     margin: 1rem 0 0 1rem
-    a.mdc-segmented-button__segment
-      border-style: solid
+    ##{buttonSort}
+      position: absolute
+      right: 0
+    
   ##{fabBusinessHoursCreate}
     position: fixed
     right: 1rem

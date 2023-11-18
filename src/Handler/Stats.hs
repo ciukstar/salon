@@ -251,7 +251,8 @@ getWorkloadEmplMonthR eid month = do
     let page = [start .. end]
     let next = addMonths 1 month
     let prev = addMonths (-1) month
-
+    
+    formQuery <- newIdent
     defaultLayout $ do
         setTitleI MsgWorkload
         $(widgetFile "stats/workloads/calendar")

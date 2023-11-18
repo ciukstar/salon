@@ -40,7 +40,7 @@
   <div.mdc-dialog__scrim>
 
 <main.mdc-top-app-bar--fixed-adjust>
-  $maybe Entity uid (User name _ admin fname email) <- user
+  $maybe Entity uid (User name _ admin analyst fname email) <- user
     <figure #figureUserPhoto>
       <img width=56 height=56 src=@{AccountPhotoR uid} alt=_{MsgPhoto} loading=lazy>
       <figcaption>
@@ -57,6 +57,14 @@
               <th.mdc-data-table__cell scope=row>_{MsgAdministrator}
               <td.mdc-data-table__cell>
                 $if admin
+                  _{MsgYes}
+                $else
+                  _{MsgNo}
+              
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgAnalyst}
+              <td.mdc-data-table__cell>
+                $if analyst
                   _{MsgYes}
                 $else
                   _{MsgNo}

@@ -27,7 +27,10 @@ import Database.Persist.Sql (SqlBackend)
 import Database.Persist ( PersistStoreWrite(insert_, insert) )
 
 import Model
-    ( User (User, userName, userPassword, userAdmin, userEmail, userFullName)
+    ( User
+      ( User, userName, userPassword, userAdmin, userAnalyst, userEmail
+      , userFullName
+      )
     , UserPhoto (UserPhoto, userPhotoUser, userPhotoPhoto, userPhotoMime)
     , Service
       ( Service, serviceName, serviceDescr, serviceGroup, serviceOverview
@@ -166,6 +169,7 @@ populateRO = do
     insert_ $ User { userName = "root"
                    , userPassword = decodeUtf8 pass
                    , userAdmin = True
+                   , userAnalyst = True
                    , userFullName = Just "Popescu Ion Andrei"
                    , userEmail = Just "popescuia@mail.ro"
                    }
@@ -174,6 +178,7 @@ populateRO = do
     let user1 = User { userName = "popaa"
                      , userPassword = decodeUtf8 pass1
                      , userAdmin = False
+                     , userAnalyst = False
                      , userFullName = Just "Popa Andrei"
                      , userEmail = Just "popaa@mail.ro"
                      }
@@ -230,6 +235,7 @@ populateRO = do
     let user2 = User { userName = "raduam"
                      , userPassword = decodeUtf8 pass2
                      , userAdmin = False
+                     , userAnalyst = False
                      , userFullName = Just "Radu Ana-Maria"
                      , userEmail = Just "raduam@mail.ro"
                      }
@@ -259,6 +265,7 @@ populateRO = do
     let user3 = User { userName = "johnjohnson"
                      , userPassword = decodeUtf8 pass3
                      , userAdmin = False
+                     , userAnalyst = False
                      , userFullName = Just "Ionescu Alexandru Victor"
                      , userEmail = Just "ionescuav@mail.ro"
                      }
@@ -289,6 +296,7 @@ populateRO = do
     let user4 = User { userName = "stoicama"
                      , userPassword = decodeUtf8 pass4
                      , userAdmin = False
+                     , userAnalyst = False
                      , userFullName = Just "Stoica Maria Alexandra"
                      , userEmail = Just "stoicama@mail.ro"
                      }
@@ -319,6 +327,7 @@ populateRO = do
     let user5 = User { userName = "rususa"
                      , userPassword = decodeUtf8 pass5
                      , userAdmin = False
+                     , userAnalyst = False
                      , userFullName = Just "Rusu Ştefan Alexandru"
                      , userEmail = Just "rususa@mail.ro"
                      }
@@ -378,6 +387,7 @@ populateRO = do
     let user8 = User { userName = "marini"
                      , userPassword = decodeUtf8 pass8
                      , userAdmin = True
+                     , userAnalyst = True
                      , userFullName = Just "Marin Ioana"
                      , userEmail = Just "marini@mail.ro"
                      }
@@ -477,6 +487,7 @@ populateRO = do
     let user11 = User { userName = "floreaim"
                       , userPassword = decodeUtf8 pass11
                       , userAdmin = False
+                      , userAnalyst = False
                       , userFullName = Just "Florea Ioana Maria"
                       , userEmail = Just "floreaim@mail.ro"
                       }
@@ -2933,6 +2944,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
     c1 <- insert $ User { userName = "grigorescudg"
                         , userPassword = decodeUtf8 pass6
                         , userAdmin = False
+                        , userAnalyst = False
                         , userFullName = Just "Grigorescu Daniela Ghiorghe"
                         , userEmail = Just "grigorescudg@mail.org"
                         }
@@ -2973,6 +2985,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
     c2 <- insert $ User { userName = "vasilescuam"
                         , userPassword = decodeUtf8 pass7
                         , userAdmin = False
+                        , userAnalyst = False
                         , userFullName = Just "Vasilescu Anton Mihai"
                         , userEmail = Just "vasilescuam@mail.org"
                         }

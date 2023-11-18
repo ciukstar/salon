@@ -94,6 +94,7 @@ User
   name Text
   password Text
   admin Bool
+  analyst Bool
   fullName Text Maybe
   email Text Maybe
   UniqueUser name

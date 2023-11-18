@@ -15,13 +15,16 @@ main
         .mdc-tab-indicator__content--underline
           border-color: var(--mdc-theme-on-primary)
   ##{toolbarTop}
+    position: relative
     padding: 1rem 1rem 0.5rem 1rem
     display: flex
     flex-direction: row
     justify-content: space-between
     align-items: center
-    a.mdc-segmented-button__segment
-      border-style: solid
+    ##{buttonSort}
+      position: absolute
+      right: 0
+    
   .mdc-list
     .mdc-list-item.mdc-list-item--activated
       .mdc-list-item__primary-text

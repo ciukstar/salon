@@ -29,7 +29,10 @@ import Database.Persist.Sql (SqlBackend)
 import Database.Persist ( PersistStoreWrite(insert_, insert) )
 
 import Model
-    ( User (User, userName, userPassword, userAdmin, userEmail, userFullName)
+    ( User
+      ( User, userName, userPassword, userAdmin, userAnalyst, userEmail
+      , userFullName
+      )
     , UserPhoto (UserPhoto, userPhotoUser, userPhotoPhoto, userPhotoMime)
     , Service
       ( Service, serviceName, serviceDescr, serviceGroup, serviceOverview
@@ -168,6 +171,7 @@ populateFR = do
     insert_ $ User { userName = "root"
                    , userPassword = decodeUtf8 pass
                    , userAdmin = True
+                   , userAnalyst = True
                    , userFullName = Just "Arnaud Antoine"
                    , userEmail = Just "arnauda@mail.fr"
                    }
@@ -176,6 +180,7 @@ populateFR = do
     let user1 = User { userName = "martinl"
                      , userPassword = decodeUtf8 pass1
                      , userAdmin = False
+                     , userAnalyst = False
                      , userFullName = Just "Martin Léo"
                      , userEmail = Just "martinl@mail.fr"
                      }
@@ -232,6 +237,7 @@ populateFR = do
     let user2 = User { userName = "bernardj"
                      , userPassword = decodeUtf8 pass2
                      , userAdmin = False
+                     , userAnalyst = False
                      , userFullName = Just "Bernard Jade"
                      , userEmail = Just "bernardj@mail.fr"
                      }
@@ -261,6 +267,7 @@ populateFR = do
     let user3 = User { userName = "thomasgr"
                      , userPassword = decodeUtf8 pass3
                      , userAdmin = False
+                     , userAnalyst = False
                      , userFullName = Just "Thomas Gabriel Raphaël"
                      , userEmail = Just "thomasgr@mail.fr"
                      }
@@ -291,6 +298,7 @@ populateFR = do
     let user4 = User { userName = "robertle"
                      , userPassword = decodeUtf8 pass4
                      , userAdmin = False
+                     , userAnalyst = False
                      , userFullName = Just "Robert Louise Emma"
                      , userEmail = Just "robertle@mail.fr"
                      }
@@ -321,6 +329,7 @@ populateFR = do
     let user5 = User { userName = "richardal"
                      , userPassword = decodeUtf8 pass5
                      , userAdmin = False
+                     , userAnalyst = False
                      , userFullName = Just "Richard Arthur Louis"
                      , userEmail = Just "richardal@mail.fr"
                      }
@@ -380,6 +389,7 @@ populateFR = do
     let user8 = User { userName = "moreaul"
                      , userPassword = decodeUtf8 pass8
                      , userAdmin = True
+                     , userAnalyst = True
                      , userFullName = Just "Moreau Lina"
                      , userEmail = Just "moreaul@mail.fr"
                      }
@@ -479,6 +489,7 @@ populateFR = do
     let user11 = User { userName = "michelrc"
                       , userPassword = decodeUtf8 pass11
                       , userAdmin = False
+                      , userAnalyst = False
                       , userFullName = Just "Michel Rose Chloé"
                       , userEmail = Just "michelrc@mail.fr"
                       }
@@ -2933,6 +2944,7 @@ Mise en forme du corps : Abdomen et taille, hanches et cuisses, jambes et bras
     c1 <- insert $ User { userName = "bernardl"
                         , userPassword = decodeUtf8 pass6
                         , userAdmin = False
+                        , userAnalyst = False
                         , userFullName = Just "Bernard Louise"
                         , userEmail = Just "bernardl@mail.fr"
                         }
@@ -2973,6 +2985,7 @@ Mise en forme du corps : Abdomen et taille, hanches et cuisses, jambes et bras
     c2 <- insert $ User { userName = "bardota"
                         , userPassword = decodeUtf8 pass7
                         , userAdmin = False
+                        , userAnalyst = False
                         , userFullName = Just "Bardot Alain"
                         , userEmail = Just "bardota@mail.fr"
                         }

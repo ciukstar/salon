@@ -27,9 +27,21 @@ main
 
 div.mdc-dialog
   div.mdc-dialog__content
+    .mdc-list-item__content
+      .mdc-list-item__secondary-text
+        white-space: nowrap
     .mdc-list-item__end
       .mdc-radio .mdc-radio__native-control:enabled:checked+.mdc-radio__background
         .mdc-radio__outer-circle, .mdc-radio__inner-circle
           border-color: var(--theme-accent)
   div.mdc-dialog__actions
     gap: 0.5rem
+
+footer.demo
+  width: 100%
+  position: absolute
+  bottom: 0
+  text-align: center
+  small.hint
+    font-style: italic
+    color: var(--theme-text-small-hint-on-light)

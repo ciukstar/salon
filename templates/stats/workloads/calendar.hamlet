@@ -15,17 +15,22 @@
       <img src=@{AdminR $ AdmStaffPhotoR eid} width=56 height=56 alt=_{MsgPhoto} loading=lazy>
       <figcaption>#{ename}
 
-  
+  <form method=get ##{formQuery}>
+    $forall (x,y) <- stati
+      <input type=text name=#{x} value=#{y} hidden>
+      
   <div.calendar>
     <div.header>
-      <a.mdc-icon-button href=@?{(StatsR $ WorkloadEmplMonthR eid prev,stati)} role=button rel=nofollow>
+      <button.mdc-icon-button type=submit
+        form=#{formQuery} formaction=@{StatsR $ WorkloadEmplMonthR eid prev}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
       $with m <- show month
         <time.year-month datetime=#{m}>
           #{m}
-      <a.mdc-icon-button href=@?{(StatsR $ WorkloadEmplMonthR eid next,stati)} role=button rel=nofollow>
+      <button.mdc-icon-button type=submit
+        form=#{formQuery} formaction=@{StatsR $ WorkloadEmplMonthR eid next}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_forward

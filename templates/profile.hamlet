@@ -9,7 +9,7 @@
 
 <main.mdc-top-app-bar--fixed-adjust>
 
-  $maybe Entity uid (User uname _ _ fname email) <- user
+  $maybe Entity uid (User uname _ _ _ fname email) <- user
     <figure>
       <img src=@{AccountPhotoR uid} height=56 width=56 style="clip-path:circle(50%)" alt=_{MsgPhoto} 
         onerror="this.src = '@{PhotoPlaceholderR}'">

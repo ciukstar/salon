@@ -83,7 +83,7 @@ import Yesod.Form.Types
     ( MForm, FormResult (FormSuccess), Field
     , FieldView (fvInput, fvLabel, fvId, fvErrors)
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsName, fsAttrs, fsId)
-    , Field (Field, fieldParse, fieldView, fieldEnctype), Enctype (UrlEncoded) 
+    , Field (Field, fieldParse, fieldView, fieldEnctype), Enctype (UrlEncoded)
     )
 import Yesod.Form.Input (runInputGet, iopt)
 import Yesod.Form.Fields
@@ -144,7 +144,7 @@ import Foundation
       , MsgInvalidTimeInterval, MsgMon, MsgTue, MsgWed, MsgThu, MsgFri, MsgSat
       , MsgSun, MsgSymbolHour, MsgSymbolMinute, MsgInvalidFormData, MsgAdd
       , MsgCompletionTime, MsgWorkday, MsgSortAscending, MsgSortDescending
-      , MsgPatternHourMinute
+      , MsgPatternHourMinute, MsgAnalyst
       )
     )
 
@@ -330,7 +330,7 @@ postAdmScheduleDeleteR eid wid = do
       _ -> do
           addMessageI "info" MsgInvalidFormData
           redirect (AdminR $ AdmTimeSlotR eid wid)
-          
+
 
 
 postAdmTimeSlotR :: StaffId -> ScheduleId -> Handler Html
@@ -383,7 +383,7 @@ getAdmEmplCalendarR eid month = do
             `leftJoin` table @User `on` (\(x :& u) -> x ^. StaffUser ==. u ?. UserId)
         where_ $ x ^. StaffId ==. val eid
         return (x,u)
-        
+
     slots <- M.fromListWith (+) . (diff <$>) <$> runDB ( select ( do
         x <- from $ table @Schedule
         where_ $ x ^. ScheduleStaff ==. val eid
@@ -403,6 +403,7 @@ getAdmEmplCalendarR eid month = do
     let next = addMonths 1 month
     let prev = addMonths (-1) month
     today <- (\(y,m,_) -> YearMonth y m) . toGregorian . utctDay <$> liftIO getCurrentTime
+    formQuery <- newIdent
     toolbarTop <- newIdent
     calendarPage <- newIdent
     defaultLayout $ do
@@ -436,7 +437,9 @@ getAdmScheduleR eid = do
     msgs <- getMessages
     touchTargetWrapperAddSchedule <- newIdent
     month <- (\(y,m,_) -> YearMonth y m) . toGregorian . utctDay <$> liftIO getCurrentTime
+    formQuery <- newIdent
     toolbarTop <- newIdent
+    buttonSort <- newIdent
     defaultLayout $ do
         setTitleI MsgEmployee
         $(widgetFile "admin/staff/empl/schedule")
@@ -635,6 +638,11 @@ formUser empl extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-checkbox__native-control")]
         } (pure False)
+    (analystR,analystV) <- mreq checkBoxField FieldSettings
+        { fsLabel = SomeMessage MsgAnalyst
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-checkbox__native-control")]
+        } (pure False)
     (fnameR,fnameV) <- mopt textField FieldSettings
         { fsLabel = SomeMessage MsgFullName
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
@@ -645,7 +653,7 @@ formUser empl extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (staffEmail . entityVal <$> empl)
-    let r = User <$> nameR <*> passR <*> adminR <*> fnameR <*> emailR
+    let r = User <$> nameR <*> passR <*> adminR <*> analystR <*> fnameR <*> emailR
     let w = [whamlet|
 #{extra}
 $forall v <- [nameV,passV]
@@ -664,28 +672,29 @@ $forall v <- [nameV,passV]
         <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
           #{errs}
 
-<div.mdc-form-field.form-field data-mdc-auto-init=MDCFormField style="display:flex;flex-direction:row">
-  ^{fvInput adminV}
-  $with selected <- resolveSelected adminR
-    <button.mdc-switch type=button role=switch #switchAdmin data-mdc-auto-init=MDCSwitch
-      :selected:.mdc-switch--selected :selected:aria-checked=true
-      :not selected:.mdc-switch--unselected :not selected:aria-checked=false
-      onclick="document.getElementById('#{fvId adminV}').checked = !this.MDCSwitch.selected">
-      <div.mdc-switch__track>
-      <div.mdc-switch__handle-track>
-        <div.mdc-switch__handle>
-          <div.mdc-switch__shadow>
-            <div.mdc-elevation-overlay>
-          <div.mdc-switch__ripple>
-          <div.mdc-switch__icons>
-            <svg.mdc-switch__icon.mdc-switch__icon--on viewBox="0 0 24 24">
-              <path d="M19.69,5.23L8.96,15.96l-4.23-4.23L2.96,13.5l6,6L21.46,7L19.69,5.23z">
-            <svg.mdc-switch__icon.mdc-switch__icon--off viewBox="0 0 24 24">
-              <path d="M20 13H4v-2h16v2z">
+$forall (r,v) <- [(adminR,adminV),(analystR,analystV)]
+  <div.mdc-form-field.form-field data-mdc-auto-init=MDCFormField style="display:flex;flex-direction:row">
+    ^{fvInput v}
+    $with selected <- resolveSelected r
+      <button.mdc-switch type=button role=switch #switch#{fvId v} data-mdc-auto-init=MDCSwitch
+        :selected:.mdc-switch--selected :selected:aria-checked=true
+        :not selected:.mdc-switch--unselected :not selected:aria-checked=false
+        onclick="document.getElementById('#{fvId v}').checked = !this.MDCSwitch.selected">
+        <div.mdc-switch__track>
+        <div.mdc-switch__handle-track>
+          <div.mdc-switch__handle>
+            <div.mdc-switch__shadow>
+              <div.mdc-elevation-overlay>
+            <div.mdc-switch__ripple>
+            <div.mdc-switch__icons>
+              <svg.mdc-switch__icon.mdc-switch__icon--on viewBox="0 0 24 24">
+                <path d="M19.69,5.23L8.96,15.96l-4.23-4.23L2.96,13.5l6,6L21.46,7L19.69,5.23z">
+              <svg.mdc-switch__icon.mdc-switch__icon--off viewBox="0 0 24 24">
+                <path d="M20 13H4v-2h16v2z">
 
-    <span.mdc-switch__focus-ring-wrapper>
-      <span.mdc-switch__focus-ring>
-    <label for=switchAdmin>_{MsgAdministrator}
+      <span.mdc-switch__focus-ring-wrapper>
+        <span.mdc-switch__focus-ring>
+      <label for=switch#{fvId v}>#{fvLabel v}
 
 $forall v <- [fnameV,emailV]
   <div.form-field>

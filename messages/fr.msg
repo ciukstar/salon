@@ -1,3 +1,9 @@
+OnlyAdminisHaveAccess: Seuls les administrateurs peuvent gérer ces données
+AuthorizationRequired: Autorisation requise
+OnlyAnalystsHaveAccess: Seuls les analystes ont accès aux rapports analytiques
+LoginAsAdminToContinue: Veuillez vous connecter en tant qu'administrateur pour continuer
+LoginAsAnalystToContinue: Veuillez vous connecter en tant qu'analyste pour continuer
+Analyst: Analyste
 NoRequestsFoundForThisDay: Aucune demande trouvée pour ce jour
 LoginAsEmployeeToContinue: Veuillez vous connecter en tant qu'employé pour continuer
 LoginToContinue: Veuillez vous connecter pour continuer
@@ -330,6 +336,11 @@ AppName: Salon
 MetaKeywords: beauté, salon, application
 MetaDescription: Application de salon de beauté
 
+
+DemoSampleOne: Cliquez sur l'icône
+DemoSampleTwo: pour obtenir une liste des comptes d'utilisateurs de démonstration
+
+
 Documentation: Documentation
 Doc001 hrefHome: L'application <a href=#{hrefHome}>« Salon »</a> offre la possibilité de publier et d'annoncer les services des propriétaires de salons de beauté sur le Web.
 
@@ -362,3 +373,13 @@ Doc007: Actuellement, l'application ne prend en charge qu'une seule entreprise. 
 Doc008 href: Les utilisateurs de l'application, y compris les clients, les employés et les administrateurs, peuvent être enregistrés via le formulaire <a href=#{href}>« Inscription »</a>.
 
 Doc009 href: De plus, les utilisateurs peuvent être gérés par les administrateurs dans la section <a href=#{href}>« Utilisateurs »</a> du groupe « Données ».
+
+Doc010: Un utilisateur enregistré peut avoir plusieurs rôles en même temps.
+
+Doc011: Un administrateur peut attribuer le rôle « Administrateur » à tout autre utilisateur enregistré. Le rôle « Administrateur » est requis pour avoir accès à n'importe quelle section du groupe « Données ». Autrement dit, gérez toutes les données d’application.
+
+Doc012: Un administrateur peut attribuer le rôle « Analyste » à tout autre utilisateur enregistré. Le rôle « Analyste » est requis pour avoir accès à n'importe quelle section du groupe « Analyse ». Autrement dit, pour générer des rapports analytiques.
+
+Doc013: Tout utilisateur également enregistré en tant que membre du personnel a le rôle "Employé". Un utilisateur avec le rôle « Employé » a accès à la file d'attente des demandes de service.
+
+Doc014: Tous les utilisateurs peuvent devenir clients par simple inscription et utilisation des services proposés.

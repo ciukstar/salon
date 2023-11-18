@@ -48,46 +48,49 @@
               <span.mdc-tab__ripple>
               <span.mdc-tab__focus-ring>
 
-    
-    <div.toolbar role=toolbar ##{toolbarTop}>
+    <form method=get ##{formQuery}>
+    <div role=toolbar ##{toolbarTop}>
       <div.mdc-segmented-button.mdc-segmented-button--single-select role=radiogroup data-mdc-auto-init=MDCSegmentedButton>
-      
-        <a.mdc-segmented-button__segment href=@{AdminR $ AdmEmplCalendarR eid month} role=radio
+        <button.mdc-segmented-button__segment role=radio type=submit title=_{MsgCalendar}
+          form=#{formQuery} formaction=@{AdminR $ AdmEmplCalendarR eid month}
           :curr == Just (AdminR $ AdmEmplCalendarR eid month):.mdc-segmented-button__segment--selected
           :curr == Just (AdminR $ AdmEmplCalendarR eid month):aria-checked=true
           :curr /= Just (AdminR $ AdmEmplCalendarR eid month):aria-checked=false>
           <div.mdc-segmented-button__ripple>
           <i.mdc-segmented-button__icon.material-symbols-outlined>calendar_month
-          <div.mdc-segmented-button__label>_{MsgCalendar}
-          
-        <a.mdc-segmented-button__segment href=@{AdminR $ AdmScheduleR eid} role=radio
+        <button.mdc-segmented-button__segment role=radio type=submit title=_{MsgList}
+          form=#{formQuery} formaction=@{AdminR $ AdmScheduleR eid}
           :curr == Just (AdminR $ AdmScheduleR eid):.mdc-segmented-button__segment--selected
           :curr == Just (AdminR $ AdmScheduleR eid):aria-checked=true
           :curr /= Just (AdminR $ AdmScheduleR eid):aria-checked=false>
           <div.mdc-segmented-button__ripple>
           <i.mdc-segmented-button__icon.material-symbols-outlined>list
-          <div.mdc-segmented-button__label>_{MsgList}
 
-      <a.mdc-icon-button href=@{AdminR $ AdmEmplCalendarR eid today} role=button title=_{MsgToday}
-        :today == month:style="visibility:hidden">
+      <button.mdc-icon-button type=submit title=_{MsgToday}
+        form=#{formQuery} formaction=@{AdminR $ AdmEmplCalendarR eid today}
+        :today == month:style="visibility:hidden;position:absolute;right:0"
+        :today /= month:style="position:absolute;right:0">
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
-        <i.material-symbols-outlined>today
+        <i.material-symbols-outlined>today 
 
     
     <div.calendar ##{calendarPage}>
       <div.header>
-        <a.mdc-icon-button href=@{AdminR $ AdmEmplCalendarR eid prev} role=button rel=nofollow>
+        <button.mdc-icon-button type=submit
+          form=#{formQuery} formaction=@{AdminR $ AdmEmplCalendarR eid prev}>
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>arrow_back
         $with m <- show month
           <time.month-of-year datetime=#{m}>
             #{m}
-        <a.mdc-icon-button href=@{AdminR $ AdmEmplCalendarR eid next} role=button rel=nofollow>
+        <button.mdc-icon-button type=submit
+          form=#{formQuery} formaction=@{AdminR $ AdmEmplCalendarR eid next}>
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>arrow_forward
+        
       $forall wd <- [MsgMon,MsgTue,MsgWed,MsgThu,MsgFri,MsgSat,MsgSun]
         <div.col-header>
           _{wd}

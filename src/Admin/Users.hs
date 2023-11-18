@@ -69,15 +69,15 @@ import Foundation
       , MsgConfirmPassword, MsgNewPassword, MsgPasswordsDoNotMatch
       , MsgPasswordChanged, MsgSearch, MsgNoUsersFound, MsgEmployee
       , MsgCustomer, MsgAdministrator, MsgYes, MsgNo, MsgCategory
-      , MsgSelect, MsgCategories, MsgNavigationMenu, MsgUserProfile, MsgLogin
+      , MsgSelect, MsgCategories, MsgNavigationMenu, MsgUserProfile, MsgLogin, MsgAnalyst
       )
     )
 import Model
-    ( UserId, User(User, userName, userPassword, userFullName, userEmail, userAdmin)
+    ( UserId, User(User, userName, userPassword, userFullName, userEmail, userAdmin, userAnalyst)
     , UserPhoto (UserPhoto)
     , EntityField
       ( UserId, UserName, UserFullName, UserEmail, UserPhotoPhoto
-      , UserPhotoMime, UserPassword, UserAdmin, StaffUser
+      , UserPhotoMime, UserPassword, UserAdmin, StaffUser, UserAnalyst
       )
     , Staff
     )
@@ -183,7 +183,7 @@ $case r
               <i.material-symbols-outlined>close            
   $of _
   
-$maybe Entity uid (User name _ _ _ _) <- user
+$maybe Entity uid (User name _ _ _ _ _) <- user
   <figure>
     <img src=@{AccountPhotoR uid} width=56 heigt=56 alt=_{MsgPhoto}>
     <figcaption>
@@ -236,9 +236,14 @@ postUserR uid = do
         return x
     ((fr,fw),et) <- runFormPost $ formUserEdit user
     case fr of
-      FormSuccess (User name _ admin fname email,mfi) -> do
+      FormSuccess (User name _ admin analyst fname email,mfi) -> do
           runDB $ update $ \x -> do
-              set x [UserName =. val name, UserAdmin =. val admin, UserFullName =. val fname, UserEmail =. val email]
+              set x [ UserName =. val name
+                    , UserAdmin =. val admin
+                    , UserAnalyst =. val analyst
+                    , UserFullName =. val fname
+                    , UserEmail =. val email
+                    ]
               where_ $ x ^. UserId ==. val uid
           addMessageI "info" MsgRecordEdited
           case mfi of
@@ -324,6 +329,11 @@ formUserCreate extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-checkbox__native-control")]
         } (Just False)
+    (analystR,analystV) <- mreq checkBoxField FieldSettings
+        { fsLabel = SomeMessage MsgAnalyst
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-checkbox__native-control")]
+        } (pure False)
     (fnameR,fnameV) <- mopt textField FieldSettings
         { fsLabel = SomeMessage MsgFullName
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
@@ -340,7 +350,7 @@ formUserCreate extra = do
         , fsAttrs = [("style","display:none")]
         } Nothing
 
-    let r = (,) <$> (User <$> nameR <*> passR <*> adminR <*> fnameR <*> emailR) <*> photoR
+    let r = (,) <$> (User <$> nameR <*> passR <*> adminR <*> analystR <*> fnameR <*> emailR) <*> photoR
     let w = [whamlet|
 #{extra}
 <div.form-field>
@@ -363,29 +373,29 @@ $forall v <- [nameV,passV]
       <div.mdc-text-field-helper-line>
         <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
           #{errs}
+$forall (r,v) <- [(adminR,adminV),(analystR,analystV)]
+  <div.mdc-form-field.form-field data-mdc-auto-init=MDCFormField style="display:flex;flex-direction:row">
+    ^{fvInput v}
+    $with selected <- resolveSelected r
+      <button.mdc-switch type=button role=switch #switch#{fvId v} data-mdc-auto-init=MDCSwitch
+        :selected:.mdc-switch--selected :selected:aria-checked=true
+        :not selected:.mdc-switch--unselected :not selected:aria-checked=false
+        onclick="document.getElementById('#{fvId v}').checked = !this.MDCSwitch.selected">
+        <div.mdc-switch__track>
+        <div.mdc-switch__handle-track>
+          <div.mdc-switch__handle>
+            <div.mdc-switch__shadow>
+              <div.mdc-elevation-overlay>
+            <div.mdc-switch__ripple>
+            <div.mdc-switch__icons>
+              <svg.mdc-switch__icon.mdc-switch__icon--on viewBox="0 0 24 24">
+                <path d="M19.69,5.23L8.96,15.96l-4.23-4.23L2.96,13.5l6,6L21.46,7L19.69,5.23z">
+              <svg.mdc-switch__icon.mdc-switch__icon--off viewBox="0 0 24 24">
+                <path d="M20 13H4v-2h16v2z">
 
-<div.mdc-form-field.form-field data-mdc-auto-init=MDCFormField style="display:flex;flex-direction:row">
-  ^{fvInput adminV}
-  $with selected <- resolveSelected adminR
-    <button.mdc-switch type=button role=switch #switchAdmin data-mdc-auto-init=MDCSwitch
-      :selected:.mdc-switch--selected :selected:aria-checked=true
-      :not selected:.mdc-switch--unselected :not selected:aria-checked=false
-      onclick="document.getElementById('#{fvId adminV}').checked = !this.MDCSwitch.selected">
-      <div.mdc-switch__track>
-      <div.mdc-switch__handle-track>
-        <div.mdc-switch__handle>
-          <div.mdc-switch__shadow>
-            <div.mdc-elevation-overlay>
-          <div.mdc-switch__ripple>
-          <div.mdc-switch__icons>
-            <svg.mdc-switch__icon.mdc-switch__icon--on viewBox="0 0 24 24">
-              <path d="M19.69,5.23L8.96,15.96l-4.23-4.23L2.96,13.5l6,6L21.46,7L19.69,5.23z">
-            <svg.mdc-switch__icon.mdc-switch__icon--off viewBox="0 0 24 24">
-              <path d="M20 13H4v-2h16v2z">
-
-    <span.mdc-switch__focus-ring-wrapper>
-      <span.mdc-switch__focus-ring>
-    <label for=switchAdmin>_{MsgAdministrator}
+      <span.mdc-switch__focus-ring-wrapper>
+        <span.mdc-switch__focus-ring>
+      <label for=switch#{fvId v}>#{fvLabel v}
 
 $forall v <- [fnameV,emailV]
   <div.form-field>
@@ -430,6 +440,11 @@ formUserEdit user extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-checkbox__native-control")]
         } (userAdmin . entityVal <$> user)
+    (analystR,analystV) <- mreq checkBoxField FieldSettings
+        { fsLabel = SomeMessage MsgAnalyst
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-checkbox__native-control")]
+        } (userAnalyst . entityVal <$> user)
     (fnameR,fnameV) <- mopt textField FieldSettings
         { fsLabel = SomeMessage MsgFullName
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
@@ -446,7 +461,7 @@ formUserEdit user extra = do
         , fsAttrs = [("style","display:none")]
         } Nothing
 
-    let r = (,) <$> (User <$> nameR <*> FormSuccess "Nothing" <*> adminR <*> fnameR <*> emailR) <*> photoR
+    let r = (,) <$> (User <$> nameR <*> FormSuccess "Nothing" <*> adminR <*> analystR <*> fnameR <*> emailR) <*> photoR
     let w = [whamlet|
 #{extra}
 <div.form-field>
@@ -472,28 +487,29 @@ formUserEdit user extra = do
       <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
         #{errs}
 
-<div.mdc-form-field.form-field data-mdc-auto-init=MDCFormField style="display:flex;flex-direction:row">
-  ^{fvInput adminV}
-  $with selected <- fromMaybe False ((userAdmin . entityVal) <$> user)
-    <button.mdc-switch type=button role=switch #switchAdmin data-mdc-auto-init=MDCSwitch
-      :selected:.mdc-switch--selected :selected:aria-checked=true
-      :not selected:.mdc-switch--unselected :not selected:aria-checked=false
-      onclick="document.getElementById('#{fvId adminV}').checked = !this.MDCSwitch.selected">
-      <div.mdc-switch__track>
-      <div.mdc-switch__handle-track>
-        <div.mdc-switch__handle>
-          <div.mdc-switch__shadow>
-            <div.mdc-elevation-overlay>
-          <div.mdc-switch__ripple>
-          <div.mdc-switch__icons>
-            <svg.mdc-switch__icon.mdc-switch__icon--on viewBox="0 0 24 24">
-              <path d="M19.69,5.23L8.96,15.96l-4.23-4.23L2.96,13.5l6,6L21.46,7L19.69,5.23z">
-            <svg.mdc-switch__icon.mdc-switch__icon--off viewBox="0 0 24 24">
-              <path d="M20 13H4v-2h16v2z">
+$forall (r,v) <- [(userAdmin,adminV),(userAnalyst,analystV)]
+  <div.mdc-form-field.form-field data-mdc-auto-init=MDCFormField style="display:flex;flex-direction:row">
+    ^{fvInput v}
+    $with selected <- fromMaybe False ((r . entityVal) <$> user)
+      <button.mdc-switch type=button role=switch #switch#{fvId v} data-mdc-auto-init=MDCSwitch
+        :selected:.mdc-switch--selected :selected:aria-checked=true
+        :not selected:.mdc-switch--unselected :not selected:aria-checked=false
+        onclick="document.getElementById('#{fvId v}').checked = !this.MDCSwitch.selected">
+        <div.mdc-switch__track>
+        <div.mdc-switch__handle-track>
+          <div.mdc-switch__handle>
+            <div.mdc-switch__shadow>
+              <div.mdc-elevation-overlay>
+            <div.mdc-switch__ripple>
+            <div.mdc-switch__icons>
+              <svg.mdc-switch__icon.mdc-switch__icon--on viewBox="0 0 24 24">
+                <path d="M19.69,5.23L8.96,15.96l-4.23-4.23L2.96,13.5l6,6L21.46,7L19.69,5.23z">
+              <svg.mdc-switch__icon.mdc-switch__icon--off viewBox="0 0 24 24">
+                <path d="M20 13H4v-2h16v2z">
 
-    <span.mdc-switch__focus-ring-wrapper>
-      <span.mdc-switch__focus-ring>
-    <label for=switchAdmin>_{MsgAdministrator}
+      <span.mdc-switch__focus-ring-wrapper>
+        <span.mdc-switch__focus-ring>
+      <label for=switch#{fvId v}>#{fvLabel v}
 
 $forall v <- [fnameV,emailV]
   <div.form-field>

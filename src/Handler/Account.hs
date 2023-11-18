@@ -57,7 +57,7 @@ import Database.Persist (Entity (Entity), insert, insert_)
 
 import Model
     ( ultDestKey
-    , User (userName, User, userPassword, userFullName), UserId
+    , User (userName, User, userPassword, userFullName, userEmail), UserId
     , UserPhoto (UserPhoto, userPhotoUser, userPhotoPhoto, userPhotoMime)
     , EntityField (UserPhotoUser)
     )
@@ -141,14 +141,16 @@ formAccount user extra = do
         { fsLabel = SomeMessage MsgEmail
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
-        } (userFullName <$> user)
+        } (userEmail <$> user)
     (photoR,photoV) <- mopt fileField FieldSettings
         { fsLabel = SomeMessage MsgPhoto
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("style","display:none")]
         } Nothing
 
-    let r = (,) <$> (User <$> nameR <*> passR <*> FormSuccess False <*> fnameR <*> emailR) <*> photoR
+    let r = (,)
+            <$> ( User <$> nameR <*> passR <*> FormSuccess False <*> FormSuccess False <*> fnameR <*> emailR )
+            <*> photoR
 
     let w = do
             toWidget [julius|

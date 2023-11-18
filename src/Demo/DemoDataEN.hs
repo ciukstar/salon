@@ -27,7 +27,10 @@ import Database.Persist.Sql (SqlBackend)
 import Database.Persist ( PersistStoreWrite(insert_, insert) )
 
 import Model
-    ( User (User, userName, userPassword, userAdmin, userEmail, userFullName)
+    ( User
+      ( User, userName, userPassword, userAdmin, userAnalyst, userEmail
+      , userFullName
+      )
     , UserPhoto (UserPhoto, userPhotoUser, userPhotoPhoto, userPhotoMime)
     , Service
       ( Service, serviceName, serviceDescr, serviceGroup, serviceOverview
@@ -168,6 +171,7 @@ populateEN = do
     insert_ $ User { userName = "root"
                    , userPassword = decodeUtf8 pass0
                    , userAdmin = True
+                   , userAnalyst = True
                    , userFullName = Just "Adam Smith"
                    , userEmail = Just "asmith@mail.uk"
                    }
@@ -176,6 +180,7 @@ populateEN = do
     let user1 = User { userName = "johnnysmith"
                      , userPassword = decodeUtf8 pass1
                      , userAdmin = False
+                     , userAnalyst = False
                      , userFullName = Just "Johnny Smith"
                      , userEmail = Just "jsmith@mail.uk"
                      }
@@ -232,6 +237,7 @@ populateEN = do
     let user2 = User { userName = "marylopez"
                      , userPassword = decodeUtf8 pass2
                      , userAdmin = False
+                     , userAnalyst = False
                      , userFullName = Just "Mary Lopez"
                      , userEmail = Just "mlopez@mail.uk"
                      }
@@ -261,6 +267,7 @@ populateEN = do
     let user3 = User { userName = "johnjohnson"
                      , userPassword = decodeUtf8 pass3
                      , userAdmin = False
+                     , userAnalyst = False
                      , userFullName = Just "John Johnson"
                      , userEmail = Just "jjohnson@mail.uk"
                      }
@@ -291,6 +298,7 @@ populateEN = do
     let user4 = User { userName = "patriciabrown"
                      , userPassword = decodeUtf8 pass4
                      , userAdmin = False
+                     , userAnalyst = False
                      , userFullName = Just "Patricia Brown"
                      , userEmail = Just "pbrown@mail.uk"
                      }
@@ -321,6 +329,7 @@ populateEN = do
     let user5 = User { userName = "chriswilson"
                      , userPassword = decodeUtf8 pass5
                      , userAdmin = False
+                     , userAnalyst = False
                      , userFullName = Just "Chris Wilson"
                      , userEmail = Just "cwilson@mail.uk"
                      }
@@ -380,6 +389,7 @@ populateEN = do
     let user8 = User { userName = "byoung"
                      , userPassword = decodeUtf8 pass8
                      , userAdmin = True
+                     , userAnalyst = True
                      , userFullName = Just "Barbara Young"
                      , userEmail = Just "byoung@mail.uk"
                      }
@@ -479,6 +489,7 @@ populateEN = do
     let user11 = User { userName = "ihughes"
                       , userPassword = decodeUtf8 pass11
                       , userAdmin = False
+                     , userAnalyst = False
                       , userFullName = Just "Isabel Hughes"
                       , userEmail = Just "ihughes@mail.uk"
                       }
@@ -2939,6 +2950,7 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
     c1 <- insert $ User { userName = "pattyofurniture"
                         , userPassword = decodeUtf8 pass6
                         , userAdmin = False
+                        , userAnalyst = False
                         , userFullName = Just "Patty O’Furniture"
                         , userEmail = Just "pattyofurniture@mail.org"
                         }
@@ -2979,6 +2991,7 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
     c2 <- insert $ User { userName = "raysin"
                         , userPassword = decodeUtf8 pass7
                         , userAdmin = False
+                        , userAnalyst = False
                         , userFullName = Just "Ray Sin"
                         , userEmail = Just "raysin@mail.org"
                         }

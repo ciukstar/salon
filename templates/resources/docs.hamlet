@@ -65,7 +65,11 @@
     <div.mdc-typography--headline5>_{MsgUser}
     <p>#{trans $ MsgDoc008 (rndr AccountR)}
     <p>#{trans $ MsgDoc009 (rndr $ AdminR UsersR)}
-
+    <p>_{MsgDoc010}
+    <p>_{MsgDoc011}
+    <p>_{MsgDoc012}
+    <p>_{MsgDoc013}
+    <p>_{MsgDoc014}
 
 
 

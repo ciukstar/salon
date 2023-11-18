@@ -1,4 +1,4 @@
-<form method=get action=@{TasksCalendarR uid eid month} ##{formSearch}>
+<form method=get ##{formSearch}>
 
 ^{menu}
 <header.mdc-top-app-bar.mdc-top-app-bar--prominent.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>

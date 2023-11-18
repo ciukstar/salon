@@ -134,98 +134,97 @@ instance Yesod App where
 
     isAuthorized (StaticR _) _ = return Authorized
 
-    isAuthorized (StatsR PopOffersR) _ = return Authorized
-    isAuthorized (StatsR WorkloadsR) _ = return Authorized
-    isAuthorized (StatsR (WorkloadEmplMonthR _ _)) _ = return Authorized
-    isAuthorized (StatsR (WorkloadEmplDayR _ _)) _ = return Authorized
-    isAuthorized (StatsR StatsAovR) _ = return Authorized
-    isAuthorized (StatsR (AovDetailsR {})) _ = return Authorized
-    
+    isAuthorized r@(StatsR PopOffersR) _               = setUltDest r >> isAnalyst
+    isAuthorized r@(StatsR WorkloadsR) _               = setUltDest r >> isAnalyst
+    isAuthorized r@(StatsR (WorkloadEmplMonthR _ _)) _ = setUltDest r >> isAnalyst
+    isAuthorized r@(StatsR (WorkloadEmplDayR _ _)) _   = setUltDest r >> isAnalyst
+    isAuthorized r@(StatsR StatsAovR) _                = setUltDest r >> isAnalyst
+    isAuthorized r@(StatsR (AovDetailsR {})) _         = setUltDest r >> isAnalyst    
         
         
-    isAuthorized (AdminR UsersR) _ = return Authorized
-    isAuthorized (AdminR UserCreateFormR) _ = return Authorized
-    isAuthorized (AdminR AdmServicesSearchR) _ = return Authorized
-    isAuthorized (AdminR (AdmServicesR _)) _ = return Authorized
-    isAuthorized (AdminR (AdmServiceR _)) _ = return Authorized
-    isAuthorized (AdminR (AdmServiceDeleteR _)) _ = return Authorized
-    isAuthorized (AdminR (AdmServiceCreateFormR _)) _ = return Authorized
-    isAuthorized (AdminR (AdmServiceEditFormR _)) _ = return Authorized
-    isAuthorized (AdminR (AdmServiceImageR _)) _ = return Authorized
-    isAuthorized (AdminR (AdmOfferCreateR _)) _ = return Authorized
-    isAuthorized (AdminR (AdmExpertCreateR _)) _ = return Authorized
-    isAuthorized (AdminR (AdmExpertsR _)) _ = return Authorized
-    isAuthorized (AdminR (AdmExpertR _ _)) _ = return Authorized
-    isAuthorized (AdminR (AdmExpertEditR _ _)) _ = return Authorized
-    isAuthorized (AdminR (AdmExpertDeleteR _ _)) _ = return Authorized
+    isAuthorized r@(AdminR UsersR) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR UserCreateFormR) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR AdmServicesSearchR) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmServicesR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmServiceR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmServiceDeleteR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmServiceCreateFormR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmServiceEditFormR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmServiceImageR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmOfferCreateR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmExpertCreateR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmExpertsR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmExpertR _ _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmExpertEditR _ _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmExpertDeleteR _ _)) _ = setUltDest r >> isAdmin
 
-    isAuthorized (AdminR (AdmOfferR _)) _ = return Authorized
-    isAuthorized (AdminR (AdmPriceR _ _)) _ = return Authorized
-    isAuthorized (AdminR (AdmPriceEditR _ _)) _ = return Authorized
-    isAuthorized (AdminR (AdmPriceDeleteR _ _)) _ = return Authorized
-    isAuthorized (AdminR AdmStaffR) _ = return Authorized
-    isAuthorized (AdminR AdmStaffCreateR) _ = return Authorized
-    isAuthorized (AdminR (AdmStaffPhotoR _)) _ = return Authorized
-    isAuthorized (AdminR (AdmEmplR _)) _ = return Authorized
-    isAuthorized (AdminR (AdmStaffEditR _)) _ = return Authorized
-    isAuthorized (AdminR (AdmStaffDeleteR _)) _ = return Authorized
-    isAuthorized (AdminR (AdmRolesR _)) _ = return Authorized
-    isAuthorized (AdminR (AdmRoleR _ _)) _ = return Authorized
-    isAuthorized (AdminR (AdmRoleCreateR _)) _ = return Authorized
-    isAuthorized (AdminR (AdmRoleEditR _ _)) _ = return Authorized
-    isAuthorized (AdminR (AdmRoleDeleteR _ _)) _ = return Authorized
-    isAuthorized (AdminR (AdmScheduleCreateR _)) _ = return Authorized
-    isAuthorized (AdminR (AdmScheduleR _)) _ = return Authorized
-    isAuthorized (AdminR (AdmTimeSlotR _ _)) _ = return Authorized
-    isAuthorized (AdminR (AdmScheduleEditR _ _)) _ = return Authorized
-    isAuthorized (AdminR (AdmScheduleDeleteR _ _)) _ = return Authorized
+    isAuthorized r@(AdminR (AdmOfferR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmPriceR _ _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmPriceEditR _ _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmPriceDeleteR _ _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR AdmStaffR) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR AdmStaffCreateR) _ = setUltDest r >> isAdmin
+    isAuthorized (AdminR (AdmStaffPhotoR _)) _ = isAdmin
+    isAuthorized r@(AdminR (AdmEmplR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmStaffEditR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmStaffDeleteR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmRolesR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmRoleR _ _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmRoleCreateR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmRoleEditR _ _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmRoleDeleteR _ _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmScheduleCreateR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmScheduleR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmTimeSlotR _ _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmScheduleEditR _ _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmScheduleDeleteR _ _)) _ = setUltDest r >> isAdmin
 
-    isAuthorized (AdminR (UserEditFormR _)) _ = return Authorized
-    isAuthorized (AdminR (UserR _)) _ = return Authorized
-    isAuthorized (AdminR (UserDeleteR _)) _ = return Authorized
-    isAuthorized (AdminR (UserPwdResetR _)) _ = return Authorized
-    isAuthorized (AdminR UsersSearchR) _ = return Authorized
-    isAuthorized (AdminR (AdmEmplUserR _)) _ = return Authorized
-    isAuthorized (AdminR (AdmEmplUnregR _ _)) _ = return Authorized
-    isAuthorized (AdminR AdmStaffSearchR) _ = return Authorized
-    isAuthorized (AdminR (AdmEmplCalendarR _ _)) _ = return Authorized
-    isAuthorized (AdminR (EmplCalendarSlotsR _ _)) _ = return Authorized
-    isAuthorized (AdminR (EmplCalendarSlotR {})) _ = return Authorized
-    isAuthorized (AdminR (EmplCalendarSlotEditR {})) _ = return Authorized
-    isAuthorized (AdminR (EmplCalendarSlotDeleteR {})) _ = return Authorized
-    isAuthorized (AdminR (EmplCalendarSlotCreateR {})) _ = return Authorized
+    isAuthorized r@(AdminR (UserEditFormR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (UserR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (UserDeleteR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (UserPwdResetR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR UsersSearchR) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmEmplUserR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmEmplUnregR _ _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR AdmStaffSearchR) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmEmplCalendarR _ _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (EmplCalendarSlotsR _ _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (EmplCalendarSlotR {})) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (EmplCalendarSlotEditR {})) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (EmplCalendarSlotDeleteR {})) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (EmplCalendarSlotCreateR {})) _ = setUltDest r >> isAdmin
 
     
-    isAuthorized (AdminR (BrandR _)) _ = return Authorized
-    isAuthorized (AdminR (BrandDeleteR _ _)) _ = return Authorized
-    isAuthorized (AdminR (BrandEditR _ _)) _ = return Authorized
-    isAuthorized (AdminR (BrandMarkR _ _)) _ = return Authorized
-    isAuthorized (AdminR (BrandIcoR _ _)) _ = return Authorized
-    isAuthorized (AdminR (BrandCreateR _)) _ = return Authorized
+    isAuthorized r@(AdminR (BrandR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (BrandDeleteR _ _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (BrandEditR _ _)) _ = setUltDest r >> isAdmin
+    isAuthorized (AdminR (BrandMarkR _ _)) _ = isAdmin
+    isAuthorized (AdminR (BrandIcoR _ _)) _ = isAdmin
+    isAuthorized r@(AdminR (BrandCreateR _)) _ = setUltDest r >> isAdmin
 
-    isAuthorized (AdminR BusinessR) _ = return Authorized
-    isAuthorized (AdminR BusinessCreateR) _ = return Authorized
-    isAuthorized (AdminR (BusinessEditR _)) _ = return Authorized
-    isAuthorized (AdminR BusinessDeleteR) _ = return Authorized
-    isAuthorized (AdminR (BusinessHoursR _)) _ = return Authorized
-    isAuthorized (AdminR (BusinessCalendarR _ _)) _ = return Authorized
-    isAuthorized (AdminR (BusinessHoursCreateR _)) _ = return Authorized
-    isAuthorized (AdminR (BusinessTimeSlotR _ _)) _ = return Authorized
-    isAuthorized (AdminR (BusinessTimeSlotDeleteR _ _)) _ = return Authorized
-    isAuthorized (AdminR (BusinessHoursEditR _ _)) _ = return Authorized
-    isAuthorized (AdminR (BusinessCalendarSlotsR _ _)) _ = return Authorized
-    isAuthorized (AdminR (BusinessCalendarSlotR {})) _ = return Authorized
-    isAuthorized (AdminR (BusinessCalendarSlotCreateR _ _)) _ = return Authorized
-    isAuthorized (AdminR (BusinessCalendarSlotEditR {})) _ = return Authorized
-    isAuthorized (AdminR (BusinessCalendarSlotDeleteR {})) _ = return Authorized
-    isAuthorized (AdminR (BusinessAboutR _)) _ = return Authorized
-    isAuthorized (AdminR (BusinessAboutCreateR _)) _ = return Authorized
-    isAuthorized (AdminR (BusinessAboutEditR _ _)) _ = return Authorized
-    isAuthorized (AdminR (BusinessAboutDeleteR _ _)) _ = return Authorized
-    isAuthorized (AdminR (BusinessContactR _)) _ = return Authorized
-    isAuthorized (AdminR (BusinessContactCreateR _)) _ = return Authorized
-    isAuthorized (AdminR (BusinessContactEditR _ _)) _ = return Authorized
-    isAuthorized (AdminR (BusinessContactDeleteR _ _)) _ = return Authorized
+    isAuthorized r@(AdminR BusinessR) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR BusinessCreateR) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (BusinessEditR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR BusinessDeleteR) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (BusinessHoursR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (BusinessCalendarR _ _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (BusinessHoursCreateR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (BusinessTimeSlotR _ _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (BusinessTimeSlotDeleteR _ _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (BusinessHoursEditR _ _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (BusinessCalendarSlotsR _ _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (BusinessCalendarSlotR {})) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (BusinessCalendarSlotCreateR _ _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (BusinessCalendarSlotEditR {})) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (BusinessCalendarSlotDeleteR {})) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (BusinessAboutR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (BusinessAboutCreateR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (BusinessAboutEditR _ _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (BusinessAboutDeleteR _ _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (BusinessContactR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (BusinessContactCreateR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (BusinessContactEditR _ _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (BusinessContactDeleteR _ _)) _ = setUltDest r >> isAdmin
     
     
     
@@ -250,18 +249,18 @@ instance Yesod App where
     isAuthorized (BookingItemR {}) _ = return Authorized
     
 
-    isAuthorized (RequestsR {}) _ = isEmployee
-    isAuthorized (RequestR {}) _ = isEmployee
-    isAuthorized (RequestsSearchR {}) _ = isEmployee
-    isAuthorized (RequestApproveR {}) _ = isEmployee
-    isAuthorized (RequestFinishR {}) _ = isEmployee
-    isAuthorized (RequestAssignR {}) _ = isEmployee
-    isAuthorized (RequestRescheduleR {}) _ = isEmployee
-    isAuthorized (RequestHistR {}) _ = isEmployee
-    isAuthorized (TasksCalendarR {}) _ = isEmployee
-    isAuthorized (TasksDayListR {}) _ = isEmployee
-    isAuthorized (TaskItemR {}) _ = isEmployee
-    isAuthorized (TaskHistR {}) _ = isEmployee
+    isAuthorized r@(RequestsR {}) _ = setUltDest r >> isEmployee
+    isAuthorized r@(RequestR {}) _ = setUltDest r >> isEmployee
+    isAuthorized r@(RequestsSearchR {}) _ = setUltDest r >> isEmployee
+    isAuthorized r@(RequestApproveR {}) _ = setUltDest r >> isEmployee
+    isAuthorized r@(RequestFinishR {}) _ = setUltDest r >> isEmployee
+    isAuthorized r@(RequestAssignR {}) _ = setUltDest r >> isEmployee
+    isAuthorized r@(RequestRescheduleR {}) _ = setUltDest r >> isEmployee
+    isAuthorized r@(RequestHistR {}) _ = setUltDest r >> isEmployee
+    isAuthorized r@(TasksCalendarR {}) _ = setUltDest r >> isEmployee
+    isAuthorized r@(TasksDayListR {}) _ = setUltDest r >> isEmployee
+    isAuthorized r@(TaskItemR {}) _ = setUltDest r >> isEmployee
+    isAuthorized r@(TaskHistR {}) _ = setUltDest r >> isEmployee
         
 
 
@@ -368,23 +367,63 @@ instance YesodAuth App where
 isAuthenticated :: Handler AuthResult
 isAuthenticated = do
     user <- maybeAuth
-    ult <- getUrlRender >>= \r -> fromMaybe (r HomeR) <$> lookupSession ultDestKey
-    -- msgs <- getMessages
     case user of
         Nothing -> do
-            r <- defaultLayout $(widgetFile "auth/403")
+            r <- defaultLayout $ do
+                setTitleI MsgAuthenticationRequired
+                msgs <- getMessages
+                $(widgetFile "auth/403")
             sendResponseStatus status403 r
         Just _ -> return Authorized
+
+
+isAdmin :: Handler AuthResult
+isAdmin = do
+    user <- maybeAuth
+    case user of
+        Nothing -> do
+            r <- defaultLayout $ do
+                setTitleI MsgAuthenticationRequired
+                msgs <- getMessages
+                $(widgetFile "auth/403")
+            sendResponseStatus status403 r
+        Just (Entity _ (User _ _ True _ _ _)) -> return Authorized
+        Just (Entity _ (User _ _ False _ _ _)) -> do
+            r <- defaultLayout $ do
+                setTitleI MsgAuthorizationRequired
+                msgs <- getMessages
+                $(widgetFile "auth/403admin")
+            sendResponseStatus status403 r
+
+
+isAnalyst :: Handler AuthResult
+isAnalyst = do
+    user <- maybeAuth
+    case user of
+        Nothing -> do
+            r <- defaultLayout $ do
+                setTitleI MsgAuthenticationRequired
+                msgs <- getMessages
+                $(widgetFile "auth/403")
+            sendResponseStatus status403 r
+        Just (Entity _ (User _ _ _ True _ _)) -> return Authorized
+        Just (Entity _ (User _ _ _ False _ _)) -> do
+            r <- defaultLayout $ do
+                setTitleI MsgAuthorizationRequired
+                msgs <- getMessages
+                $(widgetFile "auth/403analyst")
+            sendResponseStatus status403 r
 
 
 isEmployee :: Handler AuthResult
 isEmployee = do
     user <- maybeAuth
-    ult <- getUrlRender >>= \r -> fromMaybe (r HomeR) <$> lookupSession ultDestKey
-    -- msgs <- getMessages
     case user of
       Nothing -> do
-          r <- defaultLayout $(widgetFile "auth/403")
+          r <- defaultLayout $ do
+                setTitleI MsgAuthenticationRequired
+                msgs <- getMessages
+                $(widgetFile "auth/403")
           sendResponseStatus status403 r
       Just (Entity uid _) -> do
           empl <- runDB $ selectOne $ do
@@ -394,7 +433,10 @@ isEmployee = do
               return x
           case empl of
             Nothing -> do
-                r <- defaultLayout $(widgetFile "auth/403empl")
+                r <- defaultLayout $ do
+                    setTitleI MsgAuthorizationRequired
+                    msgs <- getMessages
+                    $(widgetFile "auth/403empl")
                 sendResponseStatus status403 r
             _ -> return Authorized
 
@@ -422,14 +464,16 @@ formLogin route = do
                return $ x :& val True
 
         orderBy [asc y, asc (x ^. UserName)]
-        return (((x ^. UserId, x ^. UserName), x ^. UserAdmin), y) )
+        return ((((x ^. UserId, x ^. UserName), x ^. UserAdmin),x ^. UserAnalyst), y) )
     loginFormWrapper <- newIdent
     loginForm <- newIdent
     pCreateAccount <- newIdent
     dlgSampleCreds <- newIdent
     $(widgetFile "auth/form")
+
   where
-      unval = (bimap (bimap (bimap unValue unValue) unValue) unValue <$>)
+      unval = (bimap (bimap (bimap (bimap unValue unValue) unValue) unValue) unValue <$>)
+      anError = "error"
 
 
 instance YesodAuthPersist App

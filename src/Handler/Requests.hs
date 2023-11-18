@@ -784,11 +784,9 @@ getRequestsR uid eid = do
     user <- maybeAuth
     setUltDestCurrent
     msgs <- getMessages
-    formSearch <- newIdent
     let statuses = mapMaybe (readMaybe . unpack . snd) . filter ((== "status") . fst) $ stati
     owners <- filter ((== "assignee") . fst) . reqGetParams <$> getRequest
     let assignees = mapMaybe (readMaybe . unpack . snd) owners
-    dlgAssignee <- newIdent
     sort <- fromMaybe SortOrderDesc . (readMaybe . unpack =<<) <$> runInputGet (iopt textField "sort")
     requests <- runDB $ select $ do
         x :& _ :& s :& _ :& e <- from $ table @Book
@@ -823,8 +821,10 @@ getRequestsR uid eid = do
         return (x,s)
     curr <- getCurrentRoute
     month <- (\(y,m,_) -> YearMonth y m) . toGregorian . utctDay <$> liftIO getCurrentTime
+    formQuery <- newIdent
     toolbarTop <- newIdent
-    sortButton <- newIdent
+    buttonSort <- newIdent
+    dlgAssignee <- newIdent
     defaultLayout $ do
         setTitleI MsgRequests
         $(widgetFile "requests/requests")

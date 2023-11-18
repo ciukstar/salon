@@ -9,7 +9,7 @@
 
 <main.mdc-top-app-bar--fixed-adjust>
 
-  $forall (_,msg) <- msgs
+  $forall (_,msg) <- filter (((==) anError) . fst) msgs
     <div.mdc-banner role=banner data-mdc-auto-init=MDCBanner>
       <div.mdc-banner__content role=alertdialog aria-live=assertive>
         <div.mdc-banner__graphic-text-wrapper>
@@ -68,11 +68,12 @@
       <div.mdc-dialog__content>
         <form name=formUserOptions>
           <ul.mdc-list data-mdc-auto-init=MDCList>
-            $forall (((uid,uname),admin),staff) <- users
+            $forall ((((uid,uname),admin),analyst),staff) <- users
               $with ident <- T.pack $ show $ fromSqlKey uid
                 <li.mdc-list-item.mdc-list-item--with-leading-image
                   .mdc-list-item--with-trailing-radio
-                  :admin:.mdc-list-item--with-three-lines :not admin:.mdc-list-item--with-two-lines>
+                  :admin || analyst:.mdc-list-item--with-three-lines 
+                  :not (admin || analyst):.mdc-list-item--with-two-lines>
                   <span.mdc-list-item__ripple>
                   <span.mdc-list-item__start>
                     <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" width=48 height=48 alt=_{MsgPhoto}
@@ -84,9 +85,18 @@
                         _{MsgEmployee}
                       $else
                         _{MsgCustomer}
-                    $if admin
-                      <div.mdc-list-item__secondary-text>
-                        _{MsgAdministrator}
+                    $case (analyst,admin)
+                      $of (True,True)
+                        <div.mdc-list-item__secondary-text>
+                          _{MsgAnalyst}, _{MsgAdministrator}
+                      $of (True,False)
+                        <div.mdc-list-item__secondary-text>
+                          _{MsgAnalyst}
+                      $of (False,True)
+                        <div.mdc-list-item__secondary-text>
+                          _{MsgAdministrator}
+                      $of (False,False)
+                        
                   <span.mdc-list-item__end>
                     <div.mdc-radio tabindex=-1 data-mdc-auto-init=MDCRadio>
                       <input.mdc-radio__native-control type=radio name=uname value=#{uname} #radio#{ident}>
@@ -108,3 +118,25 @@
           <span.mdc-button__label>_{MsgSelect}
       
   <div.mdc-dialog__scrim>
+
+
+$forall (_,msg) <- filter (((/=) anError) . fst) msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
+    <div.mdc-snackbar__surface>
+      <div.mdc-snackbar__label>#{msg}
+      <div.mdc-snackbar__actions>
+        <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>close
+
+<footer.demo>
+  <small.hint>
+    <sup>*
+    _{MsgDemoSampleOne}
+    <button.mdc-icon-button.mdc-text-field__icon.mdc-text-field__icon--trailing tabindex=0 type=button
+            title=_{MsgDemoUserAccounts} onclick="document.getElementById('#{dlgSampleCreds}').MDCDialog.open()">
+            <span.mdc-icon-button__ripple>
+            <span.mdc-icon-button__focus-ring>
+            <i.material-symbols-outlined>demography
+    _{MsgDemoSampleTwo}

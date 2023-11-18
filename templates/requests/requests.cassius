@@ -13,7 +13,7 @@ main
       justify-content: flex-start
       align-items: center
       gap: 0.5rem
-    ##{sortButton}
+    ##{buttonSort}
       position: absolute
       right: 0
 

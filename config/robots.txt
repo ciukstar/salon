@@ -1,4 +1,1 @@
 User-agent: *
-Disallow: /bookings/calendar/
-Disallow: /admin/
-Disallow: /stats/

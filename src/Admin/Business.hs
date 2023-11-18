@@ -181,7 +181,7 @@ import Model
       )
     , BrandId
     )
-    
+
 import Settings (widgetFile)
 import Settings.StaticFiles (img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg)
 import Menu (menu)
@@ -215,7 +215,7 @@ postBrandDeleteR :: BusinessId -> BrandId -> Handler Html
 postBrandDeleteR bid rid = do
     runDB $ delete $ void $ do
         x <- from (table @Brand)
-        where_ $ x ^. BrandId ==. val rid 
+        where_ $ x ^. BrandId ==. val rid
     addMessageI "info" MsgRecordDeleted
     redirect $ AdminR $ BrandR bid
 
@@ -229,7 +229,7 @@ postBrandEditR bid rid = do
           (ico,icoMime) <- (,fileContentType <$> mico) <$> mapM fileSourceByteString mico
           runDB $ update $ \x -> do
               set x [ BrandMarkWidth =. val (brandMarkWidth r)
-                    , BrandMarkHeight =. val (brandMarkHeight r) 
+                    , BrandMarkHeight =. val (brandMarkHeight r)
                     , BrandName =. val (brandName r)
                     , BrandStrapline =. val (brandStrapline r)
                     , BrandMore =. val (brandMore r)
@@ -459,7 +459,7 @@ formContact bid e extra = do
         } (contactUsLatitude . entityVal <$> e)
     let r = ContactUs bid <$> htmlR <*> showAddrR <*> showScheduleR <*> showMapR <*> lonR <*> latR
     let v = [whamlet|
-#{extra}    
+#{extra}
 <div.form-field>
   <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--textarea data-mdc-auto-init=MDCTextField
     :isJust (fvErrors htmlV):.mdc-text-field--invalid>
@@ -512,7 +512,7 @@ $forall v <- [lonV,latV]
 |]
     return (r,v)
   where
-      
+
     uniqueField = checkM uniqueContactUs htmlField
 
     uniqueContactUs :: Html -> Handler (Either AppMessage Html)
@@ -552,13 +552,13 @@ getBusinessContactR bid = do
                 x <- from $ table @Business
                 return (x ^. BusinessAddr) )
       _ -> return Nothing
-      
+
     schedule <- case info of
       Just (Entity _ (ContactUs _ _ _ True _ _ _)) -> do
         let groupByKey :: (Ord k) => (v -> k) -> [v] -> M.Map k [v]
             groupByKey key = M.fromListWith (++) . fmap (\x -> (key x,[x]))
 
-        M.toList . groupByKey (\(Entity _ (BusinessHours _ day s e _)) -> (dayOfWeek day,(s,e))) <$> do        
+        M.toList . groupByKey (\(Entity _ (BusinessHours _ day s e _)) -> (dayOfWeek day,(s,e))) <$> do
             ymd <- (((toGregorian <$>) . unValue) =<<) <$> runDB ( selectOne ( do
                 x <- from $ table @BusinessHours
                 where_ $ x ^. BusinessHoursDayType ==. val Weekday
@@ -575,7 +575,7 @@ getBusinessContactR bid = do
               _ -> return []
       _ -> return []
     defaultLayout $ do
-        setTitleI MsgContactUs              
+        setTitleI MsgContactUs
         case info of
           Just (Entity _ (ContactUs _ _ _ _ True (Just lng) (Just lat))) -> do
               addScriptRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"
@@ -719,7 +719,7 @@ formAbout bid e extra = do
 |]
     return (r,v)
   where
-      
+
     uniqueField = checkM uniqueAboutUs htmlField
 
     uniqueAboutUs :: Html -> Handler (Either AppMessage Html)
@@ -898,7 +898,11 @@ getBusinessCalendarR bid month = do
     let page = [start .. end]
     let next = addMonths 1 month
     let prev = addMonths (-1) month
+
     today <- (\(y,m,_) -> YearMonth y m) . toGregorian . utctDay <$> liftIO getCurrentTime
+    formQuery <- newIdent
+    toolbarTop <- newIdent
+    calendarPage <- newIdent
     defaultLayout $ do
         setTitleI MsgBusinessDays
         $(widgetFile "/admin/business/schedule/calendar/calendar")
@@ -1025,7 +1029,9 @@ getBusinessHoursR bid = do
     month <- (\(y,m,_) -> YearMonth y m) . toGregorian . utctDay <$> liftIO getCurrentTime
     setUltDestCurrent
     msgs <- getMessages
+    formQuery <- newIdent
     toolbarTop <- newIdent
+    buttonSort <- newIdent
     fabBusinessHoursCreate <- newIdent
     defaultLayout $ do
         setTitleI MsgBusinessDays

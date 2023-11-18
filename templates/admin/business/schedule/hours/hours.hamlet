@@ -92,37 +92,47 @@
           <button.mdc-banner__primary-action.mdc-icon-button type=button>
             <span.mdc-icon-button__ripple>
             <i.material-symbols-outlined>close
-
+            
+  <form method=get ##{formQuery}>
   <div role=toolbar ##{toolbarTop}>
     <div.mdc-segmented-button.mdc-segmented-button--single-select role=radiogroup data-mdc-auto-init=MDCSegmentedButton>
-      <a.mdc-segmented-button__segment href=@{AdminR $ BusinessCalendarR bid month} role=radio
+      <button.mdc-segmented-button__segment role=radio type=submit title=_{MsgCalendar}
+        form=#{formQuery} formaction=@{AdminR $ BusinessCalendarR bid month}
         :curr == Just (AdminR $ BusinessCalendarR bid month):.mdc-segmented-button__segment--selected
         :curr == Just (AdminR $ BusinessCalendarR bid month):aria-checked=true
         :curr /= Just (AdminR $ BusinessCalendarR bid month):aria-checked=false>
         <div.mdc-segmented-button__ripple>
         <i.mdc-segmented-button__icon.material-symbols-outlined>calendar_month
-        <div.mdc-segmented-button__label>_{MsgCalendar}
-      <a.mdc-segmented-button__segment href=@{AdminR $ BusinessHoursR bid} role=radio 
+        
+      <button.mdc-segmented-button__segment role=radio type=submit title=_{MsgList}
+        form=#{formQuery} formaction=@{AdminR $ BusinessHoursR bid}
         :curr == Just (AdminR $ BusinessHoursR bid):.mdc-segmented-button__segment--selected
         :curr == Just (AdminR $ BusinessHoursR bid):aria-checked=true
         :curr /= Just (AdminR $ BusinessHoursR bid):aria-checked=false>
         <div.mdc-segmented-button__ripple>
         <i.mdc-segmented-button__icon.material-symbols-outlined>list
-        <div.mdc-segmented-button__label>_{MsgList}
 
     $case sort
       $of SortOrderAsc
-        <a.mdc-icon-button role=button title=_{MsgSortDescending}
-          href=@?{(AdminR $ BusinessHoursR bid,[("sort",pack $ show SortOrderDesc)])}>
-          <span.mdc-icon-button__ripple>
-          <span.mdc-icon-button__focus-ring>
-          <i.material-symbols-outlined style="transform:rotateX(180deg)">sort
+        $with ident <- pack $ show SortOrderAsc
+          <input type=text form=#{formQuery} name=sort value=#{ident} hidden ##{ident}>
+          <button.mdc-icon-button role=button title=_{MsgSortDescending} ##{buttonSort} type=submit
+            form=#{formQuery} formaction=@{AdminR $ BusinessHoursR bid}
+            name=sort value=#{pack $ show SortOrderDesc}
+            onclick="document.getElementById('#{ident}').remove()">
+            <span.mdc-icon-button__ripple>
+            <span.mdc-icon-button__focus-ring>
+            <i.material-symbols-outlined style="transform:rotateX(180deg)">sort
       $of SortOrderDesc
-        <a.mdc-icon-button role=button title=_{MsgSortAscending}
-          href=@?{(AdminR $ BusinessHoursR bid,[("sort",pack $ show SortOrderAsc)])}>
-          <span.mdc-icon-button__ripple>
-          <span.mdc-icon-button__focus-ring>
-          <i.material-symbols-outlined>sort
+        $with ident <- pack $ show SortOrderDesc
+          <input type=text form=#{formQuery} name=sort value=#{ident} hidden ##{ident}>
+          <button.mdc-icon-button role=button title=_{MsgSortAscending} ##{buttonSort} type=submit
+            form=#{formQuery} formaction=@{AdminR $ BusinessHoursR bid}
+            name=sort value=#{pack $ show SortOrderAsc}
+            onclick="document.getElementById('#{ident}').remove()">
+            <span.mdc-icon-button__ripple>
+            <span.mdc-icon-button__focus-ring>
+            <i.material-symbols-outlined>sort
 
   $if null slots
     <figure style="text-align:center">

@@ -1,3 +1,9 @@
+OnlyAdminisHaveAccess: Only administrators can manage this data
+AuthorizationRequired: Authorization required
+OnlyAnalystsHaveAccess: Only analysts have access to analytical reports
+LoginAsAdminToContinue: Please login as administrator to continue
+LoginAsAnalystToContinue: Please log in as an analyst to continue
+Analyst: Analyst
 NoRequestsFoundForThisDay: No requests found for this day
 LoginAsEmployeeToContinue: Please login as employee to continue
 LoginToContinue: Please login to continue
@@ -330,6 +336,9 @@ AppName: Salon
 MetaKeywords: beauty, salon, application
 MetaDescription: Beauty Salon Application
 
+DemoSampleOne: Click on the
+DemoSampleTwo: icon to get a list of demo accounts
+
 Documentation: Docs
 Doc001 hrefHome@Text: The <a href=#{hrefHome}>"Salon"</a> application provides the opportunity to publish and advertise the services of beauty salon owners on the web.
 
@@ -362,3 +371,13 @@ Doc007: Currently, the app only supports one business. Multi-business support is
 Doc008 href@Text: Application users, including clients, employees and administrators, can be registered through the <a href=#{href}>"Registration"</a> form.
 
 Doc009 href@Text: Users can also be managed by administrators in the section <a href=#{href}>“Users”</a> of the group “Data”.
+
+Doc010: A registered user can have several roles at the same time.
+
+Doc011: An administrator can assign the role "Administrator" to any other registered user. The role “Administrator” is required in order to have access to any section of the group “Data”. That is, manage any application data.
+
+Doc012: An administrator can assign the role "Analyst" to any other registered user. The role “Analyst” is required in order to have access to any section of the group “Analytics”.
+
+Doc013: Any user who is also registered as a staff member has the role "Employee". A user with the role "Employee" has access to the service request queue.
+
+Doc014: All users can become customers by simply registering and using the services offered.

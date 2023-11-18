@@ -15,16 +15,15 @@ header
     height: 56px
 
 main
-  div.toolbar
+  ##{toolbarTop}
+    position: relative
     padding: 1rem 0 0.5rem 1rem
     display: flex
     flex-direction: row
     justify-content: space-between
     align-items: center
-    a.mdc-segmented-button__segment
-      border-style: solid
 
-  div.calendar
+  ##{calendarPage}
     display: grid
     gap: 0.5rem
     padding: 0 0.5rem

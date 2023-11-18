@@ -24,10 +24,10 @@
   <figure>
     <i.material-symbols-outlined>key
     <figcaption>
-      _{MsgLoginAsEmployeeToContinue}.
+      _{MsgLoginAsAnalystToContinue}.
       <p>
         <small.hint>
-          _{MsgOnlyEmployeesMaySeeRequests}.
+          _{MsgOnlyAnalystsHaveAccess}.
       
   <a.mdc-button.mdc-button--raised href=@{AuthR LoginR} role=button>
     <span.mdc-button__ripple>

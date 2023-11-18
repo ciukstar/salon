@@ -273,6 +273,7 @@ getBookingsCalendarR month = do
 
           today <- (\(y,m,_) -> YearMonth y m) . toGregorian . utctDay <$> liftIO getCurrentTime
           curr <- getCurrentRoute
+          formQuery <- newIdent
           toolbarTop <- newIdent
           divCalendar <- newIdent
           defaultLayout $ do
@@ -696,15 +697,12 @@ getAppointmentsR = do
               return (x,s)
           today <- (\(y,m,_) -> YearMonth y m) . toGregorian . utctDay <$> liftIO getCurrentTime
           curr <- getCurrentRoute
+          formQuery <- newIdent
           toolbarTop <- newIdent
           buttonSort <- newIdent
           defaultLayout $ do
               setTitleI MsgMyAppointments
               $(widgetFile "appointments/appointments")
-
-
-fstsec :: a -> b -> (a,b)
-fstsec x = (x,)
 
 
 resolveBookStatus :: BookStatus -> (Text, Text, AppMessage, AppMessage)

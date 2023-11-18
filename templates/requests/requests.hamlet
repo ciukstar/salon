@@ -1,5 +1,5 @@
 
-<form method=get action=@{RequestsR uid eid} ##{formSearch}>
+<form method=get action=@{RequestsR uid eid} ##{formQuery}>
 
 ^{menu}
 <header.mdc-top-app-bar.mdc-top-app-bar--prominent.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
@@ -36,7 +36,7 @@
     <section.left>
       <div.mdc-segmented-button.mdc-segmented-button--single-select role=radiogroup data-mdc-auto-init=MDCSegmentedButton>
         <button.mdc-segmented-button__segment role=radio title=_{MsgCalendar} type=submit
-          form=#{formSearch} formaction=@{TasksCalendarR uid eid month}
+          form=#{formQuery} formaction=@{TasksCalendarR uid eid month}
           :curr == Just (TasksCalendarR uid eid month):.mdc-segmented-button__segment--selected
           :curr == Just (TasksCalendarR uid eid month):aria-checked=true
           :curr /= Just (TasksCalendarR uid eid month):aria-checked=false>
@@ -44,7 +44,7 @@
           <i.mdc-segmented-button__icon.material-symbols-outlined>calendar_month
 
         <button.mdc-segmented-button__segment role=radio title=_{MsgList} type=submit
-          form=#{formSearch} formaction=@{RequestsR uid eid}
+          form=#{formQuery} formaction=@{RequestsR uid eid}
           :curr == Just (RequestsR uid eid):.mdc-segmented-button__segment--selected
           :curr == Just (RequestsR uid eid):aria-checked=true
           :curr /= Just (RequestsR uid eid):aria-checked=false>
@@ -65,9 +65,9 @@
     $case sort
       $of SortOrderAsc
         $with ident <- pack $ show SortOrderAsc
-          <input type=text form=#{formSearch} name=sort value=#{ident} hidden ##{ident}>
-          <button.mdc-icon-button role=button title=_{MsgSortDescending} ##{sortButton} type=submit
-            form=#{formSearch} formaction=@{RequestsR uid eid}
+          <input type=text form=#{formQuery} name=sort value=#{ident} hidden ##{ident}>
+          <button.mdc-icon-button role=button title=_{MsgSortDescending} ##{buttonSort} type=submit
+            form=#{formQuery} formaction=@{RequestsR uid eid}
             name=sort value=#{pack $ show SortOrderDesc}
             onclick="document.getElementById('#{ident}').remove()">
             <span.mdc-icon-button__ripple>
@@ -75,9 +75,9 @@
             <i.material-symbols-outlined style="transform:rotateX(180deg)">sort
       $of SortOrderDesc
         $with ident <- pack $ show SortOrderDesc
-          <input type=text form=#{formSearch} name=sort value=#{ident} hidden ##{ident}>
-          <button.mdc-icon-button role=button title=_{MsgSortAscending} ##{sortButton} type=submit
-            form=#{formSearch} formaction=@{RequestsR uid eid}
+          <input type=text form=#{formQuery} name=sort value=#{ident} hidden ##{ident}>
+          <button.mdc-icon-button role=button title=_{MsgSortAscending} ##{buttonSort} type=submit
+            form=#{formQuery} formaction=@{RequestsR uid eid}
             name=sort value=#{pack $ show SortOrderAsc}
             onclick="document.getElementById('#{ident}').remove()">
             <span.mdc-icon-button__ripple>
@@ -89,9 +89,9 @@
       $with ident <- pack $ show status
         $with ((color,icon,label,title),checked) <- (resolveBookStatus status,elem status statuses)
           $if checked
-            <input type=text name=status value=#{ident} form=#{formSearch} hidden ##{ident}>
+            <input type=text name=status value=#{ident} form=#{formQuery} hidden ##{ident}>
             <button.mdc-chip.mdc-chip--selected role=menuitem type=submit
-              form=#{formSearch} formaction=@{RequestsR uid eid}
+              form=#{formQuery} formaction=@{RequestsR uid eid}
               onclick="document.getElementById('#{ident}').remove()">
               <div.mdc-chip__ripple>
               <span.mdc-chip__checkmark>
@@ -101,7 +101,7 @@
                 <span.mdc-chip__text title=_{title}>_{label}
           $else
             <button.mdc-chip role=menuitem type=submit
-              form=#{formSearch} formaction=@{RequestsR uid eid}
+              form=#{formQuery} formaction=@{RequestsR uid eid}
               name=status value=#{ident}>
               <div.mdc-chip__ripple>
               <i.mdc-chip__icon.mdc-chip__icon--leading.material-symbols-outlined style="color:#{color}">
@@ -168,7 +168,7 @@ $forall (_,msg) <- msgs
             <div.mdc-form-field.mdc-form-field--nowrap>
               <div.mdc-checkbox data-mdc-auto-init=MDCCheckbox>
                 <input.mdc-checkbox__native-control type=checkbox #checkbox#{ident}
-                 name=assignee value=#{ident} form=#{formSearch} :elem assignee assignees:checked>
+                 name=assignee value=#{ident} form=#{formQuery} :elem assignee assignees:checked>
                 <div.mdc-checkbox__background>
                   <svg.mdc-checkbox__checkmark viewBox="0 0 24 24">
                     <path.mdc-checkbox__checkmark-path fill=none d="M1.73,12.91 8.1,19.28 22.79,4.59">
@@ -183,7 +183,7 @@ $forall (_,msg) <- msgs
           <span.mdc-button__ripple>
           <span.mdc-button__focus-ring>
           <span.mdc-button__label>_{MsgCancel}
-        <button.mdc-button.mdc-button--raised type=submit form=#{formSearch}>
+        <button.mdc-button.mdc-button--raised type=submit form=#{formQuery}>
           <span.mdc-button__ripple>
           <span.mdc-button__focus-ring>
           <span.mdc-button__label>_{MsgSelect}

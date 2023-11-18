@@ -140,7 +140,7 @@
               <tr.mdc-data-table__row>
                 <th.mdc-data-table__cell scope=row>_{MsgUser}
                 <td.mdc-data-table__cell>
-                  $maybe Entity _ (User uname _ _ _ _ ) <- user
+                  $maybe Entity _ (User uname _ _ _ _ _ ) <- user
                     #{uname}
 
 $forall (_,msg) <- msgs

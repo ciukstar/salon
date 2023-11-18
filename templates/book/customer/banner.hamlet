@@ -44,7 +44,7 @@
                 <i.material-symbols-outlined>close
     $of _
 
-  $maybe Entity _ (User name _ _ fname email) <- user
+  $maybe Entity _ (User name _ _ _ fname email) <- user
 
     <details.mdc-list open>
       <summary.mdc-list-item--with-leading-icon.mdc-list-item

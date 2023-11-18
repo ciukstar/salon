@@ -1,3 +1,9 @@
+OnlyAdminisHaveAccess: Numai administratorii pot gestiona aceste date
+AuthorizationRequired: Este necesară autorizarea
+OnlyAnalystsHaveAccess: Doar analiștii au acces la rapoartele analitice
+LoginAsAdminToContinue: Vă rugăm să vă conectați ca administrator pentru a continua
+LoginAsAnalystToContinue: Vă rugăm să vă conectați ca analist pentru a continua
+Analyst: Analist
 NoRequestsFoundForThisDay: Nu au fost găsite solicitări pentru această zi
 LoginAsEmployeeToContinue: Vă rugăm să vă autentificați ca angajat pentru a continua
 LoginToContinue: Vă rugăm să vă conectați pentru a continua
@@ -330,6 +336,11 @@ AppName: Salon
 MetaKeywords: frumusețe, salon, aplicație
 MetaDescription: Aplicația salon de frumusețe
 
+
+DemoSampleOne: Faceți clic pe pictograma
+DemoSampleTwo: pentru a obține o listă de conturi de utilizator demonstrative
+
+
 Documentation: Documentație
 Doc001 hrefHome: Aplicația <a href=#{hrefHome}>„Salon”</a> oferă posibilitatea de a publica și de a face publicitate serviciilor proprietarilor de saloane de înfrumusețare pe web.
 
@@ -362,3 +373,13 @@ Doc007: În prezent, aplicația acceptă o singură afacere. Asistența multi-bu
 Doc008 href: Utilizatorii aplicației, inclusiv clienți, angajați și administratori, pot fi înregistrați prin intermediul formularului <a href=#{href}>„Înregistrare”</a>.
 
 Doc009 href: De asemenea, utilizatorii pot fi gestionați de administratori în secțiunea <a href=#{href}>„Utilizatori”</a> din grupul „Date”.
+
+Doc010: Un utilizator înregistrat poate avea mai multe roluri în același timp.
+
+Doc011: Un administrator poate atribui rolul „Administrator” oricărui alt utilizator înregistrat. Rolul de „Administrator” este necesar pentru a avea acces la orice secțiune a grupului „Date”. Adică, gestionați orice date ale aplicației.
+
+Doc012: Un administrator poate atribui rolul „Analist” oricărui alt utilizator înregistrat. Rolul „Analist” este necesar pentru a avea acces la orice secțiune a grupului „Analiza”. Adică pentru a genera rapoarte analitice.
+
+Doc013: Orice utilizator care este înregistrat și ca membru al personalului are rolul „Angajat”. Un utilizator cu rolul „Angajat” are acces la coada de solicitări de servicii.
+
+Doc014: Toți utilizatorii pot deveni clienți prin simpla înregistrare și utilizarea serviciilor oferite.

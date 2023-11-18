@@ -26,32 +26,41 @@
           <i.material-symbols-outlined>login
 
 <main.mdc-top-app-bar--fixed-adjust>
-  $if not (null users)
-    <nav.mdc-list>
-      $forall Entity uid (User name _ _ fname email) <- users
-        <a.mdc-list-item href=@{AdminR $ UserR uid}
-          .mdc-list-item--with-three-lines.mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon>
-          <span.mdc-list-item__ripple>
-          <span.mdc-list-item__start>
-            <img width=56 height=56 src=@{AccountPhotoR uid} alt=_{MsgPhoto}
-              onerror="this.src = '@{PhotoPlaceholderR}'">
-          <span.mdc-list-item__content>
-            <div.mdc-list-item__primary-text>
-              #{name}
-            <div.mdc-list-item__secondary-text>
-              $maybe fname <- fname
-                #{fname}
-            <div.mdc-list-item__secondary-text>
-              $maybe email <- email
-                #{email}
-          <span.mdc-list-item__end>
-            <i.material-symbols-outlined>arrow_forward_ios
-        <div.mdc-list-divider role=separator>
-  $else
+  $if null users
     <figure style="text-align:center">
       <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
       <figcaption>
         _{MsgNoUsersYet}.
+  $else
+    <nav.mdc-list>
+      $forall Entity uid (User uname _ admin analyst fname email) <- users
+        <a.mdc-list-item href=@{AdminR $ UserR uid}
+          .mdc-list-item--with-three-lines.mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon>
+          <span.mdc-list-item__ripple>
+          <span.mdc-list-item__start>
+            <img width=56 height=56 src=@{AccountPhotoR uid} alt=_{MsgPhoto} loading=lazy
+              onerror="this.src = '@{PhotoPlaceholderR}'">
+          <span.mdc-list-item__content>
+            <div.mdc-list-item__primary-text>
+              #{uname}
+            <div.mdc-list-item__secondary-text>
+              $maybe fname <- fname
+                #{fname}
+            <div.mdc-list-item__secondary-text>
+              $case (analyst,admin)
+                $of (True,True)
+                  _{MsgAnalyst}, _{MsgAdministrator}
+                $of (True,False)
+                  _{MsgAnalyst}
+                $of (False,True)
+                  _{MsgAdministrator}
+                $of (False,False)
+                  $maybe email <- email
+                    #{email}
+          <span.mdc-list-item__end>
+            <i.material-symbols-outlined>arrow_forward_ios
+        <div.mdc-list-divider role=separator>
+        
   <div.mdc-touch-target-wrapper #fabAddUser>
     <a.mdc-fab.mdc-fab--touch href=@{AdminR UserCreateFormR}>
       <span.mdc-fab__ripple>

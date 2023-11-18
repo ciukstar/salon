@@ -1,0 +1,6 @@
+
+window.mdc.autoInit();
+
+Array.from(
+  document.querySelectorAll('aside.mdc-snackbar')
+).forEach(function (x) { x.MDCSnackbar.open(); });
