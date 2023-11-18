@@ -376,7 +376,7 @@ Doc009 href: De asemenea, utilizatorii pot fi gestionați de administratori în 
 
 Doc010: Un utilizator înregistrat poate avea mai multe roluri în același timp.
 
-Doc011: Un administrator poate atribui rolul „Administrator” oricărui alt utilizator înregistrat. Rolul de „Administrator” este necesar pentru a avea acces la orice secțiune a grupului „Date”. Adică, gestionați orice date ale aplicației.
+Doc011: Un administrator poate atribui rolul „Administrator” oricărui alt utilizator înregistrat. Rolul de „Administrator” este necesar pentru a avea acces la orice secțiune a grupului „Date”. Adică pentru a gestiona configurația și datele aplicației.
 
 Doc012: Un administrator poate atribui rolul „Analist” oricărui alt utilizator înregistrat. Rolul „Analist” este necesar pentru a avea acces la orice secțiune a grupului „Analiza”. Adică pentru a genera rapoarte analitice.
 

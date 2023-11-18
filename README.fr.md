@@ -39,6 +39,16 @@ Les utilisateurs de l'application, y compris les clients, les employés et les a
 
 De plus, les utilisateurs peuvent être gérés par les administrateurs dans la section [« Utilisateurs »](https://salonfr-w3cpovaqka-de.a.run.app/admin/users) du groupe « Données ».
 
+Un utilisateur enregistré peut avoir plusieurs rôles en même temps.
+
+Un administrateur peut attribuer le rôle « Administrateur » à tout autre utilisateur enregistré. Le rôle « Administrateur » est requis pour avoir accès à n'importe quelle section du groupe « Données ». C'est-à-dire gérer la configuration et les données de l'application.
+
+Un administrateur peut attribuer le rôle « Analyste » à tout autre utilisateur enregistré. Le rôle « Analyste » est requis pour avoir accès à n'importe quelle section du groupe « Analyse ». Autrement dit, pour générer des rapports analytiques.
+
+Tout utilisateur également enregistré en tant que membre du personnel a le rôle "Employé". Un utilisateur avec le rôle « Employé » a accès à la file d'attente des demandes de service.
+
+Tous les utilisateurs peuvent devenir clients par simple inscription et utilisation des services proposés.
+
 ## Diagramme ERD
 
 ![Diagramme entité-relation](static/img/Salon-ERD.svg)

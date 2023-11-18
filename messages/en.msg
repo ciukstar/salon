@@ -374,7 +374,7 @@ Doc009 href@Text: Users can also be managed by administrators in the section <a 
 
 Doc010: A registered user can have several roles at the same time.
 
-Doc011: An administrator can assign the role "Administrator" to any other registered user. The role “Administrator” is required in order to have access to any section of the group “Data”. That is, manage any application data.
+Doc011: An administrator can assign the role "Administrator" to any other registered user. The role “Administrator” is required in order to have access to any section of the group “Data”. That is, to manage the configuration and data of the application.
 
 Doc012: An administrator can assign the role "Analyst" to any other registered user. The role “Analyst” is required in order to have access to any section of the group “Analytics”.
 

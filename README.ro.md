@@ -39,6 +39,17 @@ Utilizatorii aplicației, inclusiv clienți, angajați și administratori, pot f
 
 De asemenea, utilizatorii pot fi gestionați de administratori în secțiunea [„Utilizatori”](https://salonro-w3cpovaqka-de.a.run.app/admin/users) din grupul „Date”.
 
+Un utilizator înregistrat poate avea mai multe roluri în același timp.
+
+Un administrator poate atribui rolul „Administrator” oricărui alt utilizator înregistrat. Rolul de „Administrator” este necesar pentru a avea acces la orice secțiune a grupului „Date”. Adică pentru a gestiona configurația și datele aplicației.
+
+Un administrator poate atribui rolul „Analist” oricărui alt utilizator înregistrat. Rolul „Analist” este necesar pentru a avea acces la orice secțiune a grupului „Analiza”. Adică pentru a genera rapoarte analitice.
+
+Orice utilizator care este înregistrat și ca membru al personalului are rolul „Angajat”. Un utilizator cu rolul „Angajat” are acces la coada de solicitări de servicii.
+
+Toți utilizatorii pot deveni clienți prin simpla înregistrare și utilizarea serviciilor oferite.
+
+
 ## Diagrama ERD
 
 ![Diagrama Entitate-Relație](static/img/Salon-ERD.svg)

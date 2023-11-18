@@ -39,6 +39,16 @@ Application users, including clients, employees and administrators, can be regis
 
 Users can also be managed by administrators in the section [“Users”](https://salon-w3cpovaqka-de.a.run.app/admin/users) of the group “Data”.
 
+A registered user can have several roles at the same time.
+
+An administrator can assign the role "Administrator" to any other registered user. The role “Administrator” is required in order to have access to any section of the group “Data”. That is, to manage the configuration and data of the application.
+
+An administrator can assign the role "Analyst" to any other registered user. The role “Analyst” is required in order to have access to any section of the group “Analytics”.
+
+Any user who is also registered as a staff member has the role "Employee". A user with the role "Employee" has access to the service request queue.
+
+All users can become customers by simply registering and using the services offered.
+
 
 ## ERD Diagram
 

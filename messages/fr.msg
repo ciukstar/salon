@@ -376,7 +376,7 @@ Doc009 href: De plus, les utilisateurs peuvent être gérés par les administrat
 
 Doc010: Un utilisateur enregistré peut avoir plusieurs rôles en même temps.
 
-Doc011: Un administrateur peut attribuer le rôle « Administrateur » à tout autre utilisateur enregistré. Le rôle « Administrateur » est requis pour avoir accès à n'importe quelle section du groupe « Données ». Autrement dit, gérez toutes les données d’application.
+Doc011: Un administrateur peut attribuer le rôle « Administrateur » à tout autre utilisateur enregistré. Le rôle « Administrateur » est requis pour avoir accès à n'importe quelle section du groupe « Données ». C'est-à-dire gérer la configuration et les données de l'application.
 
 Doc012: Un administrateur peut attribuer le rôle « Analyste » à tout autre utilisateur enregistré. Le rôle « Analyste » est requis pour avoir accès à n'importe quelle section du groupe « Analyse ». Autrement dit, pour générer des rapports analytiques.
 
