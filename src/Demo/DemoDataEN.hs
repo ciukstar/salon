@@ -180,7 +180,7 @@ populateEN = do
     let user1 = User { userName = "johnnysmith"
                      , userPassword = decodeUtf8 pass1
                      , userAdmin = False
-                     , userAnalyst = False
+                     , userAnalyst = True
                      , userFullName = Just "Johnny Smith"
                      , userEmail = Just "jsmith@mail.uk"
                      }
@@ -236,7 +236,7 @@ populateEN = do
     pass2 <- liftIO $ makePassword "marylopez" 17
     let user2 = User { userName = "marylopez"
                      , userPassword = decodeUtf8 pass2
-                     , userAdmin = False
+                     , userAdmin = True
                      , userAnalyst = False
                      , userFullName = Just "Mary Lopez"
                      , userEmail = Just "mlopez@mail.uk"

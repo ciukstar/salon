@@ -178,7 +178,7 @@ populateRO = do
     let user1 = User { userName = "popaa"
                      , userPassword = decodeUtf8 pass1
                      , userAdmin = False
-                     , userAnalyst = False
+                     , userAnalyst = True
                      , userFullName = Just "Popa Andrei"
                      , userEmail = Just "popaa@mail.ro"
                      }
@@ -234,7 +234,7 @@ populateRO = do
     pass2 <- liftIO $ makePassword "raduam" 17
     let user2 = User { userName = "raduam"
                      , userPassword = decodeUtf8 pass2
-                     , userAdmin = False
+                     , userAdmin = True
                      , userAnalyst = False
                      , userFullName = Just "Radu Ana-Maria"
                      , userEmail = Just "raduam@mail.ro"

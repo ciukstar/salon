@@ -164,7 +164,7 @@ instance Yesod App where
     isAuthorized r@(AdminR (AdmPriceDeleteR _ _)) _ = setUltDest r >> isAdmin
     isAuthorized r@(AdminR AdmStaffR) _ = setUltDest r >> isAdmin
     isAuthorized r@(AdminR AdmStaffCreateR) _ = setUltDest r >> isAdmin
-    isAuthorized (AdminR (AdmStaffPhotoR _)) _ = isAdmin
+    isAuthorized (AdminR (AdmStaffPhotoR _)) _ = return Authorized
     isAuthorized r@(AdminR (AdmEmplR _)) _ = setUltDest r >> isAdmin
     isAuthorized r@(AdminR (AdmStaffEditR _)) _ = setUltDest r >> isAdmin
     isAuthorized r@(AdminR (AdmStaffDeleteR _)) _ = setUltDest r >> isAdmin
@@ -194,7 +194,6 @@ instance Yesod App where
     isAuthorized r@(AdminR (EmplCalendarSlotDeleteR {})) _ = setUltDest r >> isAdmin
     isAuthorized r@(AdminR (EmplCalendarSlotCreateR {})) _ = setUltDest r >> isAdmin
 
-    
     isAuthorized r@(AdminR (BrandR _)) _ = setUltDest r >> isAdmin
     isAuthorized r@(AdminR (BrandDeleteR _ _)) _ = setUltDest r >> isAdmin
     isAuthorized r@(AdminR (BrandEditR _ _)) _ = setUltDest r >> isAdmin

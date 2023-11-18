@@ -172,7 +172,7 @@ populateRU = do
     let user1 = User { userName = "ivanoviv"
                      , userPassword = decodeUtf8 pass1
                      , userAdmin = False
-                     , userAnalyst = False
+                     , userAnalyst = True
                      , userFullName = Just "Иванов Игорь Васильевич"
                      , userEmail = Just "ivanoviv@mail.ru"
                      }
@@ -227,7 +227,7 @@ populateRU = do
     pass2 <- liftIO $ makePassword "bulanovalm" 17
     let user2 = User { userName = "bulanovalm"
                      , userPassword = decodeUtf8 pass2
-                     , userAdmin = False
+                     , userAdmin = True
                      , userAnalyst = False
                      , userFullName = Just "Буланова Любовь Михайловна"
                      , userEmail = Just "bulanovalm@mail.ru"
