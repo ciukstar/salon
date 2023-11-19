@@ -41,13 +41,18 @@ import Yesod.Auth (Route (LoginR, LogoutR), maybeAuth)
 
 import Foundation
     ( Handler, Widget
-    , Route (StaticR, AccountPhotoR, HomeR, AccountR, PhotoPlaceholderR, AuthR)
+    , Route
+      ( StaticR, AccountPhotoR, HomeR, AccountR, PhotoPlaceholderR
+      , AuthR, AdminR
+      )
+    , AdminR (AdmStaffPhotoR)
     , AppMessage
       ( MsgAccount, MsgCancel, MsgUsername, MsgPassword
       , MsgPhoto, MsgFullName, MsgEmail, MsgSignUp, MsgBack
-      , MsgConfirmPassword, MsgYouMustEnterTwoValues
+      , MsgConfirmPassword, MsgYouMustEnterTwoValues, MsgEmployee
       , MsgPasswordsDoNotMatch, MsgRegistration, MsgUserProfile
-      , MsgLogout, MsgLogin, MsgLoginToSeeYourProfile
+      , MsgLogout, MsgLogin, MsgLoginToSeeYourProfile, MsgRoles
+      , MsgAdministrator, MsgAnalyst
       )
     )
 
@@ -57,22 +62,38 @@ import Database.Persist (Entity (Entity), insert, insert_)
 
 import Model
     ( ultDestKey
-    , User (userName, User, userPassword, userFullName, userEmail), UserId
+    , UserId, User (userName, User, userPassword, userFullName, userEmail)
     , UserPhoto (UserPhoto, userPhotoUser, userPhotoPhoto, userPhotoMime)
-    , EntityField (UserPhotoUser)
+    , EntityField (UserPhotoUser, StaffUser, RoleStaff, RoleName)
+    , Staff (Staff), Role
     )
 
 import Database.Esqueleto.Experimental
-    (selectOne, from, table, where_
-    , (^.), (==.), val
+    (Value (Value), selectOne, from, table, where_
+    , (^.), (==.), val, just, select, distinct
     )
 
-import Settings.StaticFiles (img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg)
+import Settings.StaticFiles
+    ( img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg )
 
-getProfileR :: Handler Html
-getProfileR = do
+
+getProfileR :: UserId -> Handler Html
+getProfileR uid = do
     user <- maybeAuth
     ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$> lookupSession ultDestKey
+
+    empl <- runDB $ selectOne $ do
+        x <- from $ table @Staff
+        where_ $ x ^. StaffUser ==. just (val uid)
+        return x
+
+    jobs <- case empl of
+      Just (Entity eid _) -> runDB $ select $ distinct $ do
+          x <- from $ table @Role
+          where_ $ x ^. RoleStaff ==. val eid
+          return $ x ^. RoleName
+      Nothing -> return []
+        
     defaultLayout $ do
         setTitleI MsgUserProfile
         $(widgetFile "profile")

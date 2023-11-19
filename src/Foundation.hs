@@ -121,18 +121,15 @@ instance Yesod App where
     authRoute :: App -> Maybe (Route App)
     authRoute _ = Just $ AuthR LoginR
 
-    isAuthorized
-        :: Route App  -- ^ The route the user is visiting.
-        -> Bool       -- ^ Whether or not this is a "write" request.
-        -> Handler AuthResult
-    -- Routes not requiring authentication.
+    isAuthorized :: Route App -> Bool -> Handler AuthResult
+
+    isAuthorized (StaticR _) _ = return Authorized
+    
     isAuthorized (AuthR _) _ = return Authorized
     isAuthorized HomeR _ = return Authorized
     isAuthorized FaviconR _ = return Authorized
     isAuthorized RobotsR _ = return Authorized
     isAuthorized PhotoPlaceholderR _ = return Authorized
-
-    isAuthorized (StaticR _) _ = return Authorized
 
     isAuthorized r@(StatsR PopOffersR) _               = setUltDest r >> isAnalyst
     isAuthorized r@(StatsR WorkloadsR) _               = setUltDest r >> isAnalyst
@@ -225,8 +222,6 @@ instance Yesod App where
     isAuthorized r@(AdminR (BusinessContactEditR _ _)) _ = setUltDest r >> isAdmin
     isAuthorized r@(AdminR (BusinessContactDeleteR _ _)) _ = setUltDest r >> isAdmin
     
-    
-    
     isAuthorized ContactR _ = return Authorized
 
     isAuthorized BookEndR _ = return Authorized
@@ -260,12 +255,11 @@ instance Yesod App where
     isAuthorized r@(TasksDayListR {}) _ = setUltDest r >> isEmployee
     isAuthorized r@(TaskItemR {}) _ = setUltDest r >> isEmployee
     isAuthorized r@(TaskHistR {}) _ = setUltDest r >> isEmployee
-        
-
-
+    
+    isAuthorized (ProfileR _) _ = isAuthenticated
+    
     isAuthorized AccountR _ = return Authorized
     isAuthorized (AccountPhotoR _) _ = return Authorized
-    isAuthorized ProfileR _ = isAuthenticated
 
     isAuthorized ServicesR _ = return Authorized
     isAuthorized (ServiceR _) _ = return Authorized

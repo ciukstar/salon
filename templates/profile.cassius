@@ -3,6 +3,14 @@ main
   display: flex
   flex-direction: column
   align-items: center
-  gap: 1rem
   figure
     text-align: center
+
+  details.mdc-list
+    align-self: stretch
+    padding: 0
+    summary .mdc-list-item__primary-text
+      color: var(--theme-text-hint-on-light)
+
+  details.mdc-list:first-of-type
+    margin-top: 3rem
