@@ -1,3 +1,8 @@
+Remove: Supprimer
+RemoveProfileHint: Vous serez déconnecté et ne pourrez pas vous connecter avec ce nom d'utilisateur
+RemoveProfileAreYouSure: Êtes-vous sûr de vouloir supprimer votre profil ?
+Removed: Supprimé
+Blocked: Bloqué
 OnlyAdminisHaveAccess: Seuls les administrateurs peuvent gérer ces données
 AuthorizationRequired: Autorisation requise
 OnlyAnalystsHaveAccess: Seuls les analystes ont accès aux rapports analytiques
@@ -296,6 +301,7 @@ Category: Catégorie
 Categories: Catégories
 Image: Image
 NoServicesYet: Il n'y a pas encore de services
+RecordRemoved: L'enregistrement a été supprimé
 RecordDeleted: L'enregistrement a été supprimé
 RecordEdited: L'enregistrement a été modifié
 RecordAdded: Enregistrement ajouté

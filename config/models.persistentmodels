@@ -95,6 +95,8 @@ User
   password Text
   admin Bool
   analyst Bool
+  blocked Bool
+  removed Bool
   fullName Text Maybe
   email Text Maybe
   UniqueUser name

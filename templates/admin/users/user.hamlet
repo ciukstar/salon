@@ -40,7 +40,7 @@
   <div.mdc-dialog__scrim>
 
 <main.mdc-top-app-bar--fixed-adjust>
-  $maybe Entity uid (User name _ admin analyst fname email) <- user
+  $maybe Entity uid (User uname _ admin analyst blocked deleted fname email) <- user
     <figure #figureUserPhoto>
       <img width=56 height=56 src=@{AccountPhotoR uid} alt=_{MsgPhoto} loading=lazy>
       <figcaption>
@@ -51,7 +51,19 @@
           <tbody.mdc-data-table__content>
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgUsername}
-              <td.mdc-data-table__cell>#{name}
+              <td.mdc-data-table__cell>#{uname}
+
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgFullName}
+              <td.mdc-data-table__cell>
+                $maybe fname <- fname
+                  #{fname}
+
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgEmail}
+              <td.mdc-data-table__cell>
+                $maybe email <- email
+                  #{email}
               
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgAdministrator}
@@ -68,18 +80,22 @@
                   _{MsgYes}
                 $else
                   _{MsgNo}
-
+              
             <tr.mdc-data-table__row>
-              <th.mdc-data-table__cell scope=row>_{MsgFullName}
+              <th.mdc-data-table__cell scope=row>_{MsgBlocked}
               <td.mdc-data-table__cell>
-                $maybe fname <- fname
-                  #{fname}
-
+                $if blocked
+                  _{MsgYes}
+                $else
+                  _{MsgNo}
+              
             <tr.mdc-data-table__row>
-              <th.mdc-data-table__cell scope=row>_{MsgEmail}
+              <th.mdc-data-table__cell scope=row>_{MsgRemoved}
               <td.mdc-data-table__cell>
-                $maybe email <- email
-                  #{email}
+                $if deleted
+                  _{MsgYes}
+                $else
+                  _{MsgNo}
 
 
 $forall (_,msg) <- msgs

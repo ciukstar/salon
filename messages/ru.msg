@@ -1,3 +1,8 @@
+Remove: Удалить
+RemoveProfileHint: Вы автоматически выйдете из системы и не сможете войти под этим именем пользователя
+RemoveProfileAreYouSure: Вы уверены, что хотите удалить свой профиль?
+Removed: Удален
+Blocked: Заблокирован
 OnlyAdminisHaveAccess: Только администраторы могут управлять этими данными
 AuthorizationRequired: Требуется авторизация
 OnlyAnalystsHaveAccess: Доступ к аналитическим отчетам имеют только аналитики
@@ -296,6 +301,7 @@ Category: Категория
 Categories: Категории
 Image: Изображение
 NoServicesYet: Услуг пока нет
+RecordRemoved: Запись удалена
 RecordDeleted: Запись удалена
 RecordEdited: Запись отредактирована
 RecordAdded: Запись добавлена

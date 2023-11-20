@@ -1,0 +1,12 @@
+
+##{labelPhoto}
+  align-self: center
+  ##{figurePhoto}
+    display: inline-block
+    text-align: center
+div.form-field
+  margin-bottom: 1rem
+  display: flex
+  flex-direction: column
+  .mdc-text-field .mdc-text-field__input
+    caret-color: var(--mdc-theme-text-primary-on-light)

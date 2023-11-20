@@ -50,9 +50,11 @@
 /service/+Services        ServiceR          GET POST
 /services                 ServicesR         GET
 
-/account/#UserId/profile ProfileR      GET
-/account/#UserId/photo   AccountPhotoR GET
-/account                 AccountR      GET POST
+/account/#UserId/remove  ProfileRemoveR POST
+/form/account/#UserId    ProfileEditR   GET
+/account/#UserId/profile ProfileR       GET POST
+/account/#UserId/photo   AccountPhotoR  GET
+/account                 AccountR       GET POST
 
 / HomeR GET
 

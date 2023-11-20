@@ -1,3 +1,8 @@
+Remove: Remove
+RemoveProfileHint: You will be logged out and unable to log in with this username
+RemoveProfileAreYouSure: Are you sure you want to remove your profile?
+Removed: Removed
+Blocked: Blocked
 OnlyAdminisHaveAccess: Only administrators can manage this data
 AuthorizationRequired: Authorization required
 OnlyAnalystsHaveAccess: Only analysts have access to analytical reports
@@ -296,6 +301,7 @@ Category: Category
 Categories: Categories
 Image: Image
 NoServicesYet: There are not services yet
+RecordRemoved: Record removed
 RecordDeleted: Record deleted
 RecordEdited: Record edited
 RecordAdded: Record added

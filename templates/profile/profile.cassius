@@ -1,4 +1,12 @@
 
+##{dlgProfileRemove}
+  .mdc-dialog__content
+    small.hint
+      line-height: 1
+      color: var(--theme-text-small-hint-on-light)
+  .mdc-dialog__actions
+    gap: 0.5rem
+
 main
   display: flex
   flex-direction: column

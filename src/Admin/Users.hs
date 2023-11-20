@@ -59,8 +59,14 @@ import Database.Esqueleto.Experimental
 
 import Foundation
     ( Handler, Widget
-    , Route (ProfileR, AuthR, AdminR, PhotoPlaceholderR, AccountPhotoR, AdminR, StaticR)
-    , AdminR (UsersSearchR, UserCreateFormR, UsersR, UserR, UserEditFormR, UserDeleteR, UserPwdResetR)
+    , Route
+      ( ProfileR, AuthR, AdminR, PhotoPlaceholderR, AccountPhotoR, AdminR
+      , StaticR
+      )
+    , AdminR
+      ( UsersSearchR, UserCreateFormR, UsersR, UserR, UserEditFormR, UserDeleteR
+      , UserPwdResetR
+      )
     , AppMessage
       ( MsgUsers, MsgNoUsersYet, MsgPhoto, MsgSave, MsgBack, MsgDel, MsgEdit
       , MsgUser, MsgCancel, MsgUsername, MsgPassword, MsgFullName, MsgEmail
@@ -69,15 +75,21 @@ import Foundation
       , MsgConfirmPassword, MsgNewPassword, MsgPasswordsDoNotMatch
       , MsgPasswordChanged, MsgSearch, MsgNoUsersFound, MsgEmployee
       , MsgCustomer, MsgAdministrator, MsgYes, MsgNo, MsgCategory
-      , MsgSelect, MsgCategories, MsgNavigationMenu, MsgUserProfile, MsgLogin, MsgAnalyst
+      , MsgSelect, MsgCategories, MsgNavigationMenu, MsgUserProfile, MsgLogin
+      , MsgAnalyst, MsgBlocked, MsgRemoved
       )
     )
 import Model
-    ( UserId, User(User, userName, userPassword, userFullName, userEmail, userAdmin, userAnalyst)
+    ( UserId
+    , User
+      ( User, userName, userPassword, userFullName, userEmail, userAdmin
+      , userAnalyst, userBlocked, userRemoved
+      )
     , UserPhoto (UserPhoto)
     , EntityField
       ( UserId, UserName, UserFullName, UserEmail, UserPhotoPhoto
       , UserPhotoMime, UserPassword, UserAdmin, StaffUser, UserAnalyst
+      , UserBlocked, UserRemoved
       )
     , Staff
     )
@@ -183,7 +195,7 @@ $case r
               <i.material-symbols-outlined>close            
   $of _
   
-$maybe Entity uid (User name _ _ _ _ _) <- user
+$maybe Entity uid (User name _ _ _ _ _ _ _) <- user
   <figure>
     <img src=@{AccountPhotoR uid} width=56 heigt=56 alt=_{MsgPhoto}>
     <figcaption>
@@ -236,11 +248,13 @@ postUserR uid = do
         return x
     ((fr,fw),et) <- runFormPost $ formUserEdit user
     case fr of
-      FormSuccess (User name _ admin analyst fname email,mfi) -> do
+      FormSuccess (User name _ admin analyst blocked removed fname email,mfi) -> do
           runDB $ update $ \x -> do
               set x [ UserName =. val name
                     , UserAdmin =. val admin
                     , UserAnalyst =. val analyst
+                    , UserBlocked =. val blocked
+                    , UserRemoved =. val removed
                     , UserFullName =. val fname
                     , UserEmail =. val email
                     ]
@@ -334,6 +348,16 @@ formUserCreate extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-checkbox__native-control")]
         } (pure False)
+    (blockedR,blockedV) <- mreq checkBoxField FieldSettings
+        { fsLabel = SomeMessage MsgBlocked
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-checkbox__native-control")]
+        } (pure False)
+    (removedR,removedV) <- mreq checkBoxField FieldSettings
+        { fsLabel = SomeMessage MsgRemoved
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-checkbox__native-control")]
+        } (pure False)
     (fnameR,fnameV) <- mopt textField FieldSettings
         { fsLabel = SomeMessage MsgFullName
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
@@ -350,7 +374,11 @@ formUserCreate extra = do
         , fsAttrs = [("style","display:none")]
         } Nothing
 
-    let r = (,) <$> (User <$> nameR <*> passR <*> adminR <*> analystR <*> fnameR <*> emailR) <*> photoR
+    let r = (,)
+            <$> ( User <$> nameR <*> passR
+                  <*> adminR <*> analystR <*> blockedR <*> removedR
+                  <*> fnameR <*> emailR
+                ) <*> photoR
     let w = [whamlet|
 #{extra}
 <div.form-field>
@@ -373,7 +401,21 @@ $forall v <- [nameV,passV]
       <div.mdc-text-field-helper-line>
         <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
           #{errs}
-$forall (r,v) <- [(adminR,adminV),(analystR,analystV)]
+
+$forall v <- [fnameV,emailV]
+  <div.form-field>
+    <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
+      :isJust (fvErrors v):.mdc-text-field--invalid>
+      <span.mdc-text-field__ripple>
+      <span.mdc-floating-label>#{fvLabel v}
+      ^{fvInput v}
+      <div.mdc-line-ripple>
+    $maybe errs <- fvErrors v
+      <div.mdc-text-field-helper-line>
+        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+          #{errs}
+          
+$forall (r,v) <- [(adminR,adminV),(analystR,analystV),(blockedR,blockedV),(removedR,removedV)]
   <div.mdc-form-field.form-field data-mdc-auto-init=MDCFormField style="display:flex;flex-direction:row">
     ^{fvInput v}
     $with selected <- resolveSelected r
@@ -396,19 +438,6 @@ $forall (r,v) <- [(adminR,adminV),(analystR,analystV)]
       <span.mdc-switch__focus-ring-wrapper>
         <span.mdc-switch__focus-ring>
       <label for=switch#{fvId v}>#{fvLabel v}
-
-$forall v <- [fnameV,emailV]
-  <div.form-field>
-    <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
-      :isJust (fvErrors v):.mdc-text-field--invalid>
-      <span.mdc-text-field__ripple>
-      <span.mdc-floating-label>#{fvLabel v}
-      ^{fvInput v}
-      <div.mdc-line-ripple>
-    $maybe errs <- fvErrors v
-      <div.mdc-text-field-helper-line>
-        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
-          #{errs}
 |]
     return (r,w)
   where
@@ -445,6 +474,16 @@ formUserEdit user extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-checkbox__native-control")]
         } (userAnalyst . entityVal <$> user)
+    (blockedR,blockedV) <- mreq checkBoxField FieldSettings
+        { fsLabel = SomeMessage MsgBlocked
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-checkbox__native-control")]
+        } (userBlocked . entityVal <$> user)
+    (removedR,removedV) <- mreq checkBoxField FieldSettings
+        { fsLabel = SomeMessage MsgRemoved
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-checkbox__native-control")]
+        } (userRemoved . entityVal <$> user)
     (fnameR,fnameV) <- mopt textField FieldSettings
         { fsLabel = SomeMessage MsgFullName
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
@@ -461,7 +500,12 @@ formUserEdit user extra = do
         , fsAttrs = [("style","display:none")]
         } Nothing
 
-    let r = (,) <$> (User <$> nameR <*> FormSuccess "Nothing" <*> adminR <*> analystR <*> fnameR <*> emailR) <*> photoR
+    let r = (,)
+            <$> ( User <$> nameR <*> FormSuccess "Nothing"
+                  <*> adminR <*> analystR <*> blockedR <*> removedR
+                  <*> fnameR <*> emailR
+                )
+            <*> photoR
     let w = [whamlet|
 #{extra}
 <div.form-field>
@@ -487,7 +531,20 @@ formUserEdit user extra = do
       <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
         #{errs}
 
-$forall (r,v) <- [(userAdmin,adminV),(userAnalyst,analystV)]
+$forall v <- [fnameV,emailV]
+  <div.form-field>
+    <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
+      :isJust (fvErrors v):.mdc-text-field--invalid>
+      <span.mdc-text-field__ripple>
+      <span.mdc-floating-label>#{fvLabel v}
+      ^{fvInput v}
+      <div.mdc-line-ripple>
+    $maybe errs <- fvErrors v
+      <div.mdc-text-field-helper-line>
+        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+          #{errs}
+
+$forall (r,v) <- [(userAdmin,adminV),(userAnalyst,analystV),(userBlocked,blockedV),(userRemoved,removedV)]
   <div.mdc-form-field.form-field data-mdc-auto-init=MDCFormField style="display:flex;flex-direction:row">
     ^{fvInput v}
     $with selected <- fromMaybe False ((r . entityVal) <$> user)
@@ -510,19 +567,6 @@ $forall (r,v) <- [(userAdmin,adminV),(userAnalyst,analystV)]
       <span.mdc-switch__focus-ring-wrapper>
         <span.mdc-switch__focus-ring>
       <label for=switch#{fvId v}>#{fvLabel v}
-
-$forall v <- [fnameV,emailV]
-  <div.form-field>
-    <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
-      :isJust (fvErrors v):.mdc-text-field--invalid>
-      <span.mdc-text-field__ripple>
-      <span.mdc-floating-label>#{fvLabel v}
-      ^{fvInput v}
-      <div.mdc-line-ripple>
-    $maybe errs <- fvErrors v
-      <div.mdc-text-field-helper-line>
-        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
-          #{errs}
   
 |]
     return (r,w)

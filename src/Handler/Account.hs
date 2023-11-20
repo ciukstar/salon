@@ -8,6 +8,9 @@ module Handler.Account
   , postAccountR
   , getAccountPhotoR
   , getProfileR
+  , getProfileEditR
+  , postProfileR
+  , postProfileRemoveR
   ) where
 
 import Data.Text (Text)
@@ -24,7 +27,7 @@ import Yesod.Core
     , SomeMessage (SomeMessage), FileInfo (fileContentType), ToWidget (toWidget)
     , julius, fileSourceByteString, redirect
     , TypedContent (TypedContent)
-    , ToContent (toContent), typeSvg
+    , ToContent (toContent), typeSvg, newIdent, addMessageI, getMessages
     )
     
 import Yesod.Form.Types
@@ -43,38 +46,121 @@ import Foundation
     ( Handler, Widget
     , Route
       ( StaticR, AccountPhotoR, HomeR, AccountR, PhotoPlaceholderR
-      , AuthR, AdminR
+      , AuthR, AdminR, ProfileR, ProfileEditR, ProfileRemoveR
       )
     , AdminR (AdmStaffPhotoR)
     , AppMessage
-      ( MsgAccount, MsgCancel, MsgUsername, MsgPassword
-      , MsgPhoto, MsgFullName, MsgEmail, MsgSignUp, MsgBack
-      , MsgConfirmPassword, MsgYouMustEnterTwoValues, MsgEmployee
-      , MsgPasswordsDoNotMatch, MsgRegistration, MsgUserProfile
-      , MsgLogout, MsgLogin, MsgLoginToSeeYourProfile, MsgRoles
-      , MsgAdministrator, MsgAnalyst
+      ( MsgAccount, MsgCancel, MsgUsername, MsgPassword, MsgPhoto, MsgFullName
+      , MsgEmail, MsgSignUp, MsgBack, MsgConfirmPassword, MsgEmployee
+      , MsgYouMustEnterTwoValues, MsgPasswordsDoNotMatch, MsgRegistration
+      , MsgUserProfile, MsgLogout, MsgLogin, MsgLoginToSeeYourProfile, MsgRoles
+      , MsgAdministrator, MsgAnalyst, MsgPleaseConfirm, MsgEdit, MsgSave
+      , MsgRecordEdited, MsgRecordRemoved, MsgRemove, MsgRemoveProfileAreYouSure
+      , MsgRemoveProfileHint
       )
     )
 
 import Yesod.Auth.HashDB (setPassword)
-import Yesod (YesodPersist(runDB))
-import Database.Persist (Entity (Entity), insert, insert_)
+import Yesod (YesodPersist(runDB), Entity (entityVal))
+import Database.Persist (Entity (Entity), upsert, insert, insert_)
+import qualified Database.Persist as P ((=.))
 
 import Model
     ( ultDestKey
     , UserId, User (userName, User, userPassword, userFullName, userEmail)
     , UserPhoto (UserPhoto, userPhotoUser, userPhotoPhoto, userPhotoMime)
-    , EntityField (UserPhotoUser, StaffUser, RoleStaff, RoleName)
+    , EntityField
+      ( UserPhotoUser, StaffUser, RoleStaff, RoleName, UserId, UserFullName
+      , UserEmail, UserPhotoPhoto, UserPhotoMime, UserRemoved
+      )
     , Staff (Staff), Role
     )
 
 import Database.Esqueleto.Experimental
     (Value (Value), selectOne, from, table, where_
-    , (^.), (==.), val, just, select, distinct
+    , (^.), (==.), (=.)
+    , val, just, select, distinct, update, set
     )
 
 import Settings.StaticFiles
     ( img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg )
+
+
+postProfileRemoveR :: UserId -> Handler Html
+postProfileRemoveR uid = do
+    ((fr,fw),et) <- runFormPost formRemove
+    case fr of
+      FormSuccess _ -> do
+          runDB $ update $ \x -> do
+              set x [UserRemoved =. val True]
+              where_ $ x ^. UserId ==. val uid
+          addMessageI info MsgRecordRemoved
+          redirect $ AuthR LogoutR
+      _ -> defaultLayout $ do
+          setTitleI MsgUserProfile
+          $(widgetFile "profile/edit")
+
+
+postProfileR :: UserId -> Handler Html
+postProfileR uid = do
+    ((fr,fw),et) <- runFormPost $ formProfile Nothing
+    case fr of
+      FormSuccess ((fname,email),mfi) -> do
+          runDB $ update $ \x -> do
+              set x [UserFullName =. val fname, UserEmail =. val email]
+              where_ $ x ^. UserId ==. val uid
+          addMessageI info MsgRecordEdited
+          case mfi of
+            Just fi -> do
+                bs <- fileSourceByteString fi
+                _ <- runDB $ upsert (UserPhoto uid bs (fileContentType fi))
+                    [UserPhotoPhoto P.=. bs, UserPhotoMime P.=. fileContentType fi]
+                return ()
+            _ -> return ()
+          redirect $ ProfileR uid
+      _ -> defaultLayout $ do
+          setTitleI MsgUserProfile
+          $(widgetFile "profile/edit")
+
+
+getProfileEditR :: UserId -> Handler Html
+getProfileEditR uid = do
+    user <- runDB $ selectOne $ do
+        x <- from $ table @User
+        where_ $ x ^. UserId ==. val uid
+        return x
+    (fw,et) <- generateFormPost $ formProfile user
+    defaultLayout $ do
+        setTitleI MsgUserProfile
+        $(widgetFile "profile/edit")
+
+
+formProfile :: Maybe (Entity User)
+            -> Html -> MForm Handler (FormResult ((Maybe Text,Maybe Text),Maybe FileInfo),Widget)
+formProfile user extra = do
+    (fnameR,fnameV) <- mopt textField FieldSettings
+        { fsLabel = SomeMessage MsgFullName
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (userFullName . entityVal <$> user)
+    (emailR,emailV) <- mopt emailField FieldSettings
+        { fsLabel = SomeMessage MsgEmail
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (userEmail . entityVal <$> user)
+    (photoR,photoV) <- mopt fileField FieldSettings
+        { fsLabel = SomeMessage MsgPhoto
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("style","display:none")]
+        } Nothing
+
+    labelPhoto <- newIdent
+    figurePhoto <- newIdent
+    imgPhoto <- newIdent
+    
+    return ( (,) <$> ( (,) <$> fnameR <*> emailR ) <*> photoR
+           , $(widgetFile "profile/form")
+           )
 
 
 getProfileR :: UserId -> Handler Html
@@ -93,10 +179,17 @@ getProfileR uid = do
           where_ $ x ^. RoleStaff ==. val eid
           return $ x ^. RoleName
       Nothing -> return []
-        
+
+    (fw,et) <- generateFormPost formRemove
+    dlgProfileRemove <- newIdent
+    msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgUserProfile
-        $(widgetFile "profile")
+        $(widgetFile "profile/profile")
+
+
+formRemove :: Html -> MForm Handler (FormResult (), Widget)
+formRemove extra = return (FormSuccess (),[whamlet|#{extra}|])
 
 
 getAccountPhotoR :: UserId -> Handler TypedContent
@@ -170,7 +263,10 @@ formAccount user extra = do
         } Nothing
 
     let r = (,)
-            <$> ( User <$> nameR <*> passR <*> FormSuccess False <*> FormSuccess False <*> fnameR <*> emailR )
+            <$> ( User <$> nameR <*> passR
+                  <*> FormSuccess False <*> FormSuccess False <*> FormSuccess False <*> FormSuccess False
+                  <*> fnameR <*> emailR
+                )
             <*> photoR
 
     let w = do
@@ -254,3 +350,10 @@ passwordConfirmField = Field
 |]
     , fieldEnctype = UrlEncoded
     }
+
+
+info :: Text
+info = "info"
+
+warn :: Text
+warn = "warn"

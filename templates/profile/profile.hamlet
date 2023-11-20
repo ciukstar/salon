@@ -6,10 +6,54 @@
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgUserProfile}
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end>
+      <button.mdc-icon-button.mdc-theme--text-primary-on-light type=button title=_{MsgRemove}
+        onclick="document.getElementById('#{dlgProfileRemove}').MDCDialog.open()">
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>delete
+      <a.mdc-icon-button.mdc-theme--text-primary-on-light role=button title=_{MsgEdit}
+        href=@{ProfileEditR uid}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>edit
+
+<div.mdc-dialog data-mdc-auto-init=MDCDialog ##{dlgProfileRemove}>
+  <div.mdc-dialog__container>
+    <div.mdc-dialog__surface role=alertdialog tabindex=-1>
+      <h4.mdc-dialog__title>_{MsgPleaseConfirm}
+      <div.mdc-dialog__content>
+        <p>
+          _{MsgRemoveProfileAreYouSure}
+        <p>
+          <small.hint>
+            _{MsgRemoveProfileHint}.
+      <div.mdc-dialog__actions>
+        <button.mdc-button type=button data-mdc-dialog-action=cancel>
+          <span.mdc-button__ripple>
+          <span.mdc-button__label>_{MsgCancel}
+        <form method=post action=@{ProfileRemoveR uid} enctype=#{et}>
+          ^{fw}
+          <button.mdc-button.mdc-button--raised type=submit>
+            <span.mdc-button__ripple>
+            <span.mdc-button__label>_{MsgRemove}
+  <div.mdc-dialog__scrim>
 
 <main.mdc-top-app-bar--fixed-adjust>
 
-  $maybe Entity uid (User uname _ _ _ fname email) <- user
+  $forall (_,msg) <- filter (((==) warn) . fst) msgs
+    <div.mdc-banner role=banner data-mdc-auto-init=MDCBanner>
+      <div.mdc-banner__content role=alertdialog aria-live=assertive>
+        <div.mdc-banner__graphic-text-wrapper>
+          <div.mdc-banner__graphic role=img style="background-color:var(--mdc-theme-error)">
+            <i.mdc-banner__icon.material-symbols-outlined>warning
+          <div.mdc-banner__text>#{msg}
+        <div.mdc-banner__actions>
+          <button.mdc-banner__primary-action.mdc-icon-button type=button>
+            <span.mdc-icon-button__ripple>
+            <i.material-symbols-outlined>close
+
+  $maybe Entity uid (User uname _ _ _ _ _ fname email) <- user
     <figure>
       <img src=@{AccountPhotoR uid} height=56 width=56 style="clip-path:circle(50%)" alt=_{MsgPhoto}
         loading=lazy onerror="this.src = '@{PhotoPlaceholderR}'">
@@ -41,7 +85,7 @@
       <span.mdc-button__focus-ring>
       <span.mdc-button__label>_{MsgLogin}
 
-  $maybe Entity _ (User _ _ admin analyst _ _) <- user
+  $maybe Entity _ (User _ _ admin analyst _ _ _ _) <- user
     $if admin || analyst
       <details.mdc-list data-mdc-auto-init=MDCList
         ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
@@ -79,3 +123,14 @@
           <ul>
             $forall Value job <- jobs
               <li>#{job}
+
+$forall (_,msg) <- filter (((==) info) . fst) msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
+    <div.mdc-snackbar__surface role=status aria-relevant=additions>
+      <div.mdc-snackbar__label aria-atomic=false>
+        #{msg}
+      <div.mdc-snackbar__actions aria-atomic=true>
+        <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>close

@@ -135,7 +135,7 @@
               <i.material-symbols-outlined style="align-self:center;color:var(--mdc-theme-text-icon-on-background)">
                 handshake
 
-              $with Entity uid (User uname _ _ _ fname _) <- customer
+              $with Entity uid (User uname _ _ _ _ _ fname _) <- customer
                 <figure>
                   <img src=@{AccountPhotoR uid} width=56 height=56 alt=_{MsgPhoto}
                     onerror="this.src = '@{PhotoPlaceholderR}'">

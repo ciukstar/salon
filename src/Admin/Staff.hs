@@ -144,7 +144,7 @@ import Foundation
       , MsgInvalidTimeInterval, MsgMon, MsgTue, MsgWed, MsgThu, MsgFri, MsgSat
       , MsgSun, MsgSymbolHour, MsgSymbolMinute, MsgInvalidFormData, MsgAdd
       , MsgCompletionTime, MsgWorkday, MsgSortAscending, MsgSortDescending
-      , MsgPatternHourMinute, MsgAnalyst
+      , MsgPatternHourMinute, MsgAnalyst, MsgBlocked, MsgRemoved
       )
     )
 
@@ -643,6 +643,16 @@ formUser empl extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-checkbox__native-control")]
         } (pure False)
+    (blockedR,blockedV) <- mreq checkBoxField FieldSettings
+        { fsLabel = SomeMessage MsgBlocked
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-checkbox__native-control")]
+        } (pure False)
+    (deletedR,deletedV) <- mreq checkBoxField FieldSettings
+        { fsLabel = SomeMessage MsgRemoved
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-checkbox__native-control")]
+        } (pure False)
     (fnameR,fnameV) <- mopt textField FieldSettings
         { fsLabel = SomeMessage MsgFullName
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
@@ -653,7 +663,7 @@ formUser empl extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (staffEmail . entityVal <$> empl)
-    let r = User <$> nameR <*> passR <*> adminR <*> analystR <*> fnameR <*> emailR
+    let r = User <$> nameR <*> passR <*> adminR <*> analystR <*> blockedR <*> deletedR <*> fnameR <*> emailR
     let w = [whamlet|
 #{extra}
 $forall v <- [nameV,passV]
@@ -672,7 +682,7 @@ $forall v <- [nameV,passV]
         <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
           #{errs}
 
-$forall (r,v) <- [(adminR,adminV),(analystR,analystV)]
+$forall (r,v) <- [(adminR,adminV),(analystR,analystV),(blockedR,blockedV),(deletedR,deletedV)]
   <div.mdc-form-field.form-field data-mdc-auto-init=MDCFormField style="display:flex;flex-direction:row">
     ^{fvInput v}
     $with selected <- resolveSelected r

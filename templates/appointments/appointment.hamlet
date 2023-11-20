@@ -117,7 +117,7 @@
               <span.mdc-list-item__end>
                <i.expand.material-symbols-outlined>expand_more
             <div #acquaintanceContent>
-              $maybe Entity uid (User uname _ _ _ fname _) <- user
+              $maybe Entity uid (User uname _ _ _ _ _ fname _) <- user
                 <figure>
                   <img src=@{AccountPhotoR uid} width=56 height=56 alt=_{MsgPhoto} loading=lazy
                     onerror="this.src = '@{PhotoPlaceholderR}'">

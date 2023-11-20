@@ -1,3 +1,8 @@
+Remove: Șterge
+RemoveProfileHint: Veți fi deconectat și nu vă veți putea conecta cu acest nume de utilizator
+RemoveProfileAreYouSure: Sigur doriți să vă ștergeți profilul?
+Removed: Eliminat
+Blocked: Blocat
 OnlyAdminisHaveAccess: Numai administratorii pot gestiona aceste date
 AuthorizationRequired: Este necesară autorizarea
 OnlyAnalystsHaveAccess: Doar analiștii au acces la rapoartele analitice
@@ -296,6 +301,7 @@ Category: Categorie
 Categories: Categorii
 Image: Imagine
 NoServicesYet: Nu există încă servicii
+RecordRemoved: Înregistrarea a fost eliminată
 RecordDeleted: Înregistrarea a fost ștearsă
 RecordEdited: Înregistrarea a fost editată
 RecordAdded: Înregistrare adăugată

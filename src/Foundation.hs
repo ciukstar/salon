@@ -231,16 +231,16 @@ instance Yesod App where
     isAuthorized BookOffersR _ = return Authorized
     isAuthorized BookSearchR _ = return Authorized
 
-    isAuthorized AppointmentsR _ = return Authorized
-    isAuthorized AppointmentsSearchR _ = return Authorized
-    isAuthorized (AppointmentR _) _ = return Authorized
-    isAuthorized (AppointmentCancelR _) _ = return Authorized
-    isAuthorized (AppointmentHistR _) _ = return Authorized
-    isAuthorized (AppointmentRescheduleR _) _ = return Authorized
-    isAuthorized (AppointmentApproveR _) _ = return Authorized
-    isAuthorized (BookingsCalendarR _) _ = return Authorized
-    isAuthorized (BookingsDayListR _ _) _ = return Authorized
-    isAuthorized (BookingItemR {}) _ = return Authorized
+    isAuthorized AppointmentsR _ = setUltDest AppointmentsR >> isAuthenticated
+    isAuthorized AppointmentsSearchR _ = setUltDest AppointmentsSearchR >> isAuthenticated
+    isAuthorized r@(AppointmentR _) _ = setUltDest r >> isAuthenticated
+    isAuthorized r@(AppointmentCancelR _) _ = setUltDest r >> isAuthenticated
+    isAuthorized r@(AppointmentHistR _) _ = setUltDest r >> isAuthenticated
+    isAuthorized r@(AppointmentRescheduleR _) _ = setUltDest r >> isAuthenticated
+    isAuthorized r@(AppointmentApproveR _) _ = setUltDest r >> isAuthenticated
+    isAuthorized r@(BookingsCalendarR _) _ = setUltDest r >> isAuthenticated
+    isAuthorized r@(BookingsDayListR _ _) _ = setUltDest r >> isAuthenticated
+    isAuthorized r@(BookingItemR {}) _ = setUltDest r >> isAuthenticated
     
 
     isAuthorized r@(RequestsR {}) _ = setUltDest r >> isEmployee
@@ -257,6 +257,9 @@ instance Yesod App where
     isAuthorized r@(TaskHistR {}) _ = setUltDest r >> isEmployee
     
     isAuthorized (ProfileR _) _ = isAuthenticated
+    isAuthorized (ProfileEditR _) _ = isAuthenticated
+    isAuthorized (ProfileRemoveR _) _ = isAuthenticated
+    
     
     isAuthorized AccountR _ = return Authorized
     isAuthorized (AccountPhotoR _) _ = return Authorized
@@ -339,9 +342,14 @@ instance YesodAuth App where
     redirectToReferer _ = True
 
     authenticate :: (MonadHandler m, HandlerSite m ~ App) => Creds App -> m (AuthenticationResult App)
-    authenticate creds = liftHandler $ runDB $ do
-        x <- getBy $ UniqueUser $ credsIdent creds
-        return $ case x of
+    authenticate creds = liftHandler $ do
+        user <- runDB $ selectOne $ do
+            x <- from $ table @User
+            where_ $ x ^. UserName E.==. val (credsIdent creds)
+            where_ $ not_ $ x ^. UserBlocked
+            where_ $ not_ $ x ^. UserRemoved
+            return x
+        return $ case user of
             Just (Entity uid _) -> Authenticated uid
             Nothing -> UserError InvalidLogin
 
@@ -380,8 +388,8 @@ isAdmin = do
                 msgs <- getMessages
                 $(widgetFile "auth/403")
             sendResponseStatus status403 r
-        Just (Entity _ (User _ _ True _ _ _)) -> return Authorized
-        Just (Entity _ (User _ _ False _ _ _)) -> do
+        Just (Entity _ (User _ _ True _ False False _ _)) -> return Authorized
+        _ -> do
             r <- defaultLayout $ do
                 setTitleI MsgAuthorizationRequired
                 msgs <- getMessages
@@ -399,8 +407,8 @@ isAnalyst = do
                 msgs <- getMessages
                 $(widgetFile "auth/403")
             sendResponseStatus status403 r
-        Just (Entity _ (User _ _ _ True _ _)) -> return Authorized
-        Just (Entity _ (User _ _ _ False _ _)) -> do
+        Just (Entity _ (User _ _ _ True False False _ _)) -> return Authorized
+        _ -> do
             r <- defaultLayout $ do
                 setTitleI MsgAuthorizationRequired
                 msgs <- getMessages
@@ -441,6 +449,8 @@ formLogin route = do
     users <- liftHandler $ unval <$> runDB (select $ do
         x :& y <- from $
             do x <- from $ table @User
+               where_ $ not_ $ x ^. UserBlocked
+               where_ $ not_ $ x ^. UserRemoved
                where_ $ not_ $ E.exists $ do
                    e <- from $ table @Staff
                    where_ $ e ^. StaffUser E.==. just (x ^. UserId)
@@ -450,6 +460,8 @@ formLogin route = do
                return $ x :& val False
             `unionAll_`
             do x <- from $ table @User
+               where_ $ not_ $ x ^. UserBlocked
+               where_ $ not_ $ x ^. UserRemoved
                where_ $ E.exists $ do
                    e <- from $ table @Staff
                    where_ $ e ^. StaffUser E.==. just (x ^. UserId)

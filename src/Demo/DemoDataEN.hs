@@ -28,8 +28,8 @@ import Database.Persist ( PersistStoreWrite(insert_, insert) )
 
 import Model
     ( User
-      ( User, userName, userPassword, userAdmin, userAnalyst, userEmail
-      , userFullName
+      ( User, userName, userPassword, userAdmin, userAnalyst, userBlocked
+      , userRemoved, userEmail, userFullName
       )
     , UserPhoto (UserPhoto, userPhotoUser, userPhotoPhoto, userPhotoMime)
     , Service
@@ -172,6 +172,8 @@ populateEN = do
                    , userPassword = decodeUtf8 pass0
                    , userAdmin = True
                    , userAnalyst = True
+                   , userBlocked = False
+                   , userRemoved = False
                    , userFullName = Just "Adam Smith"
                    , userEmail = Just "asmith@mail.uk"
                    }
@@ -181,6 +183,8 @@ populateEN = do
                      , userPassword = decodeUtf8 pass1
                      , userAdmin = False
                      , userAnalyst = True
+                     , userBlocked = False
+                     , userRemoved = False
                      , userFullName = Just "Johnny Smith"
                      , userEmail = Just "jsmith@mail.uk"
                      }
@@ -238,6 +242,8 @@ populateEN = do
                      , userPassword = decodeUtf8 pass2
                      , userAdmin = True
                      , userAnalyst = False
+                     , userBlocked = False
+                     , userRemoved = False
                      , userFullName = Just "Mary Lopez"
                      , userEmail = Just "mlopez@mail.uk"
                      }
@@ -268,6 +274,8 @@ populateEN = do
                      , userPassword = decodeUtf8 pass3
                      , userAdmin = False
                      , userAnalyst = False
+                     , userBlocked = False
+                     , userRemoved = False
                      , userFullName = Just "John Johnson"
                      , userEmail = Just "jjohnson@mail.uk"
                      }
@@ -299,6 +307,8 @@ populateEN = do
                      , userPassword = decodeUtf8 pass4
                      , userAdmin = False
                      , userAnalyst = False
+                     , userBlocked = False
+                     , userRemoved = False
                      , userFullName = Just "Patricia Brown"
                      , userEmail = Just "pbrown@mail.uk"
                      }
@@ -330,6 +340,8 @@ populateEN = do
                      , userPassword = decodeUtf8 pass5
                      , userAdmin = False
                      , userAnalyst = False
+                     , userBlocked = False
+                     , userRemoved = False
                      , userFullName = Just "Chris Wilson"
                      , userEmail = Just "cwilson@mail.uk"
                      }
@@ -390,6 +402,8 @@ populateEN = do
                      , userPassword = decodeUtf8 pass8
                      , userAdmin = True
                      , userAnalyst = True
+                     , userBlocked = False
+                     , userRemoved = False
                      , userFullName = Just "Barbara Young"
                      , userEmail = Just "byoung@mail.uk"
                      }
@@ -489,7 +503,9 @@ populateEN = do
     let user11 = User { userName = "ihughes"
                       , userPassword = decodeUtf8 pass11
                       , userAdmin = False
-                     , userAnalyst = False
+                      , userAnalyst = False
+                      , userBlocked = False
+                      , userRemoved = False
                       , userFullName = Just "Isabel Hughes"
                       , userEmail = Just "ihughes@mail.uk"
                       }
@@ -2951,6 +2967,8 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
                         , userPassword = decodeUtf8 pass6
                         , userAdmin = False
                         , userAnalyst = False
+                        , userBlocked = False
+                        , userRemoved = False
                         , userFullName = Just "Patty O’Furniture"
                         , userEmail = Just "pattyofurniture@mail.org"
                         }
@@ -2992,6 +3010,8 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
                         , userPassword = decodeUtf8 pass7
                         , userAdmin = False
                         , userAnalyst = False
+                        , userBlocked = False
+                        , userRemoved = False
                         , userFullName = Just "Ray Sin"
                         , userEmail = Just "raysin@mail.org"
                         }

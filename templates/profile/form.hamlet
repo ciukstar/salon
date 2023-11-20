@@ -1,0 +1,24 @@
+
+#{extra}
+<label for=#{fvId photoV} ##{labelPhoto}>
+  <figure ##{figurePhoto}>
+    $maybe Entity uid _ <- user
+      <img width=56 height=56 src=@{AccountPhotoR uid} alt=_{MsgPhoto} ##{imgPhoto} loading=lazy>
+    $nothing
+      <img src=@{StaticR img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg} ##{imgPhoto} loading=lazy>
+    <figcaption>
+      _{MsgPhoto}
+^{fvInput photoV}
+        
+$forall v <- [fnameV,emailV]
+  <div.form-field>
+    <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
+      :isJust (fvErrors v):.mdc-text-field--invalid>
+      <span.mdc-text-field__ripple>
+      <span.mdc-floating-label>#{fvLabel v}
+      ^{fvInput v}
+      <span.mdc-line-ripple>
+    $maybe errs <- fvErrors v
+      <div.mdc-text-field-helper-line>
+        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+          #{errs}

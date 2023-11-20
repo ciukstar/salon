@@ -90,7 +90,10 @@ import Handler.Services
     , getServicesSearchR, getServiceSearchR
     , getServiceSearchOffersR, getOfferSearchR
     )
-import Handler.Account (getProfileR, getAccountR, postAccountR, getAccountPhotoR)
+import Handler.Account
+    ( getProfileR, getAccountR, postAccountR, getAccountPhotoR
+    , getProfileEditR, postProfileR, postProfileRemoveR
+    )
 import Handler.Home (getHomeR)
 import Handler.Resources (getDocsR)
 

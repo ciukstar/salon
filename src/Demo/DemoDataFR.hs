@@ -30,8 +30,8 @@ import Database.Persist ( PersistStoreWrite(insert_, insert) )
 
 import Model
     ( User
-      ( User, userName, userPassword, userAdmin, userAnalyst, userEmail
-      , userFullName
+      ( User, userName, userPassword, userAdmin, userAnalyst, userBlocked
+      , userRemoved, userEmail, userFullName
       )
     , UserPhoto (UserPhoto, userPhotoUser, userPhotoPhoto, userPhotoMime)
     , Service
@@ -172,6 +172,8 @@ populateFR = do
                    , userPassword = decodeUtf8 pass
                    , userAdmin = True
                    , userAnalyst = True
+                   , userBlocked = False
+                   , userRemoved = False
                    , userFullName = Just "Arnaud Antoine"
                    , userEmail = Just "arnauda@mail.fr"
                    }
@@ -181,6 +183,8 @@ populateFR = do
                      , userPassword = decodeUtf8 pass1
                      , userAdmin = False
                      , userAnalyst = True
+                     , userBlocked = False
+                     , userRemoved = False
                      , userFullName = Just "Martin Léo"
                      , userEmail = Just "martinl@mail.fr"
                      }
@@ -238,6 +242,8 @@ populateFR = do
                      , userPassword = decodeUtf8 pass2
                      , userAdmin = True
                      , userAnalyst = False
+                     , userBlocked = False
+                     , userRemoved = False
                      , userFullName = Just "Bernard Jade"
                      , userEmail = Just "bernardj@mail.fr"
                      }
@@ -268,6 +274,8 @@ populateFR = do
                      , userPassword = decodeUtf8 pass3
                      , userAdmin = False
                      , userAnalyst = False
+                     , userBlocked = False
+                     , userRemoved = False
                      , userFullName = Just "Thomas Gabriel Raphaël"
                      , userEmail = Just "thomasgr@mail.fr"
                      }
@@ -299,6 +307,8 @@ populateFR = do
                      , userPassword = decodeUtf8 pass4
                      , userAdmin = False
                      , userAnalyst = False
+                     , userBlocked = False
+                     , userRemoved = False
                      , userFullName = Just "Robert Louise Emma"
                      , userEmail = Just "robertle@mail.fr"
                      }
@@ -330,6 +340,8 @@ populateFR = do
                      , userPassword = decodeUtf8 pass5
                      , userAdmin = False
                      , userAnalyst = False
+                     , userBlocked = False
+                     , userRemoved = False
                      , userFullName = Just "Richard Arthur Louis"
                      , userEmail = Just "richardal@mail.fr"
                      }
@@ -390,6 +402,8 @@ populateFR = do
                      , userPassword = decodeUtf8 pass8
                      , userAdmin = True
                      , userAnalyst = True
+                     , userBlocked = False
+                     , userRemoved = False
                      , userFullName = Just "Moreau Lina"
                      , userEmail = Just "moreaul@mail.fr"
                      }
@@ -490,6 +504,8 @@ populateFR = do
                       , userPassword = decodeUtf8 pass11
                       , userAdmin = False
                       , userAnalyst = False
+                      , userBlocked = False
+                      , userRemoved = False
                       , userFullName = Just "Michel Rose Chloé"
                       , userEmail = Just "michelrc@mail.fr"
                       }
@@ -2945,6 +2961,8 @@ Mise en forme du corps : Abdomen et taille, hanches et cuisses, jambes et bras
                         , userPassword = decodeUtf8 pass6
                         , userAdmin = False
                         , userAnalyst = False
+                        , userBlocked = False
+                        , userRemoved = False
                         , userFullName = Just "Bernard Louise"
                         , userEmail = Just "bernardl@mail.fr"
                         }
@@ -2986,6 +3004,8 @@ Mise en forme du corps : Abdomen et taille, hanches et cuisses, jambes et bras
                         , userPassword = decodeUtf8 pass7
                         , userAdmin = False
                         , userAnalyst = False
+                        , userBlocked = False
+                        , userRemoved = False
                         , userFullName = Just "Bardot Alain"
                         , userEmail = Just "bardota@mail.fr"
                         }

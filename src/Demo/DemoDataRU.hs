@@ -27,8 +27,8 @@ import Database.Persist ( PersistStoreWrite(insert_, insert) )
 
 import Model
     ( User
-      ( User, userName, userPassword, userAdmin, userAnalyst, userEmail
-      , userFullName
+      ( User, userName, userPassword, userAdmin, userAnalyst, userBlocked
+      , userRemoved, userEmail, userFullName
       )
     , UserPhoto (UserPhoto, userPhotoUser, userPhotoPhoto, userPhotoMime)
     , Service
@@ -164,6 +164,8 @@ populateRU = do
                    , userPassword = decodeUtf8 pass
                    , userAdmin = True
                    , userAnalyst = True
+                   , userBlocked = False
+                   , userRemoved = False
                    , userFullName = Just "Админов Админ Админовичь"
                    , userEmail = Just "adminovaa@mail.ru"
                    }
@@ -173,6 +175,8 @@ populateRU = do
                      , userPassword = decodeUtf8 pass1
                      , userAdmin = False
                      , userAnalyst = True
+                     , userBlocked = False
+                     , userRemoved = False
                      , userFullName = Just "Иванов Игорь Васильевич"
                      , userEmail = Just "ivanoviv@mail.ru"
                      }
@@ -229,6 +233,8 @@ populateRU = do
                      , userPassword = decodeUtf8 pass2
                      , userAdmin = True
                      , userAnalyst = False
+                     , userBlocked = False
+                     , userRemoved = False
                      , userFullName = Just "Буланова Любовь Михайловна"
                      , userEmail = Just "bulanovalm@mail.ru"
                      }
@@ -260,6 +266,8 @@ populateRU = do
                      , userPassword = decodeUtf8 pass3
                      , userAdmin = False
                      , userAnalyst = False
+                     , userBlocked = False
+                     , userRemoved = False
                      , userFullName = Just "Петров Иван Александрович"
                      , userEmail = Just "petrovia@mail.ru"
                      }
@@ -291,6 +299,8 @@ populateRU = do
                      , userPassword = decodeUtf8 pass4
                      , userAdmin = False
                      , userAnalyst = False
+                     , userBlocked = False
+                     , userRemoved = False
                      , userFullName = Just "Лебедева Марина Викторовна"
                      , userEmail = Just "lebedevamv@mail.ru"
                      }
@@ -322,6 +332,8 @@ populateRU = do
                      , userPassword = decodeUtf8 pass5
                      , userAdmin = False
                      , userAnalyst = False
+                     , userBlocked = False
+                     , userRemoved = False
                      , userFullName = Just "Смирнов Андрей Васильевич"
                      , userEmail = Just "smirnovav@mail.ru"
                      }
@@ -383,6 +395,8 @@ populateRU = do
                      , userPassword = decodeUtf8 pass8
                      , userAdmin = True
                      , userAnalyst = True
+                     , userBlocked = False
+                     , userRemoved = False
                      , userFullName = Just "Степанова Татьяна Николаевна"
                      , userEmail = Just "stepanovatn@mail.ru"
                      }
@@ -483,6 +497,8 @@ populateRU = do
                       , userPassword = decodeUtf8 pass11
                       , userAdmin = False
                       , userAnalyst = False
+                      , userBlocked = False
+                      , userRemoved = False
                       , userFullName = Just "Баранова Алиса Григорьевна"
                       , userEmail = Just "baranovaag@mail.ru"
                       }
@@ -2943,6 +2959,8 @@ Collagen 90-II — это уважаемое и востребованное а�
                         , userPassword = decodeUtf8 pass6
                         , userAdmin = False
                         , userAnalyst = False
+                        , userBlocked = False
+                        , userRemoved = False
                         , userFullName = Just "Иванова Тамара Александровна"
                         , userEmail = Just "ivanovata@mail.ru"
                         }
@@ -2984,6 +3002,8 @@ Collagen 90-II — это уважаемое и востребованное а�
                         , userPassword = decodeUtf8 pass7
                         , userAdmin = False
                         , userAnalyst = False
+                        , userBlocked = False
+                        , userRemoved = False
                         , userFullName = Just "Данилов Илья Петрович"
                         , userEmail = Just "danilovip@mail.org"
                         }

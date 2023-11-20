@@ -28,8 +28,8 @@ import Database.Persist ( PersistStoreWrite(insert_, insert) )
 
 import Model
     ( User
-      ( User, userName, userPassword, userAdmin, userAnalyst, userEmail
-      , userFullName
+      ( User, userName, userPassword, userAdmin, userAnalyst, userBlocked
+      , userRemoved, userEmail, userFullName
       )
     , UserPhoto (UserPhoto, userPhotoUser, userPhotoPhoto, userPhotoMime)
     , Service
@@ -170,6 +170,8 @@ populateRO = do
                    , userPassword = decodeUtf8 pass
                    , userAdmin = True
                    , userAnalyst = True
+                   , userBlocked = False
+                   , userRemoved = False
                    , userFullName = Just "Popescu Ion Andrei"
                    , userEmail = Just "popescuia@mail.ro"
                    }
@@ -179,6 +181,8 @@ populateRO = do
                      , userPassword = decodeUtf8 pass1
                      , userAdmin = False
                      , userAnalyst = True
+                     , userBlocked = False
+                     , userRemoved = False
                      , userFullName = Just "Popa Andrei"
                      , userEmail = Just "popaa@mail.ro"
                      }
@@ -236,6 +240,8 @@ populateRO = do
                      , userPassword = decodeUtf8 pass2
                      , userAdmin = True
                      , userAnalyst = False
+                     , userBlocked = False
+                     , userRemoved = False
                      , userFullName = Just "Radu Ana-Maria"
                      , userEmail = Just "raduam@mail.ro"
                      }
@@ -266,6 +272,8 @@ populateRO = do
                      , userPassword = decodeUtf8 pass3
                      , userAdmin = False
                      , userAnalyst = False
+                     , userBlocked = False
+                     , userRemoved = False
                      , userFullName = Just "Ionescu Alexandru Victor"
                      , userEmail = Just "ionescuav@mail.ro"
                      }
@@ -297,6 +305,8 @@ populateRO = do
                      , userPassword = decodeUtf8 pass4
                      , userAdmin = False
                      , userAnalyst = False
+                     , userBlocked = False
+                     , userRemoved = False
                      , userFullName = Just "Stoica Maria Alexandra"
                      , userEmail = Just "stoicama@mail.ro"
                      }
@@ -328,6 +338,8 @@ populateRO = do
                      , userPassword = decodeUtf8 pass5
                      , userAdmin = False
                      , userAnalyst = False
+                     , userBlocked = False
+                     , userRemoved = False
                      , userFullName = Just "Rusu Ştefan Alexandru"
                      , userEmail = Just "rususa@mail.ro"
                      }
@@ -388,6 +400,8 @@ populateRO = do
                      , userPassword = decodeUtf8 pass8
                      , userAdmin = True
                      , userAnalyst = True
+                     , userBlocked = False
+                     , userRemoved = False
                      , userFullName = Just "Marin Ioana"
                      , userEmail = Just "marini@mail.ro"
                      }
@@ -488,6 +502,8 @@ populateRO = do
                       , userPassword = decodeUtf8 pass11
                       , userAdmin = False
                       , userAnalyst = False
+                      , userBlocked = False
+                      , userRemoved = False
                       , userFullName = Just "Florea Ioana Maria"
                       , userEmail = Just "floreaim@mail.ro"
                       }
@@ -2945,6 +2961,8 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
                         , userPassword = decodeUtf8 pass6
                         , userAdmin = False
                         , userAnalyst = False
+                        , userBlocked = False
+                        , userRemoved = False
                         , userFullName = Just "Grigorescu Daniela Ghiorghe"
                         , userEmail = Just "grigorescudg@mail.org"
                         }
@@ -2986,6 +3004,8 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
                         , userPassword = decodeUtf8 pass7
                         , userAdmin = False
                         , userAnalyst = False
+                        , userBlocked = False
+                        , userRemoved = False
                         , userFullName = Just "Vasilescu Anton Mihai"
                         , userEmail = Just "vasilescuam@mail.org"
                         }
