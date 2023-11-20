@@ -73,7 +73,7 @@
     <a.mdc-button.mdc-button--outlined href=@{AuthR LogoutR} role=button>
       <span.mdc-button__ripple>
       <span.mdc-button__focus-ring>
-      <span.mdc-button__label>_{MsgLogout}      
+      <span.mdc-button__label>_{MsgLogout}     
 
   $nothing
     <figure>

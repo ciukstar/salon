@@ -53,14 +53,15 @@
         $maybe Entity eid (Staff _ _ _ _ _ uid) <- empl
           $maybe uid <- uid
             $with (pas1,pas2) <- (pack . show, pack . show)
-              <a.mdc-deprecated-list-item 
-                href=@?{(TasksCalendarR uid eid month,[("status",pas1 BookStatusRequest),("assignee",pas2 AssigneesMe)])}
-                :Just (TasksCalendarR uid eid month) /= curr:tabindex=-1
-                :Just (TasksCalendarR uid eid month) == curr:tabindex=0
-                :Just (TasksCalendarR uid eid month) == curr:.mdc-deprecated-list-item--activated>
-                <span.mdc-deprecated-list-item__ripple>
-                <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>free_cancellation
-                <span.mdc-deprecated-list-item__text>_{MsgRequests}
+              $with stati <- [(status,pas1 BookStatusRequest),(status,pas1 BookStatusApproved),(assignee,pas2 AssigneesMe)]
+                <a.mdc-deprecated-list-item 
+                  href=@?{(TasksCalendarR uid eid month,stati)}
+                  :Just (TasksCalendarR uid eid month) /= curr:tabindex=-1
+                  :Just (TasksCalendarR uid eid month) == curr:tabindex=0
+                  :Just (TasksCalendarR uid eid month) == curr:.mdc-deprecated-list-item--activated>
+                  <span.mdc-deprecated-list-item__ripple>
+                  <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>free_cancellation
+                  <span.mdc-deprecated-list-item__text>_{MsgRequests}
           
         <a.mdc-deprecated-list-item href=@{AboutUsR}
           :Just AboutUsR /= curr:tabindex=-1

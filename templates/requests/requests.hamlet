@@ -117,12 +117,14 @@
     <figure style="text-align:center">
       <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
       <figcaption>
-        <p>_{MsgNoPendingRequestsYet}.
-        <a.mdc-button.mdc-button--outlined role=button 
-          href=@?{(RequestsR uid eid,[("status",pack $ show BookStatusRequest),("assignee",pack $ show AssigneesMe)])}>
+        <p>
+          _{MsgNoPendingRequestsYet}.
+          
+        <a.mdc-button.mdc-button--outlined role=button
+          href=@?{(RequestsR uid eid,[(assignee, pack $ show AssigneesMe)])}>
           <span.mdc-button__ripple>
           <span.mdc-button__focus-ring>
-          <span.mdc-button__label>_{MsgShowAll}
+          <span.mdc-button__label>_{MsgShowAllMine}
   $else
     <nav.mdc-list data-mdc-auto-init=MDCList>
       $forall (Entity bid (Book _ _ _ date time _ _ _ status),Entity _ (Service sname _ _ _ _ _)) <- requests

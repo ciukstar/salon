@@ -6,7 +6,7 @@
 module Menu (menu) where
 
 import Control.Monad.IO.Class (liftIO)
-import Data.Text (pack)
+import Data.Text (Text, pack)
 import Data.Time.Calendar (toGregorian, periodLastDay, periodFirstDay)
 import Data.Time.Calendar.Month (pattern YearMonth)
 import Data.Time.Clock (utctDay, getCurrentTime)
@@ -44,7 +44,7 @@ import Foundation
     )
 
 import Model
-    ( BookStatus (BookStatusRequest), Services (Services), Business (Business)
+    ( BookStatus (BookStatusRequest, BookStatusApproved), Services (Services), Business (Business)
     , Assignees (AssigneesMe), EntityField (StaffUser), Staff (Staff)
     )
 
@@ -70,3 +70,8 @@ menu = do
         
     curr <- getCurrentRoute
     $(widgetFile "menu")
+
+  where
+      status, assignee :: Text
+      status   = "status"
+      assignee = "assignee"

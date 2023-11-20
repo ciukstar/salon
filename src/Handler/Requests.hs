@@ -73,7 +73,7 @@ import Foundation
       )
     , AdminR (AdmStaffPhotoR)
     , AppMessage
-      ( MsgRequests, MsgPhoto, MsgLogin, MsgSymbolHour, MsgBack
+      ( MsgRequests, MsgPhoto, MsgLogin, MsgSymbolHour, MsgBack, MsgShowAllMine
       , MsgSymbolMinute, MsgApproved, MsgCancelled, MsgPaid, MsgAssignee
       , MsgRequest, MsgStatus, MsgMeetingLocation, MsgSortDescending
       , MsgPleaseConfirm, MsgHistory, MsgReschedule, MsgService, MsgMeetingTime
@@ -784,8 +784,8 @@ getRequestsR uid eid = do
     user <- maybeAuth
     setUltDestCurrent
     msgs <- getMessages
-    let statuses = mapMaybe (readMaybe . unpack . snd) . filter ((== "status") . fst) $ stati
-    owners <- filter ((== "assignee") . fst) . reqGetParams <$> getRequest
+    let statuses = mapMaybe (readMaybe . unpack . snd) . filter ((== status) . fst) $ stati
+    owners <- filter ((== assignee) . fst) . reqGetParams <$> getRequest
     let assignees = mapMaybe (readMaybe . unpack . snd) owners
     sort <- fromMaybe SortOrderDesc . (readMaybe . unpack =<<) <$> runInputGet (iopt textField "sort")
     requests <- runDB $ select $ do
@@ -828,6 +828,11 @@ getRequestsR uid eid = do
     defaultLayout $ do
         setTitleI MsgRequests
         $(widgetFile "requests/requests")
+        
+  where
+      status, assignee :: Text
+      status   = "status"
+      assignee = "assignee"
 
 
 statusList :: [(BookStatus, AppMessage)]

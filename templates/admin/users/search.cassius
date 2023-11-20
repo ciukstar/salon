@@ -9,7 +9,7 @@ header
       border-bottom-color: var(--theme-accent)
 
 main
-  #toolbarActions
+  ##{toolbarTop}
     padding: 1rem
     display: flex
     flex-direction: row
@@ -28,6 +28,7 @@ main
         border-radius: 50%
         padding: 2px
         background-color: var(--mdc-theme-primary)
+
 div.mdc-dialog
   div.mdc-dialog__content
     display: flex

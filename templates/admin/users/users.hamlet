@@ -32,14 +32,20 @@
       <figcaption>
         _{MsgNoUsersYet}.
   $else
-    <nav.mdc-list>
-      $forall Entity uid (User uname _ admin analyst _ _ fname email) <- users
+    <nav.mdc-list data-mdc-auto-init=MDCList>
+      $forall Entity uid (User uname _ admin analyst blocked removed fname email) <- users
         <a.mdc-list-item href=@{AdminR $ UserR uid}
           .mdc-list-item--with-three-lines.mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon>
           <span.mdc-list-item__ripple>
-          <span.mdc-list-item__start>
+          <span.mdc-list-item__start style="position:relative">
             <img width=56 height=56 src=@{AccountPhotoR uid} alt=_{MsgPhoto} loading=lazy
               onerror="this.src = '@{PhotoPlaceholderR}'">
+            $if blocked || removed
+              <div style="position:absolute;bottom:0;right:0;color:var(--mdc-theme-error)">
+                $if blocked
+                  <i.material-symbols-outlined>block
+                $if removed
+                  <i.material-symbols-outlined>cancel
           <span.mdc-list-item__content>
             <div.mdc-list-item__primary-text>
               #{uname}

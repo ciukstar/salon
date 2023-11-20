@@ -6,7 +6,7 @@
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>close
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
-        _{MsgEnd}
+        _{MsgSuccess}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end>
       $maybe Entity uid _ <- user
@@ -27,9 +27,15 @@
     <figure>
       <i.material-symbols-outlined>check_circle
       <figcaption>
-        _{MsgYouSuccessfullyCreatedYourBooking}.
+        <div>_{MsgCongratulations}!
+        <div>_{MsgYouSuccessfullyCreatedYourBooking}.
     <p>
-      <a.mdc-button.mdc-button--raised href=@{BookOffersR} role=button>
+      <a.mdc-button.mdc-button--raised href=@{AppointmentsR} role=button>
+        <span.mdc-button__ripple>
+        <span.mdc-button__focus-ring>
+        <span.mdc-button__label>_{MsgShowMyAppointments}
+    <p>
+      <a.mdc-button.mdc-button--outlined href=@{BookOffersR} role=button>
         <span.mdc-button__ripple>
         <span.mdc-button__focus-ring>
         <span.mdc-button__label>_{MsgBookNewAppointment}

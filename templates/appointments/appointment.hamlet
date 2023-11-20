@@ -11,7 +11,7 @@
 
 <main.mdc-top-app-bar--fixed-adjust>
 
-  $forall (_,msg) <- filter (((==) "warn") . fst) msgs
+  $forall (_,msg) <- filter (((==) warn) . fst) msgs
     <div.mdc-banner role=banner data-mdc-auto-init=MDCBanner>
       <div.mdc-banner__content role=alertdialog aria-live=assertive>
         <div.mdc-banner__graphic-text-wrapper>
@@ -227,3 +227,13 @@
                 <span.mdc-icon-button__ripple>
                 <span.mdc-icon-button__focus-ring>
                 <i.material-symbols-outlined>history
+
+$forall (_,msg) <- filter ((/=) warn . fst) msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
+    <div.mdc-snackbar__surface>
+      <div.mdc-snackbar__label>#{msg}
+      <div.mdc-snackbar__actions>
+        <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>close

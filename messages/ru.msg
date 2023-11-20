@@ -1,3 +1,7 @@
+ShowAllMine: Показать все мои
+ShowMyAppointments: Показать мои записи
+Success: Успех
+Congratulations: Поздравляем
 Remove: Удалить
 RemoveProfileHint: Вы автоматически выйдете из системы и не сможете войти под этим именем пользователя
 RemoveProfileAreYouSure: Вы уверены, что хотите удалить свой профиль?

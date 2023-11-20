@@ -24,64 +24,90 @@
       <div.mdc-line-ripple data-mdc-auto-init=MDCLineRipple>
       
 <main.mdc-top-app-bar--fixed-adjust>
-  <div #toolbarActions>
+  <div ##{toolbarTop}>
     <button.mdc-button.mdc-button--outlined.mdc-button--icon-trailing type=button
-      onclick="document.getElementById('#{dlgCategList}').MDCDialog.open()">
+      :not (null roles):style="color:var(--theme-accent)"
+      onclick="document.getElementById('#{dlgRoleList}').MDCDialog.open()">
       <span.mdc-button__ripple>
       <span.mdc-button__focus-ring>
-      $if null categs
-        <span.mdc-button__label>
-          _{MsgCategory}
-      $else
-        <span.mdc-button__label 
-          style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:none;color:var(--theme-accent)">
-          #{label}
-        
-      <i.mdc-button-icon.material-symbols-outlined>arrow_drop_down
+      <span.mdc-button__label>
+        _{MsgRole}
+      <i.mdc-button__icon.material-symbols-outlined>
+        $if null roles
+          arrow_drop_down
+        $else
+          counter_#{length roles}
+          
+    <button.mdc-button.mdc-button--outlined.mdc-button--icon-trailing type=button
+      :not (null statuses):style="color:var(--theme-accent)"
+      onclick="document.getElementById('#{dlgStatusList}').MDCDialog.open()">
+      <span.mdc-button__ripple>
+      <span.mdc-button__focus-ring>
+      <span.mdc-button__label>
+        _{MsgStatus}
+      <i.mdc-button__icon.material-symbols-outlined>
+        $if null statuses
+          arrow_drop_down
+        $else
+          counter_#{length statuses}
         
       
-  $if not (null users)
-    <nav.mdc-list>
-      $forall Entity uid (User name _ _ _ _ _ fname email) <- users
-        <a.mdc-list-item href=@{AdminR $ UserR uid}
-          .mdc-list-item--with-three-lines.mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon>
-          <span.mdc-list-item__ripple>
-          <span.mdc-list-item__start>
-            <img width=56 height=56 src=@{AccountPhotoR uid} alt=_{MsgPhoto}
-              onerror="this.src = '@{PhotoPlaceholderR}'">
-          <span.mdc-list-item__content>
-            <div.mdc-list-item__primary-text>
-              #{name}
-            <div.mdc-list-item__secondary-text>
-              $maybe fname <- fname
-                #{fname}
-            <div.mdc-list-item__secondary-text>
-              $maybe email <- email
-                #{email}
-          <span.mdc-list-item__end>
-            <i.material-symbols-outlined>arrow_forward_ios
-        <div.mdc-list-divider role=separator>
-  $else
+  $if null users
     <figure style="text-align:center">
       <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
       <figcaption>
         _{MsgNoUsersFound}.
+  $else
+    <nav.mdc-list data-mdc-auto-init=MDCList>
+      $forall Entity uid (User uname _ admin analyst blocked removed fname email) <- users
+        <a.mdc-list-item href=@{AdminR $ UserR uid}
+          .mdc-list-item--with-three-lines.mdc-list-item--with-leading-image.mdc-list-item--with-trailing-icon>
+          <span.mdc-list-item__ripple>
+          <span.mdc-list-item__start style="position:relative">
+            <img width=56 height=56 src=@{AccountPhotoR uid} alt=_{MsgPhoto} loading=lazy
+              onerror="this.src = '@{PhotoPlaceholderR}'">
+            $if blocked || removed
+              <div style="position:absolute;bottom:0;right:0;color:var(--mdc-theme-error)">
+                $if blocked
+                  <i.material-symbols-outlined>block
+                $if removed
+                  <i.material-symbols-outlined>cancel
+          <span.mdc-list-item__content>
+            <div.mdc-list-item__primary-text>
+              #{uname}
+            <div.mdc-list-item__secondary-text>
+              $maybe fname <- fname
+                #{fname}
+            <div.mdc-list-item__secondary-text>
+              $case (analyst,admin)
+                $of (True,True)
+                  _{MsgAnalyst}, _{MsgAdministrator}
+                $of (True,False)
+                  _{MsgAnalyst}
+                $of (False,True)
+                  _{MsgAdministrator}
+                $of (False,False)
+                  $maybe email <- email
+                    #{email}
+          <span.mdc-list-item__end>
+            <i.material-symbols-outlined>arrow_forward_ios
+        <div.mdc-list-divider role=separator>
 
         
-<div.mdc-dialog.mdc-dialog--fullscreen ##{dlgCategList} data-mdc-auto-init=MDCDialog>
+<div.mdc-dialog.mdc-dialog--fullscreen ##{dlgRoleList} data-mdc-auto-init=MDCDialog>
   <div.mdc-dialog__container>
     <div.mdc-dialog__surface role=dialog aria-modal=true tabindex=-1>
       <div.mdc-dialog__header>
-        <h4.mdc-dialog__title>_{MsgCategories}
+        <h4.mdc-dialog__title>_{MsgRoles}
         <button.mdc-dialog__close.mdc-icon-button data-mdc-dialog-action=close>
           <span.mdc-icon-button__ripple>
           <i.material-symbols-outlined>close
       <div.mdc-dialog__content>
-        $forall (name,label) <- categList
+        $forall (name,label) <- userRoles
             <div.mdc-form-field.mdc-form-field--nowrap>
               <div.mdc-checkbox data-mdc-auto-init=MDCCheckbox>
                 <input.mdc-checkbox__native-control type=checkbox form=#{formSearch} #checkbox#{name}
-                 name=categ value=#{name} :elem name categs:checked>
+                 name=#{role} value=#{name} :elem name roles:checked>
                 <div.mdc-checkbox__background>
                   <svg.mdc-checkbox__checkmark viewBox="0 0 24 24">
                     <path.mdc-checkbox__checkmark-path fill=none d="M1.73,12.91 8.1,19.28 22.79,4.59">
@@ -92,7 +118,43 @@
                 _{label}
               
       <div.mdc-dialog__actions>
-        <button.mdc-button type=button onclick="document.getElementById('#{dlgCategList}').MDCDialog.close()">
+        <button.mdc-button type=button onclick="document.getElementById('#{dlgRoleList}').MDCDialog.close()">
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgCancel}
+        <button.mdc-button.mdc-button--raised type=submit form=#{formSearch}>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgSelect}
+      
+  <div.mdc-dialog__scrim>
+
+        
+<div.mdc-dialog.mdc-dialog--fullscreen ##{dlgStatusList} data-mdc-auto-init=MDCDialog>
+  <div.mdc-dialog__container>
+    <div.mdc-dialog__surface role=dialog aria-modal=true tabindex=-1>
+      <div.mdc-dialog__header>
+        <h4.mdc-dialog__title>_{MsgStatus}
+        <button.mdc-dialog__close.mdc-icon-button data-mdc-dialog-action=close>
+          <span.mdc-icon-button__ripple>
+          <i.material-symbols-outlined>close
+      <div.mdc-dialog__content>
+        $forall (name,label) <- [(blocked,MsgBlocked),(removed,MsgRemoved)]
+            <div.mdc-form-field.mdc-form-field--nowrap>
+              <div.mdc-checkbox data-mdc-auto-init=MDCCheckbox>
+                <input.mdc-checkbox__native-control type=checkbox form=#{formSearch} #checkbox#{name}
+                 name=#{status} value=#{name} :elem name statuses:checked>
+                <div.mdc-checkbox__background>
+                  <svg.mdc-checkbox__checkmark viewBox="0 0 24 24">
+                    <path.mdc-checkbox__checkmark-path fill=none d="M1.73,12.91 8.1,19.28 22.79,4.59">
+                  <div.mdc-checkbox__mixedmark>
+                <div.mdc-checkbox__ripple>
+                <div.mdc-checkbox__focus-ring>
+              <label.mdc-list-item__primary-text for=checkbox#{name}>
+                _{label}
+              
+      <div.mdc-dialog__actions>
+        <button.mdc-button type=button data-mdc-dialog-action=cancel>
           <span.mdc-button__ripple>
           <span.mdc-button__focus-ring>
           <span.mdc-button__label>_{MsgCancel}

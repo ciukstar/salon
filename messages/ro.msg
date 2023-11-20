@@ -1,3 +1,7 @@
+ShowAllMine: Arată toate ale mele
+ShowMyAppointments: Afișează programările mele
+Success: Succes
+Congratulations: Felicitări
 Remove: Șterge
 RemoveProfileHint: Veți fi deconectat și nu vă veți putea conecta cu acest nume de utilizator
 RemoveProfileAreYouSure: Sigur doriți să vă ștergeți profilul?

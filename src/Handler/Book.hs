@@ -76,13 +76,13 @@ import Foundation
     ( Handler, Widget
     , Route
       ( AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR, AccountR
-      , HomeR, AppointmentR, ProfileR, ServiceThumbnailR
+      , HomeR, AppointmentsR, AppointmentR, ProfileR, ServiceThumbnailR
       , BookOffersR, BookStaffR, BookTimeR, BookCustomerR, BookEndR
       , BookSearchR
       )
     , AdminR (AdmStaffPhotoR)
     , AppMessage
-      ( MsgBook, MsgPhoto, MsgChooseServicesToBook, MsgServices
+      ( MsgBook, MsgPhoto, MsgChooseServicesToBook, MsgServices, MsgSuccess
       , MsgSymbolHour, MsgSymbolMinute, MsgStaff, MsgNoPreference
       , MsgMaximumAvailability, MsgSelectStaff, MsgInvalidFormData
       , MsgSelectAtLeastOneServicePlease, MsgOffer, MsgAppointmentTime
@@ -97,7 +97,7 @@ import Foundation
       , MsgCategories, MsgNoServicesFound, MsgLocation, MsgInvalidBusinessAddress
       , MsgInvalidBusinessTimeZoneOffset, MsgInvalidBusinessTimeZone
       , MsgUserProfile, MsgNavigationMenu, MsgNoOffersYet, MsgNoOffersFound
-      , MsgNoCategoriesFound
+      , MsgNoCategoriesFound, MsgCongratulations, MsgShowMyAppointments
       )
     )
 

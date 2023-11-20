@@ -29,7 +29,7 @@ import Yesod.Core
     , TypedContent (TypedContent)
     , ToContent (toContent), typeSvg, newIdent, addMessageI, getMessages
     )
-    
+import Yesod.Core.Handler (setUltDest)    
 import Yesod.Form.Types
     ( MForm, FormResult (FormSuccess), FieldView (fvInput, fvLabel, fvId, fvErrors)
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
@@ -183,6 +183,7 @@ getProfileR uid = do
     (fw,et) <- generateFormPost formRemove
     dlgProfileRemove <- newIdent
     msgs <- getMessages
+    setUltDest HomeR
     defaultLayout $ do
         setTitleI MsgUserProfile
         $(widgetFile "profile/profile")

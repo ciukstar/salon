@@ -99,7 +99,7 @@ import Foundation
       , MsgSelect, MsgRequest, MsgShowAll, MsgNoAppointmentsFound, MsgToday
       , MsgList, MsgCalendar, MsgMon, MsgTue, MsgWed, MsgThu, MsgFri, MsgSat
       , MsgSun, MsgPending, MsgCompleted, MsgSortAscending, MsgSortDescending
-      , MsgNoBusinessAddressFound, MsgAddress, MsgNoAppointmentsForThisDay
+      , MsgNoBusinessAddressFound, MsgAddress, MsgNoAppointmentsForThisDay, MsgRecordEdited
       )
     )
 
@@ -514,19 +514,20 @@ postAppointmentCancelR bid = do
                 now <- liftIO getCurrentTime
                 runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusCancelled
                     (roleName . entityVal <$> role) (staffName . entityVal <$> empl)
+                addMessageI info MsgRecordEdited
                 redirectUltDest $ AppointmentR bid
 
             Nothing -> do
-                addMessageI "warn" MsgEntityNotFound
+                addMessageI warn MsgEntityNotFound
                 redirectUltDest $ AppointmentR bid
       (FormFailure _, _) -> do
-          addMessageI "warn" MsgInvalidFormData
+          addMessageI warn MsgInvalidFormData
           redirectUltDest $ AppointmentR bid
       (FormMissing, _) -> do
-          addMessageI "warn" MsgMissingForm
+          addMessageI warn MsgMissingForm
           redirectUltDest $ AppointmentR bid
       (_, Nothing) -> do
-          addMessageI "warn" MsgLoginToPerformAction
+          addMessageI warn MsgLoginToPerformAction
           redirectUltDest $ AppointmentR bid
 
 
@@ -719,3 +720,10 @@ statusList = [ (BookStatusRequest, MsgRequest)
              , (BookStatusCancelled, MsgCancelled)
              , (BookStatusPaid, MsgPaid)
              ]
+
+
+info :: Text
+info = "info"
+
+warn :: Text
+warn = "warn"

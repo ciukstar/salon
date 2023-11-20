@@ -1,3 +1,7 @@
+ShowAllMine: Show all mine
+ShowMyAppointments: Show my appointments
+Success: Success
+Congratulations: Congratulations
 Remove: Remove
 RemoveProfileHint: You will be logged out and unable to log in with this username
 RemoveProfileAreYouSure: Are you sure you want to remove your profile?

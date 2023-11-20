@@ -16,10 +16,10 @@ module Admin.Users
   , getUsersSearchR
   ) where
 
-import Control.Monad (when)
+import Control.Monad (unless)
 import Data.Maybe (isJust, fromMaybe)
 import qualified Data.List.Safe as LS (head)
-import Data.Text (Text, intercalate)
+import Data.Text (Text)
 import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import Text.Hamlet (Html)
 import Yesod.Auth.Util.PasswordStore (makePassword)
@@ -74,9 +74,9 @@ import Foundation
       , MsgPleaseConfirm, MsgRecordDeleted, MsgRecordEdited, MsgResetPassword
       , MsgConfirmPassword, MsgNewPassword, MsgPasswordsDoNotMatch
       , MsgPasswordChanged, MsgSearch, MsgNoUsersFound, MsgEmployee
-      , MsgCustomer, MsgAdministrator, MsgYes, MsgNo, MsgCategory
-      , MsgSelect, MsgCategories, MsgNavigationMenu, MsgUserProfile, MsgLogin
-      , MsgAnalyst, MsgBlocked, MsgRemoved
+      , MsgCustomer, MsgAdministrator, MsgYes, MsgNo, MsgStatus
+      , MsgSelect, MsgNavigationMenu, MsgUserProfile, MsgLogin
+      , MsgAnalyst, MsgBlocked, MsgRemoved, MsgRole, MsgRoles
       )
     )
 import Model
@@ -101,10 +101,10 @@ import Menu (menu)
 
 getUsersSearchR :: Handler Html
 getUsersSearchR = do
-    formSearch <- newIdent
-    dlgCategList <- newIdent
     mq <- runInputGet $ iopt (searchField True) "q"
-    categs <-  (snd <$>) . filter ((== "categ") . fst) . reqGetParams <$> getRequest
+    roles <-  (snd <$>) . filter ((== role) . fst) . reqGetParams <$> getRequest
+    statuses <-  (snd <$>) . filter ((== status) . fst) . reqGetParams <$> getRequest
+    
     users <- runDB $ select $ do
         x <- from $ table @User
         case mq of
@@ -112,20 +112,58 @@ getUsersSearchR = do
             ||. ( upper_ (x ^. UserFullName) `like` ((%) ++. upper_ (just (val q)) ++. (%)) )
             ||. ( upper_ (x ^. UserEmail) `like` ((%) ++. upper_ (just (val q)) ++. (%)) )
           Nothing -> return ()
-        when ("customer" `elem` categs) $ where_ $ not_ (x ^. UserAdmin)
-        when ("employee" `elem` categs) $ where_ $ exists $ do
-            y <- from $ table @Staff
-            where_ $ y ^. StaffUser ==. just (x ^. UserId)
-        when ("admin" `elem` categs) $ where_ $ x ^. UserAdmin
+
+        let ors1 = snd <$> filter ((`elem` roles) . fst)
+                [ (customer,not_ (x ^. UserAdmin))
+                , (employee, exists $ do
+                        y <- from $ table @Staff
+                        where_ $ y ^. StaffUser ==. just (x ^. UserId) )
+                , (admin, x ^. UserAdmin)
+                , (analyst, x ^. UserAnalyst)
+                ]
+
+        unless (null ors1) $ where_ $ foldr (||.) (val False) ors1
+
+        let ors2 = snd <$> filter ((`elem` statuses) . fst)
+                [ (blocked, x ^. UserBlocked)
+                , (removed, x ^. UserRemoved)
+                ]
+
+        unless (null ors2) $ where_ $ foldr (||.) (val False) ors2
+        
         orderBy [desc (x ^. UserId)]
         return x
-    let categList = [("customer",MsgCustomer),("employee",MsgEmployee),("admin",MsgAdministrator)]
-    app <- getYesod
-    langs <- languages
-    let label = (intercalate ", " . (renderMessage app langs . snd <$>)) (filter (( `elem` categs) . fst) categList)
+    let userRoles = [ (customer, MsgCustomer)
+                    , (employee, MsgEmployee)
+                    , (admin, MsgAdministrator)
+                    , (analyst, MsgAnalyst)
+                    ]
+                    
+    formSearch <- newIdent
+    toolbarTop <- newIdent
+    dlgRoleList <- newIdent
+    dlgStatusList <- newIdent
+    
     defaultLayout $ do
         setTitleI MsgSearch
         $(widgetFile "admin/users/search")
+
+  where
+      role :: Text
+      role = "role"
+      
+      customer, employee, admin, analyst :: Text
+      customer = "customer"
+      employee = "employee"
+      admin    = "admin"
+      analyst  = "analyst"
+                 
+      status :: Text
+      status = "status"
+
+      blocked, removed :: Text
+      blocked = "blocked"
+      removed = "removed"
 
 
 postUserPwdResetR :: UserId -> Handler Html

@@ -1,3 +1,7 @@
+ShowAllMine: Montre tout le mien
+ShowMyAppointments: Afficher mes rendez-vous
+Success: Succès
+Congratulations: Félicitations
 Remove: Supprimer
 RemoveProfileHint: Vous serez déconnecté et ne pourrez pas vous connecter avec ce nom d'utilisateur
 RemoveProfileAreYouSure: Êtes-vous sûr de vouloir supprimer votre profil ?

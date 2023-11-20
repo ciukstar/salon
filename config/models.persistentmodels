@@ -1,4 +1,18 @@
 
+Bill
+  customer UserId OnDeleteCascade
+  staff StaffId OnDeleteCascade 
+  invoice Text
+  charge Centi
+  currency Text Maybe
+  payDay Day Maybe
+  payMode Text Maybe
+  creditCard Text Maybe
+  expireDay Day Maybe
+  dueDay Day Maybe
+  UniqueBill invoice
+  
+
 Hist
   book BookId
   user UserId
