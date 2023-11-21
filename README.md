@@ -66,4 +66,4 @@ All users can become customers by simply registering and using the services offe
 
 [Click here to see demo](https://salon-w3cpovaqka-de.a.run.app)
 
-_* Click on the ![static/img/demography_FILL0_wght400_GRAD0_opsz24.svg](https://salon-w3cpovaqka-de.a.run.app/auth/login) icon to get a list of demo accounts_
+_* Click on the [![Demography icon](static/img/demography_FILL0_wght400_GRAD0_opsz24.svg)](https://salon-w3cpovaqka-de.a.run.app/auth/login) icon to get a list of demo accounts_
