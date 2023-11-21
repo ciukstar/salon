@@ -1,4 +1,7 @@
 
+/billing/#UserId/billing  BillingR  GET
+/billing/#UserId/invoices InvoicesR GET
+
 /contact ContactR GET
 
 /tasks/#UserId/#StaffId/list/#Day/#BookId/hist TaskHistR      GET

@@ -131,6 +131,9 @@ instance Yesod App where
     isAuthorized RobotsR _ = return Authorized
     isAuthorized PhotoPlaceholderR _ = return Authorized
 
+    isAuthorized r@(InvoicesR _) _ = setUltDest r >> isAuthenticated
+    isAuthorized r@(BillingR _) _ = setUltDest r >> isAuthenticated
+
     isAuthorized r@(StatsR PopOffersR) _               = setUltDest r >> isAnalyst
     isAuthorized r@(StatsR WorkloadsR) _               = setUltDest r >> isAnalyst
     isAuthorized r@(StatsR (WorkloadEmplMonthR _ _)) _ = setUltDest r >> isAnalyst

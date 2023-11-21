@@ -1,17 +1,46 @@
 
-Bill
+
+ItemBook
+  item ItemId OnDeleteCascade
+  book BookId OnDeleteCascade
+  UniqueItemBook item book
+
+
+Item
+  offer OfferId OnDeleteCascade
+  invoice InvoiceId OnDeleteCascade
+  quantity Int
+  price Centi
+  tax Centi
+  amount Centi
+  currency Text Maybe
+  UniqueItem offer invoice
+
+
+Invoice
   customer UserId OnDeleteCascade
   staff StaffId OnDeleteCascade 
-  invoice Text
-  charge Centi
+  number Text
+  day Day
+  amount Centi
   currency Text Maybe
-  payDay Day Maybe
-  payMode Text Maybe
+  payMethod Text Maybe
   creditCard Text Maybe
   expireDay Day Maybe
   dueDay Day Maybe
-  UniqueBill invoice
-  
+  UniqueBill number
+
+
+Billing
+  customer UserId OnDeleteCascade
+  account Text
+  nickname Text
+  payMethod Text Maybe
+  creditCard Text Maybe
+  expireDate Month Maybe
+  UniqueBillingAccount account
+  UniqueBillingNickname customer nickname
+
 
 Hist
   book BookId

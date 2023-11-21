@@ -1,3 +1,9 @@
+NoPaymentSettingsYet: No payment settings yet
+Settings: Settings
+PaymentSettings: Payment settings
+NoInvoicesYet: There are no invoices yet
+Invoices: Invoices
+Billing: Billing
 ShowAllMine: Show all mine
 ShowMyAppointments: Show my appointments
 Success: Success

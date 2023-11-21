@@ -58,6 +58,9 @@ import Demo.DemoDataEN (populateEN)
 -- Import all relevant handler modules here.
 -- Don't forget to add new modules to your cabal file!
 
+import Handler.Billing
+    ( getBillingR, getInvoicesR )
+
 import Handler.Requests
     ( getRequestsR, getRequestR, postRequestR
     , getRequestsSearchR, postRequestApproveR

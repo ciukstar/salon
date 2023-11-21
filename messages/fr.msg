@@ -1,3 +1,9 @@
+NoPaymentSettingsYet: Aucun paramètre de paiement pour l'instant
+Settings: Paramètres
+PaymentSettings: Paramètres de paiement
+NoInvoicesYet: Il n'y a pas encore de factures
+Invoices: Factures
+Billing: Facturation
 ShowAllMine: Montre tout le mien
 ShowMyAppointments: Afficher mes rendez-vous
 Success: Succès

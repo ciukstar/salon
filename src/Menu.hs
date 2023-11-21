@@ -26,8 +26,8 @@ import Foundation
     , ResourcesR (DocsR)
     , Route
       ( ResourcesR, AdminR, ContactR, AboutUsR, AppointmentsR
-      , BookOffersR, ServicesR, HomeR, StatsR
-      , BookingsCalendarR, TasksCalendarR
+      , BookOffersR, ServicesR, HomeR, StatsR, BookingsCalendarR
+      , TasksCalendarR, InvoicesR, BillingR
       )
     , StatsR (PopOffersR, WorkloadsR, StatsAovR)
     , AdminR
@@ -40,12 +40,14 @@ import Foundation
       , MsgMyAppointments, MsgServices, MsgBookAppointment, MsgWelcome, MsgUsers
       , MsgStaff, MsgData, MsgResources, MsgRequests, MsgBusiness, MsgClose
       , MsgAnalytics, MsgWorkload, MsgCustomerRanking, MsgServiceRanking
+      , MsgInvoices, MsgBilling, MsgPaymentSettings, MsgSettings
       )
     )
 
 import Model
-    ( BookStatus (BookStatusRequest, BookStatusApproved), Services (Services), Business (Business)
-    , Assignees (AssigneesMe), EntityField (StaffUser), Staff (Staff)
+    ( BookStatus (BookStatusRequest, BookStatusApproved), Services (Services)
+    , Business (Business), Assignees (AssigneesMe), EntityField (StaffUser)
+    , Staff (Staff)
     )
 
 import Settings (widgetFile)

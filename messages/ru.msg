@@ -1,3 +1,9 @@
+NoPaymentSettingsYet: Настройки оплаты пока отсутствуют
+Settings: Настройки
+PaymentSettings: Настройки оплаты
+NoInvoicesYet: Счетов-фактур пока нет
+Invoices: Счета-фактуры
+Billing: Биллинг
 ShowAllMine: Показать все мои
 ShowMyAppointments: Показать мои записи
 Success: Успех

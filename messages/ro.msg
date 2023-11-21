@@ -1,3 +1,9 @@
+NoPaymentSettingsYet: Încă nu există setări de plată
+Settings: Setări
+PaymentSettings: Setări pentru plată
+NoInvoicesYet: Încă nu există facturi
+Invoices: Facturi
+Billing: Facturare
 ShowAllMine: Arată toate ale mele
 ShowMyAppointments: Afișează programările mele
 Success: Succes
