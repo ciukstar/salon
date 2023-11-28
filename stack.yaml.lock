@@ -3,7 +3,28 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages: []
+packages:
+- completed:
+    hackage: stripe-core-2.6.2@sha256:a10348a17d961df1c04d27319496d75542506e4b55979f982a81d0b3fee55cd3,2846
+    pantry-tree:
+      sha256: 3a693c6d8f30acd5106912f683724327f26ba061ce1d4fbfd8ef19ced7ff79ab
+      size: 1831
+  original:
+    hackage: stripe-core-2.6.2@sha256:a10348a17d961df1c04d27319496d75542506e4b55979f982a81d0b3fee55cd3,2846
+- completed:
+    hackage: stripe-http-client-2.6.2@sha256:fdcdb784bb54ecf62a6bf4d2e2d09c42b3300d4a671ba5f8e3081c2f3e4f19df,1935
+    pantry-tree:
+      sha256: 62ec31b16fb5373ac557112be111bdfd9a79c15362ac67ff76af4d41ac8ce90a
+      size: 292
+  original:
+    hackage: stripe-http-client-2.6.2@sha256:fdcdb784bb54ecf62a6bf4d2e2d09c42b3300d4a671ba5f8e3081c2f3e4f19df,1935
+- completed:
+    hackage: stripe-haskell-2.6.2@sha256:4ad015702e65b3219b9f2db10b8ae35873254a149f7b735c5d3e6250d7b641a1,1130
+    pantry-tree:
+      sha256: a4fee4fa9fe013b73b98a2b8612495a96310c004bcea4af3df3ba72945f9e9e9
+      size: 380
+  original:
+    hackage: stripe-haskell-2.6.2@sha256:4ad015702e65b3219b9f2db10b8ae35873254a149f7b735c5d3e6250d7b641a1,1130
 snapshots:
 - completed:
     sha256: afd5ba64ab602cabc2d3942d3d7e7dd6311bc626dcb415b901eaf576cb62f0ea

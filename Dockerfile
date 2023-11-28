@@ -8,6 +8,6 @@ WORKDIR /opt/salon
 COPY salon /opt/salon
 COPY static /opt/salon/static
 COPY config /opt/salon/config
-ENV YESOD_PORT=8080 DEMO_LANG=EN
+ENV YESOD_PORT=8080 YESOD_DEMO_LANG=EN
 EXPOSE 8080
 CMD ["./salon"]

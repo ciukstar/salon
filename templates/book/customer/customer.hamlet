@@ -9,7 +9,7 @@
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light style="white-space:normal;line-height:1">
         <div #divStepCounter style="margin-bottom:1rem;overflow:hidden">
           <small>
-            <small>_{MsgStepNofM 4 4}
+            <small>_{MsgStepNofM 4 5}
         <div style="white-space:inherit;overflow:inherit;text-overflow:inherit;line-height:inherit">
           _{MsgCustomerInformation}
 
@@ -86,8 +86,8 @@
   <button.mdc-button.mdc-button--raised.mdc-button--icon-leading type=submit form=formCustomer>
     <span.mdc-button__ripple>
     <span.mdc-button__focus-ring>
-    <i.mdc-button__icon.material-symbols-outlined>download_done
-    <span.mdc-button__label>_{MsgBook}
+    <i.mdc-button__icon.material-symbols-outlined>arrow_forward_ios
+    <span.mdc-button__label>_{MsgContinue}
 
 $forall (_,msg) <- msgs
   <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>

@@ -49,6 +49,14 @@ dependencies:
 - transformers
 - blaze-html
 - persistent
+- lens
+- lens-aeson
+- wreq
+- stripe-wreq
+- stripe-haskell
+- stripe-http-client
+- stripe-core
+
 
 # The library contains all of our application code. The executable
 # defined below is just a thin wrapper.

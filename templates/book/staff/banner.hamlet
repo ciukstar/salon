@@ -9,7 +9,7 @@
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light style="white-space:normal;line-height:1">
         <div #divStepCounter style="margin-bottom:1rem;overflow:hidden">
           <small>
-            <small>_{MsgStepNofM 2 4}
+            <small>_{MsgStepNofM 2 5}
         <div style="white-space:inherit;overflow:inherit;text-overflow:inherit;line-height:inherit">
           _{MsgSelectStaff}
 

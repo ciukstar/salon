@@ -1,3 +1,12 @@
+Completion: Finalisation
+Checkout: Vérifier
+PayWithCreditOrDebitCard: Payer par carte de crédit ou de débit 
+DebitCreditCard: Carte de débit/crédit
+CreditCard: Carte de crédit 
+DebitCard: Carte de débit
+PayNow: Payez maintenant
+PayAtVenue: Paiement sur place
+PaymentMethod: Mode de paiement
 NoPaymentSettingsYet: Aucun paramètre de paiement pour l'instant
 Settings: Paramètres
 PaymentSettings: Paramètres de paiement

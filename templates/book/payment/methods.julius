@@ -1,0 +1,16 @@
+
+window.mdc.autoInit();
+
+document.getElementById(#{theId}).MDCList.singleSelection = true;
+
+document.getElementById(#{theId}).MDCList.selectedIndex = document.getElementById(#{theId}).MDCList.listElements.map(
+  (x,i) => x.matches('[aria-checked=true]') ? [i] : []
+).flat()[0];
+
+document.getElementById(#{theId}).MDCList.listen('MDCList:selectionChange',function (e) {
+  this.MDCList.selectedIndex = e.detail.changedIndices[0];
+  document.getElementById(#{theId}).MDCList.listElements[this.MDCList.selectedIndex].querySelector(
+    'input.mdc-radio__native-control'
+  ).checked = true;
+});
+

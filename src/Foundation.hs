@@ -131,6 +131,9 @@ instance Yesod App where
     isAuthorized RobotsR _ = return Authorized
     isAuthorized PhotoPlaceholderR _ = return Authorized
 
+    
+    isAuthorized r@(CreatePaymentIntentR) _ = setUltDest r >> isAuthenticated
+    isAuthorized r@(CheckoutR _) _ = setUltDest r >> isAuthenticated
     isAuthorized r@(InvoicesR _) _ = setUltDest r >> isAuthenticated
     isAuthorized r@(BillingR _) _ = setUltDest r >> isAuthenticated
 
@@ -228,6 +231,11 @@ instance Yesod App where
     isAuthorized ContactR _ = return Authorized
 
     isAuthorized BookEndR _ = return Authorized
+    isAuthorized (BookPayCompletionR _) _ = isAuthenticated
+    isAuthorized (BookPaymentIntentR _) _ = isAuthenticated
+    isAuthorized (BookPayNowR _) _ = isAuthenticated
+    isAuthorized (BookPayAtVenueR _) _ = isAuthenticated
+    isAuthorized (BookPayR _) _ = isAuthenticated
     isAuthorized BookCustomerR _ = return Authorized
     isAuthorized BookTimeR _ = return Authorized
     isAuthorized BookStaffR _ = return Authorized

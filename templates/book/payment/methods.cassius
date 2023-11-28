@@ -1,0 +1,11 @@
+
+ul.mdc-list##{theId}
+  .mdc-list-item[aria-checked=true]
+    span.mdc-list-item__content
+      div.mdc-list-item__primary-text
+        color: var(--theme-accent)
+  .mdc-list-item
+    span.mdc-list-item__start
+      .mdc-radio .mdc-radio__native-control:enabled:checked+.mdc-radio__background
+        .mdc-radio__outer-circle, .mdc-radio__inner-circle
+          border-color: var(--theme-accent,#018786)

@@ -20,7 +20,7 @@ import Yesod.Auth (maybeAuth, Route (LoginR))
 import Yesod.Core
     ( Yesod(defaultLayout), setUltDestCurrent, getMessages, newIdent)
 import Yesod.Core.Widget (setTitleI, toWidget, addScriptRemote, addStylesheetRemote)
-import Settings (widgetFile)
+import Settings (widgetFile, AppSettings (appMapboxPk))
 
 import Foundation
     ( Handler
@@ -30,7 +30,7 @@ import Foundation
       , MsgLogin, MsgNoContentYet, MsgMonday, MsgTuesday, MsgWednesday
       , MsgThursday, MsgFriday, MsgSaturday, MsgSunday, MsgNoBusinessHoursFound
       , MsgBusinessHours, MsgAddress, MsgNoBusinessAddressFound
-      )
+      ), App (appSettings)
     )
 
 import Database.Persist (Entity (Entity))
@@ -45,10 +45,11 @@ import Model
     ( ContactUs (ContactUs), BusinessHours (BusinessHours)
     , EntityField (BusinessHoursDayType, BusinessHoursDay, BusinessHoursOpen, BusinessAddr)
     , DayType (Weekday)
-    , mbat, Business
+    , Business
     )
 
 import Menu (menu)
+import Yesod.Core.Handler (getYesod)
 
 getContactR :: Handler Html
 getContactR = do
@@ -91,6 +92,7 @@ getContactR = do
         setTitleI MsgContactUs
         case contacts of
           Just (Entity _ (ContactUs _ _ _ _ True (Just lng) (Just lat))) -> do
+              mapboxPk <- appMapboxPk . appSettings <$> getYesod
               addScriptRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"
               addScriptRemote "https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-language/v1.0.0/mapbox-gl-language.js"
               addStylesheetRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css"
@@ -101,7 +103,7 @@ mapgl.style.height = '300px';
 mapgl.style.width = '100%';
 main.appendChild(mapgl);
 const map = new mapboxgl.Map({
-  accessToken: #{mbat},
+  accessToken: #{mapboxPk},
   attributionControl: false,
   container: mapgl,
   style: 'mapbox://styles/mapbox/streets-v11',
@@ -115,6 +117,7 @@ const loc = new mapboxgl.Marker().setLngLat(
 ).addTo(map);
 |]
           Just (Entity _ (ContactUs _ _ _ _ True _ _)) -> do
+              mapboxPk <- appMapboxPk . appSettings <$> getYesod
               addScriptRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"
               addScriptRemote "https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-language/v1.0.0/mapbox-gl-language.js"
               addStylesheetRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css"
@@ -125,7 +128,7 @@ mapgl.style.height = '300px';
 mapgl.style.width = '100%';
 main.appendChild(mapgl);
 const map = new mapboxgl.Map({
-  accessToken: #{mbat},
+  accessToken: #{mapboxPk},
   attributionControl: false,
   container: mapgl,
   style: 'mapbox://styles/mapbox/streets-v11',

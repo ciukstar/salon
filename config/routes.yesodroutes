@@ -1,4 +1,8 @@
 
+/create-payment-intent CreatePaymentIntentR POST
+/checkout/#UserId      CheckoutR GET
+
+
 /billing/#UserId/billing  BillingR  GET
 /billing/#UserId/invoices InvoicesR GET
 
@@ -31,12 +35,17 @@
 /appointments/#BookId            AppointmentR           GET POST
 /appointments                    AppointmentsR          GET
 
-/book/search   BookSearchR   GET POST
-/book/end      BookEndR      GET
-/book/customer BookCustomerR GET POST
-/book/time     BookTimeR     GET POST
-/book/staff    BookStaffR    GET POST
-/book          BookOffersR   GET POST
+/book/search                 BookSearchR        GET POST
+/book/end                    BookEndR           GET
+/book/#UserId/pay-completion BookPayCompletionR GET
+/book/#UserId/payment-intent BookPaymentIntentR POST
+/book/#UserId/pay-now        BookPayNowR     	GET
+/book/#UserId/pay-at-venue   BookPayAtVenueR 	GET
+/book/#UserId/pay    	     BookPayR        	GET POST
+/book/customer       	     BookCustomerR   	GET POST
+/book/time     	     	     BookTimeR       	GET POST
+/book/staff    	     	     BookStaffR      	GET POST
+/book          	     	     BookOffersR     	GET POST
 
 /aboutus AboutUsR GET
 

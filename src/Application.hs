@@ -58,6 +58,8 @@ import Demo.DemoDataEN (populateEN)
 -- Import all relevant handler modules here.
 -- Don't forget to add new modules to your cabal file!
 
+import Handler.Checkout (getCheckoutR, postCreatePaymentIntentR)
+
 import Handler.Billing
     ( getBillingR, getInvoicesR )
 
@@ -83,7 +85,11 @@ import Handler.Book
     , getBookStaffR, postBookStaffR
     , getBookTimeR, postBookTimeR
     , getBookCustomerR, postBookCustomerR
-    , getBookEndR, getBookSearchR, postBookSearchR
+    , getBookPayR, postBookPayR
+    , getBookPayAtVenueR
+    , getBookPayNowR, postBookPaymentIntentR, getBookPayCompletionR
+    , getBookEndR
+    , getBookSearchR, postBookSearchR
     )
 import Handler.AboutUs (getAboutUsR)
 import Handler.Services
@@ -218,7 +224,7 @@ makeFoundation appSettings = do
     -- Perform database migration using our application's logging settings.
     flip runLoggingT logFunc $ flip runSqlPool pool $ do
         runMigration migrateAll
-        demo <- liftIO $ getEnv "DEMO_LANG"
+        demo <- liftIO $ getEnv "YESOD_DEMO_LANG"
         case demo of
           Just "FR" -> populateFR
           Just "RO" -> populateRO

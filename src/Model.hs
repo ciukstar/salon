@@ -59,6 +59,12 @@ import Database.Persist.Types
     , SqlType (SqlDayTime, SqlInt64, SqlInt32, SqlString)
     )
 import Database.Persist.Sql (fromSqlKey, toSqlKey, PersistFieldSql, sqlType)
+import Control.Lens (makeLensesFor)
+
+
+data PayMethod = PayAtVenue | PayNow
+    deriving (Show, Read, Eq, Ord)
+derivePersistField "PayMethod"
 
 
 data DayType = Weekday | Weekend | Holiday
@@ -185,6 +191,11 @@ share [mkPersist sqlSettings, mkMigrate "migrateAll"]
     $(persistFileWith lowerCaseSettings "config/models.persistentmodels")
 
 
+makeLensesFor [ ("itemBookItem","_itemBookItem")
+              , ("itemBookBook","_itemBookBook")
+              ] ''ItemBook
+
+
 instance PathPiece Month where
     toPathPiece :: Month -> Text
     toPathPiece = pack . show
@@ -219,9 +230,6 @@ data SortOrder = SortOrderAsc | SortOrderDesc
     
 instance SqlString Textarea
 
-
-mbat :: Text
-mbat = "pk.eyJ1IjoiY2l1a3N0YXIiLCJhIjoiY2o1enNibDNsMGNrNDJ3dDhxeTJuc3luMiJ9.Jgc5GdYUMbYwGq-zRWtzfw"
 
 ultDestKey :: Text
 ultDestKey = "_ULT"

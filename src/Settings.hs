@@ -63,6 +63,9 @@ data AppSettings = AppSettings
 
     , appAuthDummyLogin         :: Bool
     -- ^ Indicate if auth dummy login should be enabled.
+    , appMapboxPk :: Text
+    , appStripePk :: Text
+    , appStripeSk :: Text
     }
 
 instance FromJSON AppSettings where
@@ -93,6 +96,10 @@ instance FromJSON AppSettings where
         appAnalytics              <- o .:? "analytics"
 
         appAuthDummyLogin         <- o .:? "auth-dummy-login"      .!= dev
+                                     
+        appMapboxPk               <- o .:  "mapbox-pk"
+        appStripePk               <- o .:  "stripe-pk"
+        appStripeSk               <- o .:  "stripe-sk"
 
         return AppSettings {..}
 

@@ -23,8 +23,8 @@ Invoice
   number Text
   day Day
   amount Centi
+  payMethod PayMethod
   currency Text Maybe
-  payMethod Text Maybe
   creditCard Text Maybe
   expireDay Day Maybe
   dueDay Day Maybe

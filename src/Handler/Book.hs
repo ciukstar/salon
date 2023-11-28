@@ -13,36 +13,55 @@ module Handler.Book
   , postBookTimeR
   , getBookCustomerR
   , postBookCustomerR
+  , getBookPayR
+  , postBookPayR
+  , getBookPayAtVenueR
+  , getBookPayNowR
+  , postBookPaymentIntentR
+  , getBookPayCompletionR
   , getBookEndR
   , getBookSearchR
   , postBookSearchR
   , sessKeyBooking
   ) where
 
+import Control.Lens ((?~),(^?))
 import Control.Monad (unless, forM, when, join)
+import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Reader (ReaderT)
+import Data.Aeson.Lens (key)
+import Data.Aeson (object, (.=))
+import qualified Data.Aeson as A (Value)
 import Data.Bifunctor (Bifunctor(second))
 import Data.Either (isLeft)
 import Data.Maybe (maybeToList, isJust, fromMaybe)
 import Data.Fixed (Centi)
+import Data.Function ((&))
 import qualified Data.List.Safe as LS (head)
 import Data.Text (unpack, intercalate, pack, Text)
 import qualified Data.Text as T (null, empty)
+import Data.Text.Encoding (encodeUtf8)
 import Data.Time
     ( Day, TimeOfDay, UTCTime (utctDay), TimeZone (timeZoneMinutes)
     , LocalTime (LocalTime), utcToLocalTime, getCurrentTime
     , minutesToTimeZone
     )
 import Data.Time.Format (formatTime, defaultTimeLocale)
+import Network.Wreq
+    ( postWith, defaults, auth, basicAuth, FormParam ((:=)), responseBody
+    )
 import Text.Hamlet (Html)
 import Text.Shakespeare.I18N (renderMessage, SomeMessage (SomeMessage))
+import Text.Read (readMaybe)
+
 import Yesod.Core
     ( Yesod(defaultLayout), YesodRequest (reqGetParams), liftHandler
     , getYesod, languages, whamlet, setUltDestCurrent, getMessages
-    , redirect, getRequest, addMessageI, deleteSession, lookupSession
-    , setSession, MonadIO (liftIO), getPostParams, newIdent
+    , redirect, getRequest, addMessageI, lookupSession
+    , setSession, getPostParams, newIdent, getCurrentRoute
+    , returnJson
     )
-import Yesod.Core.Widget (setTitleI)
+import Yesod.Core.Widget (setTitleI, addScriptRemote)
 import Yesod.Auth (maybeAuth, Route (LoginR))
 import Yesod.Form.Types
     ( MForm, FormResult (FormSuccess, FormFailure)
@@ -50,15 +69,16 @@ import Yesod.Form.Types
     , Enctype (UrlEncoded)
     , FieldView (fvInput, fvErrors, fvId, fvLabel)
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
+    , FormMessage (MsgInvalidEntry)
     )
 import Yesod.Form.Fields
     ( Textarea (Textarea, unTextarea), timeField, dayField, textField, intField
     , searchField, textareaField
     )
 import Yesod.Form.Functions
-    ( mreq, check, mopt, runFormPost, generateFormPost, checkM)
-import Yesod.Form.Input (iopt, runInputGet)
-import Settings (widgetFile)
+    ( mreq, check, mopt, runFormPost, generateFormPost, checkM, parseHelper)
+import Yesod.Form.Input (iopt, runInputGet, ireq)
+import Settings (widgetFile, AppSettings (appStripePk, appStripeSk))
 
 import Yesod.Persist.Core (runDB)
 import Database.Persist ( Entity(Entity, entityVal), PersistStoreWrite (insert, insert_) )
@@ -77,8 +97,9 @@ import Foundation
     , Route
       ( AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR, AccountR
       , HomeR, AppointmentsR, AppointmentR, ProfileR, ServiceThumbnailR
-      , BookOffersR, BookStaffR, BookTimeR, BookCustomerR, BookEndR
-      , BookSearchR
+      , BookOffersR, BookStaffR, BookTimeR, BookCustomerR, BookPayR
+      , BookPayNowR, BookPayCompletionR, BookPayAtVenueR, BookEndR
+      , BookSearchR, BookPaymentIntentR
       )
     , AdminR (AdmStaffPhotoR)
     , AppMessage
@@ -98,25 +119,127 @@ import Foundation
       , MsgInvalidBusinessTimeZoneOffset, MsgInvalidBusinessTimeZone
       , MsgUserProfile, MsgNavigationMenu, MsgNoOffersYet, MsgNoOffersFound
       , MsgNoCategoriesFound, MsgCongratulations, MsgShowMyAppointments
-      )
+      , MsgPaymentMethod, MsgPayAtVenue, MsgPayNow, MsgDebitCreditCard, MsgCheckout
+      , MsgCompletionTime, MsgCompletion
+      ), App (appSettings)
     )
 
 import Model
     ( EmplStatus (EmplStatusAvailable), Service(Service), ServiceId
     , Offer (Offer), OfferId, Staff (Staff, staffName)
-    , Role (Role, roleName), RoleId, User (User), Book (Book), Thumbnail
-    , BookStatus (BookStatusRequest), Hist (Hist)
+    , RoleId, Role (Role, roleName), UserId, User (User), Book (Book)
+    , Thumbnail, BookStatus (BookStatusRequest), Hist (Hist)
     , Business (businessAddr, businessTzo, businessTz, Business)
     , EntityField
       ( StaffId, RoleId, ServiceId, OfferService, ServicePublished, BookId
       , ServiceName, RoleStaff, RoleRating, RoleService, OfferId, BookOffer
       , BookCustomer, ThumbnailService, ThumbnailAttribution, BusinessCurrency
       , ServiceOverview, ServiceDescr, ServiceGroup, StaffStatus, OfferPublished
-      )
+      ), PayMethod (PayAtVenue, PayNow)
     )
 
 import Menu (menu)
 
+
+postPaymentR :: Handler Html
+postPaymentR = undefined
+
+
+getBookPayCompletionR :: UserId -> Handler Html
+getBookPayCompletionR uid = do
+    pi <- runInputGet $ ireq textField "payment_intent"
+    pics <- runInputGet $ ireq textField "payment_intent_client_secret"
+    rdrs <- runInputGet $ ireq textField "redirect_status"
+    defaultLayout $ do
+        setTitleI MsgCompletion
+        $(widgetFile "book/payment/completion")
+        
+        
+
+
+postBookPaymentIntentR :: UserId -> Handler A.Value
+postBookPaymentIntentR uid = do
+    let stripeApi = "https://api.stripe.com/v1/payment_intents"
+    sk <- encodeUtf8 . appStripeSk . appSettings <$> getYesod
+    let opts = defaults & auth ?~ basicAuth sk "" 
+    r <- liftIO $ postWith opts stripeApi [ "amount" := (1300 :: Int)
+                                          , "currency" := ("usd" :: Text)
+                                          , "payment_method_types[]" := ("card" :: Text)
+                                          ]
+    returnJson $ object [ "clientSecret" .= (r ^? responseBody . key "client_secret")]
+
+
+getBookPayNowR :: UserId -> Handler Html
+getBookPayNowR uid = do
+    user <- maybeAuth
+    pk <- appStripePk . appSettings <$> getYesod
+    let times = []
+    let rids = []
+    let oids = []
+    let dates = []
+
+    curr <- getCurrentRoute
+    
+    defaultLayout $ do
+        setTitleI MsgCheckout
+        addScriptRemote "https://js.stripe.com/v3/"
+        $(widgetFile "book/payment/checkout/checkout")
+    
+
+getBookPayAtVenueR :: UserId -> Handler Html
+getBookPayAtVenueR uid = do
+    user <- maybeAuth
+    let times = []
+    let rids = []
+    let oids = []
+    let dates = []
+
+    curr <- getCurrentRoute
+    
+    defaultLayout $ do
+        setTitleI MsgPaymentMethod
+        $(widgetFile "book/payment/payment")
+
+
+postBookPayR :: UserId -> Handler Html
+postBookPayR uid = undefined
+
+
+getBookPayR :: UserId -> Handler Html
+getBookPayR uid = do
+    user <- maybeAuth
+    let times = []
+    let rids = []
+    let oids = []
+    let dates = []
+
+    curr <- getCurrentRoute
+    
+    defaultLayout $ do
+        setTitleI MsgPaymentMethod
+        $(widgetFile "book/payment/payment")
+
+
+formPayment :: Html -> MForm Handler (FormResult PayMethod, Widget)
+formPayment extra = do
+    (r,v) <- mreq metodsField "" Nothing
+    
+    let w = [whamlet|#{extra}^{fvInput v}|]
+    return (r,w)
+  where
+      
+      metodsField :: Field Handler PayMethod
+      metodsField = Field
+          { fieldParse = parseHelper $ \s -> case readMaybe $ unpack s of
+              Just x -> Right x
+              Nothing -> Left $ MsgInvalidEntry s
+          , fieldView = \theId name attrs eval _isReq -> do
+                let isChecked (Left _) _ = False
+                    isChecked (Right y) x = x == y
+                $(widgetFile "book/payment/methods")
+          , fieldEnctype = UrlEncoded
+          }
+      
 
 postBookSearchR :: Handler Html
 postBookSearchR = do
@@ -145,46 +268,15 @@ postBookSearchR = do
               $(widgetFile "book/search/banner")
 
 
-getBookSearchR :: Handler Html
-getBookSearchR = do
-    formSearch <- newIdent
-    dlgCategList <- newIdent
-    mq <- runInputGet $ iopt (searchField True) "q"
-    oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
-    categs <- (toSqlKey . read . unpack . snd <$>) . filter ((== "categ") . fst) . reqGetParams <$> getRequest
-    offers <- runDB $ queryOffers categs mq []
-    items <- runDB $ queryItems categs mq (toSqlKey . read . unpack . snd <$> oids)
-    (fw,et) <- generateFormPost $ formOffers items offers
-
-    currency <- (unValue <$>) <$> runDB ( selectOne $ do
-        x <- from $ table @Business
-        return $ x ^. BusinessCurrency )
-
-    groups <- runDB $ select $ do
-        x <- from $ table @Service
-        where_ $ x ^. ServicePublished
-        where_ $ exists $ do
-            y <- from $ table @Service
-            where_ $ y ^. ServiceGroup ==. just (x ^. ServiceId)
-            where_ $ x ^. ServicePublished
-        return x
-
-    msgs <- getMessages
-    setUltDestCurrent
-    defaultLayout $ do
-        setTitleI MsgSearch
-        $(widgetFile "book/search/search")
-
-
 getBookEndR :: Handler Html
 getBookEndR = do
     user <- maybeAuth
     bids <- (toSqlKey . read . unpack . snd <$>) . filter ((== "bid") . fst) . reqGetParams <$> getRequest
-    
+
     currency <- (unValue <$>) <$> runDB ( selectOne $ do
         x <- from $ table @Business
         return $ x ^. BusinessCurrency )
-        
+
     books <- runDB $ select $ do
         x :& o :& s <- from $ table @Book
             `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
@@ -208,7 +300,7 @@ postBookCustomerR = do
     resubmit <- lookupSession sessKeyBooking
     case resubmit of
       Nothing -> do
-          addMessageI "info" MsgBookingSequenceRestarted
+          addMessageI info MsgBookingSequenceRestarted
           redirect BookOffersR
       _ -> do
           rids <- filter ((== "rid") . fst) . reqGetParams <$> getRequest
@@ -229,9 +321,10 @@ postBookCustomerR = do
                     runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusRequest
                         (roleName . entityVal . snd <$> role) (staffName . entityVal . fst <$> role)
                     return bid
-                addMessageI "info" MsgRecordAdded
-                deleteSession sessKeyBooking
-                redirect (BookEndR, ("bid",) . pack . show . fromSqlKey <$> bids)
+                addMessageI info MsgRecordAdded
+                -- deleteSession sessKeyBooking
+                redirect $ BookPayR uid  
+                -- redirect (BookEndR, ("bid",) . pack . show . fromSqlKey <$> bids)
             _ -> do
                 msgs <- getMessages
                 defaultLayout $ do
@@ -270,7 +363,7 @@ postBookTimeR = do
     resubmit <- lookupSession sessKeyBooking
     case resubmit of
       Nothing -> do
-          addMessageI "info" MsgBookingSequenceRestarted
+          addMessageI info MsgBookingSequenceRestarted
           redirect BookOffersR
       _ -> do
           oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
@@ -323,7 +416,7 @@ postBookStaffR = do
     resubmit <- lookupSession sessKeyBooking
     case resubmit of
       Nothing -> do
-          addMessageI "info" MsgBookingSequenceRestarted
+          addMessageI info MsgBookingSequenceRestarted
           redirect BookOffersR
       _ -> do
           user <- maybeAuth
@@ -376,7 +469,7 @@ postBookOffersR = do
                    , ys <> ((\((_,Entity oid _),_) -> ("oid",pack $ show $ fromSqlKey oid)) <$> items)
                    )
       _ -> do
-          
+
           currency <- (unValue <$>) <$> runDB ( selectOne $ do
               x <- from $ table @Business
               return $ x ^. BusinessCurrency )
@@ -533,7 +626,7 @@ formTime :: Maybe Day -> Maybe TimeOfDay -> Maybe (Entity Business)
                            , Widget
                            )
 formTime day time business items offers role roles extra = do
-    
+
     currency <- (unValue <$>) <$> liftHandler ( runDB ( selectOne $ do
         x <- from $ table @Business
         return $ x ^. BusinessCurrency ) )
@@ -679,7 +772,7 @@ formStaff items offers role roles extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = []
         } (Just items)
-        
+
     detailsServices <- newIdent
     (rolesR,rolesV) <- mopt (rolesField roles) "" (Just role)
     return ( (,) <$> offersR <*> rolesR
@@ -726,11 +819,11 @@ formOffers :: [((Entity Service, Entity Offer),Maybe Html)]
            -> [((Entity Service, Entity Offer),Maybe Html)]
            -> Html -> MForm Handler (FormResult [((Entity Service,Entity Offer),Maybe Html)], Widget)
 formOffers items offers extra = do
-    
+
     currency <- (unValue <$>) <$> liftHandler ( runDB ( selectOne $ do
         x <- from $ table @Business
         return $ x ^. BusinessCurrency ) )
-        
+
     (r,v) <- mreq (check notNull (offersField currency offers)) FieldSettings
         { fsLabel = SomeMessage MsgOffer
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
@@ -779,7 +872,7 @@ queryRoles services = select $ do
     x :& e <- from $ table @Role
         `innerJoin` table @Staff `on` (\(x :& e) -> x ^. RoleStaff ==. e ^. StaffId)
     where_ $ e ^. StaffStatus ==. val EmplStatusAvailable
-        
+
     where_ $ not_ $ exists $ do
         _ <- from (
             ( do
@@ -853,6 +946,37 @@ queryOffers categs mq oids = (second (join . unValue) <$>) <$> ( select $ do
     return ((x,o),t ?. ThumbnailAttribution) )
 
 
+getBookSearchR :: Handler Html
+getBookSearchR = do
+    formSearch <- newIdent
+    dlgCategList <- newIdent
+    mq <- runInputGet $ iopt (searchField True) "q"
+    oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
+    categs <- (toSqlKey . read . unpack . snd <$>) . filter ((== "categ") . fst) . reqGetParams <$> getRequest
+    offers <- runDB $ queryOffers categs mq []
+    items <- runDB $ queryItems categs mq (toSqlKey . read . unpack . snd <$> oids)
+    (fw,et) <- generateFormPost $ formOffers items offers
+
+    currency <- (unValue <$>) <$> runDB ( selectOne $ do
+        x <- from $ table @Business
+        return $ x ^. BusinessCurrency )
+
+    groups <- runDB $ select $ do
+        x <- from $ table @Service
+        where_ $ x ^. ServicePublished
+        where_ $ exists $ do
+            y <- from $ table @Service
+            where_ $ y ^. ServiceGroup ==. just (x ^. ServiceId)
+            where_ $ x ^. ServicePublished
+        return x
+
+    msgs <- getMessages
+    setUltDestCurrent
+    defaultLayout $ do
+        setTitleI MsgSearch
+        $(widgetFile "book/search/search")
+
+
 amount :: [((Entity Service,Entity Offer),Maybe Html)] -> Centi
 amount oids = sum $ (\((_,Entity _ (Offer _ _ _ price _ _ _)),_) -> price) <$> oids
 
@@ -869,3 +993,7 @@ fragment :: [(Text,Text)] -> [(Text,Text)] -> Text
 fragment xs oids = case (xs,oids) of
   ([],(_,x):_) -> "#" <> x
   _ -> T.empty
+
+
+info :: Text
+info = "info"

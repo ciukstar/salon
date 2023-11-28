@@ -37,5 +37,9 @@ database:
   poolsize: "_env:YESOD_SQLITE_POOLSIZE:1"
 idle-timeout: "_env:YESOD_SQLITE_IDLETIMEOUT:1200"
 
+mapbox-pk: "_env:YESOD_MAPBOX_PK:pk.xxx"
+stripe-pk: "_env:YESOD_STRIPE_PK:pk.yyy"
+stripe-sk: "_env:YESOD_STRIPE_SK:sk.zzz"
+
 copyright: Insert copyright statement here
 #analytics: UA-YOURCODE

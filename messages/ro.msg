@@ -1,3 +1,12 @@
+Completion: Finalizare
+Checkout: Verifică
+PayWithCreditOrDebitCard: Plătiți cu card de credit sau debit
+DebitCreditCard: Card de debit/credit
+CreditCard: Card de credit
+DebitCard: Card de debit
+PayNow: Plătiți acum
+PayAtVenue: Plata la locatie
+PaymentMethod: Modalitate de plată
 NoPaymentSettingsYet: Încă nu există setări de plată
 Settings: Setări
 PaymentSettings: Setări pentru plată

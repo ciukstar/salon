@@ -143,7 +143,7 @@ import Foundation
       , MsgShowAddress, MsgAddress, MsgNoBusinessAddressFound, MsgBrand, MsgNoBrandYet
       , MsgBrandMark, MsgMarkWidth, MsgMarkHeight, MsgBrandName, MsgBrandStrapline
       , MsgFavicon, MsgMore
-      )
+      ), App (appSettings)
     )
 
 import Model
@@ -174,7 +174,6 @@ import Model
       )
     , DayType (Weekday, Weekend, Holiday)
     , SortOrder (SortOrderAsc, SortOrderDesc)
-    , mbat
     , Brand
       ( Brand, brandBusiness, brandMark, brandMarkMime, brandMarkWidth, brandMarkHeight
       , brandName, brandStrapline, brandIco, brandIcoMime, brandMore
@@ -182,7 +181,7 @@ import Model
     , BrandId
     )
 
-import Settings (widgetFile)
+import Settings (widgetFile, AppSettings (appMapboxPk))
 import Settings.StaticFiles (img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg)
 import Menu (menu)
 
@@ -578,6 +577,7 @@ getBusinessContactR bid = do
         setTitleI MsgContactUs
         case info of
           Just (Entity _ (ContactUs _ _ _ _ True (Just lng) (Just lat))) -> do
+              mapboxPk <- appMapboxPk . appSettings <$> getYesod
               addScriptRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"
               addScriptRemote "https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-language/v1.0.0/mapbox-gl-language.js"
               addStylesheetRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css"
@@ -588,7 +588,7 @@ mapgl.style.height = '300px';
 mapgl.style.width = '100%';
 main.appendChild(mapgl);
 const map = new mapboxgl.Map({
-  accessToken: #{mbat},
+  accessToken: #{mapboxPk},
   attributionControl: false,
   container: mapgl,
   style: 'mapbox://styles/mapbox/streets-v11',
@@ -602,6 +602,7 @@ const loc = new mapboxgl.Marker().setLngLat(
 ).addTo(map);
 |]
           Just (Entity _ (ContactUs _ _ _ _ True _ _)) -> do
+              mapboxPk <- appMapboxPk . appSettings <$> getYesod
               addScriptRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"
               addScriptRemote "https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-language/v1.0.0/mapbox-gl-language.js"
               addStylesheetRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css"
@@ -612,7 +613,7 @@ mapgl.style.height = '300px';
 mapgl.style.width = '100%';
 main.appendChild(mapgl);
 const map = new mapboxgl.Map({
-  accessToken: #{mbat},
+  accessToken: #{mapboxPk},
   attributionControl: false,
   container: mapgl,
   style: 'mapbox://styles/mapbox/streets-v11',

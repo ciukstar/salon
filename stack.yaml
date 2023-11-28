@@ -45,6 +45,11 @@ packages:
 #
 # extra-deps: []
 
+extra-deps:
+- stripe-core-2.6.2@sha256:a10348a17d961df1c04d27319496d75542506e4b55979f982a81d0b3fee55cd3,2846
+- stripe-http-client-2.6.2@sha256:fdcdb784bb54ecf62a6bf4d2e2d09c42b3300d4a671ba5f8e3081c2f3e4f19df,1935
+- stripe-haskell-2.6.2@sha256:4ad015702e65b3219b9f2db10b8ae35873254a149f7b735c5d3e6250d7b641a1,1130
+
 # Override default flag values for local packages and extra-deps
 # flags: {}
 

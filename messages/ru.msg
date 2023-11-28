@@ -1,3 +1,12 @@
+Completion: Завершение
+Checkout: Оформить заказ
+PayWithCreditOrDebitCard: Оплата кредитной или дебетовой картой
+DebitCreditCard: Дебетовая/кредитная карта
+CreditCard: Кредитная карта
+DebitCard: Дебетовая карта
+PayNow: Заплатить сейчас
+PayAtVenue: Оплата на месте
+PaymentMethod: Способ оплаты
 NoPaymentSettingsYet: Настройки оплаты пока отсутствуют
 Settings: Настройки
 PaymentSettings: Настройки оплаты

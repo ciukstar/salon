@@ -61,7 +61,7 @@ import Yesod.Form.Types
     )
 import Yesod.Form.Functions (generateFormPost, runFormPost, mreq, checkM)
 import Yesod.Form.Input (runInputGet, iopt)
-import Settings (widgetFile)
+import Settings (widgetFile, AppSettings (appMapboxPk))
 
 import Foundation
     ( Handler, Widget
@@ -89,7 +89,7 @@ import Foundation
       , MsgApprove, MsgUnassigned, MsgList, MsgCalendar, MsgMon, MsgTue, MsgWed
       , MsgThu, MsgFri, MsgSat, MsgSun, MsgToday, MsgSortAscending, MsgAddress
       , MsgNoRequestsFoundForThisDay, MsgNoBusinessAddressFound, MsgRecordEdited
-      )
+      ), App (appSettings)
     )
 
 import Database.Persist (Entity (Entity, entityKey, entityVal), PersistStoreWrite (insert_))
@@ -121,7 +121,7 @@ import Model
       , OfferSuffix, OfferDescr, StaffName, StaffPhone, StaffMobile, StaffEmail
       , UserName, UserFullName, UserEmail, BookTz, HistBook, HistLogtime
       , RoleService, HistUser, BookTzo, BookAddr, BusinessCurrency, BusinessAddr
-      ), SortOrder (SortOrderDesc, SortOrderAsc), mbat
+      ), SortOrder (SortOrderDesc, SortOrderAsc)
     )
 
 import Menu (menu)
@@ -192,6 +192,7 @@ getTaskItemR uid eid day bid = do
         setTitleI MsgRequest
         case location of
           Just (Entity _ (ContactUs _ _ _ _ True (Just lng) (Just lat))) -> do
+              mapboxPk <- appMapboxPk . appSettings <$> getYesod
               addScriptRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"
               addScriptRemote "https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-language/v1.0.0/mapbox-gl-language.js"
               addStylesheetRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css"
@@ -202,7 +203,7 @@ mapgl.style.height = '300px';
 mapgl.style.width = '100%';
 main.appendChild(mapgl);
 const map = new mapboxgl.Map({
-  accessToken: #{mbat},
+  accessToken: #{mapboxPk},
   attributionControl: false,
   container: mapgl,
   style: 'mapbox://styles/mapbox/streets-v11',
@@ -216,6 +217,7 @@ const loc = new mapboxgl.Marker().setLngLat(
 ).addTo(map);
 |]
           Just (Entity _ (ContactUs _ _ _ _ True _ _)) -> do
+              mapboxPk <- appMapboxPk . appSettings <$> getYesod
               addScriptRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"
               addScriptRemote "https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-language/v1.0.0/mapbox-gl-language.js"
               addStylesheetRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css"
@@ -226,7 +228,7 @@ mapgl.style.height = '300px';
 mapgl.style.width = '100%';
 main.appendChild(mapgl);
 const map = new mapboxgl.Map({
-  accessToken: #{mbat},
+  accessToken: #{mapboxPk},
   attributionControl: false,
   container: mapgl,
   style: 'mapbox://styles/mapbox/streets-v11',
@@ -715,6 +717,7 @@ getRequestR uid eid bid = do
         setTitleI MsgRequest
         case location of
           Just (Entity _ (ContactUs _ _ _ _ True (Just lng) (Just lat))) -> do
+              mapboxPk <- appMapboxPk . appSettings <$> getYesod
               addScriptRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"
               addScriptRemote "https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-language/v1.0.0/mapbox-gl-language.js"
               addStylesheetRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css"
@@ -725,7 +728,7 @@ mapgl.style.height = '300px';
 mapgl.style.width = '100%';
 main.appendChild(mapgl);
 const map = new mapboxgl.Map({
-  accessToken: #{mbat},
+  accessToken: #{mapboxPk},
   attributionControl: false,
   container: mapgl,
   style: 'mapbox://styles/mapbox/streets-v11',
@@ -739,6 +742,7 @@ const loc = new mapboxgl.Marker().setLngLat(
 ).addTo(map);
 |]
           Just (Entity _ (ContactUs _ _ _ _ True _ _)) -> do
+              mapboxPk <- appMapboxPk . appSettings <$> getYesod
               addScriptRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"
               addScriptRemote "https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-language/v1.0.0/mapbox-gl-language.js"
               addStylesheetRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css"
@@ -749,7 +753,7 @@ mapgl.style.height = '300px';
 mapgl.style.width = '100%';
 main.appendChild(mapgl);
 const map = new mapboxgl.Map({
-  accessToken: #{mbat},
+  accessToken: #{mapboxPk},
   attributionControl: false,
   container: mapgl,
   style: 'mapbox://styles/mapbox/streets-v11',

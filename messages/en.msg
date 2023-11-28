@@ -1,3 +1,12 @@
+Completion: Completion
+Checkout: Checkout
+PayWithCreditOrDebitCard: Pay with credit or debit card
+DebitCreditCard: Debit or Credit card
+CreditCard: Credit card
+DebitCard: Debit card
+PayNow: Pay now
+PayAtVenue: Pay at venue
+PaymentMethod: Payment method
 NoPaymentSettingsYet: No payment settings yet
 Settings: Settings
 PaymentSettings: Payment settings
