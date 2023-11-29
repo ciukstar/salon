@@ -1,3 +1,4 @@
+TotalPrice: Prix ​​total
 Completion: Finalisation
 Checkout: Vérifier
 PayWithCreditOrDebitCard: Payer par carte de crédit ou de débit 

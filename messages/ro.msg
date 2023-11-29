@@ -1,3 +1,4 @@
+TotalPrice: Prețul total
 Completion: Finalizare
 Checkout: Verifică
 PayWithCreditOrDebitCard: Plătiți cu card de credit sau debit

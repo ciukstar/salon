@@ -64,6 +64,7 @@ Book
   addr Textarea
   tzo TimeZone
   tz Text
+  payMethod PayMethod
   status BookStatus
 
 

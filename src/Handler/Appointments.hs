@@ -119,7 +119,7 @@ import Model
       , UserId, BookTzo, BookAddr, StaffUser, ServiceName, ServiceOverview, ServiceDescr
       , RoleName, OfferName, OfferPrefix, OfferSuffix, OfferDescr, StaffName, StaffPhone
       , StaffMobile, StaffEmail, UserName, UserFullName, UserEmail, BookStatus
-      , BusinessCurrency, BusinessAddr
+      , BusinessCurrency, BusinessAddr, BookPayMethod
       )
     , SortOrder (SortOrderAsc, SortOrderDesc)
     )
@@ -365,7 +365,7 @@ postAppointmentApproveR bid = do
               where_ $ b ^. BookCustomer ==. val uid
               return (b,r,e)
           case book of
-            Just (Entity _ (Book _ _ _ day time addr tzo tz _),role,empl) -> do
+            Just (Entity _ (Book _ _ _ day time addr tzo tz _ _),role,empl) -> do
                 runDB $ update $ \x -> do
                     set x [BookStatus =. val BookStatusApproved]
                     where_ $ x ^. BookId ==. val bid
@@ -507,7 +507,7 @@ postAppointmentCancelR bid = do
               where_ $ b ^. BookCustomer ==. val uid
               return (b,r,e)
           case book of
-            Just (Entity _ (Book _ _ _ day time addr tzo tz _),role,empl) -> do
+            Just (Entity _ (Book _ _ _ day time addr tzo tz _ _),role,empl) -> do
                 runDB $ update $ \x -> do
                     set x [BookStatus =. val BookStatusCancelled]
                     where_ $ x ^. BookId ==. val bid
@@ -546,13 +546,14 @@ postAppointmentR bid = do
               where_ $ b ^. BookCustomer ==. val uid
               return (b,r,e)
           case book of
-            Just (Entity _ (Book _ _ _ _ _ addr tzo tz _),role,empl) -> do
+            Just (Entity _ (Book _ _ _ _ _ addr tzo tz pm _),role,empl) -> do
                 runDB $ update $ \x -> do
                     set x [ BookDay =. val day
                           , BookTime =. val time
                           , BookAddr =. val addr
                           , BookTzo =. val tzo
                           , BookTz =. val tz
+                          , BookPayMethod =. val pm
                           , BookStatus =. val BookStatusRequest
                           ]
                     where_ $ x ^. BookId ==. val bid

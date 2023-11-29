@@ -1,3 +1,4 @@
+TotalPrice: Итоговая цена
 Completion: Завершение
 Checkout: Оформить заказ
 PayWithCreditOrDebitCard: Оплата кредитной или дебетовой картой

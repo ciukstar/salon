@@ -53,8 +53,8 @@ import Model
     , Role (Role, roleStaff, roleService, roleName, roleDuration, roleRating)
     , BookStatus (BookStatusRequest, BookStatusApproved, BookStatusCancelled)
     , Book
-      ( Book, bookCustomer, bookOffer, bookRole, bookDay, bookTime, bookTzo
-      , bookTz, bookStatus, bookAddr
+      ( Book, bookCustomer, bookOffer, bookRole, bookDay, bookTime, bookAddr
+      , bookTzo, bookTz, bookPayMethod, bookStatus
       )
     , Business
       ( Business, businessName, businessFullName, businessAddr, businessTzo, businessTz
@@ -75,7 +75,7 @@ import Model
       ( ContactUs, contactUsBusiness, contactUsShowSchedule, contactUsShowMap
       , contactUsLongitude, contactUsLatitude, contactUsHtml, contactUsShowAddress
       )
-    , DayType (Weekday)
+    , DayType (Weekday), PayMethod (PayAtVenue)
     )
     
 import Data.FileEmbed (embedFile)
@@ -2986,6 +2986,7 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
                      , bookTz = businessTz business
+                     , bookPayMethod = PayAtVenue
                      , bookStatus = BookStatusRequest
                      }
 
@@ -3029,6 +3030,7 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
                      , bookTz = businessTz business
+                     , bookPayMethod = PayAtVenue
                      , bookStatus = BookStatusRequest
                      }
 
@@ -3055,6 +3057,7 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
                      , bookTz = businessTz business
+                     , bookPayMethod = PayAtVenue
                      , bookStatus = BookStatusRequest
                      }
 
@@ -3081,6 +3084,7 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
                      , bookTz = businessTz business
+                     , bookPayMethod = PayAtVenue
                      , bookStatus = BookStatusCancelled
                      }
 
@@ -3107,6 +3111,7 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
                      , bookTz = businessTz business
+                     , bookPayMethod = PayAtVenue
                      , bookStatus = BookStatusApproved
                      }
 
@@ -3133,6 +3138,7 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
                      , bookTz = businessTz business
+                     , bookPayMethod = PayAtVenue
                      , bookStatus = BookStatusCancelled
                      }
 
@@ -3159,6 +3165,7 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
                      , bookTz = businessTz business
+                     , bookPayMethod = PayAtVenue
                      , bookStatus = BookStatusRequest
                      }
 
@@ -3185,6 +3192,7 @@ Body Shaping: Abdomen & waist, hips & thighs, legs & arms
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
                      , bookTz = businessTz business
+                     , bookPayMethod = PayAtVenue
                      , bookStatus = BookStatusApproved
                      }
 

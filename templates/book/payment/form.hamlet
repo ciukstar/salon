@@ -1,0 +1,143 @@
+
+#{extra}
+
+^{fvInput pmV}
+
+$maybe Entity uid (User uname _ _ _ _ _ fname email) <- user
+  <details.mdc-list
+    ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+    <summary.mdc-list-item.mdc-list-item--with-leading-icon
+      .mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+      <span.mdc-list-item__ripple>
+      <span.mdc-list-item__start>
+        <i.material-symbols-outlined>counter_4
+      <span.mdc-list-item__content>
+        <div.mdc-list-item__primary-text>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span>_{MsgCustomer}
+            <span style="padding:2px 4px;line-height:1;border-radius:25%;background-color:var(--mdc-theme-primary)">
+              <small>&check;
+      <span.mdc-list-item__end>
+        <i.expand.material-symbols-outlined>expand_more
+    <div.mdc-list-item.mdc-list-item--with-leading-image.mdc-list-item--with-three-lines>
+      <span.mdc-list-item__ripple>
+      <span.mdc-list-item__start>
+        <img src=@{AccountPhotoR uid} width=56 height=56 alt=_{MsgPhoto} loading=lazy
+          onerror="this.src = '@{PhotoPlaceholderR}'">
+      <span.mdc-list-item__content>
+        <div.mdc-list-item__primary-text>
+          #{uname}
+        <div.mdc-list-item__secondary-text>
+          $maybe email <- email
+            #{email}
+        <div.mdc-list-item__secondary-text>
+          $maybe fname <- fname
+            #{fname}
+
+<details.mdc-list data-mdc-auto-init=MDCList ##{detailsAppointmentTime}
+  ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+  <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+    <span.mdc-list-item__ripple>
+    <span.mdc-list-item__start>
+      <i.material-symbols-outlined>counter_3
+    <span.mdc-list-item__content>
+      <div.mdc-list-item__primary-text>
+        <div.wrapper>
+          <span>_{MsgAppointmentTime}
+          <span.badge>
+            <small>
+              $case (day,time,business,dayR,timeR,addrR,tzoR,tzR)
+                $of (Just _,Just _,Just _,_,_,_,_,_)
+                  &check;
+                $of (_,_,_,FormSuccess _,FormSuccess _,FormSuccess _,FormSuccess _,FormSuccess _)
+                  &check;
+                $of _
+                  &varnothing;
+    <span.mdc-list-item__end>
+      <i.expand.material-symbols-outlined>expand_more
+
+  <div.mdc-list-item.mdc-list-item--with-leading-image.mdc-list-item--with-three-lines>
+    <span.mdc-list-item__ripple>
+    <span.mdc-list-item__start style="text-align:center">
+      <i.material-symbols-outlined style="font-size:3rem;color:var(--mdc-theme-primary)">
+        schedule
+    <span.mdc-list-item__content>
+      $case (day,time,business,dayR,timeR,addrR,tzoR,tzR)
+        $of (Just day,Just time,Just (Entity _ (Business _ _ _ _ tzo tz _ _ _)),_,_,_,_,_)
+          $with dt <- ((<>) ((<>) (pack $ show day) " ") (pack $ show time))
+            $with z <- ((<>) ((<>) ((<>) (pack $ show tzo) " (") tz) ")")
+              $with dtz <- ((<>) dt z)
+                <time.mdc-list-item__primary-text datetime=#{dt} tz=#{tz} ##{appointmentTime}>
+                  #{dtz}
+                <time.mdc-list-item__secondary-text datetime=#{dt} tz=#{tz} ##{appointmentFullLongTime}>
+                  #{dtz}
+        $of (_,_,_,FormSuccess day,FormSuccess time,FormSuccess _,FormSuccess tzo,FormSuccess tz)
+          $with dt <- ((<>) ((<>) (pack $ show day) " ") (pack $ show time))
+            $with z <- ((<>) ((<>) ((<>) (pack $ show tzo) " (") tz) ")")
+              $with dtz <- ((<>) dt z)
+                <time.mdc-list-item__primary-text datetime=#{dt} tz=#{tz} ##{appointmentTime}>
+                  #{dtz}
+                <time.mdc-list-item__secondary-text datetime=#{dt} tz=#{tz} ##{appointmentFullLongTime}>
+                  #{dtz}
+        $of _
+
+  <div.mdc-list-item.mdc-list-item--with-leading-image.mdc-list-item--with-one-line>
+    <span.mdc-list-item__ripple>
+    <span.mdc-list-item__start style="text-align:center">
+      <i.material-symbols-outlined style="font-size:3rem;color:var(--mdc-theme-primary)">
+        pin_drop
+    <span.mdc-list-item__content>
+      <div.mdc-list-item__secondary-text style="white-space:wrap">
+        $case (business,addrR)
+          $of (Just (Entity _ (Business _ _ _ addr _ _ _ _ _)),_)
+            #{unTextarea addr}
+          $of (_,FormSuccess addr)
+            #{unTextarea addr}
+          $of _
+
+  $forall v <- [dayV,timeV,addrV,tzoV,tzV]
+    ^{fvInput v}
+
+<details.mdc-list data-mdc-auto-init=MDCList ##{detailsStaff}
+  ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+  <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+    <span.mdc-list-item__ripple>
+    <span.mdc-list-item__start>
+      <i.material-symbols-outlined>counter_2
+    <span.mdc-list-item__content>
+      <div.mdc-list-item__primary-text>
+        <div.wrapper>
+          <span>_{MsgStaff}
+          <span.badge>
+            <small>
+              $case (role,roleR)
+                $of (Just _,_)
+                  1
+                $of (_,FormSuccess (Just _))
+                  1
+                $of _
+                  &varnothing;
+    <span.mdc-list-item__end>
+      <i.expand.material-symbols-outlined>expand_more
+  ^{fvInput roleV}
+
+<details.mdc-list data-mdc-auto-init=MDCList ##{detailsServices}
+  ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+  <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+    <span.mdc-list-item__ripple>
+    <span.mdc-list-item__start>
+      <i.material-symbols-outlined>counter_1
+    <span.mdc-list-item__content>
+      <div.mdc-list-item__primary-text>
+        <div.wrapper>
+          <span>_{MsgServices}
+          <span.badge>
+            <small>
+              $case offersR
+                $of FormSuccess xs
+                  #{length xs}
+                $of _
+                  #{length items}
+    <span.mdc-list-item__end>
+      <i.expand.material-symbols-outlined>expand_more
+  ^{fvInput offersV}

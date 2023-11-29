@@ -1,44 +1,21 @@
 <ul.mdc-list role=listbox ##{theId} tabindex=-1 data-mdc-auto-init=MDCList aria-label=_{MsgPaymentMethod}>
   $forall (method,label) <- [(PayAtVenue,MsgPayAtVenue),(PayNow,MsgPayNow)]
     $with checked <- isChecked eval method
-      $case method
-        $of PayAtVenue
-          <li.mdc-list-item.mdc-list-item--with-leading-radio.mdc-list-item--with-one-line role=option
-            :checked:aria-checked=true :not checked:aria-checked=false>
-            <span.mdc-list-item__ripple>
-            <span.mdc-list-item__start>
-              <div.mdc-radio tabindex=-1 data-mdc-auto-init=MDCRadio>
-                <input.mdc-radio__native-control aria-label=_{label}
-                  type=radio name=#{name} value=#{show method} *{attrs} :checked:checked>
-                <div.mdc-radio__background>
-                  <div.mdc-radio__outer-circle>
-                  <div.mdc-radio__inner-circle>
-                <div.mdc-radio__ripple>
-                <div.mdc-radio__focus-ring>
-            <span.mdc-list-item__content>
-              <div.mdc-list-item__primary-text>
-                _{label}
-          
-        $of PayNow
-          <details :checked:open
-            ontoggle="this.querySelector('input.mdc-radio__native-control').checked ? this.open = true : this.open = false">
-            <summary.mdc-list-item.mdc-list-item--with-leading-radio.mdc-list-item--with-one-line
-              .mdc-list-item--with-trailing-icon role=option
-              :checked:aria-checked=true :not checked:aria-checked=false>
-              <span.mdc-list-item__ripple>
-              <span.mdc-list-item__start>
-                <div.mdc-radio tabindex=-1 data-mdc-auto-init=MDCRadio>
-                  <input.mdc-radio__native-control aria-label=_{label}
-                    type=radio name=#{name} value=#{show method} *{attrs} :checked:checked>
-                  <div.mdc-radio__background>
-                    <div.mdc-radio__outer-circle>
-                    <div.mdc-radio__inner-circle>
-                  <div.mdc-radio__ripple>
-                  <div.mdc-radio__focus-ring>
-              <span.mdc-list-item__content>
-                <div.mdc-list-item__primary-text>
-                  _{label}
-              <span.mdc-list-item__end>
-                <i.material-symbols-outlined>expand_more
-            <div>Card Info ...
+      <a.mdc-list-item.mdc-list-item--with-leading-radio.mdc-list-item--with-one-line role=option
+        :checked:aria-checked=true :not checked:aria-checked=false
+        href=@?{(BookPayR uid,(:) ("pm",pack $ show method) (filter (((/=) "pm") . fst) stati))}>
+        <span.mdc-list-item__ripple>
+        <span.mdc-list-item__start>
+          <div.mdc-radio tabindex=-1 data-mdc-auto-init=MDCRadio>
+            <input.mdc-radio__native-control aria-label=_{label}
+              type=radio name=#{name} value=#{show method} *{attrs} :checked:checked>
+            <div.mdc-radio__background>
+              <div.mdc-radio__outer-circle>
+              <div.mdc-radio__inner-circle>
+            <div.mdc-radio__ripple>
+            <div.mdc-radio__focus-ring>
+        <span.mdc-list-item__content>
+          <div.mdc-list-item__primary-text>
+            _{label}
+            
       <div.mdc-list-divider role=none>

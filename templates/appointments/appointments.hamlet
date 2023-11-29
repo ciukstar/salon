@@ -111,7 +111,7 @@
             <span.mdc-button__label>_{MsgBookAppointment}
   $else
     <nav.mdc-list data-mdc-auto-init=MDCList>
-      $forall (Entity bid (Book _ _ _ date time _ _ _ status),Entity _ (Service sname _ _ _ _ _)) <- books
+      $forall (Entity bid (Book _ _ _ date time _ _ _ _ status),Entity _ (Service sname _ _ _ _ _)) <- books
         $with (color,icon,label,title) <- resolveBookStatus status
           <a.mdc-list-item href=@?{(AppointmentR bid,stati)}
             .mdc-list-item--with-leading-icon.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon>

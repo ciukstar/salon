@@ -2,7 +2,7 @@
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section-align-start>
       <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
-        href=@?{(BookTimeR,(((oids <> rids) <> dates) <> times))}>
+        href=@?{(BookCustomerR,(((oids <> rids) <> dates) <> times))}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
@@ -28,30 +28,32 @@
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
 
-  <nav.mdc-list tabindex=-1 data-mdc-auto-init=MDCList aria-label=_{MsgPaymentMethod}>
-    $forall (label,route) <- [(MsgPayAtVenue,BookPayAtVenueR),(MsgPayNow,BookPayNowR)]
-      $with checked <- (curr == Just (route uid))
-        <a.mdc-list-item.mdc-list-item--with-leading-radio.mdc-list-item--with-one-line
-          :checked:aria-checked=true :not checked:aria-checked=false
-          href=@{route uid}>
-          <span.mdc-list-item__ripple>
-          <span.mdc-list-item__start>
-            <div.mdc-radio tabindex=-1 data-mdc-auto-init=MDCRadio>
-              <input.mdc-radio__native-control aria-label=_{label} type=radio :checked:checked>
-              <div.mdc-radio__background>
-                <div.mdc-radio__outer-circle>
-                <div.mdc-radio__inner-circle>
-              <div.mdc-radio__ripple>
-              <div.mdc-radio__focus-ring>
-          <span.mdc-list-item__content>
-            <div.mdc-list-item__primary-text>
-              _{label}
-    
+  <section ##{sectionPriceTag}>
+    <h4.hint>_{MsgTotalPrice}
+    $with amount <- show $ sumOf ((((folded . _1) . _2) . to entityVal) . _offerPrice) items
+      $maybe currency <- currency
+        <div.currency data-value=#{amount} data-currency=#{currency}>
+          #{currency}#{amount}
+      $nothing
+        <div.currency data-value=#{amount}>
+          #{amount}
+
+  <form method=post enctype=#{et} ##{formPaymentMethod} novalidate
+    action=@?{(BookPayR uid,(((oids <> rids) <> dates) <> times))}>
+    ^{fw}
 
 
 <footer #footerActions>
-  <button.mdc-button.mdc-button--raised.mdc-button--icon-leading type=submit form=formPaymentMethod>
-    <span.mdc-button__ripple>
-    <span.mdc-button__focus-ring>
-    <i.mdc-button__icon.material-symbols-outlined>download_done
-    <span.mdc-button__label>_{MsgBook}
+  $case payMethod
+    $of Just PayNow
+      <button.mdc-button.mdc-button--raised.mdc-button--icon-trailing type=submit form=#{formPaymentMethod}>
+        <span.mdc-button__ripple>
+        <span.mdc-button__focus-ring>
+        <span.mdc-button__label>_{MsgCheckout}
+        <i.mdc-button__icon.material-symbols-outlined>arrow_forward_ios
+    $of _
+      <button.mdc-button.mdc-button--raised.mdc-button--icon-leading type=submit form=#{formPaymentMethod}>
+        <span.mdc-button__ripple>
+        <span.mdc-button__focus-ring>
+        <i.mdc-button__icon.material-symbols-outlined>download_done
+        <span.mdc-button__label>_{MsgBook}

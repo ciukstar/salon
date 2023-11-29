@@ -47,7 +47,7 @@ import Model
     , BookStatus (BookStatusRequest, BookStatusCancelled, BookStatusApproved)
     , Book
       ( Book, bookCustomer, bookOffer, bookRole, bookDay, bookTime, bookTzo
-      , bookTz, bookStatus, bookAddr
+      , bookTz, bookPayMethod, bookStatus, bookAddr
       )
     , Business
       ( Business, businessName, businessFullName, businessAddr, businessTzo, businessTz
@@ -68,7 +68,7 @@ import Model
       ( ContactUs, contactUsBusiness, contactUsShowSchedule, contactUsHtml
       , contactUsShowMap, contactUsLongitude, contactUsLatitude, contactUsShowAddress
       )
-    , DayType (Weekday)
+    , DayType (Weekday), PayMethod (PayAtVenue)
     )
 import Data.FileEmbed (embedFile)
 import Demo.DemoPhotos
@@ -2978,6 +2978,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
                      , bookTz = businessTz business
+                     , bookPayMethod = PayAtVenue
                      , bookStatus = BookStatusRequest
                      }
 
@@ -3021,6 +3022,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
                      , bookTz = businessTz business
+                     , bookPayMethod = PayAtVenue
                      , bookStatus = BookStatusRequest
                      }
 
@@ -3047,6 +3049,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
                      , bookTz = businessTz business
+                     , bookPayMethod = PayAtVenue
                      , bookStatus = BookStatusRequest
                      }
 
@@ -3073,6 +3076,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
                      , bookTz = businessTz business
+                     , bookPayMethod = PayAtVenue
                      , bookStatus = BookStatusCancelled
                      }
 
@@ -3099,6 +3103,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
                      , bookTz = businessTz business
+                     , bookPayMethod = PayAtVenue
                      , bookStatus = BookStatusApproved
                      }
 
@@ -3125,6 +3130,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
                      , bookTz = businessTz business
+                     , bookPayMethod = PayAtVenue
                      , bookStatus = BookStatusCancelled
                      }
 
@@ -3151,6 +3157,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
                      , bookTz = businessTz business
+                     , bookPayMethod = PayAtVenue
                      , bookStatus = BookStatusRequest
                      }
 
@@ -3177,6 +3184,7 @@ Collagen 90-II — это уважаемое и востребованное а�
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
                      , bookTz = businessTz business
+                     , bookPayMethod = PayAtVenue
                      , bookStatus = BookStatusApproved
                      }
 

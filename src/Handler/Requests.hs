@@ -120,7 +120,7 @@ import Model
       , ServiceDescr, ServiceOverview, RoleName, OfferName, OfferPrefix
       , OfferSuffix, OfferDescr, StaffName, StaffPhone, StaffMobile, StaffEmail
       , UserName, UserFullName, UserEmail, BookTz, HistBook, HistLogtime
-      , RoleService, HistUser, BookTzo, BookAddr, BusinessCurrency, BusinessAddr
+      , RoleService, HistUser, BookTzo, BookAddr, BusinessCurrency, BusinessAddr, BookPayMethod
       ), SortOrder (SortOrderDesc, SortOrderAsc)
     )
 
@@ -351,7 +351,7 @@ postRequestAssignR uid eid bid sid = do
         where_ $ b ^. BookId ==. val bid
         return b
     case book of
-      Just (Entity bid' (Book _ _ _ day' time' addr' tzo' tz' status')) -> do
+      Just (Entity bid' (Book _ _ _ day' time' addr' tzo' tz' _ status')) -> do
 
           role <- runDB $ selectOne $ do
               r :& e <- from $ table @Role `innerJoin` table @Staff
@@ -483,7 +483,7 @@ postRequestFinishR uid eid bid = do
               where_ $ b ^. BookId ==. val _bid
               return (b,r,e)
           case book of
-            Just (Entity _ (Book _ _ _ day time addr tzo tz _),role',empl') -> do
+            Just (Entity _ (Book _ _ _ day time addr tzo tz _ _),role',empl') -> do
                 runDB $ update $ \x -> do
                     set x [BookStatus =. val BookStatusPaid]
                     where_ $ x ^. BookId ==. val bid
@@ -528,7 +528,7 @@ postRequestApproveR uid eid bid = do
               return r
 
           case (book,role) of
-            (Just ((Entity _ (Book _ _ _ day time addr tzo tz _),_),(role',empl')),Just (Entity rid _)) -> do
+            (Just ((Entity _ (Book _ _ _ day time addr tzo tz _ _),_),(role',empl')),Just (Entity rid _)) -> do
                 runDB $ update $ \x -> do
                     set x [BookRole =. just (val rid), BookStatus =. val BookStatusApproved]
                     where_ $ x ^. BookId ==. val bid
@@ -640,7 +640,7 @@ postRequestR uid eid bid = do
               return r
 
           case (book,role) of
-            (Just ( ( Entity _ (Book _ _ _ _ _ addr tzo tz _) ,_ ),(role',empl')), Just (Entity rid _) ) -> do
+            (Just ( ( Entity _ (Book _ _ _ _ _ addr tzo tz pm _) ,_ ),(role',empl')), Just (Entity rid _) ) -> do
                 runDB $ update $ \x -> do
                     set x [ BookRole =. just (val rid)
                           , BookDay =. val day
@@ -648,6 +648,7 @@ postRequestR uid eid bid = do
                           , BookAddr =. val addr
                           , BookTzo =. val tzo
                           , BookTz =. val tz
+                          , BookPayMethod =. val pm
                           , BookStatus =. val BookStatusAdjusted
                           ]
                     where_ $ x ^. BookId ==. val bid

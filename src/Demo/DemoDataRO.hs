@@ -54,7 +54,7 @@ import Model
     , BookStatus (BookStatusRequest, BookStatusApproved, BookStatusCancelled)
     , Book
       ( Book, bookCustomer, bookOffer, bookRole, bookDay, bookTime, bookTzo
-      , bookTz, bookStatus, bookAddr
+      , bookTz, bookPayMethod, bookStatus, bookAddr
       )
     , Business
       ( Business, businessName, businessFullName, businessAddr, businessTzo, businessTz
@@ -75,7 +75,7 @@ import Model
       ( ContactUs, contactUsBusiness, contactUsShowSchedule, contactUsHtml
       , contactUsShowMap, contactUsLongitude, contactUsLatitude, contactUsShowAddress
       )
-    , DayType (Weekday)
+    , DayType (Weekday), PayMethod (PayAtVenue)
     )
 import Data.FileEmbed (embedFile)
 import Demo.DemoPhotos
@@ -2980,6 +2980,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
                      , bookTz = businessTz business
+                     , bookPayMethod = PayAtVenue
                      , bookStatus = BookStatusRequest
                      }
 
@@ -3023,6 +3024,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
                      , bookTz = businessTz business
+                     , bookPayMethod = PayAtVenue
                      , bookStatus = BookStatusRequest
                      }
 
@@ -3049,6 +3051,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
                      , bookTz = businessTz business
+                     , bookPayMethod = PayAtVenue
                      , bookStatus = BookStatusRequest
                      }
 
@@ -3075,6 +3078,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
                      , bookTz = businessTz business
+                     , bookPayMethod = PayAtVenue
                      , bookStatus = BookStatusCancelled
                      }
 
@@ -3101,6 +3105,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
                      , bookTz = businessTz business
+                     , bookPayMethod = PayAtVenue
                      , bookStatus = BookStatusApproved
                      }
 
@@ -3127,6 +3132,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
                      , bookTz = businessTz business
+                     , bookPayMethod = PayAtVenue
                      , bookStatus = BookStatusCancelled
                      }
 
@@ -3153,6 +3159,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
                      , bookTz = businessTz business
+                     , bookPayMethod = PayAtVenue
                      , bookStatus = BookStatusRequest
                      }
 
@@ -3179,6 +3186,7 @@ Pachetul include: machiaj de mireasă, up-do, tratament facial și manichiură
                      , bookAddr = businessAddr business
                      , bookTzo = businessTzo business
                      , bookTz = businessTz business
+                     , bookPayMethod = PayAtVenue
                      , bookStatus = BookStatusApproved
                      }
 

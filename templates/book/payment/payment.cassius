@@ -4,6 +4,18 @@ header.mdc-top-app-bar
     transition: height 0.3s ease-out
     
 main
+  ##{sectionPriceTag}
+    margin: 1rem 1rem
+    text-align: center
+    .hint
+      margin: 0
+      padding: 0
+      font-weight: 400
+      color: var(--theme-text-hint-on-light)
+    .currency
+      font-size: 2rem
+      font-weight: 500
+      
   .mdc-list
     .mdc-list-item[aria-checked=true]
       span.mdc-list-item__content

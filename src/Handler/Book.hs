@@ -25,8 +25,8 @@ module Handler.Book
   , sessKeyBooking
   ) where
 
-import Control.Lens ((?~),(^?))
-import Control.Monad (unless, forM, when, join)
+import Control.Lens ((?~),(^?), sumOf, folded, _1, _2, to)
+import Control.Monad (unless, when, join)
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Reader (ReaderT)
 import Data.Aeson.Lens (key)
@@ -93,7 +93,7 @@ import Database.Esqueleto.Experimental
     )
 
 import Foundation
-    ( Handler, Widget
+    ( Handler, Widget, App (appSettings)
     , Route
       ( AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR, AccountR
       , HomeR, AppointmentsR, AppointmentR, ProfileR, ServiceThumbnailR
@@ -120,8 +120,8 @@ import Foundation
       , MsgUserProfile, MsgNavigationMenu, MsgNoOffersYet, MsgNoOffersFound
       , MsgNoCategoriesFound, MsgCongratulations, MsgShowMyAppointments
       , MsgPaymentMethod, MsgPayAtVenue, MsgPayNow, MsgDebitCreditCard, MsgCheckout
-      , MsgCompletionTime, MsgCompletion
-      ), App (appSettings)
+      , MsgCompletionTime, MsgCompletion, MsgTotalPrice
+      )
     )
 
 import Model
@@ -130,12 +130,14 @@ import Model
     , RoleId, Role (Role, roleName), UserId, User (User), Book (Book)
     , Thumbnail, BookStatus (BookStatusRequest), Hist (Hist)
     , Business (businessAddr, businessTzo, businessTz, Business)
+    , PayMethod (PayAtVenue, PayNow)
+    , _offerPrice
     , EntityField
       ( StaffId, RoleId, ServiceId, OfferService, ServicePublished, BookId
       , ServiceName, RoleStaff, RoleRating, RoleService, OfferId, BookOffer
       , BookCustomer, ThumbnailService, ThumbnailAttribution, BusinessCurrency
       , ServiceOverview, ServiceDescr, ServiceGroup, StaffStatus, OfferPublished
-      ), PayMethod (PayAtVenue, PayNow)
+      )
     )
 
 import Menu (menu)
@@ -153,8 +155,6 @@ getBookPayCompletionR uid = do
     defaultLayout $ do
         setTitleI MsgCompletion
         $(widgetFile "book/payment/completion")
-        
-        
 
 
 postBookPaymentIntentR :: UserId -> Handler A.Value
@@ -198,7 +198,7 @@ getBookPayAtVenueR uid = do
     
     defaultLayout $ do
         setTitleI MsgPaymentMethod
-        $(widgetFile "book/payment/payment")
+        -- $( widgetFile "book/payment/payment")
 
 
 postBookPayR :: UserId -> Handler Html
@@ -207,65 +207,41 @@ postBookPayR uid = undefined
 
 getBookPayR :: UserId -> Handler Html
 getBookPayR uid = do
+    stati <- reqGetParams <$> getRequest
     user <- maybeAuth
-    let times = []
-    let rids = []
-    let oids = []
-    let dates = []
 
-    curr <- getCurrentRoute
+    rids <- filter ((== "rid") . fst) . reqGetParams <$> getRequest
+    oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
+    dates <- filter ((== "date") . fst) . reqGetParams <$> getRequest
+    times <- filter ((== "time") . fst) . reqGetParams <$> getRequest
+    pms <- filter ((== "pm") . fst) . reqGetParams <$> getRequest    
+
+    let payMethod = (read . unpack . snd <$>) $ LS.head pms
     
+    items <- runDB $ queryItems [] Nothing (toSqlKey . read . unpack . snd <$> oids)
+    role <- runDB $ selectOne $ do
+        x :& s <- from $ table @Role `innerJoin` table @Staff `on` (\(x :& s) -> x ^. RoleStaff ==. s ^. StaffId)
+        where_ $ x ^. RoleId `in_` valList (toSqlKey . read . unpack . snd <$> rids)
+        return (s,x)
+        
+    business <- runDB $ selectOne $ from $ table @Business
+    currency <- (unValue <$>) <$> runDB ( selectOne $ do
+        x <- from $ table @Business
+        return $ x ^. BusinessCurrency )
+        
+    (fw,et) <- generateFormPost $ formPayMethod
+        payMethod uid stati user
+        ((read . unpack . snd <$>) $ LS.head dates)
+        ((read . unpack . snd <$>) $ LS.head times)
+        business
+        items items role (maybeToList role)
+    msgs <- getMessages
+    setUltDestCurrent
+    sectionPriceTag <- newIdent
+    formPaymentMethod <- newIdent
     defaultLayout $ do
         setTitleI MsgPaymentMethod
         $(widgetFile "book/payment/payment")
-
-
-formPayment :: Html -> MForm Handler (FormResult PayMethod, Widget)
-formPayment extra = do
-    (r,v) <- mreq metodsField "" Nothing
-    
-    let w = [whamlet|#{extra}^{fvInput v}|]
-    return (r,w)
-  where
-      
-      metodsField :: Field Handler PayMethod
-      metodsField = Field
-          { fieldParse = parseHelper $ \s -> case readMaybe $ unpack s of
-              Just x -> Right x
-              Nothing -> Left $ MsgInvalidEntry s
-          , fieldView = \theId name attrs eval _isReq -> do
-                let isChecked (Left _) _ = False
-                    isChecked (Right y) x = x == y
-                $(widgetFile "book/payment/methods")
-          , fieldEnctype = UrlEncoded
-          }
-      
-
-postBookSearchR :: Handler Html
-postBookSearchR = do
-    formSearch <- newIdent
-    mq <- runInputGet $ iopt (searchField True) "q"
-    y <- filter ((== "y") . fst) <$> getPostParams
-    oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
-    categs <- (toSqlKey . read . unpack . snd <$>) . filter ((== "categ") . fst) . reqGetParams <$> getRequest
-    offers <- runDB $ queryOffers categs mq []
-    ioffers <- runDB $ queryItems categs mq (toSqlKey . read . unpack . snd <$> oids)
-    ((fr,fw),et) <- runFormPost $ formOffers ioffers offers
-    case fr of
-      FormSuccess items -> do
-          setSession sessKeyBooking "BOOKING_START"
-          redirect ( BookStaffR
-                   , y <> ((\((_,Entity oid _),_) -> ("oid",pack $ show $ fromSqlKey oid)) <$> items)
-                   )
-      _ -> do
-          currency <- (unValue <$>) <$> runDB ( selectOne $ do
-              x <- from $ table @Business
-              return $ x ^. BusinessCurrency )
-          msgs <- getMessages
-          let items = ioffers
-          defaultLayout $ do
-              setTitleI MsgSearch
-              $(widgetFile "book/search/banner")
 
 
 getBookEndR :: Handler Html
@@ -314,17 +290,14 @@ postBookCustomerR = do
               user Nothing Nothing Nothing ioffers ioffers irole (maybeToList irole)
           case fr of
             FormSuccess (items,role,day,time,addr,tzo,tz,Entity uid _) -> do
-                bids <- forM items $ \((_,Entity oid _),_) -> do
-                    bid  <- runDB $ insert $
-                        Book uid oid ((\(_,Entity rid _) -> rid) <$> role) day time addr tzo tz BookStatusRequest
-                    now <- liftIO getCurrentTime
-                    runDB $ insert_ $ Hist bid uid now day time addr tzo tz BookStatusRequest
-                        (roleName . entityVal . snd <$> role) (staffName . entityVal . fst <$> role)
-                    return bid
-                addMessageI info MsgRecordAdded
-                -- deleteSession sessKeyBooking
-                redirect $ BookPayR uid  
-                -- redirect (BookEndR, ("bid",) . pack . show . fromSqlKey <$> bids)
+                redirect ( BookPayR uid
+                         , maybeToList (("rid",) . (\(_,Entity rid _) -> pack $ show $ fromSqlKey rid) <$> role)
+                           <> ((\((_,Entity oid _),_) -> ("oid",pack $ show $ fromSqlKey oid)) <$> items)
+                           <> [ ("date",pack $ show day)
+                              , ("time",pack $ show time)
+                              ]
+                           <> [("pm",pack $ show PayNow)]
+                         )
             _ -> do
                 msgs <- getMessages
                 defaultLayout $ do
@@ -501,6 +474,106 @@ getBookOffersR = do
         $(widgetFile "book/offers/offers")
 
 
+formPayMethod :: Maybe PayMethod
+              -> UserId
+              -> [(Text,Text)]
+              -> Maybe (Entity User)
+              -> Maybe Day -> Maybe TimeOfDay -> Maybe (Entity Business)
+              -> [((Entity Service, Entity Offer),Maybe Html)]
+              -> [((Entity Service, Entity Offer),Maybe Html)]
+              -> Maybe (Entity Staff, Entity Role)
+              -> [(Entity Staff, Entity Role)]
+              -> Html -> MForm Handler ( FormResult ( [((Entity Service, Entity Offer),Maybe Html)]
+                                                   , Maybe (Entity Staff, Entity Role)
+                                                   , Day, TimeOfDay, Textarea, TimeZone, Text
+                                                   , Entity User, PayMethod
+                                                   )
+                                      , Widget
+                                      )
+formPayMethod pm uid stati user day time business items offers role roles extra = do
+
+    currency <- (unValue <$>) <$> liftHandler ( runDB ( selectOne $ do
+        x <- from $ table @Business
+        return $ x ^. BusinessCurrency ) )
+
+    (offersR,offersV) <- mreq (check notNull (offersField currency offers)) FieldSettings
+        { fsLabel = SomeMessage MsgOffer
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = []
+        } (Just items)
+
+    (roleR,roleV) <- mopt (rolesField roles) FieldSettings
+        { fsLabel = SomeMessage MsgRole
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = []
+        } (Just role)
+
+    (dayR,dayV) <- mreq dayField FieldSettings
+        { fsLabel = SomeMessage MsgDay
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("hidden","hidden")]
+        } day
+
+    (timeR,timeV) <- mreq timeField FieldSettings
+        { fsLabel = SomeMessage MsgTime
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("hidden","hidden")]
+        } time
+
+    (addrR,addrV) <- mreq textareaField FieldSettings
+        { fsLabel = SomeMessage MsgAddress
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("hidden","hidden")]
+        } (businessAddr . entityVal <$> business)
+
+    (tzoR,tzoV) <- mreq textField FieldSettings
+        { fsLabel = SomeMessage MsgTimeZoneOffset
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("hidden","hidden")]
+        } (pack . show . businessTzo . entityVal <$> business)
+
+    (tzR,tzV) <- mreq textField FieldSettings
+        { fsLabel = SomeMessage MsgTimeZone
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("hidden","hidden")]
+        } (businessTz . entityVal <$> business)
+
+    (pmR,pmV) <- mreq metodsField FieldSettings
+        { fsLabel = SomeMessage MsgPaymentMethod
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = []
+        } pm
+
+    app <- getYesod
+    langs <- languages
+
+    let r = (,,,,,,,,) <$> offersR <*> roleR <*> dayR <*> timeR <*> addrR <*> (read . unpack <$> tzoR) <*> tzR
+            <*> case user of
+                  Just u -> FormSuccess u
+                  Nothing -> FormFailure [renderMessage app langs MsgLoginToIdentifyCustomer]
+            <*> pmR
+
+    detailsAppointmentTime <- newIdent
+    appointmentTime <- newIdent
+    appointmentFullLongTime <- newIdent
+    detailsStaff <- newIdent
+    detailsServices <- newIdent
+    return (r,$(widgetFile "book/payment/form"))
+  where
+      
+      metodsField :: Field Handler PayMethod
+      metodsField = Field
+          { fieldParse = parseHelper $ \s -> case readMaybe $ unpack s of
+              Just x -> Right x
+              Nothing -> Left $ MsgInvalidEntry s
+          , fieldView = \theId name attrs eval _isReq -> do
+                let isChecked (Left _) _ = False
+                    isChecked (Right y) x = x == y
+                $(widgetFile "book/payment/methods")
+          , fieldEnctype = UrlEncoded
+          }
+
+
 formCustomer :: Maybe (Entity User)
              -> Maybe Day -> Maybe TimeOfDay -> Maybe (Entity Business)
              -> [((Entity Service, Entity Offer),Maybe Html)]
@@ -576,41 +649,6 @@ formCustomer user day time business items offers role roles extra = do
     detailsStaff <- newIdent
     detailsServices <- newIdent
     return (r,$(widgetFile "book/customer/form"))
-  where
-
-      notNull xs = case xs of
-        [] -> Left MsgSelectAtLeastOneServicePlease
-        _ -> Right xs
-
-      offersField :: Maybe Text -> [((Entity Service, Entity Offer),Maybe Html)]
-                  -> Field Handler [((Entity Service, Entity Offer),Maybe Html)]
-      offersField currency options = Field
-          { fieldParse = \xs _ -> return $
-            (Right . Just . filter (\((_, Entity oid _),_) -> oid `elem` (toSqlKey . read . unpack <$> xs))) options
-          , fieldView = \theId name attrs vals _isReq -> do
-                app <- getYesod
-                langs <- languages
-                let proj :: ((Entity Service,Entity Offer),Maybe Html) -> OfferId
-                    proj ((_, Entity oid _),_) = oid
-                let isChecked (Left _) _ = False
-                    isChecked (Right xs) x = proj x `elem` (proj <$> xs)
-                $(widgetFile "book/customer/items")
-          , fieldEnctype = UrlEncoded
-          }
-
-      rolesField :: [(Entity Staff, Entity Role)]
-                 -> Field Handler (Entity Staff, Entity Role)
-      rolesField options = Field
-          { fieldParse = \xs _ -> return $ case xs of
-              (x:_) | T.null x -> Right Nothing
-                    | otherwise -> (Right . LS.head . filter (\(_, Entity rid _) -> rid == toSqlKey (read $ unpack x))) options
-              _ -> Right Nothing
-          , fieldView = \theId name attrs eval _isReq -> do
-                let isChecked (Left _) _ = False
-                    isChecked (Right y) x = x == y
-                $(widgetFile "book/customer/empls")
-          , fieldEnctype = UrlEncoded
-          }
 
 
 formTime :: Maybe Day -> Maybe TimeOfDay -> Maybe (Entity Business)
@@ -716,40 +754,20 @@ formTime day time business items offers role roles extra = do
           return $ if d < today
               then Left MsgAppointmentDayIsInThePast
               else Right d
+              
 
-      notNull xs = case xs of
-        [] -> Left MsgSelectAtLeastOneServicePlease
-        _ -> Right xs
-
-      offersField :: Maybe Text -> [((Entity Service, Entity Offer),Maybe Html)]
-                  -> Field Handler [((Entity Service, Entity Offer),Maybe Html)]
-      offersField currency options = Field
-          { fieldParse = \xs _ -> return $
-            (Right . Just . filter (\((_, Entity oid _),_) -> oid `elem` (toSqlKey . read . unpack <$> xs))) options
-          , fieldView = \theId name attrs vals _isReq -> do
-                app <- getYesod
-                langs <- languages
-                let proj :: ((Entity Service,Entity Offer),Maybe Html) -> OfferId
-                    proj ((_, Entity oid _),_) = oid
-                let isChecked (Left _) _ = False
-                    isChecked (Right xs) x = proj x `elem` (proj <$> xs)
-                $(widgetFile "book/time/items")
-          , fieldEnctype = UrlEncoded
-          }
-
-      rolesField :: [(Entity Staff, Entity Role)]
-                 -> Field Handler (Entity Staff, Entity Role)
-      rolesField options = Field
-          { fieldParse = \xs _ -> return $ case xs of
-              (x:_) | T.null x -> Right Nothing
-                    | otherwise -> (Right . LS.head . filter (\(_, Entity rid _) -> rid == toSqlKey (read $ unpack x))) options
-              _ -> Right Nothing
-          , fieldView = \theId name attrs eval _isReq -> do
-                let isChecked (Left _) _ = False
-                    isChecked (Right y) x = x == y
-                $(widgetFile "book/time/empls")
-          , fieldEnctype = UrlEncoded
-          }
+rolesField :: [(Entity Staff, Entity Role)] -> Field Handler (Entity Staff, Entity Role)
+rolesField options = Field
+    { fieldParse = \xs _ -> return $ case xs of
+        (x:_) | T.null x -> Right Nothing
+              | otherwise -> (Right . LS.head . filter (\(_, Entity rid _) -> rid == toSqlKey (read $ unpack x))) options
+        _ -> Right Nothing
+    , fieldView = \theId name attrs eval _isReq -> do
+          let isChecked (Left _) _ = False
+              isChecked (Right y) x = x == y
+          $(widgetFile "book/time/empls")
+    , fieldEnctype = UrlEncoded
+    }
 
 
 formStaff :: [((Entity Service,Entity Offer),Maybe Html)]
@@ -772,33 +790,13 @@ formStaff items offers role roles extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = []
         } (Just items)
+    (rolesR,rolesV) <- mopt (rolesField roles) "" (Just role)
 
     detailsServices <- newIdent
-    (rolesR,rolesV) <- mopt (rolesField roles) "" (Just role)
     return ( (,) <$> offersR <*> rolesR
            , $(widgetFile "book/staff/form")
            )
   where
-
-      notNull xs = case xs of
-        [] -> Left MsgSelectAtLeastOneServicePlease
-        _ -> Right xs
-
-      offersField :: Maybe Text -> [((Entity Service,Entity Offer),Maybe Html)]
-                  -> Field Handler [((Entity Service,Entity Offer),Maybe Html)]
-      offersField currency options = Field
-          { fieldParse = \xs _ -> return $
-            (Right . Just . filter (\((_,Entity oid _),_) -> oid `elem` (toSqlKey . read . unpack <$> xs))) options
-          , fieldView = \theId name attrs vals _isReq -> do
-                app <- getYesod
-                langs <- languages
-                let proj :: ((Entity Service,Entity Offer),Maybe Html) -> OfferId
-                    proj ((_, Entity oid _),_) = oid
-                let isChecked (Left _) _ = False
-                    isChecked (Right xs) x = proj x `elem` (proj <$> xs)
-                $(widgetFile "book/staff/items")
-          , fieldEnctype = UrlEncoded
-          }
 
       rolesField :: [(Entity Staff, Entity Role)]
                  -> Field Handler (Entity Staff, Entity Role)
@@ -813,6 +811,23 @@ formStaff items offers role roles extra = do
                 $(widgetFile "book/staff/empls")
           , fieldEnctype = UrlEncoded
           }
+          
+
+offersField :: Maybe Text -> [((Entity Service,Entity Offer),Maybe Html)]
+            -> Field Handler [((Entity Service,Entity Offer),Maybe Html)]
+offersField currency options = Field
+    { fieldParse = \xs _ -> return $
+      (Right . Just . filter (\((_,Entity oid _),_) -> oid `elem` (toSqlKey . read . unpack <$> xs))) options
+    , fieldView = \theId name attrs vals _isReq -> do
+          app <- getYesod
+          langs <- languages
+          let proj :: ((Entity Service,Entity Offer),Maybe Html) -> OfferId
+              proj ((_, Entity oid _),_) = oid
+          let isChecked (Left _) _ = False
+              isChecked (Right xs) x = proj x `elem` (proj <$> xs)
+          $(widgetFile "book/staff/items")
+    , fieldEnctype = UrlEncoded
+    }
 
 
 formOffers :: [((Entity Service, Entity Offer),Maybe Html)]
@@ -836,10 +851,6 @@ formOffers items offers extra = do
     return (r,w)
   where
 
-      notNull xs = case xs of
-        [] -> Left MsgSelectAtLeastOneServicePlease
-        _ -> Right xs
-
       offersField :: Maybe Text -> [((Entity Service,Entity Offer),Maybe Html)]
                   -> Field Handler [((Entity Service,Entity Offer),Maybe Html)]
       offersField currency options = Field
@@ -855,6 +866,12 @@ formOffers items offers extra = do
                 $(widgetFile "book/offers/items")
           , fieldEnctype = UrlEncoded
           }
+          
+
+notNull :: [a] -> Either AppMessage [a]
+notNull xs = case xs of
+               [] -> Left MsgSelectAtLeastOneServicePlease
+               _ -> Right xs
 
 
 queryRole :: [RoleId] -> ReaderT SqlBackend Handler (Maybe (Entity Staff, Entity Role))
@@ -944,6 +961,33 @@ queryOffers categs mq oids = (second (join . unValue) <$>) <$> ( select $ do
     unless (null oids) $ where_ $ o ^. OfferId `in_` valList oids
     orderBy [asc (x ^. ServiceName), asc (o ^. OfferId)]
     return ((x,o),t ?. ThumbnailAttribution) )
+      
+
+postBookSearchR :: Handler Html
+postBookSearchR = do
+    formSearch <- newIdent
+    mq <- runInputGet $ iopt (searchField True) "q"
+    y <- filter ((== "y") . fst) <$> getPostParams
+    oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
+    categs <- (toSqlKey . read . unpack . snd <$>) . filter ((== "categ") . fst) . reqGetParams <$> getRequest
+    offers <- runDB $ queryOffers categs mq []
+    ioffers <- runDB $ queryItems categs mq (toSqlKey . read . unpack . snd <$> oids)
+    ((fr,fw),et) <- runFormPost $ formOffers ioffers offers
+    case fr of
+      FormSuccess items -> do
+          setSession sessKeyBooking "BOOKING_START"
+          redirect ( BookStaffR
+                   , y <> ((\((_,Entity oid _),_) -> ("oid",pack $ show $ fromSqlKey oid)) <$> items)
+                   )
+      _ -> do
+          currency <- (unValue <$>) <$> runDB ( selectOne $ do
+              x <- from $ table @Business
+              return $ x ^. BusinessCurrency )
+          msgs <- getMessages
+          let items = ioffers
+          defaultLayout $ do
+              setTitleI MsgSearch
+              $(widgetFile "book/search/banner")
 
 
 getBookSearchR :: Handler Html

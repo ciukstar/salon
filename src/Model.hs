@@ -191,6 +191,15 @@ share [mkPersist sqlSettings, mkMigrate "migrateAll"]
     $(persistFileWith lowerCaseSettings "config/models.persistentmodels")
 
 
+makeLensesFor [ ("offerService", "_offerService")
+              , ("offerName", "_offerName")
+              , ("offerPublished", "_offerPublished")
+              , ("offerPrice", "_offerPrice")
+              , ("offerPrefix", "_offerPrefix")
+              , ("offerSuffix", "_offerSuffix")
+              , ("offerDescr", "_offerDescr")
+              ] ''Offer
+
 makeLensesFor [ ("itemBookItem","_itemBookItem")
               , ("itemBookBook","_itemBookBook")
               ] ''ItemBook

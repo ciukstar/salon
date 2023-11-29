@@ -1,3 +1,4 @@
+TotalPrice: Total price
 Completion: Completion
 Checkout: Checkout
 PayWithCreditOrDebitCard: Pay with credit or debit card
