@@ -58,7 +58,7 @@ import Demo.DemoDataEN (populateEN)
 -- Import all relevant handler modules here.
 -- Don't forget to add new modules to your cabal file!
 
-import Handler.Checkout (getCheckoutR, postCreatePaymentIntentR)
+import Handler.Scratch (getScratchR)
 
 import Handler.Billing
     ( getBillingR, getInvoicesR )
@@ -87,7 +87,8 @@ import Handler.Book
     , getBookCustomerR, postBookCustomerR
     , getBookPayR, postBookPayR
     , getBookPayAtVenueR
-    , getBookPayNowR, postBookPaymentIntentR, getBookPayCompletionR
+    , getBookPayNowR, postBookPaymentIntentR
+    , postBookPaymentIntentCancelR, getBookPayCompletionR
     , getBookEndR
     , getBookSearchR, postBookSearchR
     )

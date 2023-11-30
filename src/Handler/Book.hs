@@ -19,6 +19,7 @@ module Handler.Book
   , getBookPayNowR
   , postBookPaymentIntentR
   , getBookPayCompletionR
+  , postBookPaymentIntentCancelR
   , getBookEndR
   , getBookSearchR
   , postBookSearchR
@@ -33,6 +34,7 @@ import Data.Aeson.Lens (key)
 import Data.Aeson (object, (.=))
 import qualified Data.Aeson as A (Value)
 import Data.Bifunctor (Bifunctor(second))
+import qualified Data.ByteString as BS (empty)
 import Data.Either (isLeft)
 import Data.Maybe (maybeToList, isJust, fromMaybe)
 import Data.Fixed (Centi)
@@ -51,8 +53,10 @@ import Network.Wreq
     ( postWith, defaults, auth, basicAuth, FormParam ((:=)), responseBody
     )
 import Text.Hamlet (Html)
+import Text.Julius (rawJS)
 import Text.Shakespeare.I18N (renderMessage, SomeMessage (SomeMessage))
 import Text.Read (readMaybe)
+import Text.Printf (printf)
 
 import Yesod.Core
     ( Yesod(defaultLayout), YesodRequest (reqGetParams), liftHandler
@@ -99,7 +103,7 @@ import Foundation
       , HomeR, AppointmentsR, AppointmentR, ProfileR, ServiceThumbnailR
       , BookOffersR, BookStaffR, BookTimeR, BookCustomerR, BookPayR
       , BookPayNowR, BookPayCompletionR, BookPayAtVenueR, BookEndR
-      , BookSearchR, BookPaymentIntentR
+      , BookSearchR, BookPaymentIntentR, BookPaymentIntentCancelR
       )
     , AdminR (AdmStaffPhotoR)
     , AppMessage
@@ -120,7 +124,8 @@ import Foundation
       , MsgUserProfile, MsgNavigationMenu, MsgNoOffersYet, MsgNoOffersFound
       , MsgNoCategoriesFound, MsgCongratulations, MsgShowMyAppointments
       , MsgPaymentMethod, MsgPayAtVenue, MsgPayNow, MsgDebitCreditCard, MsgCheckout
-      , MsgCompletionTime, MsgCompletion, MsgTotalPrice
+      , MsgCompletionTime, MsgCompletion, MsgTotalPrice, MsgPaymentAmount, MsgPay
+      , MsgPaymentIntentCancelled
       )
     )
 
@@ -141,49 +146,6 @@ import Model
     )
 
 import Menu (menu)
-
-
-postPaymentR :: Handler Html
-postPaymentR = undefined
-
-
-getBookPayCompletionR :: UserId -> Handler Html
-getBookPayCompletionR uid = do
-    pi <- runInputGet $ ireq textField "payment_intent"
-    pics <- runInputGet $ ireq textField "payment_intent_client_secret"
-    rdrs <- runInputGet $ ireq textField "redirect_status"
-    defaultLayout $ do
-        setTitleI MsgCompletion
-        $(widgetFile "book/payment/completion")
-
-
-postBookPaymentIntentR :: UserId -> Handler A.Value
-postBookPaymentIntentR uid = do
-    let stripeApi = "https://api.stripe.com/v1/payment_intents"
-    sk <- encodeUtf8 . appStripeSk . appSettings <$> getYesod
-    let opts = defaults & auth ?~ basicAuth sk "" 
-    r <- liftIO $ postWith opts stripeApi [ "amount" := (1300 :: Int)
-                                          , "currency" := ("usd" :: Text)
-                                          , "payment_method_types[]" := ("card" :: Text)
-                                          ]
-    returnJson $ object [ "clientSecret" .= (r ^? responseBody . key "client_secret")]
-
-
-getBookPayNowR :: UserId -> Handler Html
-getBookPayNowR uid = do
-    user <- maybeAuth
-    pk <- appStripePk . appSettings <$> getYesod
-    let times = []
-    let rids = []
-    let oids = []
-    let dates = []
-
-    curr <- getCurrentRoute
-    
-    defaultLayout $ do
-        setTitleI MsgCheckout
-        addScriptRemote "https://js.stripe.com/v3/"
-        $(widgetFile "book/payment/checkout/checkout")
     
 
 getBookPayAtVenueR :: UserId -> Handler Html
@@ -201,8 +163,117 @@ getBookPayAtVenueR uid = do
         -- $( widgetFile "book/payment/payment")
 
 
+getBookPayCompletionR :: UserId -> Handler Html
+getBookPayCompletionR uid = do
+    pi <- runInputGet $ ireq textField "payment_intent"
+    pics <- runInputGet $ ireq textField "payment_intent_client_secret"
+    rdrs <- runInputGet $ ireq textField "redirect_status"
+    defaultLayout $ do
+        setTitleI MsgCompletion
+        $(widgetFile "book/payment/completion")
+
+
+postBookPaymentIntentCancelR :: UserId -> Text -> Handler ()
+postBookPaymentIntentCancelR uid intent = do
+    stati <- reqGetParams <$> getRequest    
+    let api = printf "https://api.stripe.com/v1/payment_intents/%s/cancel" intent
+    sk <- encodeUtf8 . appStripeSk . appSettings <$> getYesod
+    let opts = defaults & auth ?~ basicAuth sk "" 
+    r <- liftIO $ postWith opts api BS.empty
+    addMessageI info MsgPaymentIntentCancelled
+    redirect (BookPayR uid,("pm",pack $ show PayNow) : stati)
+
+
+postBookPaymentIntentR :: UserId -> Int -> Text -> Handler A.Value
+postBookPaymentIntentR uid cents currency = do
+    let api = "https://api.stripe.com/v1/payment_intents"
+    sk <- encodeUtf8 . appStripeSk . appSettings <$> getYesod
+    let opts = defaults & auth ?~ basicAuth sk "" 
+    r <- liftIO $ postWith opts api [ "amount" := cents
+                                    , "currency" := currency
+                                    , "payment_method_types[]" := ("card" :: Text)
+                                    ]
+         
+    returnJson $ object [ "clientSecret" .= (r ^? responseBody . key "client_secret")]
+
+
+getBookPayNowR :: UserId -> Handler Html
+getBookPayNowR uid = do
+    stati <- reqGetParams <$> getRequest
+    user <- maybeAuth
+    pk <- appStripePk . appSettings <$> getYesod
+
+    rids <- filter ((== "rid") . fst) . reqGetParams <$> getRequest
+    oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
+    dates <- filter ((== "date") . fst) . reqGetParams <$> getRequest
+    times <- filter ((== "time") . fst) . reqGetParams <$> getRequest
+
+    items <- runDB $ queryItems [] Nothing (toSqlKey . read . unpack . snd <$> oids)
+
+    let amount = sumOf (folded . _1 . _2 . to entityVal . _offerPrice) items
+    let cents = truncate $ 100 * amount
+    
+    currency <- maybe "USD" unValue <$> runDB ( selectOne $ do
+        x <- from $ table @Business
+        return $ x ^. BusinessCurrency )
+
+    curr <- getCurrentRoute
+    formPaymentIntentCancel <- newIdent
+    sectionPriceTag <- newIdent
+    formPayment <- newIdent
+    elementPayment <- newIdent
+    buttonSubmitPayment <- newIdent
+    buttonCancelPayment <- newIdent
+    defaultLayout $ do
+        setTitleI MsgCheckout
+        addScriptRemote "https://js.stripe.com/v3/"
+        $(widgetFile "book/payment/checkout/checkout")
+
+
 postBookPayR :: UserId -> Handler Html
-postBookPayR uid = undefined
+postBookPayR uid = do
+    stati <- reqGetParams <$> getRequest
+    user <- maybeAuth
+
+    rids <- filter ((== "rid") . fst) . reqGetParams <$> getRequest
+    oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
+    dates <- filter ((== "date") . fst) . reqGetParams <$> getRequest
+    times <- filter ((== "time") . fst) . reqGetParams <$> getRequest
+    pms <- filter ((== "pm") . fst) . reqGetParams <$> getRequest    
+
+    let payMethod = (read . unpack . snd <$>) $ LS.head pms
+    
+    items <- runDB $ queryItems [] Nothing (toSqlKey . read . unpack . snd <$> oids)
+    role <- runDB $ selectOne $ do
+        x :& s <- from $ table @Role `innerJoin` table @Staff `on` (\(x :& s) -> x ^. RoleStaff ==. s ^. StaffId)
+        where_ $ x ^. RoleId `in_` valList (toSqlKey . read . unpack . snd <$> rids)
+        return (s,x)
+        
+    business <- runDB $ selectOne $ from $ table @Business
+    currency <- (unValue <$>) <$> runDB ( selectOne $ do
+        x <- from $ table @Business
+        return $ x ^. BusinessCurrency )
+        
+    ((fr,fw),et) <- runFormPost $ formPayMethod
+        payMethod uid stati user
+        ((read . unpack . snd <$>) $ LS.head dates)
+        ((read . unpack . snd <$>) $ LS.head times)
+        business
+        items items role (maybeToList role)
+        
+    case fr of
+      FormSuccess (items,role,day,time,addr,tzo,tz,Entity uid _,PayNow) -> do
+          redirect (BookPayNowR uid,stati)
+      FormSuccess (items,role,day,time,addr,tzo,tz,Entity uid _,PayAtVenue) -> do
+          redirect (BookPayAtVenueR uid)
+      _ -> do
+          msgs <- getMessages
+          setUltDestCurrent
+          sectionPriceTag <- newIdent
+          formPaymentMethod <- newIdent
+          defaultLayout $ do
+              setTitleI MsgPaymentMethod
+              $(widgetFile "book/payment/payment")
 
 
 getBookPayR :: UserId -> Handler Html

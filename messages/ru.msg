@@ -1,3 +1,6 @@
+PaymentIntentCancelled: Намерение платежа было отменено
+Pay: Заплатить
+PaymentAmount: Сумма платежа
 TotalPrice: Итоговая цена
 Completion: Завершение
 Checkout: Оформить заказ

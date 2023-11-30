@@ -1,3 +1,6 @@
+PaymentIntentCancelled: Intenția de plată a fost anulată
+Pay: Plătiți
+PaymentAmount: Suma de plată
 TotalPrice: Prețul total
 Completion: Finalizare
 Checkout: Verifică

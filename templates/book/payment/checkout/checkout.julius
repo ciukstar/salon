@@ -1,3 +1,26 @@
+
+Array.from(
+  document.querySelectorAll('.currency[data-value][data-currency]')
+).forEach(function (x) {
+  x.textContent = Intl.NumberFormat(navigator.language, {
+    style: 'currency',
+    currency: x.dataset.currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+    useGrouping: true
+  }).format(x.dataset.value);
+});
+
+Array.from(
+  document.querySelectorAll('.currency[data-value]:not([data-currency])')
+).forEach(function (x) {
+  x.textContent = Intl.NumberFormat(navigator.language, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+    useGrouping: true
+  }).format(x.dataset.value);
+});
+
 // This is your test publishable API key.
 const stripe = Stripe(#{pk});
 
@@ -9,30 +32,32 @@ let elements;
 initialize();
 checkStatus();
 
-document
-  .querySelector("#payment-form")
-  .addEventListener("submit", handleSubmit);
+document.getElementById(#{formPayment}).addEventListener("submit", handleSubmit);
 
 // Fetches a payment intent and captures the client secret
 async function initialize() {
-  const response = await fetch("@{BookPaymentIntentR uid}", {
+  setLoading(true);
+  const response = await fetch("@{BookPaymentIntentR uid cents currency}", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ items }),
+    body: JSON.stringify({ items })
   });
+  
   const { clientSecret } = await response.json();
 
   const appearance = {
-    theme: 'stripe',
+    theme: 'stripe'
   };
+  
   elements = stripe.elements({ appearance, clientSecret });
 
   const paymentElementOptions = {
-    layout: "tabs",
+    layout: "tabs"
   };
 
   const paymentElement = elements.create("payment", paymentElementOptions);
-  paymentElement.mount("#payment-element");
+  paymentElement.mount("##{rawJS elementPayment}");
+  setLoading(false);
 }
 
 async function handleSubmit(e) {
@@ -108,11 +133,11 @@ function showMessage(messageText) {
 function setLoading(isLoading) {
   if (isLoading) {
     // Disable the button and show a spinner
-    document.querySelector("#submit").disabled = true;
+    document.getElementById(#{buttonSubmitPayment}).disabled = true;
     document.querySelector("#spinner").classList.remove("hidden");
     document.querySelector("#button-text").classList.add("hidden");
   } else {
-    document.querySelector("#submit").disabled = false;
+    document.getElementById(#{buttonSubmitPayment}).disabled = false;
     document.querySelector("#spinner").classList.add("hidden");
     document.querySelector("#button-text").classList.remove("hidden");
   }

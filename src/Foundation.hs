@@ -123,6 +123,8 @@ instance Yesod App where
 
     isAuthorized :: Route App -> Bool -> Handler AuthResult
 
+    isAuthorized ScratchR _ = return Authorized
+    
     isAuthorized (StaticR _) _ = return Authorized
     
     isAuthorized (AuthR _) _ = return Authorized
@@ -131,9 +133,6 @@ instance Yesod App where
     isAuthorized RobotsR _ = return Authorized
     isAuthorized PhotoPlaceholderR _ = return Authorized
 
-    
-    isAuthorized r@(CreatePaymentIntentR) _ = setUltDest r >> isAuthenticated
-    isAuthorized r@(CheckoutR _) _ = setUltDest r >> isAuthenticated
     isAuthorized r@(InvoicesR _) _ = setUltDest r >> isAuthenticated
     isAuthorized r@(BillingR _) _ = setUltDest r >> isAuthenticated
 
@@ -231,8 +230,9 @@ instance Yesod App where
     isAuthorized ContactR _ = return Authorized
 
     isAuthorized BookEndR _ = return Authorized
+    isAuthorized (BookPaymentIntentCancelR _ _) _ = isAuthenticated
     isAuthorized (BookPayCompletionR _) _ = isAuthenticated
-    isAuthorized (BookPaymentIntentR _) _ = isAuthenticated
+    isAuthorized (BookPaymentIntentR {}) _ = isAuthenticated
     isAuthorized (BookPayNowR _) _ = isAuthenticated
     isAuthorized (BookPayAtVenueR _) _ = isAuthenticated
     isAuthorized (BookPayR _) _ = isAuthenticated

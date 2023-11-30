@@ -1,3 +1,6 @@
+PaymentIntentCancelled: L'intention de paiement a été annulée
+Pay: Payez
+PaymentAmount: Montant du paiement
 TotalPrice: Prix ​​total
 Completion: Finalisation
 Checkout: Vérifier

@@ -1,3 +1,6 @@
+PaymentIntentCancelled: Payment intent was cancelled
+Pay: Pay
+PaymentAmount: Payment amount
 TotalPrice: Total price
 Completion: Completion
 Checkout: Checkout

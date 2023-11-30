@@ -1,8 +1,0 @@
-
-<form #payment-form>
-  <div #payment-element>
-  <button #submit>
-    <div.spinner.hidden #spinner>
-    <span #button-text>Pay now
-
-  <div.hidden #payment-message>
