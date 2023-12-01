@@ -49,6 +49,17 @@
 
 Все пользователи могут стать клиентами, просто зарегистрировавшись и воспользовавшись предлагаемыми услугами.
 
+## Интеграция с внешними API
+* Платежный шлюз: [Stripe](https://stripe.com/)
+```
+ENV: YESOD_STRIPE_PK, YESOD_STRIPE_SK
+```
+
+* Онлайн карты: [Mapbox](https://www.mapbox.com/)
+```
+ENV: YESOD_MAPBOX_PK
+```
+
 ## ER-диаграмма
 
 ![Диаграмма отношений сущностей](static/img/Salon-ERD.svg)

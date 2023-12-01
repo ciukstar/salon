@@ -230,11 +230,10 @@ instance Yesod App where
     isAuthorized ContactR _ = return Authorized
 
     isAuthorized BookEndR _ = return Authorized
-    isAuthorized (BookPaymentIntentCancelR _ _) _ = isAuthenticated
+    isAuthorized (BookPaymentIntentCancelR _) _ = isAuthenticated
     isAuthorized (BookPayCompletionR _) _ = isAuthenticated
     isAuthorized (BookPaymentIntentR {}) _ = isAuthenticated
     isAuthorized (BookPayNowR _) _ = isAuthenticated
-    isAuthorized (BookPayAtVenueR _) _ = isAuthenticated
     isAuthorized (BookPayR _) _ = isAuthenticated
     isAuthorized BookCustomerR _ = return Authorized
     isAuthorized BookTimeR _ = return Authorized

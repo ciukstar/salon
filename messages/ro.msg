@@ -1,3 +1,5 @@
+OnlineMaps: Hărți online
+PaymentGateway: Gateway de plată
 PaymentIntentCancelled: Intenția de plată a fost anulată
 Pay: Plătiți
 PaymentAmount: Suma de plată
@@ -412,3 +414,5 @@ Doc012: Un administrator poate atribui rolul „Analist” oricărui alt utiliza
 Doc013: Orice utilizator care este înregistrat și ca membru al personalului are rolul „Angajat”. Un utilizator cu rolul „Angajat” are acces la coada de solicitări de servicii.
 
 Doc014: Toți utilizatorii pot deveni clienți prin simpla înregistrare și utilizarea serviciilor oferite.
+
+Doc015: Integrare cu API-uri externe

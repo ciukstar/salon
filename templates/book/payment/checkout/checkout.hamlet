@@ -1,15 +1,13 @@
 
-<form method=post ##{formPaymentIntentCancel}
-  action=@?{(BookPaymentIntentCancelR uid "pi_xxx",(:) ("pm",pack $ show PayNow) stati)}>
-
 <header.mdc-top-app-bar.mdc-top-app-bar--prominent.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row.mdc-theme--background>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section-align-start>
-      <button.mdc-top-app-bar__navigation-icon.mdc-icon-button title=_{MsgBack}
-        type=submit form=#{formPaymentIntentCancel}>
+    
+      <button.mdc-top-app-bar__navigation-icon.mdc-icon-button ##{btnBack} title=_{MsgBack}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
+        
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light style="white-space:normal;line-height:1">
         <div style="white-space:inherit;overflow:inherit;text-overflow:inherit;line-height:inherit">
           _{MsgCheckout}
@@ -57,15 +55,15 @@
               <svg.mdc-circular-progress__indeterminate-circle-graphic viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
                 <circle cx=24 cy=24 r=18 stroke-dasharray="113.097" stroke-dashoffset="56.549" stroke-width=4>
           
-    <button.mdc-button.mdc-button--raised ##{buttonSubmitPayment} disabled>
+    <button.mdc-button.mdc-button--raised ##{btnSubmitPayment} disabled>
       <span.mdc-button__ripple>
+      <span.mdc-button__focus-ring>
       <div.spinner.hidden #spinner>
       <span.mdc-button__label #button-text>_{MsgPay}
 
     <div.hidden #payment-message>
 
-  <a.mdc-button.mdc-button--outlined ##{buttonCancelPayment} role=button
-    href=@?{(BookPayR uid,(:) ("pm",pack $ show PayNow) stati)}>
+  <button.mdc-button.mdc-button--outlined ##{btnCancelPayment} type=button>
     <span.mdc-button__ripple>
-    <div.spinner.hidden #spinner>
-    <span.mdc-button__label #button-text>_{MsgCancel}
+    <span.mdc-button__focus-ring>
+    <span.mdc-button__label>_{MsgCancel}

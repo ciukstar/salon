@@ -1,3 +1,5 @@
+OnlineMaps: Online maps
+PaymentGateway: Payment gateway
 PaymentIntentCancelled: Payment intent was cancelled
 Pay: Pay
 PaymentAmount: Payment amount
@@ -410,3 +412,5 @@ Doc012: An administrator can assign the role "Analyst" to any other registered u
 Doc013: Any user who is also registered as a staff member has the role "Employee". A user with the role "Employee" has access to the service request queue.
 
 Doc014: All users can become customers by simply registering and using the services offered.
+
+Doc015: Integration with external APIs

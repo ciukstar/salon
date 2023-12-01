@@ -54,7 +54,7 @@ $if not (null offers)
         <div #footerBookCountLabel>
           <span #footerBookCount>#{length items}
           <span>_{MsgServices}
-        $with x <- show $ amount items
+        $with x <- show $ sumOf ((((folded . _1) . _2) . to entityVal) . _offerPrice) items
           <div #footerBookAmount>
             $maybe c <- currency
               <span.currency data-value=#{x} data-currency=#{c}>#{x}

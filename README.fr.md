@@ -49,6 +49,18 @@ Tout utilisateur également enregistré en tant que membre du personnel a le rô
 
 Tous les utilisateurs peuvent devenir clients par simple inscription et utilisation des services proposés.
 
+## Intégration avec des API externes
+
+* Passerelle de paiement: [Stripe](https://stripe.com/)
+```
+ENV: YESOD_STRIPE_PK, YESOD_STRIPE_SK
+```
+
+* Cartes en ligne: [Mapbox](https://www.mapbox.com/)
+```
+ENV: YESOD_MAPBOX_PK
+```
+
 ## Diagramme ERD
 
 ![Diagramme entité-relation](static/img/Salon-ERD.svg)

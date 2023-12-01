@@ -35,11 +35,10 @@
 
 /book/search                 BookSearchR              GET POST
 /book/end                    BookEndR                 GET
-/book/#UserId/pi/#Text       BookPaymentIntentCancelR POST
+/book/#UserId/pi/cancel      BookPaymentIntentCancelR POST
 /book/#UserId/pay-completion BookPayCompletionR       GET
 /book/#UserId/pi/#Int/#Text  BookPaymentIntentR       POST
 /book/#UserId/pay-now        BookPayNowR     	      GET
-/book/#UserId/pay-at-venue   BookPayAtVenueR 	      GET
 /book/#UserId/pay    	     BookPayR        	      GET POST
 /book/customer       	     BookCustomerR   	      GET POST
 /book/time     	     	     BookTimeR       	      GET POST

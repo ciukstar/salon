@@ -1,9 +1,90 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--prominent.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section-align-start>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=@{HomeR} role=button title=_{MsgBack}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>close
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
+        _{MsgSuccess}
 
-<p>
-  #{pi}
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end>
+      $maybe Entity uid _ <- user
+        <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{ProfileR uid} role=button title=_{MsgUserProfile}>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" alt=_{MsgPhoto}
+            onerror="this.src = '@{PhotoPlaceholderR}'">
+      $nothing
+        <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{AuthR LoginR} role=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>login
+          
 
-<p>
-  #{pics}
+<main.mdc-top-app-bar--prominent-fixed-adjust>
+  <section.header>
+    <figure>
+      <i.material-symbols-outlined>check_circle
+      <figcaption>
+        <div>_{MsgCongratulations}!
+        <div>_{MsgYouSuccessfullyCreatedYourBooking}.
+    <p>
+      <a.mdc-button.mdc-button--raised href=@{AppointmentsR} role=button>
+        <span.mdc-button__ripple>
+        <span.mdc-button__focus-ring>
+        <span.mdc-button__label>_{MsgShowMyAppointments}
+    <p>
+      <a.mdc-button.mdc-button--outlined href=@{BookOffersR} role=button>
+        <span.mdc-button__ripple>
+        <span.mdc-button__focus-ring>
+        <span.mdc-button__label>_{MsgBookNewAppointment}
 
-<p>
-  #{rdrs}
+  <details.mdc-list data-mdc-auto-init=MDCList ##{detailsBooks}
+    ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">
+    <summary.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon>
+      <span.mdc-list-item__ripple>
+      <span.mdc-list-item__start>
+        <i.material-symbols-outlined>info
+      <span.mdc-list-item__content>
+        <div.mdc-list-item__primary-text>
+          _{MsgShowDetails}
+      <span.mdc-list-item__end>
+        <i.expand.material-symbols-outlined>expand_more
+
+    $forall (Entity bid (Book _ _ _ date time _ _ tz _ _),offer,service) <- books
+      $with Entity _ (Offer _ oname _ price prefix suffix _) <- offer
+        $with Entity _ (Service sname _ _ _ _ _) <- service
+          <a.mdc-list-item.mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon href=@{AppointmentR bid}>
+            <span.mdc-list-item__ripple>
+            <span.mdc-list-item__content>
+              <div.mdc-list-item__primary-text>
+                #{sname}
+              <div.mdc-list-item__secondary-text>
+                #{oname}:&nbsp;
+                $maybe x <- prefix
+                  #{x}
+                $with x <- show price
+                  $maybe c <- currency
+                    <span.currency data-value=#{x} data-currency=#{c}>#{x}
+                  $nothing
+                    <span.currency data-value=#{x}>#{x}
+                $maybe x <- suffix
+                  #{x}
+              $with dt <- ((<>) ((<>) (pack $ show date) " ") (pack $ show time))
+                $with dtz <- ((<>) dt ((<>) ((<>) " (" tz) ")"))
+                  <time.mdc-list-item__secondary-text datetime=#{dt}>
+                    #{dtz}
+            <span.mdc-list-item__end>
+              <i.material-symbols-outlined>arrow_forward_ios
+      <div.mdc-list-divider role=separator>
+    
+$forall (_,msg) <- msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
+    <div.mdc-snackbar__surface>
+      <div.mdc-snackbar__label>#{msg}
+      <div.mdc-snackbar__actions>
+        <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>close

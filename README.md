@@ -50,6 +50,17 @@ Any user who is also registered as a staff member has the role "Employee". A use
 All users can become customers by simply registering and using the services offered.
 
 
+## Integration with external APIs
+
+* Payment gateway: [Stripe](https://stripe.com/)
+```
+ENV: YESOD_STRIPE_PK, YESOD_STRIPE_SK
+```
+* Online maps: [Mapbox](https://www.mapbox.com/)
+```
+ENV: YESOD_MAPBOX_PK
+```
+
 ## ERD Diagram
 
 ![Entity Relationship Diagram](static/img/Salon-ERD.svg)

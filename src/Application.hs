@@ -86,7 +86,6 @@ import Handler.Book
     , getBookTimeR, postBookTimeR
     , getBookCustomerR, postBookCustomerR
     , getBookPayR, postBookPayR
-    , getBookPayAtVenueR
     , getBookPayNowR, postBookPaymentIntentR
     , postBookPaymentIntentCancelR, getBookPayCompletionR
     , getBookEndR

@@ -1,3 +1,5 @@
+OnlineMaps: Cartes en ligne
+PaymentGateway: Passerelle de paiement
 PaymentIntentCancelled: L'intention de paiement a été annulée
 Pay: Payez
 PaymentAmount: Montant du paiement
@@ -412,3 +414,5 @@ Doc012: Un administrateur peut attribuer le rôle « Analyste » à tout autre
 Doc013: Tout utilisateur également enregistré en tant que membre du personnel a le rôle "Employé". Un utilisateur avec le rôle « Employé » a accès à la file d'attente des demandes de service.
 
 Doc014: Tous les utilisateurs peuvent devenir clients par simple inscription et utilisation des services proposés.
+
+Doc015: Intégration avec des API externes

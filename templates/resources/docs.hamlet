@@ -71,6 +71,20 @@
     <p>_{MsgDoc013}
     <p>_{MsgDoc014}
 
+    <div.mdc-typography--headline4>_{MsgDoc015}
+    <ul>
+      <li>
+        _{MsgPaymentGateway}:
+        <a href="https://stripe.com/">Stripe
+        <p>
+          <small>
+            <code>ENV: YESOD_STRIPE_PK, YESOD_STRIPE_SK 
+      <li>
+        _{MsgOnlineMaps}:
+        <a href="https://www.mapbox.com/">Mapbox
+        <p>
+          <small>
+            <code>ENV: YESOD_MAPBOX_PK
 
 
     <div.mdc-typography--headline4>

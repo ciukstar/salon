@@ -43,8 +43,8 @@ async function initialize() {
     body: JSON.stringify({ items })
   });
   
-  const { clientSecret } = await response.json();
-
+  const { paymentIntentId, clientSecret } = await response.json();
+  
   const appearance = {
     theme: 'stripe'
   };
@@ -57,20 +57,30 @@ async function initialize() {
 
   const paymentElement = elements.create("payment", paymentElementOptions);
   paymentElement.mount("##{rawJS elementPayment}");
+
+  [ document.getElementById(#{btnCancelPayment}),
+    document.getElementById(#{btnBack})
+  ].forEach(function (x) {
+    x.addEventListener("click",function (e) {
+      const r = fetch(`@{BookPaymentIntentCancelR uid}?pi=${paymentIntentId}`, {
+	method: "POST",
+	headers: { "Cotent-Type": "application/x-www-form-urlencoded" }
+      }).then(function (result) {
+	window.location.href = '@?{(BookPayR uid,(:) ("pm",pack $ show PayNow) stati)}';
+      });
+    });
+  });
+  
   setLoading(false);
 }
 
 async function handleSubmit(e) {
   e.preventDefault();
   setLoading(true);
-
+  
   const { error } = await stripe.confirmPayment({
     elements,
-    confirmParams: {
-      // Make sure to change this to your payment completion page
-      return_url: "@{BookPayCompletionR uid}",
-      receipt_email: "ciukstar@yahoo.com",
-    },
+    confirmParams: #{rawJS confirmParams}
   });
 
   // This point will only be reached if there is an immediate error when
@@ -133,11 +143,11 @@ function showMessage(messageText) {
 function setLoading(isLoading) {
   if (isLoading) {
     // Disable the button and show a spinner
-    document.getElementById(#{buttonSubmitPayment}).disabled = true;
+    document.getElementById(#{btnSubmitPayment}).disabled = true;
     document.querySelector("#spinner").classList.remove("hidden");
     document.querySelector("#button-text").classList.add("hidden");
   } else {
-    document.getElementById(#{buttonSubmitPayment}).disabled = false;
+    document.getElementById(#{btnSubmitPayment}).disabled = false;
     document.querySelector("#spinner").classList.add("hidden");
     document.querySelector("#button-text").classList.remove("hidden");
   }

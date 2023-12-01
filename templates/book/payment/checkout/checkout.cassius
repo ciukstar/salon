@@ -17,6 +17,10 @@ main
       font-weight: 500
   ##{formPayment} ##{elementPayment}
     text-align: center
-  ##{buttonSubmitPayment}, ##{buttonCancelPayment}
+  ##{btnSubmitPayment}
     margin-top: 2rem
     width: 100%
+  ##{btnCancelPayment}
+    margin-top: 1rem
+    width: fit-content
+    align-self: center
