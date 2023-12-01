@@ -103,7 +103,7 @@
 <main.mdc-top-app-bar--fixed-adjust>
   <div.mdc-top-app-bar--fixed-adjust>
 
-  $forall (_,msg) <- filter (((==) "warn" . fst)) msgs
+  $forall (_,msg) <- filter (((/=) info . fst)) msgs
     <div.mdc-banner role=banner data-mdc-auto-init=MDCBanner>
       <div.mdc-banner__content role=alertdialog aria-live=assertive>
         <div.mdc-banner__graphic-text-wrapper>
@@ -166,7 +166,7 @@
         <span.mdc-fab__icon.material-symbols-outlined>add
         <span.mdc-fab__touch>
 
-$forall (_,msg) <- filter (((==) "info") . fst) msgs
+$forall (_,msg) <- filter (((==) info) . fst) msgs
   <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar :isNothing business:style="bottom:5rem">
     <div.mdc-snackbar__surface>
       <div.mdc-snackbar__label>#{msg}

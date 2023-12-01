@@ -25,7 +25,7 @@ module Handler.Book
   , sessKeyBooking
   ) where
 
-import Control.Lens ((?~),(^?), sumOf, folded, _1, _2, to)
+import Control.Lens ((?~),(^?), (^..), sumOf, folded, _1, _2, to)
 import Control.Monad (unless, when, join, forM)
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Reader (ReaderT)
@@ -123,8 +123,8 @@ import Foundation
       , MsgInvalidBusinessTimeZoneOffset, MsgInvalidBusinessTimeZone
       , MsgUserProfile, MsgNavigationMenu, MsgNoOffersYet, MsgNoOffersFound
       , MsgNoCategoriesFound, MsgCongratulations, MsgShowMyAppointments
-      , MsgPaymentMethod, MsgPayAtVenue, MsgPayNow, MsgDebitCreditCard, MsgCheckout
-      , MsgCompletionTime, MsgCompletion, MsgTotalPrice, MsgPaymentAmount, MsgPay
+      , MsgPaymentMethod, MsgPayAtVenue, MsgPayNow, MsgCheckout
+      , MsgCompletion, MsgTotalPrice, MsgPaymentAmount, MsgPay
       , MsgPaymentIntentCancelled
       )
     )
@@ -143,7 +143,7 @@ import Model
       , ServiceName, RoleStaff, RoleRating, RoleService, OfferId, BookOffer
       , BookCustomer, ThumbnailService, ThumbnailAttribution, BusinessCurrency
       , ServiceOverview, ServiceDescr, ServiceGroup, StaffStatus, OfferPublished
-      )
+      ), _serviceName
     )
 
 import Menu (menu)
@@ -160,7 +160,7 @@ getBookPayCompletionR uid = do
     addr <- runInputGet $ ireq textareaField "addr"
     tzo <- minutesToTimeZone <$> runInputGet ( ireq intField "tzo" )
     tz <- runInputGet $ ireq textField "tz"
-    
+
     _ <- runInputGet $ ireq textField "payment_intent"
     _ <- runInputGet $ ireq textField "payment_intent_client_secret"
     _ <- runInputGet $ ireq textField "redirect_status"
@@ -168,7 +168,7 @@ getBookPayCompletionR uid = do
     currency <- (unValue <$>) <$> runDB ( selectOne $ do
         x <- from $ table @Business
         return $ x ^. BusinessCurrency )
-    
+
     items <- runDB $ queryItems [] Nothing (toSqlKey . read . unpack . snd <$> oids)
 
     role <- case rid of
@@ -195,7 +195,7 @@ getBookPayCompletionR uid = do
         where_ $ x ^. BookCustomer ==. val uid
         where_ $ x ^. BookId `in_` valList bids
         return (x,o,s)
-        
+
     msgs <- getMessages
     detailsBooks <- newIdent
     defaultLayout $ do
@@ -224,6 +224,7 @@ postBookPaymentIntentR _ cents currency = do
     r <- liftIO $ postWith opts api [ "amount" := cents
                                     , "currency" := currency
                                     , "payment_method_types[]" := ("card" :: Text)
+                                    , "payment_method_types[]" := ("paypal" :: Text)
                                     ]
 
     returnJson $ object [ "paymentIntentId" .= (r ^? responseBody . key "id")
@@ -233,7 +234,7 @@ postBookPaymentIntentR _ cents currency = do
 
 getBookPayNowR :: UserId -> Handler Html
 getBookPayNowR uid = do
-    
+
     stati <- reqGetParams <$> getRequest
     user <- maybeAuth
     pk <- appStripePk . appSettings <$> getYesod
@@ -241,6 +242,8 @@ getBookPayNowR uid = do
     oids <- filter ((== "oid") . fst) . reqGetParams <$> getRequest
 
     items <- runDB $ queryItems [] Nothing (toSqlKey . read . unpack . snd <$> oids)
+
+    let json = (\x -> object ["id" .= x]) <$> items ^.. folded . _1 . _1 . to entityVal . _serviceName
 
     let amount = sumOf (folded . _1 . _2 . to entityVal . _offerPrice) items
     let cents = truncate $ 100 * amount
@@ -259,12 +262,14 @@ getBookPayNowR uid = do
           _ -> [ "return_url" .= rndr (BookPayCompletionR uid) stati ]
 
     btnBack <- newIdent
+    bannerStripe <- newIdent
     sectionPriceTag <- newIdent
     formPayment <- newIdent
     elementPayment <- newIdent
     btnSubmitPayment <- newIdent
     btnCancelPayment <- newIdent
-    
+
+    msgs <- getMessages
     defaultLayout $ do
         setTitleI MsgCheckout
         addScriptRemote "https://js.stripe.com/v3/"
@@ -317,7 +322,7 @@ postBookPayR uid = do
               return bid
           addMessageI info MsgRecordAdded
           deleteSession sessKeyBooking
-          
+
           redirect (BookEndR, ("bid",) . pack . show . fromSqlKey <$> bids)
       _ -> do
           msgs <- getMessages
@@ -388,7 +393,7 @@ getBookEndR = do
           Just (Entity uid _) -> where_ $ x ^. BookCustomer ==. val uid
         where_ $ x ^. BookId `in_` valList bids
         return (x,o,s)
-        
+
     msgs <- getMessages
     detailsBooks <- newIdent
     defaultLayout $ do
@@ -420,10 +425,9 @@ postBookCustomerR = do
                            <> ((\((_,Entity oid _),_) -> ("oid",pack $ show $ fromSqlKey oid)) <$> items)
                            <> [ ("date",pack $ show day)
                               , ("time",pack $ show time)
-                              , ("addr",pack $ show addr)
-                              , ("addr",pack $ show addr)
+                              , ("addr",unTextarea addr)
                               , ("tzo",pack $ show tzo)
-                              , ("tz",pack $ show tz)
+                              , ("tz",tz)
                               ]
                            <> [("pm",pack $ show PayNow)]
                          )
@@ -484,7 +488,7 @@ postBookTimeR = do
                            <> ((\((_,Entity oid _),_) -> ("oid",pack $ show $ fromSqlKey oid)) <$> items)
                            <> [ ("date",pack $ show date)
                               , ("time",pack $ show time)
-                              , ("addr",pack $ show addr)
+                              , ("addr",unTextarea addr)
                               , ("tzo",pack $ show tzo)
                               , ("tz",tz)
                               ]
@@ -1151,7 +1155,7 @@ getBookSearchR = do
     defaultLayout $ do
         setTitleI MsgSearch
         $(widgetFile "book/search/search")
-        
+
 
 sessKeyBooking :: Text
 sessKeyBooking = "BOOKING_APPOINTMENT"

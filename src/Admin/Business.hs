@@ -215,7 +215,7 @@ postBrandDeleteR bid rid = do
     runDB $ delete $ void $ do
         x <- from (table @Brand)
         where_ $ x ^. BrandId ==. val rid
-    addMessageI "info" MsgRecordDeleted
+    addMessageI info MsgRecordDeleted
     redirect $ AdminR $ BrandR bid
 
 
@@ -244,7 +244,7 @@ postBrandEditR bid rid = do
               set y [ BrandIco =. val (Just x), BrandIcoMime =. val icoMime ]
               where_ $ y ^. BrandId ==. val rid
             Nothing -> return ()
-          addMessageI "info" MsgRecordEdited
+          addMessageI info MsgRecordEdited
           redirect $ AdminR $ BrandR bid
       _ -> defaultLayout $ do
           setTitleI MsgBrand
@@ -281,7 +281,7 @@ postBrandR bid = do
                                   , brandIcoMime = icoMime
                                   , brandMore = brandMore r
                                   }
-          addMessageI "info" MsgRecordAdded
+          addMessageI info MsgRecordAdded
           redirect $ AdminR $ BrandR bid
       _ -> defaultLayout $ do
           setTitleI MsgBrand
@@ -366,7 +366,7 @@ postBusinessContactDeleteR bid xid = do
     case fr of
       FormSuccess () -> do
           runDB $ P.delete xid
-          addMessageI "info" MsgRecordDeleted
+          addMessageI info MsgRecordDeleted
           redirect $ AdminR $ BusinessContactR bid
       _ -> do
           addMessageI "warn" MsgInvalidFormData
@@ -375,15 +375,15 @@ postBusinessContactDeleteR bid xid = do
 
 postBusinessContactEditR :: BusinessId -> ContactUsId -> Handler Html
 postBusinessContactEditR bid xid = do
-    info <- runDB $ selectOne $ do
+    contact <- runDB $ selectOne $ do
         x <- from $ table @ContactUs
         where_ $ x ^. ContactUsId ==. val xid
         return x
-    ((fr,fw),et) <- runFormPost $ formContact bid info
+    ((fr,fw),et) <- runFormPost $ formContact bid contact
     case fr of
       FormSuccess r -> do
           runDB $ replace xid r
-          addMessageI "info" MsgRecordEdited
+          addMessageI info MsgRecordEdited
           redirect $ AdminR $ BusinessContactR bid
       _ -> defaultLayout $ do
           setTitleI MsgContactUs
@@ -392,11 +392,11 @@ postBusinessContactEditR bid xid = do
 
 getBusinessContactEditR :: BusinessId -> ContactUsId -> Handler Html
 getBusinessContactEditR bid xid = do
-    info <- runDB $ selectOne $ do
+    contact <- runDB $ selectOne $ do
         x <- from $ table @ContactUs
         where_ $ x ^. ContactUsId ==. val xid
         return x
-    (fw,et) <- generateFormPost $ formContact bid info
+    (fw,et) <- generateFormPost $ formContact bid contact
     defaultLayout $ do
         setTitleI MsgAboutUs
         $(widgetFile "admin/business/contact/edit")
@@ -408,7 +408,7 @@ postBusinessContactR bid = do
     case fr of
       FormSuccess r -> do
           runDB $ insert_ r
-          addMessageI "info" MsgRecordAdded
+          addMessageI info MsgRecordAdded
           redirect $ AdminR $ BusinessContactR bid
       _ -> defaultLayout $ do
           setTitleI MsgAboutUs
@@ -532,7 +532,7 @@ getBusinessContactR :: BusinessId -> Handler Html
 getBusinessContactR bid = do
     user <- maybeAuth
 
-    info <- runDB $ selectOne $ do
+    contact <- runDB $ selectOne $ do
         x <- from $ table @ContactUs
         where_ $ x ^. ContactUsBusiness ==. val bid
         return x
@@ -545,14 +545,14 @@ getBusinessContactR bid = do
     (fw,et) <- generateFormPost formDelete
     today <- utctDay <$> liftIO getCurrentTime
 
-    address <- case info of
+    address <- case contact of
       Just (Entity _ (ContactUs _ _ True _ _ _ _)) -> do
          (unValue <$>) <$> runDB ( selectOne $ do
                 x <- from $ table @Business
                 return (x ^. BusinessAddr) )
       _ -> return Nothing
 
-    schedule <- case info of
+    schedule <- case contact of
       Just (Entity _ (ContactUs _ _ _ True _ _ _)) -> do
         let groupByKey :: (Ord k) => (v -> k) -> [v] -> M.Map k [v]
             groupByKey key = M.fromListWith (++) . fmap (\x -> (key x,[x]))
@@ -575,7 +575,7 @@ getBusinessContactR bid = do
       _ -> return []
     defaultLayout $ do
         setTitleI MsgContactUs
-        case info of
+        case contact of
           Just (Entity _ (ContactUs _ _ _ _ True (Just lng) (Just lat))) -> do
               mapboxPk <- appMapboxPk . appSettings <$> getYesod
               addScriptRemote "https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"
@@ -633,7 +633,7 @@ postBusinessAboutDeleteR bid xid = do
     case fr of
       FormSuccess () -> do
           runDB $ P.delete xid
-          addMessageI "info" MsgRecordDeleted
+          addMessageI info MsgRecordDeleted
           redirect $ AdminR $ BusinessAboutR bid
       _ -> do
           addMessageI "warn" MsgInvalidFormData
@@ -646,15 +646,15 @@ formDelete extra = return (FormSuccess (),[whamlet|#{extra}|])
 
 postBusinessAboutEditR :: BusinessId -> AboutUsId -> Handler Html
 postBusinessAboutEditR bid xid = do
-    info <- runDB $ selectOne $ do
+    about <- runDB $ selectOne $ do
         x <- from $ table @AboutUs
         where_ $ x ^. AboutUsId ==. val xid
         return x
-    ((fr,fw),et) <- runFormPost $ formAbout bid info
+    ((fr,fw),et) <- runFormPost $ formAbout bid about
     case fr of
       FormSuccess r -> do
           runDB $ replace xid r
-          addMessageI "info" MsgRecordEdited
+          addMessageI info MsgRecordEdited
           redirect $ AdminR $ BusinessAboutR bid
       _ -> defaultLayout $ do
           setTitleI MsgAboutUs
@@ -663,11 +663,11 @@ postBusinessAboutEditR bid xid = do
 
 getBusinessAboutEditR :: BusinessId -> AboutUsId -> Handler Html
 getBusinessAboutEditR bid xid = do
-    info <- runDB $ selectOne $ do
+    about <- runDB $ selectOne $ do
         x <- from $ table @AboutUs
         where_ $ x ^. AboutUsId ==. val xid
         return x
-    (fw,et) <- generateFormPost $ formAbout bid info
+    (fw,et) <- generateFormPost $ formAbout bid about
     defaultLayout $ do
         setTitleI MsgAboutUs
         $(widgetFile "admin/business/about/edit")
@@ -679,7 +679,7 @@ postBusinessAboutR bid = do
     case fr of
       FormSuccess r -> do
           runDB $ insert_ r
-          addMessageI "info" MsgRecordAdded
+          addMessageI info MsgRecordAdded
           redirect $ AdminR $ BusinessAboutR bid
       _ -> defaultLayout $ do
         setTitleI MsgAboutUs
@@ -741,7 +741,7 @@ getBusinessAboutR :: BusinessId -> Handler Html
 getBusinessAboutR bid = do
     user <- maybeAuth
 
-    info <- runDB $ selectOne $ do
+    about <- runDB $ selectOne $ do
         x <- from $ table @AboutUs
         where_ $ x ^. AboutUsBusiness ==. val bid
         return x
@@ -771,7 +771,7 @@ getBusinessCalendarSlotR bid day sid = do
 postBusinessCalendarSlotDeleteR :: BusinessId -> BusinessHoursId -> Day -> Handler Html
 postBusinessCalendarSlotDeleteR bid sid day = do
     runDB $ P.delete sid
-    addMessageI "info" MsgRecordDeleted
+    addMessageI info MsgRecordDeleted
     redirect (AdminR $ BusinessCalendarR bid ((\(y,m,_) -> YearMonth y m) . toGregorian $ day))
 
 
@@ -781,7 +781,7 @@ postBusinessCalendarSlotEditR bid day sid = do
     case fr of
       FormSuccess r -> do
           runDB $ replace sid r
-          addMessageI "info" MsgRecordEdited
+          addMessageI info MsgRecordEdited
           redirect (AdminR $ BusinessCalendarSlotsR bid day)
       _ -> do
           timeDay <- newIdent
@@ -810,7 +810,7 @@ postBusinessCalendarSlotCreateR bid day = do
     case fr of
       FormSuccess r -> do
           runDB $ insert_ r
-          addMessageI "info" MsgRecordAdded
+          addMessageI info MsgRecordAdded
           redirect (AdminR $ BusinessCalendarR bid month)
       _ -> do
           timeDay <- newIdent
@@ -917,7 +917,7 @@ postBusinessTimeSlotR bid sid = do
     case fr of
       FormSuccess r -> do
           runDB $ replace sid r
-          addMessageI "info" MsgRecordEdited
+          addMessageI info MsgRecordEdited
           redirect (AdminR $ BusinessTimeSlotR bid sid)
       _ -> defaultLayout $ do
           setTitleI MsgBusinessHours
@@ -939,7 +939,7 @@ getBusinessHoursEditR bid sid = do
 postBusinessTimeSlotDeleteR :: BusinessId -> BusinessHoursId -> Handler Html
 postBusinessTimeSlotDeleteR bid sid = do
     runDB $ P.delete sid
-    addMessageI "info" MsgRecordDeleted
+    addMessageI info MsgRecordDeleted
     redirect (AdminR $ BusinessHoursR bid)
 
 
@@ -1009,7 +1009,7 @@ postBusinessHoursR bid = do
     case fr of
       FormSuccess r -> do
           runDB $ insert_ r
-          addMessageI "info" MsgRecordAdded
+          addMessageI info MsgRecordAdded
           redirect $ AdminR $ BusinessHoursR bid
       _ -> defaultLayout $ do
           setTitleI MsgBusinessHours
@@ -1042,7 +1042,7 @@ getBusinessHoursR bid = do
 postBusinessDeleteR :: Handler Html
 postBusinessDeleteR = do
     runDB $ delete $ void $ from (table @Business)
-    addMessageI "info" MsgRecordDeleted
+    addMessageI info MsgRecordDeleted
     redirect $ AdminR BusinessR
 
 
@@ -1067,7 +1067,7 @@ postBusinessEditR bid = do
                     , BusinessEmail =. val email
                     ]
               where_ $ x ^. BusinessId ==. val bid
-          addMessageI "info" MsgRecordEdited
+          addMessageI info MsgRecordEdited
           redirect $ AdminR BusinessR
       _ -> defaultLayout $ do
           setTitleI MsgBusiness
@@ -1098,7 +1098,7 @@ postBusinessR = do
     case (fr,business) of
       (FormSuccess r,Nothing) -> do
           runDB $ insert_ r
-          addMessageI "info" MsgRecordAdded
+          addMessageI info MsgRecordAdded
           redirect $ AdminR BusinessR
       (_,Just _) -> do
           addMessageI "warn" MsgBusinessAlreadyExists
@@ -1195,3 +1195,7 @@ formBusiness business extra = do
 
 fullHours :: NominalDiffTime -> NominalDiffTime -> Bool
 fullHours x y = mod' x y == 0
+
+
+info :: Text
+info = "info"

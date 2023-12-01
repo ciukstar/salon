@@ -2,6 +2,8 @@ FROM ubuntu:22.04
 RUN mkdir -p /opt/salon \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends build-essential zlib1g-dev libpq-dev libicu-dev \
+	&& apt-get install -y ca-certificates \
+	&& update-ca-certificates \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists/*
 

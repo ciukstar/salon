@@ -200,9 +200,13 @@ makeLensesFor [ ("offerService", "_offerService")
               , ("offerDescr", "_offerDescr")
               ] ''Offer
 
-makeLensesFor [ ("itemBookItem","_itemBookItem")
-              , ("itemBookBook","_itemBookBook")
-              ] ''ItemBook
+makeLensesFor [ ("serviceName","_serviceName")
+              , ("servicePublished","_servicePublished")
+              , ("serviceOverview","_serviceOverview")
+              , ("serviceDuration","_serviceDuration")
+              , ("serviceDescr","_serviceDescr")
+              , ("serviceGroup","_serviceGroup")
+              ] ''Service
 
 
 instance PathPiece Month where

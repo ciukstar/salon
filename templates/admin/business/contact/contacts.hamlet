@@ -9,7 +9,7 @@
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgBusiness}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end>
-      $maybe Entity xid _ <- info
+      $maybe Entity xid _ <- contact
         <button.mdc-top-app-bar__action-item.mdc-icon-button type=button title=_{MsgDel}
           onclick="document.getElementById('#{dlgContactUsDelete}').MDCDialog.open()">
           <span.mdc-icon-button__ripple>
@@ -108,7 +108,7 @@
 <main.mdc-top-app-bar--fixed-adjust>
   <div.mdc-top-app-bar--fixed-adjust>
 
-  $maybe Entity _ (ContactUs _ html showAddress showSchedule _ _ _) <- info
+  $maybe Entity _ (ContactUs _ html showAddress showSchedule _ _ _) <- contact
     <div ##{htmlContainer}>
       ^{html}
     $if showAddress
@@ -156,7 +156,7 @@
 
 $forall (_,msg) <- msgs
   <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar
-    :isNothing info:style="bottom:5rem">
+    :isNothing contact:style="bottom:5rem">
     <div.mdc-snackbar__surface>
       <div.mdc-snackbar__label>#{msg}
       <div.mdc-snackbar__actions>

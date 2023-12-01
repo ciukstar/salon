@@ -1,4 +1,6 @@
 
+window.mdc.autoInit();
+
 Array.from(
   document.querySelectorAll('.currency[data-value][data-currency]')
 ).forEach(function (x) {
@@ -25,7 +27,7 @@ Array.from(
 const stripe = Stripe(#{pk});
 
 // The items the customer wants to buy
-const items = [{ id: "xl-tshirt" }];
+const items = #{rawJS $ encodeToLazyText json};
 
 let elements;
 
@@ -45,15 +47,11 @@ async function initialize() {
   
   const { paymentIntentId, clientSecret } = await response.json();
   
-  const appearance = {
-    theme: 'stripe'
-  };
+  const appearance = { theme: 'stripe' };
   
   elements = stripe.elements({ appearance, clientSecret });
 
-  const paymentElementOptions = {
-    layout: "tabs"
-  };
+  const paymentElementOptions = { layout: "tabs" };
 
   const paymentElement = elements.create("payment", paymentElementOptions);
   paymentElement.mount("##{rawJS elementPayment}");
@@ -125,18 +123,10 @@ async function checkStatus() {
   }
 }
 
-// ------- UI helpers -------
-
 function showMessage(messageText) {
-  const messageContainer = document.querySelector("#payment-message");
-
-  messageContainer.classList.remove("hidden");
-  messageContainer.textContent = messageText;
-
-  setTimeout(function () {
-    messageContainer.classList.add("hidden");
-    messageContainer.textContent = "";
-  }, 4000);
+  const banner = document.getElementById(#{bannerStripe});
+  banner.querySelector("div.mdc-banner__text").textContent = messageText;
+  banner.MDCBanner.open();
 }
 
 // Show a spinner on payment submission
@@ -152,3 +142,11 @@ function setLoading(isLoading) {
     document.querySelector("#button-text").classList.remove("hidden");
   }
 }
+
+Array.from(
+  document.querySelectorAll('aside.mdc-snackbar')
+).map(x => x.MDCSnackbar).forEach(function (x) { x.open(); });
+
+Array.from(
+  document.querySelectorAll('div.mdc-banner.banner-auto')
+).map(x => x.MDCBanner).forEach(function (x) { x.open(); });

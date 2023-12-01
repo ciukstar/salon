@@ -9,7 +9,7 @@
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgBusiness}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end>
-      $maybe Entity xid _ <- info
+      $maybe Entity xid _ <- about
         <button.mdc-top-app-bar__action-item.mdc-icon-button type=button title=_{MsgDel}
           onclick="document.getElementById('#{dlgAboutUsDelete}').MDCDialog.open()">
           <span.mdc-icon-button__ripple>
@@ -107,7 +107,7 @@
 <main.mdc-top-app-bar--fixed-adjust>
   <div.mdc-top-app-bar--fixed-adjust>
   
-  $maybe Entity _ (AboutUs _ html) <- info
+  $maybe Entity _ (AboutUs _ html) <- about
     ^{html}
   $nothing
     <figure style="text-align:center">
@@ -122,7 +122,7 @@
         <span.mdc-fab__touch>
 
 $forall (_,msg) <- msgs
-  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar :isNothing info:style="bottom:5rem">
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar :isNothing about:style="bottom:5rem">
     <div.mdc-snackbar__surface>
       <div.mdc-snackbar__label>#{msg}
       <div.mdc-snackbar__actions>
