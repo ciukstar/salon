@@ -12,6 +12,7 @@ Item
   quantity Int
   price Centi
   tax Centi
+  vat Centi
   amount Centi
   currency Text Maybe
   UniqueItem offer invoice
@@ -21,25 +22,10 @@ Invoice
   customer UserId OnDeleteCascade
   staff StaffId OnDeleteCascade 
   number Text
+  status InvoiceStatus
   day Day
-  amount Centi
-  payMethod PayMethod
-  currency Text Maybe
-  creditCard Text Maybe
-  expireDay Day Maybe
   dueDay Day Maybe
   UniqueBill number
-
-
-Billing
-  customer UserId OnDeleteCascade
-  account Text
-  nickname Text
-  payMethod Text Maybe
-  creditCard Text Maybe
-  expireDate Month Maybe
-  UniqueBillingAccount account
-  UniqueBillingNickname customer nickname
 
 
 Hist

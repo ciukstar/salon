@@ -27,20 +27,20 @@ import Foundation
     , Route
       ( ResourcesR, AdminR, ContactR, AboutUsR, AppointmentsR
       , BookOffersR, ServicesR, HomeR, StatsR, BookingsCalendarR
-      , TasksCalendarR, InvoicesR, BillingR
+      , TasksCalendarR
       )
     , StatsR (PopOffersR, WorkloadsR, StatsAovR)
     , AdminR
       ( BrandR, UsersR, AdmStaffR, AdmServicesR
       , BusinessR, BusinessHoursR, BusinessCalendarR, BusinessAboutR
-      , BusinessContactR
+      , BusinessContactR, AdmInvoicesR
       )
     , AppMessage
       ( MsgSourceCode, MsgDocumentation, MsgContactUs, MsgAboutUs, MsgSalon
       , MsgMyAppointments, MsgServices, MsgBookAppointment, MsgWelcome, MsgUsers
       , MsgStaff, MsgData, MsgResources, MsgRequests, MsgBusiness, MsgClose
       , MsgAnalytics, MsgWorkload, MsgCustomerRanking, MsgServiceRanking
-      , MsgInvoices, MsgBilling, MsgPaymentSettings, MsgSettings
+      , MsgInvoices, MsgBilling
       )
     )
 

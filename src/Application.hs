@@ -61,7 +61,7 @@ import Demo.DemoDataEN (populateEN)
 import Handler.Scratch (getScratchR)
 
 import Handler.Billing
-    ( getBillingR, getInvoicesR )
+    ( getAdmInvoicesR, postAdmInvoicesR, getAdmInvoiceCreateR )
 
 import Handler.Requests
     ( getRequestsR, getRequestR, postRequestR

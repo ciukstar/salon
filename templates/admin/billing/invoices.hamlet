@@ -6,7 +6,7 @@
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>menu
-      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgBilling}
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgInvoices}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end>
       $maybe Entity uid _ <- user
@@ -21,62 +21,36 @@
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>login
 
-  <div.mdc-top-app-bar__row>
-    <div.mdc-tab-bar role=tablist data-mdc-auto-init=MDCTabBar>
-      <div.mdc-tab-scroller>
-        <div.mdc-tab-scroller__scroll-area>
-          <div.mdc-tab-scroller__scroll-content>
-
-            <a.mdc-tab href=@{InvoicesR uid} role=tab tabindex=0
-              :curr == Just (InvoicesR uid):.mdc-tab--active
-              :curr == Just (InvoicesR uid):aria-selected=true>
-              <span.mdc-tab__content>
-                <span.mdc-tab__text-label>_{MsgInvoices}
-              <span.mdc-tab-indicator :curr == Just (InvoicesR uid):.mdc-tab-indicator--active>
-                <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
-              <span.mdc-tab__ripple>
-              <span.mdc-tab__focus-ring>
-
-            <a.mdc-tab href=@{BillingR uid} role=tab tabindex=0
-              :curr == Just (BillingR uid):.mdc-tab--active
-              :curr == Just (BillingR uid):aria-selected=true>
-              <span.mdc-tab__content>
-                <span.mdc-tab__text-label>_{MsgSettings}
-              <span.mdc-tab-indicator :curr == Just (BillingR uid):.mdc-tab-indicator--active>
-                <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
-              <span.mdc-tab__ripple>
-              <span.mdc-tab__focus-ring>
-
 
 <main.mdc-top-app-bar--fixed-adjust>
-  <div.mdc-top-app-bar--fixed-adjust>
 
-    $if null accounts
+    $if null invoices
       <figure style="text-align:center">
         <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
         <figcaption>
-          _{MsgNoPaymentSettingsYet}.
+          _{MsgNoInvoicesYet}.
     $else
       <nav.mdc-list data-mdc-auto-init=MDCList>
-        $forall Entity _ (Billing _ acc nick method _ _) <- accounts
+        $forall Entity _ (Invoice _ _ no status day dueDay) <- invoices
           <a.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon
             href=#>
             <span.mdc-list-item__ripple>
             <span.mdc-list-item__start>
-              <i.material-symbols-outlined>                  
+              <i.material-symbols-outlined>paid                  
             <span.mdc-list-item__content>
               <div.mdc-list-item__primary-text>
-                #{nick}
+                #{no}
               <div.mdc-list-item__secodary-text>
-                #{acc}
+                #{show status}
               <div.mdc-list-item__secodary-text>
-                $maybe method <- method
-                  #{method}
+                #{show day}
+              <div.mdc-list-item__secodary-text>
+                #{show dueDay}
             <span.mdc-list-item__end>
               <i.material-symbols-outlined>arrow_forward_ios
-              
-    <div.mdc-touch-target-wrapper ##{fabAddAccount}>
-      <a.mdc-fab.mdc-fab--touch role=button href=#>
+
+    <div.mdc-touch-target-wrapper ##{fabAddInvoice}>
+      <a.mdc-fab.mdc-fab--touch role=button href=@{AdminR AdmInvoiceCreateR}>
         <span.mdc-fab__ripple>
         <span.mdc-fab__focus-ring>
         <span.mdc-fab__icon.material-symbols-outlined>add

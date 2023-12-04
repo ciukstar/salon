@@ -1,0 +1,6 @@
+
+<form method=post action=@{AdminR AdmInvoicesR} enctype=#{et}>
+  ^{fw}
+  <div>
+    <a href=@{AdminR AdmInvoicesR} role=button>_{MsgCancel}
+    <button type=submit>_{MsgSave}

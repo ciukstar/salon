@@ -1,3 +1,8 @@
+DueDate: Срок оплаты
+DateCreated: Дата создания
+InvoiceDate: Дата счета-фактуры
+InvoiceNumber: Номер счета-фактуры
+Invoice: Счет-фактура
 OnlineMaps: Онлайн карты
 PaymentGateway: Платежный шлюз
 PaymentIntentCancelled: Намерение платежа было отменено

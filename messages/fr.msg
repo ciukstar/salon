@@ -1,3 +1,8 @@
+DueDate: Date d'échéance
+DateCreated: Date créée
+InvoiceDate: Date de facture
+InvoiceNumber: Numéro de facture
+Invoice: Facture
 OnlineMaps: Cartes en ligne
 PaymentGateway: Passerelle de paiement
 PaymentIntentCancelled: L'intention de paiement a été annulée

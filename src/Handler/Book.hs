@@ -102,8 +102,8 @@ import Foundation
       ( AuthR, PhotoPlaceholderR, AccountPhotoR, AdminR, AccountR
       , HomeR, AppointmentsR, AppointmentR, ProfileR, ServiceThumbnailR
       , BookOffersR, BookStaffR, BookTimeR, BookCustomerR, BookPayR
-      , BookPayNowR, BookPayCompletionR, BookEndR
-      , BookSearchR, BookPaymentIntentR, BookPaymentIntentCancelR
+      , BookPayNowR, BookPayCompletionR, BookEndR, BookSearchR
+      , BookPaymentIntentR, BookPaymentIntentCancelR
       )
     , AdminR (AdmStaffPhotoR)
     , AppMessage
@@ -114,7 +114,7 @@ import Foundation
       , MsgRole, MsgSignUp, MsgSignIn, MsgOffers, MsgCustomerInformation
       , MsgCustomer, MsgStepNofM, MsgContinue, MsgNotYourAccount, MsgBack
       , MsgLogin, MsgDay, MsgTime , MsgEnd, MsgAlreadyHaveAnAccount
-      , MsgLoginToIdentifyCustomer, MsgRecordAdded, MsgShowDetails
+      , MsgLoginToIdentifyCustomer, MsgShowDetails, MsgRecordAdded
       , MsgYouSuccessfullyCreatedYourBooking, MsgBookNewAppointment
       , MsgBookingSequenceRestarted, MsgThumbnail, MsgAppointmentDayIsInThePast
       , MsgAppointmentTimeIsInThePast, MsgTimeZone, MsgTimeZoneOffset
@@ -190,6 +190,7 @@ getBookPayCompletionR uid = do
         x :& o :& s <- from $ table @Book
             `innerJoin` table @Offer `on` (\(x :& o) -> x ^. BookOffer ==. o ^. OfferId)
             `innerJoin` table @Service `on` (\(_ :& o :& s) -> o ^. OfferService ==. s ^. ServiceId)
+            
         where_ $ s ^. ServicePublished
         where_ $ o ^. OfferPublished
         where_ $ x ^. BookCustomer ==. val uid

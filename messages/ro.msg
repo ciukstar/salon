@@ -1,3 +1,8 @@
+DueDate: Data scadenței
+DateCreated: Data creării
+InvoiceDate: Data facturii
+InvoiceNumber: Număr de factură
+Invoice: Factură
 OnlineMaps: Hărți online
 PaymentGateway: Gateway de plată
 PaymentIntentCancelled: Intenția de plată a fost anulată

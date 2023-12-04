@@ -1,3 +1,8 @@
+DueDate: Due date
+DateCreated: Date created
+InvoiceDate: Invoice date
+InvoiceNumber: Invoice number
+Invoice: Invoice
 OnlineMaps: Online maps
 PaymentGateway: Payment gateway
 PaymentIntentCancelled: Payment intent was cancelled

@@ -116,35 +116,8 @@
             <span.mdc-deprecated-list-item__text>_{MsgWorkload}
             
       <hr.mdc-deprecated-list-divider role=separator>
-
-      $maybe Entity uid _ <- user
-        <details :elem curr [Just (InvoicesR uid),Just (BillingR uid)]:open
-          ontoggle="document.getElementById('iconBillingExpand').textContent = this.open ? 'expand_less' : 'expand_more'">
-          <summary.mdc-deprecated-list>
-            <li.mdc-deprecated-list-item>
-              <span.mdc-deprecated-list-item__ripple>
-              <span.mdc-deprecated-list-item__graphic.material-symbols-outlined #iconBillingExpand>expand_more
-              <span.mdc-deprecated-list-item__text>_{MsgBilling}
-          <nav.mdc-deprecated-list>
-            <a.mdc-deprecated-list-item href=@{InvoicesR uid}
-              :Just (InvoicesR uid) /= curr:tabindex=-1
-              :Just (InvoicesR uid) == curr:tabindex=0
-              :Just (InvoicesR uid) == curr:.mdc-deprecated-list-item--activated>
-              <span.mdc-deprecated-list-item__ripple>
-              <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>playlist_add_check
-              <span.mdc-deprecated-list-item__text>_{MsgInvoices}
-              
-            <a.mdc-deprecated-list-item href=@{BillingR uid}
-              :Just (BillingR uid) /= curr:tabindex=-1
-              :Just (BillingR uid) == curr:tabindex=0
-              :Just (BillingR uid) == curr:.mdc-deprecated-list-item--activated>
-              <span.mdc-deprecated-list-item__ripple>
-              <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>manage_accounts
-              <span.mdc-deprecated-list-item__text>_{MsgPaymentSettings}
-
-        <hr.mdc-deprecated-list-divider role=separator>
       
-      <details :elem curr [Just (AdminR $ AdmServicesR (Services [])),Just (AdminR AdmStaffR),Just (AdminR UsersR),((AdminR . BrandR) . entityKey) <$> business,Just (AdminR BusinessR),((AdminR . BusinessHoursR) . entityKey) <$> business,((AdminR . flip BusinessCalendarR month) . entityKey) <$> business,((AdminR . BusinessAboutR) . entityKey) <$> business,((AdminR . BusinessContactR) . entityKey) <$> business]:open
+      <details :elem curr [Just (AdminR AdmInvoicesR), Just (AdminR $ AdmServicesR (Services [])),Just (AdminR AdmStaffR),Just (AdminR UsersR),((AdminR . BrandR) . entityKey) <$> business,Just (AdminR BusinessR),((AdminR . BusinessHoursR) . entityKey) <$> business,((AdminR . flip BusinessCalendarR month) . entityKey) <$> business,((AdminR . BusinessAboutR) . entityKey) <$> business,((AdminR . BusinessContactR) . entityKey) <$> business]:open
         ontoggle="document.getElementById('iconDataExpand').textContent = this.open ? 'expand_less' : 'expand_more'">
         <summary.mdc-deprecated-list>
           <li.mdc-deprecated-list-item>
@@ -159,6 +132,14 @@
             <span.mdc-deprecated-list-item__ripple>
             <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>edit_note
             <span.mdc-deprecated-list-item__text>_{MsgServices}
+
+          <a.mdc-deprecated-list-item href=@{AdminR AdmInvoicesR}
+            :Just (AdminR AdmInvoicesR) /= curr:tabindex=-1
+            :Just (AdminR AdmInvoicesR) == curr:tabindex=0
+            :Just (AdminR AdmInvoicesR) == curr:.mdc-deprecated-list-item--activated>
+            <span.mdc-deprecated-list-item__ripple>
+            <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>playlist_add_check
+            <span.mdc-deprecated-list-item__text>_{MsgInvoices}
 
           <a.mdc-deprecated-list-item href=@{AdminR AdmStaffR}
             :Just (AdminR AdmStaffR) /= curr:tabindex=-1

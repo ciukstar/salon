@@ -1,9 +1,6 @@
 
 /scratch ScratchR GET
 
-/billing/#UserId/billing  BillingR  GET
-/billing/#UserId/invoices InvoicesR GET
-
 /contact ContactR GET
 
 /tasks/#UserId/#StaffId/list/#Day/#BookId/hist TaskHistR      GET
@@ -81,6 +78,9 @@
     /aov 	 	   StatsAovR   GET
 
 /admin AdminR:
+
+    /billing/invoices/create AdmInvoiceCreateR GET
+    /billing/invoices 	     AdmInvoicesR      GET POST
     
     /delete/contact/business/#BusinessId/#ContactUsId BusinessContactDeleteR POST
     /form/contact/business/#BusinessId/#ContactUsId   BusinessContactEditR   GET POST

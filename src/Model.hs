@@ -71,12 +71,19 @@ data DayType = Weekday | Weekend | Holiday
     deriving (Show, Read, Eq, Ord)
 derivePersistField "DayType"
 
-
 data ServiceStatus = ServiceStatusPulished | ServiceStatusUnpublished
   deriving (Show, Read, Eq)
 
 data Assignees = AssigneesMe | AssigneesNone | AssigneesOthers
     deriving (Show, Read, Eq)
+
+data InvoiceStatus = InvoiceStatusDraft
+                   | InvoiceStatusOpen
+                   | InvoiceStatusPaid
+                   | InvoiceStatusVoid
+                   | InvoiceStatusUncollectible
+    deriving (Show, Read, Eq, Ord)
+derivePersistField "InvoiceStatus"
 
 data BookStatus = BookStatusRequest
                 | BookStatusAdjusted

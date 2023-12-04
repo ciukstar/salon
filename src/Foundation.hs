@@ -27,8 +27,8 @@ import qualified Data.CaseInsensitive as CI
 import qualified Data.Text.Encoding as TE
 import Yesod.Auth.HashDB (authHashDBWithForm)
 import Yesod.Auth.Message
-    ( AuthMessage(InvalidLogin)
-    , englishMessage, frenchMessage, russianMessage, defaultMessage
+    ( AuthMessage(InvalidLogin), englishMessage, frenchMessage
+    , russianMessage, defaultMessage
     )
 import Yesod.Form.I18n.English (englishFormMessage)
 import Yesod.Form.I18n.French (frenchFormMessage)
@@ -133,9 +133,6 @@ instance Yesod App where
     isAuthorized RobotsR _ = return Authorized
     isAuthorized PhotoPlaceholderR _ = return Authorized
 
-    isAuthorized r@(InvoicesR _) _ = setUltDest r >> isAuthenticated
-    isAuthorized r@(BillingR _) _ = setUltDest r >> isAuthenticated
-
     isAuthorized r@(StatsR PopOffersR) _               = setUltDest r >> isAnalyst
     isAuthorized r@(StatsR WorkloadsR) _               = setUltDest r >> isAnalyst
     isAuthorized r@(StatsR (WorkloadEmplMonthR _ _)) _ = setUltDest r >> isAnalyst
@@ -143,7 +140,9 @@ instance Yesod App where
     isAuthorized r@(StatsR StatsAovR) _                = setUltDest r >> isAnalyst
     isAuthorized r@(StatsR (AovDetailsR {})) _         = setUltDest r >> isAnalyst    
         
-        
+    
+    isAuthorized r@(AdminR AdmInvoiceCreateR) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR AdmInvoicesR) _ = setUltDest r >> isAdmin
     isAuthorized r@(AdminR UsersR) _ = setUltDest r >> isAdmin
     isAuthorized r@(AdminR UserCreateFormR) _ = setUltDest r >> isAdmin
     isAuthorized r@(AdminR AdmServicesSearchR) _ = setUltDest r >> isAdmin
