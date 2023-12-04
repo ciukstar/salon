@@ -60,9 +60,6 @@ import Demo.DemoDataEN (populateEN)
 
 import Handler.Scratch (getScratchR)
 
-import Handler.Billing
-    ( getAdmInvoicesR, postAdmInvoicesR, getAdmInvoiceCreateR )
-
 import Handler.Requests
     ( getRequestsR, getRequestR, postRequestR
     , getRequestsSearchR, postRequestApproveR
@@ -110,6 +107,9 @@ import Handler.Stats
     ( getPopOffersR, getWorkloadsR, getWorkloadEmplMonthR, getWorkloadEmplDayR
     , getStatsAovR, getAovDetailsR
     )
+
+import Admin.Billing
+    ( getAdmInvoicesR, postAdmInvoicesR, getAdmInvoiceCreateR )
 
 import Admin.Business
   ( getBusinessR, postBusinessR, getBusinessCreateR

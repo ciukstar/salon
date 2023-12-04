@@ -1,3 +1,7 @@
+Uncollectible: Irrecouvrable
+Void: Annulé
+Open: Ouverte
+Draft: Brouillon
 DueDate: Date d'échéance
 DateCreated: Date créée
 InvoiceDate: Date de facture
@@ -421,3 +425,7 @@ Doc013: Tout utilisateur également enregistré en tant que membre du personnel 
 Doc014: Tous les utilisateurs peuvent devenir clients par simple inscription et utilisation des services proposés.
 
 Doc015: Intégration avec des API externes
+
+Doc016 href: Pour simuler un paiement réussi, utilisez les cartes de test de la <a href=#{href}>liste suivante</a>.
+
+Doc017 href: Pour simuler les paiements refusés par l'émetteur, utilisez les cartes de test de la <a href=#{href}>liste suivante</a>.

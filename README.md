@@ -53,13 +53,17 @@ All users can become customers by simply registering and using the services offe
 ## Integration with external APIs
 
 * Payment gateway: [Stripe](https://stripe.com/)
-```
-ENV: YESOD_STRIPE_PK, YESOD_STRIPE_SK
-```
+  ```
+  ENV: YESOD_STRIPE_PK, YESOD_STRIPE_SK
+  ```
+  To simulate a successful payment, use test cards from the [following list](https://stripe.com/docs/testing?testing-method=card-numbers#cards).
+
+  To simulate payments that the issuer declines, use test cards from the [following list](https://stripe.com/docs/testing?testing-method=card-numbers#declined-payments).
+
 * Online maps: [Mapbox](https://www.mapbox.com/)
-```
-ENV: YESOD_MAPBOX_PK
-```
+  ```
+  ENV: YESOD_MAPBOX_PK
+  ```
 
 ## ERD Diagram
 

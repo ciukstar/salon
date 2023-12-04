@@ -52,14 +52,19 @@ Tous les utilisateurs peuvent devenir clients par simple inscription et utilisat
 ## Intégration avec des API externes
 
 * Passerelle de paiement: [Stripe](https://stripe.com/)
-```
-ENV: YESOD_STRIPE_PK, YESOD_STRIPE_SK
-```
+  ```
+  ENV: YESOD_STRIPE_PK, YESOD_STRIPE_SK
+  ```
+
+  Pour simuler un paiement réussi, utilisez les cartes de test de la [liste suivante](https://stripe.com/docs/testing?testing-method=card-numbers#cards).
+  
+  Pour simuler les paiements refusés par l'émetteur, utilisez les cartes de test de la [liste suivante](https://stripe.com/docs/testing?testing-method=card-numbers#declined-payments).
+
 
 * Cartes en ligne: [Mapbox](https://www.mapbox.com/)
-```
-ENV: YESOD_MAPBOX_PK
-```
+  ```
+  ENV: YESOD_MAPBOX_PK
+  ```
 
 ## Diagramme ERD
 

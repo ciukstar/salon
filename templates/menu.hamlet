@@ -138,7 +138,7 @@
             :Just (AdminR AdmInvoicesR) == curr:tabindex=0
             :Just (AdminR AdmInvoicesR) == curr:.mdc-deprecated-list-item--activated>
             <span.mdc-deprecated-list-item__ripple>
-            <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>playlist_add_check
+            <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>edit_note
             <span.mdc-deprecated-list-item__text>_{MsgInvoices}
 
           <a.mdc-deprecated-list-item href=@{AdminR AdmStaffR}

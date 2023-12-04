@@ -1,3 +1,7 @@
+Uncollectible: Necolectabilă
+Void: Nulă
+Open: Deschisă
+Draft: Ciornă
 DueDate: Data scadenței
 DateCreated: Data creării
 InvoiceDate: Data facturii
@@ -421,3 +425,7 @@ Doc013: Orice utilizator care este înregistrat și ca membru al personalului ar
 Doc014: Toți utilizatorii pot deveni clienți prin simpla înregistrare și utilizarea serviciilor oferite.
 
 Doc015: Integrare cu API-uri externe
+
+Doc016 href: Pentru a simula o plată reușită, utilizați carduri de test din <a href=#{href}>lista următoare</a>.
+
+Doc017 href: Pentru a simula plățile pe care emitentul le refuză, utilizați carduri de testare din <a href=#{href}>următoarea listă</a>.

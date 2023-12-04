@@ -78,7 +78,11 @@
         <a href="https://stripe.com/">Stripe
         <p>
           <small>
-            <code>ENV: YESOD_STRIPE_PK, YESOD_STRIPE_SK 
+            <code>ENV: YESOD_STRIPE_PK, YESOD_STRIPE_SK
+        <p>
+          #{trans $ MsgDoc016 $ pack "https://stripe.com/docs/testing?testing-method=card-numbers#cards"}
+        <p>
+          #{trans $ MsgDoc017 $ pack "https://stripe.com/docs/testing?testing-method=card-numbers#declined-payments"}
       <li>
         _{MsgOnlineMaps}:
         <a href="https://www.mapbox.com/">Mapbox

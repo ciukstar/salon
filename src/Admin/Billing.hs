@@ -3,7 +3,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 
-module Handler.Billing
+module Admin.Billing
   ( getAdmInvoicesR
   , postAdmInvoicesR
   , getAdmInvoiceCreateR
@@ -13,22 +13,23 @@ import Text.Hamlet (Html)
 
 import Yesod.Auth (Route (LoginR), maybeAuth)
 import Yesod.Core
-    ( Yesod(defaultLayout), newIdent, whamlet, SomeMessage (SomeMessage) )
-import Yesod.Core.Handler (getCurrentRoute)
+    ( Yesod(defaultLayout), newIdent, SomeMessage (SomeMessage)
+    , MonadHandler (liftHandler)
+    )
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Form.Functions (generateFormPost, mreq, mopt)
 import Yesod.Form.Types
-    ( MForm, FormResult (FormSuccess), FieldView (fvInput)
+    ( MForm, FormResult, FieldView (fvInput, fvErrors, fvLabel, fvId)
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
     )
-import Yesod.Form.Fields (textField, selectFieldList, dayField)
+import Yesod.Form.Fields (textField, dayField, hiddenField)
 import Settings (widgetFile)
 
 import Yesod.Persist (Entity (Entity, entityVal))
 import Yesod.Persist.Core (YesodPersist(runDB))
 import Database.Esqueleto.Experimental
-    ( select, from, table, where_, val
-    , (^.), (==.)
+    ( select, from, table
+    , (^.), orderBy, asc, fromSqlKey
     )
 
 import Foundation
@@ -37,25 +38,32 @@ import Foundation
       ( AuthR, PhotoPlaceholderR, AccountPhotoR
       , ProfileR, AdminR
       )
-    , AdminR (AdmInvoicesR, AdmInvoiceCreateR)
+    , AdminR (AdmInvoicesR, AdmInvoiceCreateR, AdmStaffPhotoR)
     , AppMessage
       ( MsgInvoices, MsgLogin, MsgPhoto, MsgUserProfile, MsgNavigationMenu
       , MsgNoInvoicesYet, MsgInvoice, MsgCancel, MsgSave, MsgCustomer
       , MsgEmployee, MsgInvoiceNumber, MsgStatus, MsgInvoiceDate, MsgDueDate
+      , MsgBack, MsgPaid, MsgDraft, MsgOpen, MsgVoid, MsgUncollectible
       )
     )
 
 import Model
-    ( UserId, StaffId, InvoiceStatus
+    ( InvoiceStatus
+      ( InvoiceStatusDraft, InvoiceStatusOpen, InvoiceStatusPaid
+      , InvoiceStatusUncollectible, InvoiceStatusVoid
+      )
     , User (User)
     , Invoice
       ( Invoice, invoiceNumber, invoiceStatus, invoiceDay, invoiceDueDay
       , invoiceCustomer, invoiceStaff
       )
-    , EntityField (InvoiceCustomer, UserId, StaffId, InvoiceStatus)
+    , EntityField
+      ( UserFullName, StaffName)
+    , Staff (Staff)
     )
 
 import Menu (menu)
+import Data.Maybe (isJust)
 
 
 getAdmInvoiceCreateR :: Handler Html
@@ -67,13 +75,13 @@ getAdmInvoiceCreateR = do
 
 
 formInvoice :: Maybe (Entity Invoice) -> Html -> MForm Handler (FormResult Invoice,Widget)
-formInvoice invoice extra = do
-    (custR,custV) <- mreq (selectFieldList ([] :: [(AppMessage,UserId)])) FieldSettings
+formInvoice invoice extra = do    
+    (custR,custV) <- mreq hiddenField FieldSettings
         { fsLabel = SomeMessage MsgCustomer
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = []
         } (invoiceCustomer . entityVal <$> invoice)
-    (emplR,emplV) <- mreq (selectFieldList ([] :: [(AppMessage,StaffId)])) FieldSettings
+    (emplR,emplV) <- mreq hiddenField FieldSettings
         { fsLabel = SomeMessage MsgEmployee
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = []
@@ -81,41 +89,44 @@ formInvoice invoice extra = do
     (noR,noV) <- mreq textField FieldSettings
         { fsLabel = SomeMessage MsgInvoiceNumber
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
-        , fsAttrs = []
+        , fsAttrs = [("class","mdc-text-field__input")]
         } (invoiceNumber . entityVal <$> invoice)
-    (statusR,statusV) <- mreq (selectFieldList ([] :: [(AppMessage,InvoiceStatus)])) FieldSettings
+    (statusR,statusV) <- mreq hiddenField FieldSettings
         { fsLabel = SomeMessage MsgStatus
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = []
-        } (invoiceStatus . entityVal <$> invoice)
+        } (show . invoiceStatus . entityVal <$> invoice)
     (dayR,dayV) <- mreq dayField FieldSettings
         { fsLabel = SomeMessage MsgInvoiceDate
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
-        , fsAttrs = []
+        , fsAttrs = [("class","mdc-text-field__input")]
         } (invoiceDay . entityVal <$> invoice)
     (dueR,dueV) <- mopt dayField FieldSettings
         { fsLabel = SomeMessage MsgDueDate
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
-        , fsAttrs = []
+        , fsAttrs = [("class","mdc-text-field__input")]
         } (invoiceDueDay . entityVal <$> invoice)
+
+    customers <- liftHandler $ runDB $ select $ do
+        x <- from $ table @User
+        orderBy [asc (x ^. UserFullName)]
+        return x
+
+    employees <- liftHandler $ runDB $ select $ do
+        x <- from $ table @Staff
+        orderBy [asc (x ^. StaffName)]
+        return x
     
-    return ( Invoice <$> custR <*> emplR <*> noR <*> statusR <*> dayR <*> dueR
-           , [whamlet|
-#{extra}
-<div>
-  ^{fvInput custV}
-<div>
-  ^{fvInput emplV}
-<div>
-  ^{fvInput noV}
-<div>
-  ^{fvInput statusV}
-<div>
-  ^{fvInput dayV}
-<div>
-  ^{fvInput dueV}
-|]
+    return ( Invoice <$> custR <*> emplR <*> noR <*> (read <$> statusR) <*> dayR <*> dueR
+           , $(widgetFile "admin/billing/form")
            )
+  where
+      statuses = [ (InvoiceStatusDraft,MsgDraft)
+                 , (InvoiceStatusOpen,MsgOpen)
+                 , (InvoiceStatusPaid,MsgPaid)
+                 , (InvoiceStatusVoid,MsgVoid)
+                 , (InvoiceStatusUncollectible,MsgUncollectible)
+                 ]
 
 
 postAdmInvoicesR :: Handler Html
@@ -128,7 +139,6 @@ getAdmInvoicesR = do
 
     invoices <- runDB $ select $ from $ table @Invoice
 
-    curr <- getCurrentRoute
     fabAddInvoice <- newIdent
     defaultLayout $ do
         setTitleI MsgInvoices

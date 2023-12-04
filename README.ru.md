@@ -51,14 +51,18 @@
 
 ## Интеграция с внешними API
 * Платежный шлюз: [Stripe](https://stripe.com/)
-```
-ENV: YESOD_STRIPE_PK, YESOD_STRIPE_SK
-```
+  ```
+  ENV: YESOD_STRIPE_PK, YESOD_STRIPE_SK
+  ```
+  
+  Для имитации успешного платежа используйте тестовые карты из [следующего списка](https://stripe.com/docs/testing?testing-method=card-numbers#cards).
+
+  Для имитации платежей, от которых эмитент отклоняет, используйте тестовые карты из [следующего списка](https://stripe.com/docs/testing?testing-method=card-numbers#declined-payments).
 
 * Онлайн карты: [Mapbox](https://www.mapbox.com/)
-```
-ENV: YESOD_MAPBOX_PK
-```
+  ```
+  ENV: YESOD_MAPBOX_PK
+  ```
 
 ## ER-диаграмма
 

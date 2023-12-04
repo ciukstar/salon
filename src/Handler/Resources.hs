@@ -3,6 +3,7 @@
 
 module Handler.Resources (getDocsR) where
 
+import Data.Text (pack)
 import Text.Hamlet (Html)
 import Text.Shakespeare.I18N (renderMessage)
 import Yesod.Core
@@ -32,7 +33,7 @@ import Foundation
       , MsgDoc005, MsgDoc0061, MsgDoc0062, MsgDoc0063, MsgDoc0064
       , MsgDoc0065, MsgDoc0066, MsgDoc0067, MsgDoc0068
       , MsgDoc007, MsgDoc008, MsgDoc009, MsgDoc010, MsgDoc011, MsgDoc012
-      , MsgDoc013, MsgDoc014, MsgDoc015
+      , MsgDoc013, MsgDoc014, MsgDoc015, MsgDoc016, MsgDoc017
       )
     )
 
@@ -60,7 +61,7 @@ getDocsR = do
     topAppBar <- newIdent
 
     business <- runDB $ selectOne $ from $ table @Business
-    
+
     defaultLayout $ do
         setTitleI MsgDocumentation
         $(widgetFile "resources/docs")

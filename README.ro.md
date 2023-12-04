@@ -51,14 +51,18 @@ Toți utilizatorii pot deveni clienți prin simpla înregistrare și utilizarea 
 
 ## Integrare cu API-uri externe
 * Gateway de plată: [Stripe](https://stripe.com/)
-```
-ENV: YESOD_STRIPE_PK, YESOD_STRIPE_SK
-```
+  ```
+  ENV: YESOD_STRIPE_PK, YESOD_STRIPE_SK
+  ```
+
+  Pentru a simula o plată reușită, utilizați carduri de test din [lista următoare](https://stripe.com/docs/testing?testing-method=card-numbers#cards).
+
+  Pentru a simula plățile pe care emitentul le refuză, utilizați carduri de testare din [următoarea listă](https://stripe.com/docs/testing?testing-method=card-numbers#declined-payments).
 
 * Hărți online: [Mapbox](https://www.mapbox.com/)
-```
-ENV: YESOD_MAPBOX_PK
-```
+  ```
+  ENV: YESOD_MAPBOX_PK
+  ```
 
 
 ## Diagrama ERD

@@ -1,3 +1,7 @@
+Uncollectible: Uncollectible
+Void: Void
+Open: Open
+Draft: Draft
 DueDate: Due date
 DateCreated: Date created
 InvoiceDate: Invoice date
@@ -419,3 +423,7 @@ Doc013: Any user who is also registered as a staff member has the role "Employee
 Doc014: All users can become customers by simply registering and using the services offered.
 
 Doc015: Integration with external APIs
+
+Doc016 href@Text: To simulate a successful payment, use test cards from the <a href=#{href}>following list</a>.
+
+Doc017 href@Text: To simulate payments that the issuer declines, use test cards from the <a href=#{href}>following list</a>.
