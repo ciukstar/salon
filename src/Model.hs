@@ -27,10 +27,10 @@ import Data.Time
 import Data.Time.Calendar (Year, Day, DayOfWeek)
 import Data.Time.Calendar.Month (Month (MkMonth))
 import Data.Time.Clock (UTCTime, NominalDiffTime)
-import Prelude (Int, fromIntegral, Double)
+import Prelude (Integer, Int, fromIntegral, Double)
 import Data.Either (Either (Left, Right))
 import Data.Bool (Bool)
-import Data.Fixed ( Centi ) 
+import Data.Fixed ( Centi )
 import Data.Function ((.),($))
 import Data.Maybe (Maybe (Just))
 import ClassyPrelude.Yesod

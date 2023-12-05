@@ -103,7 +103,7 @@
     <div.mdc-select-helper-text.mdc-select-helper-text--validation-msg>
       #{errs}
   
-$forall v <- [dayV,dueV]
+$forall (v,icon) <- [(dayV,"today"),(dueV,"event")]
   <div.form-field>
     <label.mdc-text-field.mdc-text-field--filled.mdc-text-field--with-trailing-icon data-mdc-auto-init=MDCTextField
       :isJust (fvErrors v):.mdc-text-field--invalid>
@@ -115,7 +115,7 @@ $forall v <- [dayV,dueV]
         style="position:absolute;right:2px;background-color:inherit">
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
-        <i.material-symbols-outlined>event
+        <i.material-symbols-outlined>#{pack icon}
       <div.mdc-line-ripple>
     $maybe errs <- fvErrors v
       <div.mdc-text-field-helper-line>

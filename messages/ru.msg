@@ -1,3 +1,6 @@
+InvoiceAlreadyInTheList: Счет-фактура уже в списке
+BilledFrom: Счет выставлен от
+BillTo: Плательщик
 Uncollectible: Не подлежит взысканию
 Void: Аннулирован
 Open: Открыто

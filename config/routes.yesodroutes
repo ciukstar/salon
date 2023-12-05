@@ -79,8 +79,11 @@
 
 /admin AdminR:
 
-    /billing/invoices/create AdmInvoiceCreateR GET
-    /billing/invoices 	     AdmInvoicesR      GET POST
+    /billing/form/invoices/#InvoiceId/edit AdmInvoiceEditR   GET
+    /billing/form/invoices/create 	   AdmInvoiceCreateR GET
+    /billing/invoices/#InvoiceId/delete	   AdmInvoiceDeleteR POST
+    /billing/invoices/#InvoiceId  	   AdmInvoiceR 	     GET POST
+    /billing/invoices 	     	  	   AdmInvoicesR      GET POST
     
     /delete/contact/business/#BusinessId/#ContactUsId BusinessContactDeleteR POST
     /form/contact/business/#BusinessId/#ContactUsId   BusinessContactEditR   GET POST

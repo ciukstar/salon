@@ -1,3 +1,6 @@
+InvoiceAlreadyInTheList: Factură deja în listă
+BilledFrom: Facturat de la
+BillTo: Factură către
 Uncollectible: Necolectabilă
 Void: Nulă
 Open: Deschisă

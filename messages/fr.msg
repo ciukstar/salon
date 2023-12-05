@@ -1,3 +1,6 @@
+InvoiceAlreadyInTheList: Facture déjà dans la liste
+BilledFrom: Facturé à partir de
+BillTo: Facturer à
 Uncollectible: Irrecouvrable
 Void: Annulé
 Open: Ouverte

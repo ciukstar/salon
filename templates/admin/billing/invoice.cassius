@@ -1,0 +1,15 @@
+
+##{dlgInvoiceDelete}
+  div.mdc-dialog__actions
+    gap: 0.5rem
+
+main
+  div.mdc-data-table
+    width: 100%
+    border-right: none
+    border-left: none
+    border-radius: 0
+    table tr th
+      font-weight: 500
+    table tr td
+      white-space: wrap

@@ -140,7 +140,10 @@ instance Yesod App where
     isAuthorized r@(StatsR StatsAovR) _                = setUltDest r >> isAnalyst
     isAuthorized r@(StatsR (AovDetailsR {})) _         = setUltDest r >> isAnalyst    
         
-    
+
+    isAuthorized r@(AdminR (AdmInvoiceDeleteR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmInvoiceEditR _)) _ = setUltDest r >> isAdmin
+    isAuthorized r@(AdminR (AdmInvoiceR _)) _ = setUltDest r >> isAdmin
     isAuthorized r@(AdminR AdmInvoiceCreateR) _ = setUltDest r >> isAdmin
     isAuthorized r@(AdminR AdmInvoicesR) _ = setUltDest r >> isAdmin
     isAuthorized r@(AdminR UsersR) _ = setUltDest r >> isAdmin

@@ -21,7 +21,7 @@ Item
 Invoice
   customer UserId OnDeleteCascade
   staff StaffId OnDeleteCascade 
-  number Text
+  number Integer
   status InvoiceStatus
   day Day
   dueDay Day Maybe

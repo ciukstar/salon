@@ -7,7 +7,7 @@
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgRole}
-    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end.mdc-theme--text-primary-on-light role=toolbar>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end.mdc-theme--text-primary-on-light>
       <button.mdc-icon-button type=button title=_{MsgDel}
         onclick="document.getElementById('#{dlgRoleDelete}').MDCDialog.open()">
         <span.mdc-icon-button__ripple>

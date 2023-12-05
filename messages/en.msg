@@ -1,3 +1,6 @@
+InvoiceAlreadyInTheList: Invoice already in the list
+BilledFrom: Billed from
+BillTo: Bill to
 Uncollectible: Uncollectible
 Void: Void
 Open: Open

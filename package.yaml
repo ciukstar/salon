@@ -53,9 +53,7 @@ dependencies:
 - lens-aeson
 - wreq
 - stripe-wreq
-- stripe-haskell
-- stripe-http-client
-- stripe-core
+- uuid
 
 
 # The library contains all of our application code. The executable

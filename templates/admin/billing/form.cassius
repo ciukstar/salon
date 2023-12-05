@@ -1,0 +1,6 @@
+
+main
+  form
+    div.form-field
+      input.mdc-text-field__input
+        caret-color: var(--mdc-theme-text-primary-on-light)

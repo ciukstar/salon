@@ -1,0 +1,83 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
+        href=@{AdminR AdmInvoicesR}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgInvoice}
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end.mdc-theme--text-primary-on-light>
+      <button.mdc-icon-button type=button title=_{MsgDel}
+        onclick="document.getElementById('#{dlgInvoiceDelete}').MDCDialog.open()">
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>delete
+      <a.mdc-icon-button href=@{AdminR $ AdmInvoiceEditR iid} role=button title=_{MsgEdit}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>edit
+
+<div.mdc-dialog ##{dlgInvoiceDelete} data-mdc-auto-init=MDCDialog>
+  <div.mdc-dialog__container>
+    <div.mdc-dialog__surface role=alertdialog tabindex=-1>
+      <h4.mdc-dialog__title>_{MsgPleaseConfirm}
+      <div.mdc-dialog__content>_{MsgDeleteAreYouSure}
+      <div.mdc-dialog__actions>
+        <button.mdc-button type=button data-mdc-dialog-action=cancel>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgCancel}
+        <form method=post action=@{AdminR $ AdmInvoiceDeleteR iid}>
+          <button.mdc-button.mdc-button--raised type=submit>
+            <span.mdc-button__ripple>
+            <span.mdc-button__focus-ring>
+            <span.mdc-button__label>_{MsgYesDelete}
+  <div.mdc-dialog__scrim>
+
+<main.mdc-top-app-bar--fixed-adjust>
+
+  $maybe (Entity _ (Invoice _ _ no status day due),Entity _ customer,Entity _ employee) <- invoice
+    <div.mdc-data-table>
+      <div.mdc-data-table__container>
+        <table.mdc-data-table__table>
+          <tbody.mdc-data-table__content>
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgInvoiceNumber}
+              <td.mdc-data-table__cell>#{no}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgStatus}
+              <td.mdc-data-table__cell>#{show status}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgBillTo}
+              <td.mdc-data-table__cell>
+                $maybe cname <- userFullName customer
+                  #{cname}
+                $nothing
+                  #{userName customer}
+                $maybe email <- userEmail customer
+                  <div>
+                    <small style="color:var(--theme-text-small-hint-on-light)">#{email}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgBilledFrom}
+              <td.mdc-data-table__cell>
+                $maybe Entity _ (Business bname fullName _ addr _ _ _ _ _) <- business
+                  $maybe fname <- fullName
+                    #{fname}
+                  $nothing
+                    #{bname}
+                  <div>
+                    <small style="color:var(--theme-text-small-hint-on-light)">#{unTextarea addr}
+                $nothing
+                  #{staffName employee}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgInvoiceDate}
+              <td.mdc-data-table__cell>
+                $with day <- show day
+                  <time.day datetime=#{day}>#{day}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgDueDate}
+              <td.mdc-data-table__cell>
+                $maybe due <- due
+                  $with day <- show due
+                    <time.day datetime=#{day}>#{day}

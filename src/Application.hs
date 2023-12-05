@@ -109,7 +109,9 @@ import Handler.Stats
     )
 
 import Admin.Billing
-    ( getAdmInvoicesR, postAdmInvoicesR, getAdmInvoiceCreateR )
+    ( getAdmInvoicesR, postAdmInvoicesR, getAdmInvoiceCreateR, getAdmInvoiceR
+    , getAdmInvoiceEditR, postAdmInvoiceR, postAdmInvoiceDeleteR
+    )
 
 import Admin.Business
   ( getBusinessR, postBusinessR, getBusinessCreateR

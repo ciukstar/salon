@@ -31,21 +31,34 @@
           _{MsgNoInvoicesYet}.
     $else
       <nav.mdc-list data-mdc-auto-init=MDCList>
-        $forall Entity _ (Invoice _ _ no status day dueDay) <- invoices
-          <a.mdc-list-item.mdc-list-item--with-leading-icon.mdc-list-item--with-one-line.mdc-list-item--with-trailing-icon
-            href=#>
+        $forall Entity iid (Invoice _ _ no status day _) <- invoices
+          <a.mdc-list-item href=@{AdminR $ AdmInvoiceR iid}
+            .mdc-list-item--with-leading-icon
+            .mdc-list-item--with-three-lines
+            .mdc-list-item--with-trailing-icon>
             <span.mdc-list-item__ripple>
             <span.mdc-list-item__start>
-              <i.material-symbols-outlined>paid                  
+              <i.material-symbols-outlined>
+                $case status
+                  $of InvoiceStatusDraft
+                    draft
+                  $of InvoiceStatusOpen
+                    file_present
+                  $of InvoiceStatusPaid
+                    paid
+                  $of InvoiceStatusVoid
+                    block
+                  $of InvoiceStatusUncollectible
+                    cancel
+                    
             <span.mdc-list-item__content>
               <div.mdc-list-item__primary-text>
-                #{no}
-              <div.mdc-list-item__secodary-text>
+                _{MsgNumberSign} #{no}
+              <div.mdc-list-item__secondary-text>
                 #{show status}
-              <div.mdc-list-item__secodary-text>
-                #{show day}
-              <div.mdc-list-item__secodary-text>
-                #{show dueDay}
+              <div.mdc-list-item__secondary-text>
+                $with day <- show day
+                  <time.day datetime=#{day}>#{day}
             <span.mdc-list-item__end>
               <i.material-symbols-outlined>arrow_forward_ios
 
@@ -55,3 +68,13 @@
         <span.mdc-fab__focus-ring>
         <span.mdc-fab__icon.material-symbols-outlined>add
         <span.mdc-fab__touch>
+
+$forall (_,msg) <- filter (((==) info) . fst) msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar style="bottom:5rem">
+    <div.mdc-snackbar__surface>
+      <div.mdc-snackbar__label>#{msg}
+      <div.mdc-snackbar__actions>
+        <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>close
