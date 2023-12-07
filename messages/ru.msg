@@ -1,3 +1,10 @@
+Amount: Сумма
+Vat: НДС
+Tax: Налог
+Quantity: Количество
+InvoiceItem: Позиция счета-фактуры
+NoInvoiceItemsYet: Позиций по счетам пока нет
+InvoiceItems: Позиции
 InvoiceAlreadyInTheList: Счет-фактура уже в списке
 BilledFrom: Счет выставлен от
 BillTo: Плательщик

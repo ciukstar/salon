@@ -1,3 +1,10 @@
+Amount: Suma
+Vat: TVA
+Tax: Impozit
+Quantity: Cantitate
+InvoiceItem: Articol de factură
+NoInvoiceItemsYet: Încă nu există articole pe factură
+InvoiceItems: Articole
 InvoiceAlreadyInTheList: Factură deja în listă
 BilledFrom: Facturat de la
 BillTo: Factură către

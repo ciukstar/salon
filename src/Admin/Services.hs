@@ -30,7 +30,7 @@ module Admin.Services
 
 import Control.Monad (join)
 import Control.Applicative ((<|>))
-import Data.Bifunctor (Bifunctor(second))
+import Data.Bifunctor (Bifunctor(second, first))
 import Data.Maybe (isJust, fromMaybe, catMaybes)
 import Data.FileEmbed (embedFile)
 import qualified Data.List.Safe as LS (last)
@@ -98,7 +98,7 @@ import Foundation
       , MsgOffer, MsgExperts, MsgNoExpertsYet, MsgAddExpert, MsgExpert
       , MsgValueNotInRange, MsgExpertAlreadyInTheList, MsgRating, MsgEmployee
       , MsgRole, MsgLogin, MsgUserProfile, MsgNavigationMenu, MsgEdit, MsgDel
-      , MsgCompletionTime, MsgPatternHourMinute
+      , MsgCompletionTime, MsgPatternHourMinute, MsgQuantity
       )
     )
 
@@ -123,7 +123,10 @@ import Model
       , ServiceDescr, ServicePublished, ThumbnailAttribution, RoleStaff, StaffId
       , RoleService, RoleName, RoleId, BusinessCurrency
       )
-    , Offer (Offer, offerName, offerPrice, offerPrefix, offerSuffix, offerDescr, offerPublished)
+    , Offer
+      ( Offer, offerName, offerPublished, offerQuantity, offerPrice, offerPrefix
+      , offerSuffix, offerDescr
+      )
     , OfferId
     , ServiceStatus (ServiceStatusPulished, ServiceStatusUnpublished)
     , Role (Role, roleStaff, roleName, roleDuration, roleRating), StaffId
@@ -433,7 +436,12 @@ formOffer sid offer extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-radio__native-control")]
         } (offerPublished . entityVal <$> offer)
-    (priceR,priceV) <- mreq doubleField FieldSettings
+    (quantityR,quantityV) <- mreq intField FieldSettings
+        { fsLabel = SomeMessage MsgQuantity
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } ((offerQuantity . entityVal <$> offer) <|> pure 1)
+    (priceR,priceV) <- first (realToFrac <$>) <$> mreq doubleField FieldSettings
         { fsLabel = SomeMessage MsgPrice
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
@@ -454,7 +462,7 @@ formOffer sid offer extra = do
         , fsAttrs = [("class","mdc-text-field__input")]
         } (offerDescr . entityVal <$> offer)
 
-    let r = Offer sid <$> nameR <*> publishedR <*> (realToFrac <$> priceR) <*> prefR <*> suffR <*> descrR
+    let r = Offer sid <$> nameR <*> publishedR <*> quantityR <*> priceR <*> prefR <*> suffR <*> descrR
     let w = [whamlet|
 #{extra}
 
@@ -469,7 +477,7 @@ formOffer sid offer extra = do
       <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
         #{errs}
 
-$forall v <- [nameV,priceV,prefV,suffV]
+$forall v <- [nameV,quantityV,priceV,prefV,suffV]
   <div.form-field>
     <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
       :isJust (fvErrors v):.mdc-text-field--invalid

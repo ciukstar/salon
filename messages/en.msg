@@ -1,3 +1,10 @@
+Amount: Amount
+Vat: VAT
+Tax: Tax
+Quantity: Quantity
+InvoiceItem: Invoice item
+NoInvoiceItemsYet: No items yet
+InvoiceItems: Items
 InvoiceAlreadyInTheList: Invoice already in the list
 BilledFrom: Billed from
 BillTo: Bill to

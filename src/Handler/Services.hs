@@ -454,7 +454,7 @@ buildSnippet currency open msid (Services sids) (Srvs services) = [whamlet|
             <div.mdc-list-item__primary-text>
               #{sname}
             $if noffers == 1
-              $forall Entity _ (Offer _ oname _ price prefix suffix _) <- take 1 offers
+              $forall Entity _ (Offer _ oname _ _ price prefix suffix _) <- take 1 offers
                 <div.mdc-list-item__secondary-text style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
                   #{oname}:&nbsp;
                   $maybe x <- prefix

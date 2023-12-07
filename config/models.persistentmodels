@@ -11,8 +11,8 @@ Item
   invoice InvoiceId OnDeleteCascade
   quantity Int
   price Centi
-  tax Centi
-  vat Centi
+  tax Centi Maybe
+  vat Centi Maybe
   amount Centi
   currency Text Maybe
   UniqueItem offer invoice
@@ -97,6 +97,7 @@ Offer
   service ServiceId OnDeleteCascade
   name Text
   published Bool
+  quantity Int
   price Centi
   prefix Text Maybe
   suffix Text Maybe

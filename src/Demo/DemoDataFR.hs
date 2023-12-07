@@ -43,7 +43,7 @@ import Model
       , thumbnailAttribution
       )
     , Offer
-      ( Offer, offerName, offerPublished, offerPrice, offerPrefix
+      ( Offer, offerName, offerPublished, offerQuantity, offerPrice, offerPrefix
       , offerSuffix, offerDescr, offerService
       )
     , EmplStatus (EmplStatusAvailable, EmplStatusUnavailable)
@@ -576,6 +576,7 @@ populateFR = do
     o111 <- insert $ Offer { offerService = s11
                            , offerName = "Prix"
                            , offerPublished = True
+                           , offerQuantity = 1
                            , offerPrice = 26
                            , offerPrefix = Nothing
                            , offerSuffix = Nothing
@@ -600,6 +601,7 @@ populateFR = do
     insert_ $ Offer { offerService = s12
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 28
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -645,6 +647,7 @@ populateFR = do
     o131 <- insert $ Offer { offerService = s13
                            , offerName = "Prix"
                            , offerPublished = True
+                           , offerQuantity = 1
                            , offerPrice = 35
                            , offerPrefix = Nothing
                            , offerSuffix = Nothing
@@ -685,6 +688,7 @@ populateFR = do
     o141 <- insert $ Offer { offerService = s14
                            , offerName = "Prix"
                            , offerPublished = True
+                           , offerQuantity = 1
                            , offerPrice = 16
                            , offerPrefix = Nothing
                            , offerSuffix = Just "-20 € (en fonction de la longueur de leurs cheveux)"
@@ -746,6 +750,7 @@ populateFR = do
     insert_ $ Offer { offerService = s1511
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 99
                     , offerPrefix = Nothing
                     , offerSuffix = Just " et plus"
@@ -791,6 +796,7 @@ populateFR = do
     insert_ $ Offer { offerService = s1512
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 110
                     , offerPrefix = Nothing
                     , offerSuffix = Just " et plus"
@@ -851,6 +857,7 @@ populateFR = do
     insert_ $ Offer { offerService = s1521
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 130
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -896,6 +903,7 @@ populateFR = do
     insert_ $ Offer { offerService = s1522
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 68
                     , offerPrefix = Nothing
                     , offerSuffix = Just " et plus"
@@ -934,6 +942,7 @@ populateFR = do
     insert_ $ Offer { offerService = s1523
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 68
                     , offerPrefix = Nothing
                     , offerSuffix = Just " et plus"
@@ -994,6 +1003,7 @@ populateFR = do
     insert_ $ Offer { offerService = s1531
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 79
                     , offerPrefix = Nothing
                     , offerSuffix = Just " et plus"
@@ -1039,6 +1049,7 @@ populateFR = do
     insert_ $ Offer { offerService = s1532
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 89
                     , offerPrefix = Nothing
                     , offerSuffix = Just " et plus"
@@ -1084,6 +1095,7 @@ populateFR = do
     insert_ $ Offer { offerService = s1533
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 250
                     , offerPrefix = Nothing
                     , offerSuffix = Just " et plus"
@@ -1149,6 +1161,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
     insert_ $ Offer { offerService = s21
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 55
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1158,6 +1171,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
     insert_ $ Offer { offerService = s21
                     , offerName = "Forfait"
                     , offerPublished = True
+                    , offerQuantity = 5
                     , offerPrice = 250
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 séances"
@@ -1203,6 +1217,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
     insert_ $ Offer { offerService = s22
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 75
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1212,6 +1227,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
     insert_ $ Offer { offerService = s22
                     , offerName = "Forfait"
                     , offerPublished = True
+                    , offerQuantity = 5
                     , offerPrice = 350
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 séances"
@@ -1257,6 +1273,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
     insert_ $ Offer { offerService = s23
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 90
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1266,6 +1283,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
     insert_ $ Offer { offerService = s23
                     , offerName = "Forfait"
                     , offerPublished = True
+                    , offerQuantity = 5
                     , offerPrice = 400
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 séances"
@@ -1318,6 +1336,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
     insert_ $ Offer { offerService = s24
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 95
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1327,6 +1346,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
     insert_ $ Offer { offerService = s24
                     , offerName = "Forfait"
                     , offerPublished = True
+                    , offerQuantity = 7
                     , offerPrice = 600
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/7 séances"
@@ -1372,6 +1392,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
     o251 <- insert $ Offer { offerService = s25
                            , offerName = "Prix"
                            , offerPublished = True
+                           , offerQuantity = 1
                            , offerPrice = 100
                            , offerPrefix = Nothing
                            , offerSuffix = Nothing
@@ -1381,6 +1402,7 @@ Votre visage est une toile expressive qui montre l'expérience et l'émotion. Da
     insert_ $ Offer { offerService = s25
                     , offerName = "Forfait"
                     , offerPublished = True
+                    , offerQuantity = 5
                     , offerPrice = 460
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 séances"
@@ -1473,6 +1495,7 @@ En conséquence, le peeling au lait est un puissant processus de resurfaçage de
     insert_ $ Offer { offerService = s31
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 330
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1524,6 +1547,7 @@ Le Scientia Derma Roller est un appareil incroyable qui augmente naturellement l
     o321 <- insert $ Offer { offerService = s32
                            , offerName = "Prix"
                            , offerPublished = True
+                           , offerQuantity = 1
                            , offerPrice = 330
                            , offerPrefix = Nothing
                            , offerSuffix = Nothing
@@ -1573,6 +1597,7 @@ Procédure indolore, elle aide à éliminer les cicatrices d'acné, les pores di
     insert_ $ Offer { offerService = s33
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 70
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1620,6 +1645,7 @@ Procédure indolore, elle aide à éliminer les cicatrices d'acné, les pores di
     insert_ $ Offer { offerService = s34
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 95
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1629,6 +1655,7 @@ Procédure indolore, elle aide à éliminer les cicatrices d'acné, les pores di
     insert_ $ Offer { offerService = s34
                     , offerName = "Forfait"
                     , offerPublished = True
+                    , offerQuantity = 7
                     , offerPrice = 600
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/7 séances"
@@ -1703,6 +1730,7 @@ Ce soin réduit l'apparence des rides et ridules. Unifie le teint et illumine la
     insert_ $ Offer { offerService = s41
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 95
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1712,6 +1740,7 @@ Ce soin réduit l'apparence des rides et ridules. Unifie le teint et illumine la
     insert_ $ Offer { offerService = s41
                     , offerName = "Forfait"
                     , offerPublished = True
+                    , offerQuantity = 5
                     , offerPrice = 430
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 séances"
@@ -1761,6 +1790,7 @@ Après un seul traitement, les rides d'expression semblent détendues. Les rides
     insert_ $ Offer { offerService = s42
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 170
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1770,6 +1800,7 @@ Après un seul traitement, les rides d'expression semblent détendues. Les rides
     insert_ $ Offer { offerService = s42
                     , offerName = "Forfait"
                     , offerPublished = True
+                    , offerQuantity = 5
                     , offerPrice = 780
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 séances"
@@ -1822,6 +1853,7 @@ Ce traitement améliore le teint global en minimisant l'apparence des rides et r
     insert_ $ Offer { offerService = s43
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 160
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1831,6 +1863,7 @@ Ce traitement améliore le teint global en minimisant l'apparence des rides et r
     insert_ $ Offer { offerService = s43
                     , offerName = "Forfait"
                     , offerPublished = True
+                    , offerQuantity = 5
                     , offerPrice = 730
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 séances"
@@ -1873,6 +1906,7 @@ Il favorise la production de collagène, resserre et raffermit les tissus cutan�
     insert_ $ Offer { offerService = s44
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 180
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1932,6 +1966,7 @@ Semblable à une permanente, essayez d’éviter de mouiller vos cils pendant 4 
     insert_ $ Offer { offerService = s51
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 45
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -1989,6 +2024,7 @@ Semblable à une permanente, essayez d’éviter de mouiller vos cils pendant 4 
     insert_ $ Offer { offerService = s52
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 130
                     , offerPrefix = Nothing
                     , offerSuffix = Just " et plus"
@@ -2027,6 +2063,7 @@ Semblable à une permanente, essayez d’éviter de mouiller vos cils pendant 4 
     insert_ $ Offer { offerService = s53
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 25
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2079,6 +2116,7 @@ Les traitements peuvent être effectués toutes les semaines ou toutes les deux 
     insert_ $ Offer { offerService = s54
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 40
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2117,6 +2155,7 @@ Les traitements peuvent être effectués toutes les semaines ou toutes les deux 
     insert_ $ Offer { offerService = s55
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 40
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2174,6 +2213,7 @@ La massothérapie suédoise est la modalité qui vient à l’esprit lorsque la 
     insert_ $ Offer { offerService = s61
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 60
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2223,6 +2263,7 @@ Le massage sur chaise est un massage de 15 à 20 minutes axé sur le dos, les é
     insert_ $ Offer { offerService = s62
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 60
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2269,6 +2310,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     insert_ $ Offer { offerService = s63
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 30
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2324,6 +2366,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     insert_ $ Offer { offerService = s71
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 200
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2369,6 +2412,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     insert_ $ Offer { offerService = s72
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 85
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2407,6 +2451,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     insert_ $ Offer { offerService = s73
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 60
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2445,6 +2490,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     insert_ $ Offer { offerService = s74
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 100
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2498,6 +2544,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     insert_ $ Offer { offerService = s81
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 50
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2543,6 +2590,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     insert_ $ Offer { offerService = s82
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 45
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2596,6 +2644,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     o911 <- insert $ Offer { offerService = s91
                            , offerName = "Prix"
                            , offerPublished = True
+                           , offerQuantity = 1
                            , offerPrice = 15
                            , offerPrefix = Nothing
                            , offerSuffix = Nothing
@@ -2643,6 +2692,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     insert_ $ Offer { offerService = s92
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 32
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2681,6 +2731,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     insert_ $ Offer { offerService = s93
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 35
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2719,6 +2770,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     insert_ $ Offer { offerService = s94
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 55
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2757,6 +2809,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     insert_ $ Offer { offerService = s95
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 38
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2795,6 +2848,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     insert_ $ Offer { offerService = s96
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 10
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2833,6 +2887,7 @@ Lors d'un massage des pieds, diverses techniques peuvent être utilisées, notam
     insert_ $ Offer { offerService = s97
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 5
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2890,6 +2945,7 @@ Mise en forme du corps : Abdomen et taille, hanches et cuisses, jambes et bras
     insert_ $ Offer { offerService = s101
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 350
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing
@@ -2928,6 +2984,7 @@ Mise en forme du corps : Abdomen et taille, hanches et cuisses, jambes et bras
     insert_ $ Offer { offerService = s102
                     , offerName = "Prix"
                     , offerPublished = True
+                    , offerQuantity = 1
                     , offerPrice = 300
                     , offerPrefix = Nothing
                     , offerSuffix = Nothing

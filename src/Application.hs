@@ -111,6 +111,7 @@ import Handler.Stats
 import Admin.Billing
     ( getAdmInvoicesR, postAdmInvoicesR, getAdmInvoiceCreateR, getAdmInvoiceR
     , getAdmInvoiceEditR, postAdmInvoiceR, postAdmInvoiceDeleteR
+    , getAdmInvoiceItemsR, getAdmInvoiceItemCreateR, postAdmInvoiceItemCreateR
     )
 
 import Admin.Business

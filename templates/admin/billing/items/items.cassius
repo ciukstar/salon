@@ -1,9 +1,6 @@
 
-##{dlgInvoiceDelete}
-  div.mdc-dialog__actions
-    gap: 0.5rem
-
 main
+  .mdc-tab-bar
     background-color: var(--mdc-theme-background)
     .mdc-tab.mdc-tab--active
       .mdc-tab__text-label
@@ -11,14 +8,7 @@ main
       .mdc-tab-indicator.mdc-tab-indicator--active
         .mdc-tab-indicator__content--underline
           border-color: var(--mdc-theme-on-primary)
-          
-  div.mdc-data-table
-    width: 100%
-    border-right: none
-    border-left: none
-    border-radius: 0
-    table tr th
-      white-space: wrap
-      font-weight: 500
-    table tr td
-      white-space: wrap
+  ##{fabAddInvoiceItem}
+    position: fixed
+    right: 1rem
+    bottom: 1rem

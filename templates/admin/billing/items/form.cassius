@@ -1,0 +1,8 @@
+
+main
+  form
+    div.form-field
+      .mdc-select .mdc-list .mdc-list-item--selected .mdc-list-item__primary-text
+          color: var(--theme-accent)
+      input.mdc-text-field__input
+        caret-color: var(--mdc-theme-text-primary-on-light)

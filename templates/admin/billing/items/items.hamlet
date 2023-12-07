@@ -1,0 +1,61 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
+        href=@{AdminR AdmInvoicesR}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgInvoice}
+
+<main.mdc-top-app-bar--fixed-adjust>
+
+  <div.mdc-tab-bar role=tablist data-mdc-auto-init=MDCTabBar>
+    <div.mdc-tab-scroller>
+      <div.mdc-tab-scroller__scroll-area>
+        <div.mdc-tab-scroller__scroll-content>
+          <a.mdc-tab href=@{AdminR $ AdmInvoiceR iid} role=tab tabindex=0
+            :curr == Just (AdminR $ AdmInvoiceR iid):.mdc-tab--active
+            :curr == Just (AdminR $ AdmInvoiceR iid):aria-selected=true>
+            <span.mdc-tab__content>
+              <span.mdc-tab__text-label>_{MsgDetails}
+            <span.mdc-tab-indicator
+              :curr == Just (AdminR $ AdmInvoiceR iid):.mdc-tab-indicator--active>
+              <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
+            <span.mdc-tab__ripple>
+            <span.mdc-tab__focus-ring>
+          <a.mdc-tab href=@{AdminR $ AdmInvoiceItemsR iid} role=tab tabindex=0
+            :curr == Just (AdminR $ AdmInvoiceItemsR iid):.mdc-tab--active
+            :curr == Just (AdminR $ AdmInvoiceItemsR iid):aria-selected=true>
+            <span.mdc-tab__content>
+              <span.mdc-tab__text-label>_{MsgInvoiceItems}
+            <span.mdc-tab-indicator
+              :curr == Just (AdminR $ AdmInvoiceItemsR iid):.mdc-tab-indicator--active>
+              <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
+            <span.mdc-tab__ripple>
+            <span.mdc-tab__focus-ring>
+
+  $if null items
+    <figure style="text-align:center">
+      <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
+      <figcaption>
+        _{MsgNoInvoiceItemsYet}.
+  $else
+    $forall _ <- items
+
+  <div.mdc-touch-target-wrapper ##{fabAddInvoiceItem}>
+    <a.mdc-fab.mdc-fab--touch role=button href=@{AdminR $ AdmInvoiceItemCreateR iid}>
+      <span.mdc-fab__ripple>
+      <span.mdc-fab__focus-ring>
+      <span.mdc-fab__icon.material-symbols-outlined>add
+      <span.mdc-fab__touch>
+
+$forall (_,msg) <- filter (((==) info) . fst) msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar style="bottom:5rem">
+    <div.mdc-snackbar__surface>
+      <div.mdc-snackbar__label>#{msg}
+      <div.mdc-snackbar__actions>
+        <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>close

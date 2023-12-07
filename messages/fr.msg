@@ -1,3 +1,10 @@
+Amount: Montant
+Vat: T.V.A.
+Tax: Impôt
+Quantity: Quantité
+InvoiceItem: Article de facture
+NoInvoiceItemsYet: Aucun article de facture pour le moment
+InvoiceItems: Postes
 InvoiceAlreadyInTheList: Facture déjà dans la liste
 BilledFrom: Facturé à partir de
 BillTo: Facturer à

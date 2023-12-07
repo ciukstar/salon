@@ -37,7 +37,7 @@
     <div.mdc-dialog__scrim>
         
 <main.mdc-top-app-bar--fixed-adjust>
-  $maybe Entity _ (Offer _ name published price prefix suffix descr) <- offer
+  $maybe Entity _ (Offer _ name published quantity price prefix suffix descr) <- offer
     <div.mdc-data-table>
       <div.mdc-data-table__table-container>
         <table.mdc-data-table__table>
@@ -52,6 +52,10 @@
                   _{MsgYes}
                 $else
                   _{MsgNo}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgQuantity}
+              <td.mdc-data-table__cell>
+                #{show quantity}
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgPrice}
               <td.mdc-data-table__cell>

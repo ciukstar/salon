@@ -18,24 +18,32 @@
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>edit
 
-<div.mdc-dialog ##{dlgInvoiceDelete} data-mdc-auto-init=MDCDialog>
-  <div.mdc-dialog__container>
-    <div.mdc-dialog__surface role=alertdialog tabindex=-1>
-      <h4.mdc-dialog__title>_{MsgPleaseConfirm}
-      <div.mdc-dialog__content>_{MsgDeleteAreYouSure}
-      <div.mdc-dialog__actions>
-        <button.mdc-button type=button data-mdc-dialog-action=cancel>
-          <span.mdc-button__ripple>
-          <span.mdc-button__focus-ring>
-          <span.mdc-button__label>_{MsgCancel}
-        <form method=post action=@{AdminR $ AdmInvoiceDeleteR iid}>
-          <button.mdc-button.mdc-button--raised type=submit>
-            <span.mdc-button__ripple>
-            <span.mdc-button__focus-ring>
-            <span.mdc-button__label>_{MsgYesDelete}
-  <div.mdc-dialog__scrim>
-
 <main.mdc-top-app-bar--fixed-adjust>
+
+  <div.mdc-tab-bar role=tablist data-mdc-auto-init=MDCTabBar>
+    <div.mdc-tab-scroller>
+      <div.mdc-tab-scroller__scroll-area>
+        <div.mdc-tab-scroller__scroll-content>
+          <a.mdc-tab href=@{AdminR $ AdmInvoiceR iid} role=tab tabindex=0
+            :curr == Just (AdminR $ AdmInvoiceR iid):.mdc-tab--active
+            :curr == Just (AdminR $ AdmInvoiceR iid):aria-selected=true>
+            <span.mdc-tab__content>
+              <span.mdc-tab__text-label>_{MsgDetails}
+            <span.mdc-tab-indicator
+              :curr == Just (AdminR $ AdmInvoiceR iid):.mdc-tab-indicator--active>
+              <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
+            <span.mdc-tab__ripple>
+            <span.mdc-tab__focus-ring>
+          <a.mdc-tab href=@{AdminR $ AdmInvoiceItemsR iid} role=tab tabindex=0
+            :curr == Just (AdminR $ AdmInvoiceItemsR iid):.mdc-tab--active
+            :curr == Just (AdminR $ AdmInvoiceItemsR iid):aria-selected=true>
+            <span.mdc-tab__content>
+              <span.mdc-tab__text-label>_{MsgInvoiceItems}
+            <span.mdc-tab-indicator
+              :curr == Just (AdminR $ AdmInvoiceItemsR iid):.mdc-tab-indicator--active>
+              <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
+            <span.mdc-tab__ripple>
+            <span.mdc-tab__focus-ring>
 
   $maybe (Entity _ (Invoice _ _ no status day due),Entity _ customer,Entity _ employee) <- invoice
     <div.mdc-data-table>
@@ -81,3 +89,21 @@
                 $maybe due <- due
                   $with day <- show due
                     <time.day datetime=#{day}>#{day}
+
+
+<div.mdc-dialog ##{dlgInvoiceDelete} data-mdc-auto-init=MDCDialog>
+  <div.mdc-dialog__container>
+    <div.mdc-dialog__surface role=alertdialog tabindex=-1>
+      <h4.mdc-dialog__title>_{MsgPleaseConfirm}
+      <div.mdc-dialog__content>_{MsgDeleteAreYouSure}
+      <div.mdc-dialog__actions>
+        <button.mdc-button type=button data-mdc-dialog-action=cancel>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgCancel}
+        <form method=post action=@{AdminR $ AdmInvoiceDeleteR iid}>
+          <button.mdc-button.mdc-button--raised type=submit>
+            <span.mdc-button__ripple>
+            <span.mdc-button__focus-ring>
+            <span.mdc-button__label>_{MsgYesDelete}
+  <div.mdc-dialog__scrim>

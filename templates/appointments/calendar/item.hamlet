@@ -25,7 +25,7 @@
             <i.material-symbols-outlined>close
 
   $maybe (Entity _ (Book _ _ _ date time _ _ _ _ status),offer,service,thumbnail,role,staff) <- book
-    $with Entity _ (Offer _ oname _ price pref suff _) <- offer
+    $with Entity _ (Offer _ oname _ _ price pref suff _) <- offer
       $with Entity sid (Service sname _ _ dur _ _) <- service
         <div.mdc-card>
           <div.mdc-card__primary-action>

@@ -25,7 +25,7 @@
 
   $maybe (Entity _ (Book _ _ rid date time _ _ _ _ status),(offer,service,thumbnail,role,staff,customer)) <- request
     $with Entity sid (Service sname _ _ dur _ _) <- service
-      $with Entity _ (Offer _ oname _ price pref suff _) <- offer
+      $with Entity _ (Offer _ oname _ _ price pref suff _) <- offer
         <div.mdc-card>
           <div.mdc-card__primary-action>
             <div.mdc-card__media.mdc-card__media--16-9 style="background-image:url('@{ServiceThumbnailR sid}')">

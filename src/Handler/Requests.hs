@@ -523,7 +523,7 @@ postRequestApproveR uid eid bid = do
                   `innerJoin` table @Service `on` (\(r :& _ :& _ :& s) -> r ^. RoleService ==. s ^. ServiceId)
               where_ $ u ^. UserId ==. val uid
               where_ $ case book of
-                Just ((_,Entity _ (Offer sid _ _ _ _ _ _)),_) -> s ^. ServiceId ==. val sid
+                Just ((_,Entity _ (Offer sid _ _ _ _ _ _ _)),_) -> s ^. ServiceId ==. val sid
                 Nothing -> val False
               return r
 
@@ -635,7 +635,7 @@ postRequestR uid eid bid = do
                   `innerJoin` table @Service `on` (\(r :& _ :& _ :& s) -> r ^. RoleService ==. s ^. ServiceId)
               where_ $ u ^. UserId ==. val uid
               where_ $ case book of
-                Just ((_,Entity _ (Offer sid _ _ _ _ _ _)),(_,_)) -> s ^. ServiceId ==. val sid
+                Just ((_,Entity _ (Offer sid _ _ _ _ _ _ _)),(_,_)) -> s ^. ServiceId ==. val sid
                 Nothing -> val False
               return r
 

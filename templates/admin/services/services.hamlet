@@ -31,7 +31,7 @@ $if null sids
           <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{ProfileR uid} role=button title=_{MsgUserProfile}>
             <span.mdc-icon-button__ripple>
             <span.mdc-icon-button__focus-ring>
-            <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" alt=_{MsgPhoto}
+            <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" alt=_{MsgPhoto} loading=lazy
               onerror="this.src = '@{PhotoPlaceholderR}'">
         $nothing
           <a.mdc-top-app-bar__action-item.mdc-icon-button role=button href=@{AuthR LoginR} title=_{MsgLogin}>
@@ -71,7 +71,7 @@ $if null sids
 
   $maybe (Entity sid (Service name published overview duration descr _),attribution) <- service
     <figure>
-      <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail}
+      <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail} loading=lazy
         onerror="this.src = '@{StaticR img_photo_FILL0_wght400_GRAD0_opsz48_svg}'">
       $maybe attribution <- attribution
         <figcaption style="font-size:0.5rem;line-height:1">
@@ -145,7 +145,7 @@ $if null sids
             _{MsgNoPriceSetYet}.
       $else
         <nav.mdc-list data-mdc-auto-init=MDCList>
-          $forall Entity pid (Offer _ name published price prefix suffix _) <- offer
+          $forall Entity pid (Offer _ name published _ price prefix suffix _) <- offer
             <a.mdc-list-item href=@?{(AdminR $ AdmPriceR pid (Services sids),[("o","offer")])}
               :Just pid == mpid:.mdc-list-item--activated
               .mdc-list-item--with-three-lines.mdc-list-item--with-trailing-icon>
