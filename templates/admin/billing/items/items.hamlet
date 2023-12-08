@@ -41,7 +41,26 @@
       <figcaption>
         _{MsgNoInvoiceItemsYet}.
   $else
-    $forall _ <- items
+    <nav.mdc-list data-mdc-auto-init=MDCList>
+      $forall (i,(Entity xid (Item _ _ quantity _ _ _ amount currency),Entity _ (Service sname _ _ _ _ _))) <- items
+        <a.mdc-list-item href=@{AdminR $ AdmInvoiceItemR iid xid}
+          .mdc-list-item--with-leading-icon
+          .mdc-list-item--with-three-lines
+          .mdc-list-item--with-trailing-icon>
+          <span.mdc-list-item__ripple>
+          <span.mdc-list-item__start>#{i}
+          <span.mdc-list-item__content>
+            <div.mdc-list-item__primary-text>
+              #{sname}
+            <div.mdc-list-item__secondary-text>
+              #{show amount}
+              $maybe currency <- currency
+                #{currency}
+            <div.mdc-list-item__secondary-text>
+              #{show quantity}
+          <span.mdc-list-item__end>
+            <i.material-symbols-outlined>arrow_forward_ios
+        <div.mdc-list-divider role=separator>
 
   <div.mdc-touch-target-wrapper ##{fabAddInvoiceItem}>
     <a.mdc-fab.mdc-fab--touch role=button href=@{AdminR $ AdmInvoiceItemCreateR iid}>

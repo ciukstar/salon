@@ -1,0 +1,76 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button role=button title=_{MsgBack}
+        href=@{AdminR $ AdmInvoiceItemsR iid}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgInvoiceItem}
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end.mdc-theme--text-primary-on-light>
+      <button.mdc-icon-button type=button title=_{MsgDel}
+        onclick="document.getElementById('#{dlgInvoiceDelete}').MDCDialog.open()">
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>delete
+      <a.mdc-icon-button href=# role=button title=_{MsgEdit}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>edit
+
+<main.mdc-top-app-bar--fixed-adjust>
+
+  $maybe (Entity _ (Item _ _ q p t v a c),Entity _ (Service sname _ _ _ _ _)) <- item
+    <div.mdc-data-table>
+      <div.mdc-data-table__container>
+        <table.mdc-data-table__table>
+          <tbody.mdc-data-table__content>
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgInvoiceItem}
+              <td.mdc-data-table__cell>#{sname}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgQuantity}
+              <td.mdc-data-table__cell>#{show q}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgPrice}
+              <td.mdc-data-table__cell>
+                $with price <- show p
+                  $maybe currency <- c
+                    <span.currency data-value=#{price} data-currency=#{currency}>
+                      #{price} #{currency}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgTax}
+              <td.mdc-data-table__cell>
+                $maybe tax <- t
+                  #{show tax}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgVat}
+              <td.mdc-data-table__cell>
+                $maybe vat <- v
+                  #{show vat}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgAmount}
+              <td.mdc-data-table__cell>
+                $with amount <- show a
+                  $maybe currency <- c
+                    <span.currency data-value=#{amount} data-currency=#{currency}>
+                      #{amount} #{currency}
+
+
+<div.mdc-dialog ##{dlgInvoiceDelete} data-mdc-auto-init=MDCDialog>
+  <div.mdc-dialog__container>
+    <div.mdc-dialog__surface role=alertdialog tabindex=-1>
+      <h4.mdc-dialog__title>_{MsgPleaseConfirm}
+      <div.mdc-dialog__content>_{MsgDeleteAreYouSure}
+      <div.mdc-dialog__actions>
+        <button.mdc-button type=button data-mdc-dialog-action=cancel>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgCancel}
+        <form method=post action=#>
+          <button.mdc-button.mdc-button--raised type=submit>
+            <span.mdc-button__ripple>
+            <span.mdc-button__focus-ring>
+            <span.mdc-button__label>_{MsgYesDelete}
+  <div.mdc-dialog__scrim>
+

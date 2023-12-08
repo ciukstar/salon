@@ -1,9 +1,6 @@
 
-##{dlgInvoiceDelete}
-  div.mdc-dialog__actions
-    gap: 0.5rem
-
 main
+  .mdc-tab-bar
     background-color: var(--mdc-theme-background)
     .mdc-tab.mdc-tab--active
       .mdc-tab__text-label
@@ -22,3 +19,7 @@ main
       font-weight: 500
     table tr td
       white-space: wrap
+      
+##{dlgInvoiceDelete}
+  div.mdc-dialog__actions
+    gap: 0.5rem

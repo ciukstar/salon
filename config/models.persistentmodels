@@ -15,7 +15,6 @@ Item
   vat Centi Maybe
   amount Centi
   currency Text Maybe
-  UniqueItem offer invoice
 
 
 Invoice

@@ -2,7 +2,7 @@
 #{extra}
 
 <div.form-field>
-  <div.mdc-select.mdc-select--filled.mdc-select--required data-mdc-auto-init=MDCSelect ##{selectOffer}
+  <div.mdc-select.mdc-select--filled.mdc-select--required data-mdc-auto-init=MDCSelect
     :isJust (fvErrors offerV):.mdc-select--invalid>
     ^{fvInput offerV}
     <div.mdc-select__anchor role=button aria-haspopup=listbox aria-expanded=false>
@@ -17,28 +17,33 @@
       <span.mdc-line-ripple>
 
     <div.mdc-select__menu.mdc-menu.mdc-menu-surface.mdc-menu-surface--fullwidth>
-      <ul.mdc-list role=listbox data-mdc-auto-init=MDCList>
-        $forall (Entity oid (Offer _ oname _ _ price _ _ _),(Entity sid (Service sname _ _ _ _ _),attrib)) <- offers
-          <li.mdc-list-item.mdc-list-item--with-leading-image.mdc-list-item--with-two-lines
-            role=option data-value=#{fromSqlKey oid} aria-selected=false>
-            <span.mdc-list-item__ripple>
-            <span.mdc-list-item__start>
-              <figure style="margin:0;padding:0">
-                <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail} loading=lazy
-                  onerror="this.src = '@{StaticR img_photo_FILL0_wght400_GRAD0_opsz48_svg}'">
-                $maybe attribution <- attrib
-                  <figcaption style="font-size:0.5rem;line-height:1;position:absolute;bottom:0;left:0.5rem">
-                    ^{attribution}
-            <span.mdc-list-item__content>
-              <span.mdc-list-item__primary-text>
-                #{sname}
-              <span.mdc-list-item__secondary-text>
-                #{oname}: 
-                $with amount <- show price
-                  $maybe currency <- currency
-                    <span.currency data-value=#{amount} data-currency=#{currency}>#{amount}
-                  $nothing
-                    <span.currency data-value=#{amount}>#{amount}
+      <div.mdc-list role=listbox data-mdc-auto-init=MDCList>
+        $with moid <- entityKey <$> offer
+          $forall (Entity oid (Offer _ oname _ _ price _ _ _),(Entity sid (Service sname _ _ _ _ _),attrib)) <- offers
+            <button.mdc-list-item.mdc-list-item--with-leading-image.mdc-list-item--with-two-lines
+              role=option data-value=#{fromSqlKey oid} 
+              :Just oid == moid:.mdc-list-item--selected
+              :Just oid == moid:aria-selected=true
+              :Just oid /= moid:aria-selected=false
+              type=submit name=oid value=#{fromSqlKey oid} formaction=@{AdminR $ AdmInvoiceItemCreateR iid}>
+              <span.mdc-list-item__ripple>
+              <span.mdc-list-item__start>
+                <figure style="margin:0;padding:0">
+                  <img src=@{ServiceThumbnailR sid} height=56 width=56 alt=_{MsgThumbnail} loading=lazy
+                    onerror="this.src = '@{StaticR img_photo_FILL0_wght400_GRAD0_opsz48_svg}'">
+                  $maybe attribution <- attrib
+                    <figcaption style="font-size:0.5rem;line-height:1;position:absolute;bottom:0;left:0.5rem">
+                      ^{attribution}
+              <span.mdc-list-item__content>
+                <span.mdc-list-item__primary-text>
+                  #{sname}
+                <span.mdc-list-item__secondary-text>
+                  #{oname}: 
+                  $with amount <- show price
+                    $maybe currency <- currency
+                      <span.currency data-value=#{amount} data-currency=#{currency}>#{amount}
+                    $nothing
+                      <span.currency data-value=#{amount}>#{amount}
 
   $maybe errs <- fvErrors offerV
     <div.mdc-select-helper-text.mdc-select-helper-text--validation-msg>

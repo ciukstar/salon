@@ -9,9 +9,6 @@
 
 <main.mdc-top-app-bar--fixed-adjust>
 
-  <form method=post action=@{AdminR $ AdmInvoiceItemCreateR iid} enctype=#{et0} novalidate ##{formAutofillId}>
-    ^{fw0}
-
   <form method=post action=@{AdminR $ AdmInvoiceItemsR iid} enctype=#{et} novalidate>
     ^{fw}
     <div.form-actions>

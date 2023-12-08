@@ -21,8 +21,3 @@ Array.from(
   }).format(x.dataset.value);
 });
 
-window.mdc.autoInit();
-
-document.getElementById(#{selectOffer}).MDCSelect.listen('MDCSelect:change',function (e) {
-  document.getElementById(#{formAutofillId}).submit();
-});

@@ -1231,7 +1231,7 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
     insert_ $ Offer { offerService = s22
                     , offerName = "Package"
                     , offerPublished = True
-                    , offerQuantity = 1
+                    , offerQuantity = 5
                     , offerPrice = 350
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 sessions"
@@ -1406,7 +1406,7 @@ Your face is an expressive canvass that shows experience and emotion. At one of 
     insert_ $ Offer { offerService = s25
                     , offerName = "Package"
                     , offerPublished = True
-                    , offerQuantity = 1
+                    , offerQuantity = 5
                     , offerPrice = 460
                     , offerPrefix = Nothing
                     , offerSuffix = Just "/5 sessions"
