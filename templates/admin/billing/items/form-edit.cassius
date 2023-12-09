@@ -1,0 +1,17 @@
+
+main
+  form
+    div.form-field
+      .mdc-select .mdc-list
+        button.mdc-list-item
+          display: inline-flex
+          text-align: justify
+          border: none
+          padding: 0
+          margin: 0
+          width: 100%
+          background-color: transparent
+        .mdc-list-item.mdc-list-item--selected .mdc-list-item__primary-text
+          color: var(--theme-accent)
+      input.mdc-text-field__input
+        caret-color: var(--mdc-theme-text-primary-on-light)

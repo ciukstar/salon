@@ -49,7 +49,19 @@ Orice utilizator care este înregistrat și ca membru al personalului are rolul 
 
 Toți utilizatorii pot deveni clienți prin simpla înregistrare și utilizarea serviciilor oferite.
 
-## Integrare cu API-uri externe
+## Personalul
+...
+
+## Serviciu
+...
+
+## Ofertă
+...
+
+## Factură
+...
+
+# Integrare cu API-uri externe
 * Gateway de plată: [Stripe](https://stripe.com/)
   ```
   ENV: YESOD_STRIPE_PK, YESOD_STRIPE_SK

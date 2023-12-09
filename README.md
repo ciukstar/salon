@@ -49,8 +49,19 @@ Any user who is also registered as a staff member has the role "Employee". A use
 
 All users can become customers by simply registering and using the services offered.
 
+## Staff
+...
 
-## Integration with external APIs
+## Service
+...
+
+## Offer
+...
+
+## Invoice
+...
+
+# Integration with external APIs
 
 * Payment gateway: [Stripe](https://stripe.com/)
   ```

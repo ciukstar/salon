@@ -53,11 +53,15 @@
             <div.mdc-list-item__primary-text>
               #{sname}
             <div.mdc-list-item__secondary-text>
-              #{show amount}
-              $maybe currency <- currency
-                #{currency}
+              _{MsgQuantity}: #{show quantity}
             <div.mdc-list-item__secondary-text>
-              #{show quantity}
+              $with amount <- show amount
+                $maybe currency <- currency
+                  <span.currency data-value=#{amount} data-currency=#{currency}>
+                    #{show amount} #{currency}
+                $nothing
+                  <span.currency data-value=#{amount}>
+                    #{show amount}
           <span.mdc-list-item__end>
             <i.material-symbols-outlined>arrow_forward_ios
         <div.mdc-list-divider role=separator>

@@ -49,7 +49,19 @@ Tout utilisateur également enregistré en tant que membre du personnel a le rô
 
 Tous les utilisateurs peuvent devenir clients par simple inscription et utilisation des services proposés.
 
-## Intégration avec des API externes
+## Personnelle
+...
+
+## Service
+...
+
+## Offre
+...
+
+## Facture
+...
+
+# Intégration avec des API externes
 
 * Passerelle de paiement: [Stripe](https://stripe.com/)
   ```

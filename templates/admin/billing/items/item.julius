@@ -21,18 +21,6 @@ Array.from(
   }).format(x.dataset.value);
 });
 
-Array.from(
-  document.querySelectorAll('time.day[datetime]')
-).forEach(function (x) {
-  x.textContent = new Date(x.getAttribute('datetime')).toLocaleDateString(
-    navigator.language,
-    { year: 'numeric',
-      month: 'numeric',
-      day: 'numeric'
-    }
-  );
-});
-
 window.mdc.autoInit();
 
 Array.from(

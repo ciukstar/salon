@@ -45,7 +45,7 @@
             <span.mdc-tab__ripple>
             <span.mdc-tab__focus-ring>
 
-  $maybe (Entity _ (Invoice _ _ no status day due),Entity _ customer,Entity _ employee) <- invoice
+  $maybe (Entity _ (Invoice _ _ no status day due),Entity _ customer,Entity _ employee,a) <- invoice
     <div.mdc-data-table>
       <div.mdc-data-table__container>
         <table.mdc-data-table__table>
@@ -65,7 +65,8 @@
                   #{userName customer}
                 $maybe email <- userEmail customer
                   <div>
-                    <small style="color:var(--theme-text-small-hint-on-light)">#{email}
+                    <small style="color:var(--theme-text-small-hint-on-light)">
+                      #{email}
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgBilledFrom}
               <td.mdc-data-table__cell>
@@ -75,7 +76,8 @@
                   $nothing
                     #{bname}
                   <div>
-                    <small style="color:var(--theme-text-small-hint-on-light)">#{unTextarea addr}
+                    <small style="color:var(--theme-text-small-hint-on-light)">
+                      #{unTextarea addr}
                 $nothing
                   #{staffName employee}
             <tr.mdc-data-table__row>
@@ -89,6 +91,27 @@
                 $maybe due <- due
                   $with day <- show due
                     <time.day datetime=#{day}>#{day}
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgAmount}
+              <td.mdc-data-table__cell>
+                $with Value amount <- a
+                  $with amount <- show amount
+                    $maybe Entity _ (Business _ _ currency _ _ _ _ _ _) <- business
+                      <span.currency data-value=#{amount} data-currency=#{currency}>
+                        #{amount} #{currency}
+                    $nothing
+                      <span.currency data-value=#{amount}>
+                        #{amount}
+
+$forall (_,msg) <- filter (((==) info) . fst) msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
+    <div.mdc-snackbar__surface>
+      <div.mdc-snackbar__label>#{msg}
+      <div.mdc-snackbar__actions>
+        <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>close
 
 
 <div.mdc-dialog ##{dlgInvoiceDelete} data-mdc-auto-init=MDCDialog>
@@ -101,7 +124,8 @@
           <span.mdc-button__ripple>
           <span.mdc-button__focus-ring>
           <span.mdc-button__label>_{MsgCancel}
-        <form method=post action=@{AdminR $ AdmInvoiceDeleteR iid}>
+        <form method=post action=@{AdminR $ AdmInvoiceDeleteR iid} enctype=#{et}>
+          ^{fw}
           <button.mdc-button.mdc-button--raised type=submit>
             <span.mdc-button__ripple>
             <span.mdc-button__focus-ring>

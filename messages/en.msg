@@ -1,3 +1,4 @@
+ActionCancelled: Something went wrong. Action cancelled
 Amount: Amount
 Vat: VAT
 Tax: Tax

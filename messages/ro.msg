@@ -1,3 +1,4 @@
+ActionCancelled: Ceva n-a mers bine. Acțiunea anulată
 Amount: Suma
 Vat: TVA
 Tax: Impozit

@@ -79,14 +79,17 @@
 
 /admin AdminR:
 
-    /invoices/#InvoiceId/form/items/create AdmInvoiceItemCreateR GET POST
-    /invoices/#InvoiceId/items/#ItemId 	   AdmInvoiceItemR  	 GET
-    /invoices/#InvoiceId/items     	   AdmInvoiceItemsR  	 GET POST
-    /billing/form/invoices/#InvoiceId/edit AdmInvoiceEditR   	 GET
-    /billing/form/invoices/create 	   AdmInvoiceCreateR 	 GET
-    /billing/invoices/#InvoiceId/delete	   AdmInvoiceDeleteR 	 POST
-    /billing/invoices/#InvoiceId  	   AdmInvoiceR 	     	 GET POST
-    /billing/invoices 	     	  	   AdmInvoicesR      	 GET POST
+    
+    /invoices/#InvoiceId/items/#ItemId/delete    AdmInvoiceItemDeleteR POST
+    /invoices/#InvoiceId/form/items/#ItemId/edit AdmInvoiceItemEditR   GET POST
+    /invoices/#InvoiceId/form/items/create 	 AdmInvoiceItemCreateR GET POST
+    /invoices/#InvoiceId/items/#ItemId 	   	 AdmInvoiceItemR       GET POST
+    /invoices/#InvoiceId/items     	   	 AdmInvoiceItemsR      GET POST
+    /billing/form/invoices/#InvoiceId/edit 	 AdmInvoiceEditR       GET
+    /billing/form/invoices/create 	   	 AdmInvoiceCreateR     GET
+    /billing/invoices/#InvoiceId/delete	   	 AdmInvoiceDeleteR     POST
+    /billing/invoices/#InvoiceId  	   	 AdmInvoiceR	       GET POST
+    /billing/invoices 	     	  	   	 AdmInvoicesR	       GET POST
     
     /delete/contact/business/#BusinessId/#ContactUsId BusinessContactDeleteR POST
     /form/contact/business/#BusinessId/#ContactUsId   BusinessContactEditR   GET POST

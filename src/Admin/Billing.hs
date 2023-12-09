@@ -16,14 +16,20 @@ module Admin.Billing
   , getAdmInvoiceItemCreateR
   , postAdmInvoiceItemCreateR
   , getAdmInvoiceItemR
+  , postAdmInvoiceItemR
+  , getAdmInvoiceItemEditR
+  , postAdmInvoiceItemEditR
+  , postAdmInvoiceItemDeleteR
   ) where
 
 import Control.Applicative ((<|>))
 import Control.Monad (join)
 import Control.Monad.IO.Class (liftIO)
 import Data.Bifunctor (Bifunctor(first, second))
+import Data.Fixed (Centi)
 import Data.Maybe (isJust)
 import Data.Text (Text, pack, unpack)
+import Text.Read (readMaybe)
 import Data.Time.Clock (getCurrentTime, UTCTime (utctDay))
 import Text.Hamlet (Html)
 
@@ -31,12 +37,13 @@ import Yesod.Auth (Route (LoginR), maybeAuth)
 import Yesod.Core
     ( Yesod(defaultLayout), newIdent, SomeMessage (SomeMessage)
     , MonadHandler (liftHandler), redirect, addMessageI, getMessages
-    , getCurrentRoute, lookupPostParam
+    , getCurrentRoute, lookupPostParam, whamlet
     )
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Form.Functions
     ( generateFormPost, mreq, mopt, runFormPost, checkM
     )
+import Yesod.Form.Input (runInputGet, iopt)
 import Yesod.Form.Types
     ( MForm, FormResult (FormSuccess), Field
     , FieldView (fvInput, fvErrors, fvLabel, fvId)
@@ -46,13 +53,15 @@ import Yesod.Form.Fields
     ( dayField, hiddenField, unTextarea, intField, doubleField, textField )
 
 import Yesod.Persist
-    ( Entity (Entity, entityVal, entityKey), PersistStoreWrite (insert_) )
+    ( Entity (Entity, entityVal, entityKey)
+    , PersistStoreWrite (insert_, replace, delete)
+    )
 import Yesod.Persist.Core (YesodPersist(runDB))
 import Database.Esqueleto.Experimental
-    ( select, from, table, where_, innerJoin, on, Value (unValue), max_, desc
+    ( select, from, table, where_, innerJoin, on, Value (unValue, Value), max_, desc
     , (==.), (^.), (:&)((:&)), (?.)
     , orderBy, asc, fromSqlKey, selectOne, val, isNothing_, not_, just, leftJoin
-    , toSqlKey
+    , toSqlKey, subSelect, sum_, SqlExpr, coalesceDefault
     )
 
 import Foundation
@@ -65,7 +74,7 @@ import Foundation
       ( AdmInvoicesR, AdmInvoiceCreateR, AdmStaffPhotoR, AdmInvoiceR
       , AdmInvoiceDeleteR, AdmInvoiceEditR, AdmInvoiceItemsR
       , AdmInvoiceItemCreateR, AdmInvoiceItemCreateR, AdmInvoiceItemCreateR
-      , AdmInvoiceItemR
+      , AdmInvoiceItemR, AdmInvoiceItemEditR, AdmInvoiceItemDeleteR
       )
     , AppMessage
       ( MsgInvoices, MsgLogin, MsgPhoto, MsgUserProfile, MsgNavigationMenu
@@ -76,7 +85,8 @@ import Foundation
       , MsgEdit, MsgDel, MsgBillTo, MsgBilledFrom, MsgInvoiceAlreadyInTheList
       , MsgNumberSign, MsgDetails, MsgInvoiceItems, MsgNoInvoiceItemsYet
       , MsgInvoiceItem, MsgOffer, MsgQuantity, MsgPrice, MsgTax, MsgVat
-      , MsgAmount, MsgCurrency, MsgThumbnail
+      , MsgAmount, MsgCurrency, MsgThumbnail, MsgRecordDeleted, MsgActionCancelled
+      , MsgRecordEdited
       )
     )
 
@@ -94,7 +104,7 @@ import Model
       ( StaffName, InvoiceId, InvoiceCustomer, UserId, InvoiceStaff, StaffId
       , StaffUser, InvoiceNumber, ItemId, ItemInvoice, OfferService, ServiceId
       , ServiceName, ThumbnailService, ThumbnailAttribution, BusinessCurrency
-      , OfferId, ItemOffer
+      , OfferId, ItemOffer, ItemAmount
       )
     , Staff (Staff, staffName), InvoiceId, Business (Business)
     , ItemId
@@ -108,13 +118,81 @@ import Model
 import Menu (menu)
 import Settings (widgetFile)
 import Settings.StaticFiles (img_photo_FILL0_wght400_GRAD0_opsz48_svg)
-import Yesod.Form.Input (runInputGet, iopt)
-import Text.Read (readMaybe)
+
+
+postAdmInvoiceItemDeleteR :: InvoiceId -> ItemId -> Handler Html
+postAdmInvoiceItemDeleteR iid xid = do
+    ((fr,_),_) <- runFormPost formItemDelete
+    case fr of
+      FormSuccess _ -> do
+          runDB $ delete xid
+          addMessageI info MsgRecordDeleted
+          redirect $ AdminR $ AdmInvoiceItemsR iid
+      _ -> do
+          addMessageI info MsgActionCancelled
+          redirect $ AdminR $ AdmInvoiceItemsR iid
+
+
+formItemDelete :: Html -> MForm Handler (FormResult (),Widget)
+formItemDelete extra = return (pure (),[whamlet|#{extra}|])
+
+
+postAdmInvoiceItemR :: InvoiceId -> ItemId -> Handler Html
+postAdmInvoiceItemR iid xid = do
+    (item,offer) <- do
+        p <- runDB $ selectOne $ do
+            x :& o <- from $ table @Item
+                `innerJoin` table @Offer `on` (\(x :& o) -> x ^. ItemOffer ==. o ^. OfferId)
+            where_ $ x ^. ItemId ==. val xid
+            return (x,o)
+        return (fst <$> p, snd <$> p)
+
+    ((fr,fw),et) <- runFormPost $ formItemCreate iid offer item
+    case fr of
+      FormSuccess r -> do
+          runDB $ replace xid r
+          addMessageI info MsgRecordEdited
+          redirect $ AdminR $ AdmInvoiceItemR iid xid
+      _ -> defaultLayout $ do
+          setTitleI MsgInvoiceItem
+          $(widgetFile "admin/billing/items/edit")
+
+
+postAdmInvoiceItemEditR :: InvoiceId -> ItemId -> Handler Html
+postAdmInvoiceItemEditR iid xid = do
+    moid <- (toSqlKey <$>) . (readMaybe . unpack =<<) <$> lookupPostParam "oid"
+    offer <- case moid of
+      Just oid -> runDB $ selectOne $ do
+          x <- from $ table @Offer
+          where_ $ x ^. OfferId ==. val oid
+          return x
+      Nothing -> return Nothing
+
+    (fw,et) <- generateFormPost $ formItemEdit iid xid offer Nothing
+    defaultLayout $ do
+        setTitleI MsgInvoiceItem
+        $(widgetFile "admin/billing/items/edit")
+
+
+getAdmInvoiceItemEditR :: InvoiceId -> ItemId -> Handler Html
+getAdmInvoiceItemEditR iid xid = do
+    (item,offer) <- do
+        p <- runDB $ selectOne $ do
+            x :& o <- from $ table @Item
+                `innerJoin` table @Offer `on` (\(x :& o) -> x ^. ItemOffer ==. o ^. OfferId)
+            where_ $ x ^. ItemId ==. val xid
+            return (x,o)
+        return (fst <$> p, snd <$> p)
+
+    (fw,et) <- generateFormPost $ formItemEdit iid xid offer item
+    defaultLayout $ do
+        setTitleI MsgInvoiceItem
+        $(widgetFile "admin/billing/items/edit")
 
 
 postAdmInvoiceItemsR :: InvoiceId -> Handler Html
 postAdmInvoiceItemsR iid = do
-    ((fr,fw),et) <- runFormPost $ formItem iid Nothing Nothing
+    ((fr,fw),et) <- runFormPost $ formItemCreate iid Nothing Nothing
     case fr of
       FormSuccess r -> do
           runDB $ insert_ r
@@ -134,8 +212,8 @@ postAdmInvoiceItemCreateR iid = do
           where_ $ x ^. OfferId ==. val oid
           return x
       Nothing -> return Nothing
-    
-    (fw,et) <- generateFormPost $ formItem iid offer Nothing
+
+    (fw,et) <- generateFormPost $ formItemCreate iid offer Nothing
     defaultLayout $ do
         setTitleI MsgInvoiceItem
         $(widgetFile "admin/billing/items/create")
@@ -150,22 +228,21 @@ getAdmInvoiceItemCreateR iid = do
           where_ $ x ^. OfferId ==. val oid
           return x
       Nothing -> return Nothing
-    
-    (fw,et) <- generateFormPost $ formItem iid offer Nothing
+
+    (fw,et) <- generateFormPost $ formItemCreate iid offer Nothing
     defaultLayout $ do
         setTitleI MsgInvoiceItem
         $(widgetFile "admin/billing/items/create")
-    
 
 
-formItem :: InvoiceId -> Maybe (Entity Offer) -> Maybe (Entity Item)
-         -> Html -> MForm Handler (FormResult Item, Widget)
-formItem iid offer item extra = do
-    
+formItemEdit :: InvoiceId -> ItemId -> Maybe (Entity Offer) -> Maybe (Entity Item)
+             -> Html -> MForm Handler (FormResult Item, Widget)
+formItemEdit iid xid offer item extra = do
+
     currency <- liftHandler $ (unValue <$>) <$> runDB ( selectOne $ do
         x <- from $ table @Business
         return $ x ^. BusinessCurrency )
-    
+
     offers <- liftHandler $ (second (second (join . unValue)) <$>) <$> runDB ( select ( do
         x :& s :& t <- from $ table @Offer
             `innerJoin` table @Service `on` (\(x :& s) -> x ^. OfferService ==. s ^. ServiceId)
@@ -178,7 +255,7 @@ formItem iid offer item extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = []
         } ((itemOffer . entityVal <$> item) <|> (entityKey <$> offer))
-    
+
     (quantityR,quantityV) <- mreq intField FieldSettings
         { fsLabel = SomeMessage MsgQuantity
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
@@ -216,7 +293,69 @@ formItem iid offer item extra = do
         } ((itemCurrency . entityVal <$> item) <|> pure currency)
 
     let r = Item <$> offerR <*> pure iid <*> quantityR <*> priceR <*> taxR <*> vatR <*> amountR <*> currencyR
-    let w = $(widgetFile "admin/billing/items/form")
+    let w = $(widgetFile "admin/billing/items/form-edit")
+    return (r,w)
+
+
+formItemCreate :: InvoiceId -> Maybe (Entity Offer) -> Maybe (Entity Item)
+               -> Html -> MForm Handler (FormResult Item, Widget)
+formItemCreate iid offer item extra = do
+
+    currency <- liftHandler $ (unValue <$>) <$> runDB ( selectOne $ do
+        x <- from $ table @Business
+        return $ x ^. BusinessCurrency )
+
+    offers <- liftHandler $ (second (second (join . unValue)) <$>) <$> runDB ( select ( do
+        x :& s :& t <- from $ table @Offer
+            `innerJoin` table @Service `on` (\(x :& s) -> x ^. OfferService ==. s ^. ServiceId)
+            `leftJoin` table @Thumbnail `on` (\(_ :& s :& t) -> t ?. ThumbnailService ==. just (s ^. ServiceId))
+        orderBy [asc (s ^. ServiceName)]
+        return (x,(s,t ?. ThumbnailAttribution)) ) )
+
+    (offerR,offerV) <- mreq hiddenField FieldSettings
+        { fsLabel = SomeMessage MsgOffer
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = []
+        } ((itemOffer . entityVal <$> item) <|> (entityKey <$> offer))
+
+    (quantityR,quantityV) <- mreq intField FieldSettings
+        { fsLabel = SomeMessage MsgQuantity
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } ((itemQuantity . entityVal <$> item) <|> (offerQuantity . entityVal <$> offer) <|> pure 1)
+
+    (priceR,priceV) <- first (realToFrac <$>) <$> mreq doubleField FieldSettings
+        { fsLabel = SomeMessage MsgPrice
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (realToFrac <$> ((itemPrice . entityVal <$> item) <|> (offerPrice . entityVal <$> offer)))
+
+    (taxR,taxV) <- first ((realToFrac <$>) <$>) <$> mopt doubleField FieldSettings
+        { fsLabel = SomeMessage MsgTax
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (((realToFrac <$>) . itemTax . entityVal <$> item) <|> pure (pure 0))
+
+    (vatR,vatV) <- first ((realToFrac <$>) <$>) <$> mopt doubleField FieldSettings
+        { fsLabel = SomeMessage MsgVat
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (((realToFrac <$>) . itemVat . entityVal <$> item) <|> pure (pure 0))
+
+    (amountR,amountV) <- first (realToFrac <$>) <$> mreq doubleField FieldSettings
+        { fsLabel = SomeMessage MsgAmount
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (realToFrac <$> ((itemAmount . entityVal <$> item) <|> (offerPrice . entityVal <$> offer)))
+
+    (currencyR,currencyV) <- mopt textField FieldSettings
+        { fsLabel = SomeMessage MsgCurrency
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } ((itemCurrency . entityVal <$> item) <|> pure currency)
+
+    let r = Item <$> offerR <*> pure iid <*> quantityR <*> priceR <*> taxR <*> vatR <*> amountR <*> currencyR
+    let w = $(widgetFile "admin/billing/items/form-create")
     return (r,w)
 
 
@@ -224,12 +363,14 @@ getAdmInvoiceItemR :: InvoiceId -> ItemId -> Handler Html
 getAdmInvoiceItemR iid xid = do
     item <- runDB $ selectOne $ do
         x :& _ :& s <- from $ table @Item
-          `innerJoin` table @Offer `on` (\(x :& o) -> x ^. ItemOffer ==. o ^. OfferId) 
-          `innerJoin` table @Service `on` (\(_ :& o :& s) -> o ^. OfferService ==. s ^. ServiceId) 
+          `innerJoin` table @Offer `on` (\(x :& o) -> x ^. ItemOffer ==. o ^. OfferId)
+          `innerJoin` table @Service `on` (\(_ :& o :& s) -> o ^. OfferService ==. s ^. ServiceId)
         where_ $ x ^. ItemId ==. val xid
         return (x,s)
-        
-    dlgInvoiceDelete <- newIdent
+
+    dlgItemDelete <- newIdent
+    msgs <- getMessages
+    (fw,et) <- generateFormPost formItemDelete
     defaultLayout $ do
         setTitleI MsgInvoiceItem
         $(widgetFile "admin/billing/items/item")
@@ -240,8 +381,8 @@ getAdmInvoiceItemsR iid = do
 
     items <- zip [1 :: Int ..] <$> runDB ( select $ do
         x :& _ :& s <- from $ table @Item
-          `innerJoin` table @Offer `on` (\(x :& o) -> x ^. ItemOffer ==. o ^. OfferId) 
-          `innerJoin` table @Service `on` (\(_ :& o :& s) -> o ^. OfferService ==. s ^. ServiceId) 
+          `innerJoin` table @Offer `on` (\(x :& o) -> x ^. ItemOffer ==. o ^. OfferId)
+          `innerJoin` table @Service `on` (\(_ :& o :& s) -> o ^. OfferService ==. s ^. ServiceId)
         where_ $ x ^. ItemInvoice ==. val iid
         orderBy [asc (x ^. ItemId)]
         return (x,s) )
@@ -255,15 +396,49 @@ getAdmInvoiceItemsR iid = do
 
 
 postAdmInvoiceDeleteR :: InvoiceId -> Handler Html
-postAdmInvoiceDeleteR _ = undefined
+postAdmInvoiceDeleteR iid = do
+    ((fr,_),_) <- runFormPost formInvoiceDelete
+    case fr of
+      FormSuccess _ -> do
+          runDB $ delete iid
+          addMessageI info MsgRecordDeleted
+          redirect $ AdminR AdmInvoicesR
+      _ -> do
+          addMessageI info MsgActionCancelled
+          redirect $ AdminR AdmInvoicesR
+
+
+formInvoiceDelete :: Html -> MForm Handler (FormResult (),Widget)
+formInvoiceDelete extra = return (pure (),[whamlet|#{extra}|])
 
 
 getAdmInvoiceEditR :: InvoiceId -> Handler Html
-getAdmInvoiceEditR _ = undefined
+getAdmInvoiceEditR iid = do
+    invoice <- runDB $ selectOne $ do
+        x <- from $ table @Invoice
+        where_ $ x ^. InvoiceId ==. val iid
+        return x
+    (fw,et) <- generateFormPost $ formInvoice invoice
+    defaultLayout $ do
+        setTitleI MsgInvoice
+        $(widgetFile "admin/billing/edit")
 
 
 postAdmInvoiceR :: InvoiceId -> Handler Html
-postAdmInvoiceR _ = undefined
+postAdmInvoiceR iid = do
+    invoice <- runDB $ selectOne $ do
+        x <- from $ table @Invoice
+        where_ $ x ^. InvoiceId ==. val iid
+        return x
+    ((fr,fw),et) <- runFormPost $ formInvoice invoice
+    case fr of
+      FormSuccess r -> do
+          runDB $ replace iid r
+          addMessageI info MsgRecordEdited
+          redirect $ AdminR $ AdmInvoiceR iid
+      _ -> defaultLayout $ do
+          setTitleI MsgInvoice
+          $(widgetFile "admin/billing/edit")
 
 
 getAdmInvoiceR :: InvoiceId -> Handler Html
@@ -275,11 +450,20 @@ getAdmInvoiceR iid = do
         x :& c :& e <- from $ table @Invoice
             `innerJoin` table @User `on` (\(x :& c) -> x ^. InvoiceCustomer ==. c ^. UserId)
             `innerJoin` table @Staff `on` (\(x :& _ :& e) -> x ^. InvoiceStaff ==. e ^. StaffId)
+
+        let a :: SqlExpr (Value (Maybe Centi))
+            a = subSelect $ do
+                i <- from $ table @Item
+                where_ $ i ^. ItemInvoice ==. x ^. InvoiceId
+                return $ coalesceDefault [sum_ (i ^. ItemAmount)] (val 0)
+            
         where_ $ x ^. InvoiceId ==. val iid
-        return (x,c,e)
+        return (x,c,e,coalesceDefault [a] (val 0))
 
     curr <- getCurrentRoute
     dlgInvoiceDelete <- newIdent
+    msgs <- getMessages
+    (fw,et) <- generateFormPost formInvoiceDelete
     defaultLayout $ do
         setTitleI MsgInvoice
         $(widgetFile "admin/billing/invoice")
@@ -310,10 +494,21 @@ getAdmInvoicesR :: Handler Html
 getAdmInvoicesR = do
     user <- maybeAuth
 
-    invoices <- runDB $ select $ do
+    currency <- (unValue <$>) <$> runDB ( selectOne $ do
+        x <- from $ table @Business
+        return $ x ^. BusinessCurrency )
+
+    invoices <- (second unValue <$>) <$> runDB ( select $ do
         x <- from $ table @Invoice
+        
+        let a :: SqlExpr (Value (Maybe Centi))
+            a = subSelect $ do
+                i <- from $ table @Item
+                where_ $ i ^. ItemInvoice ==. x ^. InvoiceId
+                return $ coalesceDefault [sum_ (i ^. ItemAmount)] (val 0)
+            
         orderBy [desc (x ^. InvoiceNumber)]
-        return x
+        return (x, coalesceDefault [a] (val 0)) )
 
     fabAddInvoice <- newIdent
     msgs <- getMessages

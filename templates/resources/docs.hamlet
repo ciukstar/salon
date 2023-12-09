@@ -71,6 +71,22 @@
     <p>_{MsgDoc013}
     <p>_{MsgDoc014}
 
+    <div.mdc-typography--headline5>_{MsgStaff}
+    <p>
+      ...
+
+    <div.mdc-typography--headline5>_{MsgService}
+    <p>
+      ...
+      
+    <div.mdc-typography--headline5>_{MsgOffer}
+    <p>
+      ...
+
+    <div.mdc-typography--headline5>_{MsgInvoice}
+    <p>
+      ...
+
     <div.mdc-typography--headline4>_{MsgDoc015}
     <ul>
       <li>

@@ -1,3 +1,4 @@
+ActionCancelled: Quelque chose s'est mal passé. Action annulée
 Amount: Montant
 Vat: T.V.A.
 Tax: Impôt

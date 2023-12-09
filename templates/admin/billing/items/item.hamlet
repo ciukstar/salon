@@ -9,11 +9,11 @@
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgInvoiceItem}
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end.mdc-theme--text-primary-on-light>
       <button.mdc-icon-button type=button title=_{MsgDel}
-        onclick="document.getElementById('#{dlgInvoiceDelete}').MDCDialog.open()">
+        onclick="document.getElementById('#{dlgItemDelete}').MDCDialog.open()">
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>delete
-      <a.mdc-icon-button href=# role=button title=_{MsgEdit}>
+      <a.mdc-icon-button href=@{AdminR $ AdmInvoiceItemEditR iid xid} role=button title=_{MsgEdit}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>edit
@@ -38,6 +38,10 @@
                   $maybe currency <- c
                     <span.currency data-value=#{price} data-currency=#{currency}>
                       #{price} #{currency}
+                  $nothing
+                    <span.currency data-value=#{price}>
+                      #{price}
+                    
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgTax}
               <td.mdc-data-table__cell>
@@ -55,9 +59,22 @@
                   $maybe currency <- c
                     <span.currency data-value=#{amount} data-currency=#{currency}>
                       #{amount} #{currency}
+                  $nothing
+                    <span.currency data-value=#{amount}>
+                      #{amount}
+
+$forall (_,msg) <- filter (((==) info) . fst) msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
+    <div.mdc-snackbar__surface>
+      <div.mdc-snackbar__label>#{msg}
+      <div.mdc-snackbar__actions>
+        <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>close
 
 
-<div.mdc-dialog ##{dlgInvoiceDelete} data-mdc-auto-init=MDCDialog>
+<div.mdc-dialog ##{dlgItemDelete} data-mdc-auto-init=MDCDialog>
   <div.mdc-dialog__container>
     <div.mdc-dialog__surface role=alertdialog tabindex=-1>
       <h4.mdc-dialog__title>_{MsgPleaseConfirm}
@@ -67,7 +84,8 @@
           <span.mdc-button__ripple>
           <span.mdc-button__focus-ring>
           <span.mdc-button__label>_{MsgCancel}
-        <form method=post action=#>
+        <form method=post action=@{AdminR $ AdmInvoiceItemDeleteR iid xid} enctype=#{et}>
+          ^{fw}
           <button.mdc-button.mdc-button--raised type=submit>
             <span.mdc-button__ripple>
             <span.mdc-button__focus-ring>

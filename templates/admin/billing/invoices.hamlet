@@ -31,7 +31,7 @@
         _{MsgNoInvoicesYet}.
   $else
     <nav.mdc-list data-mdc-auto-init=MDCList>
-      $forall Entity iid (Invoice _ _ no status day _) <- invoices
+      $forall (Entity iid (Invoice _ _ no status _ due),a) <- invoices
         <a.mdc-list-item href=@{AdminR $ AdmInvoiceR iid}
           .mdc-list-item--with-leading-icon
           .mdc-list-item--with-three-lines
@@ -55,12 +55,32 @@
             <div.mdc-list-item__primary-text>
               _{MsgNumberSign} #{no}
             <div.mdc-list-item__secondary-text>
-              #{show status}
+              $case status
+                $of InvoiceStatusDraft
+                  _{MsgDraft}
+                $of InvoiceStatusOpen
+                  _{MsgOpen}
+                $of InvoiceStatusPaid
+                  _{MsgPaid}
+                $of InvoiceStatusVoid
+                  _{MsgVoid}
+                $of InvoiceStatusUncollectible
+                  _{MsgUncollectible}
             <div.mdc-list-item__secondary-text>
-              $with day <- show day
-                <time.day datetime=#{day}>#{day}
+              $with amount <- show a
+                $maybe currency <- currency
+                  <span.currency data-value=#{amount} data-currency=#{currency}>
+                    #{amount} #{currency}
+                $nothing
+                  <span.currency data-value=#{amount}>
+                    #{amount}
+              $maybe day <- due
+                $with day <- show day
+                  &mdash;
+                  <time.day datetime=#{day}>#{day}
           <span.mdc-list-item__end>
             <i.material-symbols-outlined>arrow_forward_ios
+        <div.mdc-list-divider role=separator>
 
   <div.mdc-touch-target-wrapper ##{fabAddInvoice}>
     <a.mdc-fab.mdc-fab--touch role=button href=@{AdminR AdmInvoiceCreateR}>

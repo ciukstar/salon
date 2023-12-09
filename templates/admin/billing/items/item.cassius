@@ -6,11 +6,11 @@ main
     border-left: none
     border-radius: 0
     table tr th
-      white-space: wrap
+      white-space: normal
       font-weight: 500
     table tr td
-      white-space: wrap
+      white-space: normal
 
-##{dlgInvoiceDelete}
+##{dlgItemDelete}
   div.mdc-dialog__actions
     gap: 0.5rem
