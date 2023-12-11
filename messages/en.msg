@@ -1,3 +1,8 @@
+BodyEmail: Body
+SubjectEmail: Subject
+FromEmail: From
+ToEmail: To
+Send: Send
 ActionCancelled: Something went wrong. Action cancelled
 Amount: Amount
 Vat: VAT

@@ -1,3 +1,8 @@
+BodyEmail: Текст
+SubjectEmail: Тема
+FromEmail: Отправитель
+ToEmail: Получатель
+Send: Отправлять
 ActionCancelled: Что-то пошло не так. Действие отменено
 Amount: Сумма
 Vat: НДС

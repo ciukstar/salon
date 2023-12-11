@@ -1,3 +1,8 @@
+BodyEmail: Corps
+SubjectEmail: Sujet
+FromEmail: De
+ToEmail: À
+Send: Envoyer
 ActionCancelled: Quelque chose s'est mal passé. Action annulée
 Amount: Montant
 Vat: T.V.A.

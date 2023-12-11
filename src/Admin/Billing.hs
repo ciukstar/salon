@@ -20,6 +20,7 @@ module Admin.Billing
   , getAdmInvoiceItemEditR
   , postAdmInvoiceItemEditR
   , postAdmInvoiceItemDeleteR
+  , postAdmInvoiceSendmailR
   ) where
 
 import Control.Applicative ((<|>))
@@ -29,15 +30,18 @@ import Data.Bifunctor (Bifunctor(first, second))
 import Data.Fixed (Centi)
 import Data.Maybe (isJust)
 import Data.Text (Text, pack, unpack)
-import Text.Read (readMaybe)
+import Data.Text.Lazy (fromStrict)
 import Data.Time.Clock (getCurrentTime, UTCTime (utctDay))
+import Network.Mail.Mime (renderSendMail, Address (Address), simpleMail')
+import Text.Read (readMaybe)
 import Text.Hamlet (Html)
 
 import Yesod.Auth (Route (LoginR), maybeAuth)
 import Yesod.Core
     ( Yesod(defaultLayout), newIdent, SomeMessage (SomeMessage)
     , MonadHandler (liftHandler), redirect, addMessageI, getMessages
-    , getCurrentRoute, lookupPostParam, whamlet
+    , getCurrentRoute, lookupPostParam, whamlet, RenderMessage (renderMessage)
+    , getYesod, languages
     )
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Form.Functions
@@ -50,7 +54,9 @@ import Yesod.Form.Types
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
     )
 import Yesod.Form.Fields
-    ( dayField, hiddenField, unTextarea, intField, doubleField, textField )
+    ( dayField, hiddenField, unTextarea, intField, doubleField, textField
+    , textareaField, Textarea
+    )
 
 import Yesod.Persist
     ( Entity (Entity, entityVal, entityKey)
@@ -75,6 +81,7 @@ import Foundation
       , AdmInvoiceDeleteR, AdmInvoiceEditR, AdmInvoiceItemsR
       , AdmInvoiceItemCreateR, AdmInvoiceItemCreateR, AdmInvoiceItemCreateR
       , AdmInvoiceItemR, AdmInvoiceItemEditR, AdmInvoiceItemDeleteR
+      , AdmInvoiceSendmailR
       )
     , AppMessage
       ( MsgInvoices, MsgLogin, MsgPhoto, MsgUserProfile, MsgNavigationMenu
@@ -85,8 +92,9 @@ import Foundation
       , MsgEdit, MsgDel, MsgBillTo, MsgBilledFrom, MsgInvoiceAlreadyInTheList
       , MsgNumberSign, MsgDetails, MsgInvoiceItems, MsgNoInvoiceItemsYet
       , MsgInvoiceItem, MsgOffer, MsgQuantity, MsgPrice, MsgTax, MsgVat
-      , MsgAmount, MsgCurrency, MsgThumbnail, MsgRecordDeleted, MsgActionCancelled
-      , MsgRecordEdited
+      , MsgAmount, MsgCurrency, MsgThumbnail, MsgRecordDeleted, MsgFromEmail
+      , MsgActionCancelled, MsgRecordEdited, MsgSend, MsgToEmail, MsgBodyEmail
+      , MsgSubjectEmail
       )
     )
 
@@ -106,7 +114,7 @@ import Model
       , ServiceName, ThumbnailService, ThumbnailAttribution, BusinessCurrency
       , OfferId, ItemOffer, ItemAmount
       )
-    , Staff (Staff, staffName), InvoiceId, Business (Business)
+    , Staff (Staff, staffName, staffEmail), InvoiceId, Business (Business)
     , ItemId
     , Item
       ( Item, itemOffer, itemQuantity, itemPrice, itemTax, itemVat, itemAmount
@@ -118,6 +126,91 @@ import Model
 import Menu (menu)
 import Settings (widgetFile)
 import Settings.StaticFiles (img_photo_FILL0_wght400_GRAD0_opsz48_svg)
+
+
+postAdmInvoiceSendmailR :: InvoiceId -> Handler Html
+postAdmInvoiceSendmailR iid = do
+
+    (customer,employee,invoice) <- do
+        p <- runDB $ selectOne $ do
+            x :& c :& e <- from $ table @Invoice
+                `innerJoin` table @User `on` (\(x :& c) -> x ^. InvoiceCustomer ==. c ^. UserId)
+                `innerJoin` table @Staff `on` (\(x :& _ :& e) -> x ^. InvoiceStaff ==. e ^. StaffId)
+            where_ $ x ^. InvoiceId ==. val iid
+            return ((c,e),x)
+        return (fst . fst <$> p,snd . fst <$> p,snd <$> p)
+        
+    ((fr2,_),_) <- runFormPost $ formInvoiceSendmail customer employee invoice
+    case fr2 of
+      FormSuccess (to,fr,subject,body) -> do
+          liftIO $ renderSendMail $ simpleMail'
+              (Address ((userFullName . entityVal =<< customer) <|> (userName . entityVal <$> customer)) to)
+              (Address (staffName . entityVal <$> employee) fr)
+              subject (fromStrict (unTextarea body))
+          redirect $ AdminR $ AdmInvoiceR iid
+      _ -> redirect $ AdminR $ AdmInvoiceR iid
+
+
+formInvoiceSendmail :: Maybe (Entity User) -> Maybe (Entity Staff) -> Maybe (Entity Invoice)
+                    -> Html -> MForm Handler (FormResult (Text,Text,Text,Textarea),Widget)
+formInvoiceSendmail customer employee invoice extra = do
+    (toR,toV) <- mreq textField FieldSettings
+        { fsLabel = SomeMessage MsgToEmail
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (userEmail . entityVal =<< customer)
+    (fromR,fromV) <- mreq textField FieldSettings
+        { fsLabel = SomeMessage MsgFromEmail
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } (staffEmail . entityVal =<< employee)
+
+    trans <- getYesod >>= \a -> languages >>= \l -> return (renderMessage a l)
+        
+    (subjectR,subjectV) <- mreq textField FieldSettings
+        { fsLabel = SomeMessage MsgSubjectEmail
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input")]
+        } ( (((trans MsgInvoice <> " ") <> trans MsgNumberSign) <>)
+            . pack . show . invoiceNumber . entityVal <$> invoice
+          )
+        
+    (bodyR,bodyV) <- mreq textareaField FieldSettings
+        { fsLabel = SomeMessage MsgBodyEmail
+        , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
+        , fsAttrs = [("class","mdc-text-field__input"),("rows","8")]
+        } Nothing
+
+    let r = (,,,) <$> toR <*> fromR <*> subjectR <*> bodyR
+    let w = [whamlet|
+#{extra}
+$forall v <- [toV,fromV,subjectV]
+  <div.form-field>
+    <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
+      :isJust (fvErrors v):.mdc-text-field--invalid>
+      <span.mdc-text-field__ripple>
+      <span.mdc-floating-label>#{fvLabel v}
+      ^{fvInput v}
+      <div.mdc-line-ripple>
+    $maybe errs <- fvErrors v
+      <div.mdc-text-field-helper-line>
+        <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+          #{errs}
+          
+<div.form-field>
+  <label.mdc-text-field.mdc-text-field--textarea.mdc-text-field--filled data-mdc-auto-init=MDCTextField
+    :isJust (fvErrors bodyV):.mdc-text-field--invalid>
+    <span.mdc-text-field__ripple>
+    <span.mdc-floating-label>#{fvLabel bodyV}
+    <span.mdc-text-field__resizer>
+      ^{fvInput bodyV}
+    <div.mdc-line-ripple>
+  $maybe errs <- fvErrors bodyV
+    <div.mdc-text-field-helper-line>
+      <div.mdc-text-field-helper-text.mdc-text-field-helper-text--validation-msg aria-hidden=true>
+        #{errs}
+|]
+    return (r,w)
 
 
 postAdmInvoiceItemDeleteR :: InvoiceId -> ItemId -> Handler Html
@@ -464,6 +557,20 @@ getAdmInvoiceR iid = do
     dlgInvoiceDelete <- newIdent
     msgs <- getMessages
     (fw,et) <- generateFormPost formInvoiceDelete
+        
+    (fw2,et2) <- do
+        (cust,empl,inv) <- do
+            p <- runDB $ selectOne $ do
+                x :& c :& e <- from $ table @Invoice
+                    `innerJoin` table @User `on` (\(x :& c) -> x ^. InvoiceCustomer ==. c ^. UserId)
+                    `innerJoin` table @Staff `on` (\(x :& _ :& e) -> x ^. InvoiceStaff ==. e ^. StaffId)
+                where_ $ x ^. InvoiceId ==. val iid
+                return ((c,e),x)
+            return (fst . fst <$> p,snd . fst <$> p,snd <$> p)
+        generateFormPost $ formInvoiceSendmail cust empl inv
+    
+    dlgInvoiceSendmail <- newIdent
+    formSendmailInvoice <- newIdent
     defaultLayout $ do
         setTitleI MsgInvoice
         $(widgetFile "admin/billing/invoice")

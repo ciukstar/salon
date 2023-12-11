@@ -79,7 +79,8 @@
 
 /admin AdminR:
 
-    
+    /mail/invoices/#InvoiceId AdmInvoiceSendmailR POST
+
     /invoices/#InvoiceId/items/#ItemId/delete    AdmInvoiceItemDeleteR POST
     /invoices/#InvoiceId/form/items/#ItemId/edit AdmInvoiceItemEditR   GET POST
     /invoices/#InvoiceId/form/items/create 	 AdmInvoiceItemCreateR GET POST

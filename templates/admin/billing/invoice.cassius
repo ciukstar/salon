@@ -20,6 +20,19 @@ main
     table tr td
       white-space: normal
       
-##{dlgInvoiceDelete}
+##{dlgInvoiceDelete}, ##{dlgInvoiceSendmail}
+  form
+    display: flex
+    flex-direction: column
+    gap: 1rem
+    div.form-field
+      display: flex
+      flex-direction: column
+      .mdc-text-field__input
+        caret-color: var(--mdc-theme-on-secondary)
   div.mdc-dialog__actions
+    display: flex
+    flex-direction: row
+    justify-content: flex-end
     gap: 0.5rem
+    margin: 1rem

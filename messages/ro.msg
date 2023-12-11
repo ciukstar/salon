@@ -1,3 +1,8 @@
+BodyEmail: Mesaj
+SubjectEmail: Subiect
+FromEmail: De la
+ToEmail: Către
+Send: Trimite
 ActionCancelled: Ceva n-a mers bine. Acțiunea anulată
 Amount: Suma
 Vat: TVA

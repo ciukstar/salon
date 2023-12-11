@@ -52,8 +52,7 @@ dependencies:
 - lens
 - lens-aeson
 - wreq
-- stripe-wreq
-- uuid
+- mime-mail
 
 
 # The library contains all of our application code. The executable

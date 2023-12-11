@@ -125,6 +125,7 @@ import Admin.Billing
     , getAdmInvoiceItemEditR
     , postAdmInvoiceItemEditR
     , postAdmInvoiceItemDeleteR
+    , postAdmInvoiceSendmailR
     )
 
 import Admin.Business

@@ -8,11 +8,19 @@
         <i.material-symbols-outlined>arrow_back
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgInvoice}
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end.mdc-theme--text-primary-on-light>
+    
+      <button.mdc-icon-button type=button title=_{MsgSend}
+        onclick="document.getElementById('#{dlgInvoiceSendmail}').MDCDialog.open()">
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>send
+        
       <button.mdc-icon-button type=button title=_{MsgDel}
         onclick="document.getElementById('#{dlgInvoiceDelete}').MDCDialog.open()">
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>delete
+        
       <a.mdc-icon-button href=@{AdminR $ AdmInvoiceEditR iid} role=button title=_{MsgEdit}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
@@ -103,6 +111,7 @@
                       <span.currency data-value=#{amount}>
                         #{amount}
 
+
 $forall (_,msg) <- filter (((==) info) . fst) msgs
   <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
     <div.mdc-snackbar__surface>
@@ -112,6 +121,29 @@ $forall (_,msg) <- filter (((==) info) . fst) msgs
           <span.mdc-icon-button__ripple>
           <span.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>close
+
+
+<div.mdc-dialog.mdc-dialog--fullscreen ##{dlgInvoiceSendmail} data-mdc-auto-init=MDCDialog>
+  <div.mdc-dialog__container>
+    <div.mdc-dialog__surface role=alertdialog tabindex=-1>
+      <div.mdc-dialog__header>
+        <h4.mdc-dialog__title>_{MsgPleaseConfirm}
+        <button.mdc-dialog__close.mdc-icon-button data-mdc-dialog-action=close>
+          <span.mdc-icon-button__ripple>
+          <i.material-symbols-outlined>close
+      <div.mdc-dialog__content>
+        <form method=post action=@{AdminR $ AdmInvoiceSendmailR iid} enctype=#{et2} ##{formSendmailInvoice}>
+          ^{fw2}
+      <div.mdc-dialog__actions>
+        <button.mdc-button type=button data-mdc-dialog-action=cancel>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgCancel}
+        <button.mdc-button.mdc-button--raised type=submit form=#{formSendmailInvoice}>
+          <span.mdc-button__ripple>
+          <span.mdc-button__focus-ring>
+          <span.mdc-button__label>_{MsgSend}
+  <div.mdc-dialog__scrim>
 
 
 <div.mdc-dialog ##{dlgInvoiceDelete} data-mdc-auto-init=MDCDialog>
