@@ -32,7 +32,7 @@ import Data.Maybe (isJust)
 import Data.Text (Text, pack, unpack)
 import Data.Text.Lazy (fromStrict)
 import Data.Time.Clock (getCurrentTime, UTCTime (utctDay))
-import Network.Mail.Mime (renderSendMail, Address (Address), simpleMail')
+import Network.Mail.Mime (Address (Address), simpleMail', renderSendMail)
 import Text.Read (readMaybe)
 import Text.Hamlet (Html)
 
@@ -41,7 +41,7 @@ import Yesod.Core
     ( Yesod(defaultLayout), newIdent, SomeMessage (SomeMessage)
     , MonadHandler (liftHandler), redirect, addMessageI, getMessages
     , getCurrentRoute, lookupPostParam, whamlet, RenderMessage (renderMessage)
-    , getYesod, languages
+    , getYesod, languages, ToJSON (toJSON)
     )
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Form.Functions
@@ -55,7 +55,7 @@ import Yesod.Form.Types
     )
 import Yesod.Form.Fields
     ( dayField, hiddenField, unTextarea, intField, doubleField, textField
-    , textareaField, Textarea
+    , textareaField, Textarea, emailField
     )
 
 import Yesod.Persist
@@ -143,10 +143,8 @@ postAdmInvoiceSendmailR iid = do
     ((fr2,_),_) <- runFormPost $ formInvoiceSendmail customer employee invoice
     case fr2 of
       FormSuccess (to,fr,subject,body) -> do
-          liftIO $ renderSendMail $ simpleMail'
-              (Address ((userFullName . entityVal =<< customer) <|> (userName . entityVal <$> customer)) to)
-              (Address (staffName . entityVal <$> employee) fr)
-              subject (fromStrict (unTextarea body))
+
+          
           redirect $ AdminR $ AdmInvoiceR iid
       _ -> redirect $ AdminR $ AdmInvoiceR iid
 
@@ -154,12 +152,13 @@ postAdmInvoiceSendmailR iid = do
 formInvoiceSendmail :: Maybe (Entity User) -> Maybe (Entity Staff) -> Maybe (Entity Invoice)
                     -> Html -> MForm Handler (FormResult (Text,Text,Text,Textarea),Widget)
 formInvoiceSendmail customer employee invoice extra = do
-    (toR,toV) <- mreq textField FieldSettings
+    (toR,toV) <- mreq emailField FieldSettings
         { fsLabel = SomeMessage MsgToEmail
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (userEmail . entityVal =<< customer)
-    (fromR,fromV) <- mreq textField FieldSettings
+        
+    (fromR,fromV) <- mreq emailField FieldSettings
         { fsLabel = SomeMessage MsgFromEmail
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]

@@ -75,6 +75,11 @@ All users can become customers by simply registering and using the services offe
   ```
   ENV: YESOD_MAPBOX_PK
   ```
+  
+* Email: [Gmail API](https://developers.google.com/gmail/api/guides)
+  ```
+  ENV: YESOD_GOOGLE_CLIENT_ID, YESOD_GOOGLE_CLIENT_SECRET
+  ```
 
 ## ERD Diagram
 

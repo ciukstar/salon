@@ -40,7 +40,7 @@ import Foundation
       , MsgMyAppointments, MsgServices, MsgBookAppointment, MsgWelcome, MsgUsers
       , MsgStaff, MsgData, MsgResources, MsgRequests, MsgBusiness, MsgClose
       , MsgAnalytics, MsgWorkload, MsgCustomerRanking, MsgServiceRanking
-      , MsgInvoices, MsgBilling
+      , MsgInvoices
       )
     )
 

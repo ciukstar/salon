@@ -76,6 +76,11 @@
   ENV: YESOD_MAPBOX_PK
   ```
 
+* Электронная почта: [Gmail API](https://developers.google.com/gmail/api/guides)
+  ```
+  ENV: YESOD_GOOGLE_CLIENT_ID, YESOD_GOOGLE_CLIENT_SECRET
+  ```
+
 ## ER-диаграмма
 
 ![Диаграмма отношений сущностей](static/img/Salon-ERD.svg)

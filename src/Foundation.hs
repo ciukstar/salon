@@ -123,7 +123,9 @@ instance Yesod App where
 
     isAuthorized :: Route App -> Bool -> Handler AuthResult
 
-    isAuthorized ScratchR _ = return Authorized
+    isAuthorized (ScratchR ScratchTwoR) _ = return Authorized
+    isAuthorized (ScratchR ScratchOneR) _ = return Authorized
+    isAuthorized (ScratchR ScratchInitR) _ = return Authorized
     
     isAuthorized (StaticR _) _ = return Authorized
     

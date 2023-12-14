@@ -63,9 +63,11 @@ data AppSettings = AppSettings
 
     , appAuthDummyLogin         :: Bool
     -- ^ Indicate if auth dummy login should be enabled.
-    , appMapboxPk :: Text
-    , appStripePk :: Text
-    , appStripeSk :: Text
+    , appMapboxPk           :: Text
+    , appStripePk           :: Text
+    , appStripeSk           :: Text
+    , appGoogleClientId     :: Text
+    , appGoogleClientSecret :: Text
     }
 
 instance FromJSON AppSettings where
@@ -100,6 +102,9 @@ instance FromJSON AppSettings where
         appMapboxPk               <- o .:  "mapbox-pk"
         appStripePk               <- o .:  "stripe-pk"
         appStripeSk               <- o .:  "stripe-sk"
+        appGoogleClientId         <- o .:  "google-client-id"
+        appGoogleClientSecret     <- o .:  "google-client-secret"
+                                     
 
         return AppSettings {..}
 

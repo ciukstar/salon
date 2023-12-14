@@ -40,6 +40,8 @@ idle-timeout: "_env:YESOD_SQLITE_IDLETIMEOUT:1200"
 mapbox-pk: "_env:YESOD_MAPBOX_PK:pk.xxx"
 stripe-pk: "_env:YESOD_STRIPE_PK:pk.yyy"
 stripe-sk: "_env:YESOD_STRIPE_SK:sk.zzz"
+google-client-id: "_env:YESOD_GOOGLE_CLIENT_ID:xxx"
+google-client-secret: "_env:YESOD_GOOGLE_CLIENT_SECRET:xxx"
 
 copyright: Insert copyright statement here
 #analytics: UA-YOURCODE

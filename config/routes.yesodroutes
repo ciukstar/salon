@@ -1,5 +1,8 @@
 
-/scratch ScratchR GET
+/scratch ScratchR:
+    /two  ScratchTwoR  GET
+    /one  ScratchOneR  GET
+    /init ScratchInitR GET POST
 
 /contact ContactR GET
 

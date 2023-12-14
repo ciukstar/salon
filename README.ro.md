@@ -76,6 +76,11 @@ Toți utilizatorii pot deveni clienți prin simpla înregistrare și utilizarea 
   ENV: YESOD_MAPBOX_PK
   ```
 
+* E-mail: [Gmail API](https://developers.google.com/gmail/api/guides)
+  ```
+  ENV: YESOD_GOOGLE_CLIENT_ID, YESOD_GOOGLE_CLIENT_SECRET
+  ```
+
 
 ## Diagrama ERD
 

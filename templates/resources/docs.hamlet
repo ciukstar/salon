@@ -105,7 +105,12 @@
         <p>
           <small>
             <code>ENV: YESOD_MAPBOX_PK
-
+      <li>
+        _{MsgEmail}:
+        <a href="https://developers.google.com/gmail/api/guides">Gmail API
+        <p>
+          <small>
+            <code>ENV: YESOD_GOOGLE_CLIENT_ID, YESOD_GOOGLE_CLIENT_SECRET
 
     <div.mdc-typography--headline4>
       _{MsgErdDiagram}

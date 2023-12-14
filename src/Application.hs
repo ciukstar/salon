@@ -58,7 +58,12 @@ import Demo.DemoDataEN (populateEN)
 -- Import all relevant handler modules here.
 -- Don't forget to add new modules to your cabal file!
 
-import Handler.Scratch (getScratchR)
+import Handler.Scratch
+    ( getScratchInitR
+    , postScratchInitR
+    , getScratchOneR
+    , getScratchTwoR
+    )
 
 import Handler.Requests
     ( getRequestsR, getRequestR, postRequestR

@@ -2,8 +2,7 @@ FROM ubuntu:22.04
 RUN mkdir -p /opt/salon \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends build-essential zlib1g-dev libpq-dev libicu-dev \
-	&& apt-get install -y ca-certificates \
-	&& update-ca-certificates \
+	&& apt-get install -y ca-certificates && update-ca-certificates \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists/*
 
@@ -11,6 +10,8 @@ ARG YESOD_DEMO_LANG=EN
 ARG YESOD_MAPBOX_PK
 ARG YESOD_STRIPE_PK
 ARG YESOD_STRIPE_SK
+ARG YESOD_GOOGLE_API_KEY
+ARG YESOD_GOOGLE_CLIENT_ID
 
 WORKDIR /opt/salon
 COPY salon /opt/salon
@@ -22,6 +23,8 @@ ENV YESOD_DEMO_LANG=${YESOD_DEMO_LANG}
 ENV YESOD_MAPBOX_PK=${YESOD_MAPBOX_PK}
 ENV YESOD_STRIPE_PK=${YESOD_STRIPE_PK}
 ENV YESOD_STRIPE_SK=${YESOD_STRIPE_SK}
+ENV YESOD_GOOGLE_API_KEY=${YESOD_GOOGLE_API_KEY}
+ENV YESOD_GOOGLE_CLIENT_ID=${YESOD_GOOGLE_CLIENT_ID}
 
 EXPOSE 8080
 CMD ["./salon"]
