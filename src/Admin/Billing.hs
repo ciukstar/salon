@@ -21,18 +21,32 @@ module Admin.Billing
   , postAdmInvoiceItemEditR
   , postAdmInvoiceItemDeleteR
   , postAdmInvoiceSendmailR
+  , getBillingMailHookR
   ) where
 
 import Control.Applicative ((<|>))
+import Control.Lens ((?~))
+import qualified Control.Lens as L ((^.),(^?))
 import Control.Monad (join)
 import Control.Monad.IO.Class (liftIO)
+import Data.Aeson (object, (.=))
+import Data.Aeson.Lens (AsValue(_String), key, AsNumber (_Integer))
 import Data.Bifunctor (Bifunctor(first, second))
+import Data.ByteString (toStrict)
+import Data.ByteString.Base64.Lazy (encode)
 import Data.Fixed (Centi)
+import Data.Function ((&))
 import Data.Maybe (isJust)
 import Data.Text (Text, pack, unpack)
+import Data.Text.Encoding (encodeUtf8, decodeUtf8)
 import Data.Text.Lazy (fromStrict)
 import Data.Time.Clock (getCurrentTime, UTCTime (utctDay))
-import Network.Mail.Mime (Address (Address), simpleMail', renderSendMail)
+import Network.Mail.Mime (Address (Address), simpleMail', renderMail')
+import Network.Wreq
+    ( post, FormParam ((:=)), responseBody, responseStatus, statusCode
+    , postWith, defaults, auth, oauth2Bearer
+    )
+import Text.Blaze.Html (preEscapedToHtml)
 import Text.Read (readMaybe)
 import Text.Hamlet (Html)
 
@@ -41,13 +55,13 @@ import Yesod.Core
     ( Yesod(defaultLayout), newIdent, SomeMessage (SomeMessage)
     , MonadHandler (liftHandler), redirect, addMessageI, getMessages
     , getCurrentRoute, lookupPostParam, whamlet, RenderMessage (renderMessage)
-    , getYesod, languages, ToJSON (toJSON)
+    , getYesod, languages, lookupSession, getUrlRender, setSession
     )
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Form.Functions
     ( generateFormPost, mreq, mopt, runFormPost, checkM
     )
-import Yesod.Form.Input (runInputGet, iopt)
+import Yesod.Form.Input (runInputGet, iopt, ireq)
 import Yesod.Form.Types
     ( MForm, FormResult (FormSuccess), Field
     , FieldView (fvInput, fvErrors, fvLabel, fvId)
@@ -74,7 +88,7 @@ import Foundation
     ( Handler, Widget
     , Route
       ( AuthR, PhotoPlaceholderR, AccountPhotoR, ProfileR, AdminR, StaticR
-      , ServiceThumbnailR
+      , ServiceThumbnailR, BillingMailHookR
       )
     , AdminR
       ( AdmInvoicesR, AdmInvoiceCreateR, AdmStaffPhotoR, AdmInvoiceR
@@ -95,7 +109,7 @@ import Foundation
       , MsgAmount, MsgCurrency, MsgThumbnail, MsgRecordDeleted, MsgFromEmail
       , MsgActionCancelled, MsgRecordEdited, MsgSend, MsgToEmail, MsgBodyEmail
       , MsgSubjectEmail
-      )
+      ), App (appSettings)
     )
 
 import Model
@@ -124,8 +138,50 @@ import Model
     )
 
 import Menu (menu)
-import Settings (widgetFile)
+import Settings (widgetFile, AppSettings (appGoogleClientId, appGoogleClientSecret))
 import Settings.StaticFiles (img_photo_FILL0_wght400_GRAD0_opsz48_svg)
+
+
+getBillingMailHookR :: Handler Html
+getBillingMailHookR = do
+    rndr <- getUrlRender
+    app <- appSettings <$> getYesod
+    let googleClientId = appGoogleClientId app
+    let googleClientSecret = appGoogleClientSecret app
+    
+    code <- runInputGet $ ireq textField "code"
+    
+    r <- liftIO $ post "https://oauth2.googleapis.com/token"
+         [ "code" := code
+         , "redirect_uri" := rndr BillingMailHookR
+         , "client_id" := googleClientId
+         , "client_secret" := googleClientSecret
+         , "grant_type" := ("authorization_code" :: Text)
+         ]
+
+    let _status = r L.^. responseStatus . statusCode
+
+    let accessToken = r L.^. responseBody . key "access_token" . _String
+    let refreshToken = r L.^. responseBody . key "refresh_token" . _String
+    let _tokenType = r L.^. responseBody . key "token_type" . _String
+    let _scope = r L.^. responseBody . key "scope" . _String
+    let _expiresIn = r L.^? responseBody . key "expires_in" . _Integer
+
+    setSession gmailAccessToken accessToken
+    setSession gmailRefreshToken refreshToken
+    
+    let api = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send"
+    mail <- liftIO $ decodeUtf8 . toStrict . encode <$> renderMail'
+        ( simpleMail'
+          (Address (Just "Sergiu Starciuc") "ciukstar@gmail.com")
+          (Address (Just "Sergiu Starciuc") "ciukstar@gmail.com")
+          "Mail sample subect" "Mail sample body"
+        )
+
+    let opts = defaults & auth ?~ oauth2Bearer (encodeUtf8 accessToken)
+    _ <- liftIO $ postWith opts api (object ["raw" .= mail])
+
+    redirect $ AdminR AdmInvoicesR
 
 
 postAdmInvoiceSendmailR :: InvoiceId -> Handler Html
@@ -144,9 +200,45 @@ postAdmInvoiceSendmailR iid = do
     case fr2 of
       FormSuccess (to,fr,subject,body) -> do
 
-          
-          redirect $ AdminR $ AdmInvoiceR iid
+          accessToken <- lookupSession gmailAccessToken
+          _refreshToken <- lookupSession gmailRefreshToken
+          mail <- liftIO $ decodeUtf8 . toStrict . encode <$> renderMail'
+              ( simpleMail'
+                (Address ((userFullName . entityVal =<< customer) <|> (userName . entityVal <$> customer)) to)
+                (Address (staffName . entityVal <$> employee) fr)
+                subject (fromStrict (unTextarea body))
+              )
+
+          case accessToken of
+            Just token -> do
+                let api = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send"
+
+                let opts = defaults & auth ?~ oauth2Bearer (encodeUtf8 token)
+                _ <- liftIO $ postWith opts api (object ["raw" .= mail])
+                redirect $ AdminR $ AdmInvoiceR iid
+                
+            Nothing -> do
+                googleClientId <- appGoogleClientId . appSettings <$> getYesod
+                rndr <- getUrlRender
+                r <- liftIO $ post "https://accounts.google.com/o/oauth2/v2/auth"
+                    [ "redirect_uri" := rndr BillingMailHookR
+                    , "response_type" := ("code" :: Text)
+                    , "prompt" := ("consent" :: Text)
+                    , "client_id" := googleClientId
+                    , "scope" := ("https://www.googleapis.com/auth/gmail.send" :: Text)
+                    , "access_type" := ("offline" :: Text)
+                    ]
+                    
+                return $ preEscapedToHtml $ decodeUtf8 $ toStrict (r L.^. responseBody) 
       _ -> redirect $ AdminR $ AdmInvoiceR iid
+
+
+gmailAccessToken :: Text
+gmailAccessToken = "gmail_access_token"
+
+
+gmailRefreshToken :: Text
+gmailRefreshToken = "gmail_refresh_token"
 
 
 formInvoiceSendmail :: Maybe (Entity User) -> Maybe (Entity Staff) -> Maybe (Entity Invoice)

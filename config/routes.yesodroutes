@@ -80,6 +80,8 @@
     /aov/#UserId/#Day/#Day AovDetailsR GET
     /aov 	 	   StatsAovR   GET
 
+/billing/mail/hook BillingMailHookR GET
+
 /admin AdminR:
 
     /mail/invoices/#InvoiceId AdmInvoiceSendmailR POST
