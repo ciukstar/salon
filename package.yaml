@@ -53,6 +53,9 @@ dependencies:
 - lens-aeson
 - wreq
 - mime-mail
+- http-client
+- safe-exceptions
+- HPDF
 
 
 # The library contains all of our application code. The executable

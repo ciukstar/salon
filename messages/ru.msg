@@ -1,3 +1,5 @@
+MessageNotSent: Сообщение не отправлено
+MessageSent: Сообщение отправлено
 BodyEmail: Текст
 SubjectEmail: Тема
 FromEmail: Отправитель

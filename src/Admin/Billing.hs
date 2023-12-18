@@ -25,15 +25,19 @@ module Admin.Billing
   ) where
 
 import Control.Applicative ((<|>))
-import Control.Lens ((?~))
-import qualified Control.Lens as L ((^.),(^?))
+import Control.Exception.Safe
+    ( tryAny, SomeException (SomeException), Exception (fromException))
+import Control.Lens ((?~), sumOf, folded, to)
+import qualified Control.Lens as L ((^.), (^?))
 import Control.Monad (join)
 import Control.Monad.IO.Class (liftIO)
 import Data.Aeson (object, (.=))
 import Data.Aeson.Lens (AsValue(_String), key, AsNumber (_Integer))
 import Data.Bifunctor (Bifunctor(first, second))
 import Data.ByteString (toStrict)
+import qualified Data.ByteString.Lazy as L (ByteString)
 import Data.ByteString.Base64.Lazy (encode)
+import Data.Complex (Complex ((:+)))
 import Data.Fixed (Centi)
 import Data.Function ((&))
 import Data.Maybe (isJust)
@@ -41,14 +45,30 @@ import Data.Text (Text, pack, unpack)
 import Data.Text.Encoding (encodeUtf8, decodeUtf8)
 import Data.Text.Lazy (fromStrict)
 import Data.Time.Clock (getCurrentTime, UTCTime (utctDay))
-import Network.Mail.Mime (Address (Address), simpleMail', renderMail')
+import Graphics.PDF
+    ( pdfByteString, PDFDocumentInfo (author), standardViewerPrefs
+    , PDFRect (PDFRect), PDF, addPage, drawWithPage
+    , strokeColor, red, setWidth, Shape (stroke), Rectangle (Rectangle)
+    )
+import Graphics.PDF.Document
+    ( standardDocInfo, PDFDocumentInfo (subject, compressed, viewerPreferences)
+    , PDFViewerPreferences (displayDoctitle)
+    )
+import Network.Mail.Mime
+    ( Address (Address), simpleMail', renderMail', simpleMailInMemory
+    )
+import Network.HTTP.Client
+    ( HttpExceptionContent(StatusCodeException)
+    , HttpException (HttpExceptionRequest)
+    )
 import Network.Wreq
     ( post, FormParam ((:=)), responseBody, responseStatus, statusCode
     , postWith, defaults, auth, oauth2Bearer
     )
-import Text.Blaze.Html (preEscapedToHtml)
+import Text.Blaze.Html (preEscapedToHtml, toHtml)
+import Text.Blaze.Html.Renderer.Text (renderHtml)
 import Text.Read (readMaybe)
-import Text.Hamlet (Html)
+import Text.Hamlet (Html, HtmlUrlI18n, ihamlet)
 
 import Yesod.Auth (Route (LoginR), maybeAuth)
 import Yesod.Core
@@ -56,6 +76,7 @@ import Yesod.Core
     , MonadHandler (liftHandler), redirect, addMessageI, getMessages
     , getCurrentRoute, lookupPostParam, whamlet, RenderMessage (renderMessage)
     , getYesod, languages, lookupSession, getUrlRender, setSession
+    , getMessageRender, getUrlRenderParams
     )
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Form.Functions
@@ -74,14 +95,14 @@ import Yesod.Form.Fields
 
 import Yesod.Persist
     ( Entity (Entity, entityVal, entityKey)
-    , PersistStoreWrite (insert_, replace, delete)
+    , PersistStoreWrite (insert_, replace, delete, insert)
     )
 import Yesod.Persist.Core (YesodPersist(runDB))
 import Database.Esqueleto.Experimental
     ( select, from, table, where_, innerJoin, on, Value (unValue, Value), max_, desc
-    , (==.), (^.), (:&)((:&)), (?.)
+    , (==.), (^.), (:&)((:&)), (?.), (=.)
     , orderBy, asc, fromSqlKey, selectOne, val, isNothing_, not_, just, leftJoin
-    , toSqlKey, subSelect, sum_, SqlExpr, coalesceDefault
+    , toSqlKey, subSelect, sum_, SqlExpr, coalesceDefault, update, set
     )
 
 import Foundation
@@ -108,7 +129,7 @@ import Foundation
       , MsgInvoiceItem, MsgOffer, MsgQuantity, MsgPrice, MsgTax, MsgVat
       , MsgAmount, MsgCurrency, MsgThumbnail, MsgRecordDeleted, MsgFromEmail
       , MsgActionCancelled, MsgRecordEdited, MsgSend, MsgToEmail, MsgBodyEmail
-      , MsgSubjectEmail
+      , MsgSubjectEmail, MsgMessageSent, MsgMessageNotSent, MsgAppName
       ), App (appSettings)
     )
 
@@ -126,7 +147,8 @@ import Model
       ( StaffName, InvoiceId, InvoiceCustomer, UserId, InvoiceStaff, StaffId
       , StaffUser, InvoiceNumber, ItemId, ItemInvoice, OfferService, ServiceId
       , ServiceName, ThumbnailService, ThumbnailAttribution, BusinessCurrency
-      , OfferId, ItemOffer, ItemAmount
+      , OfferId, ItemOffer, ItemAmount, InvoiceMailId, InvoiceMailStatus
+      , InvoiceMailTimemark
       )
     , Staff (Staff, staffName, staffEmail), InvoiceId, Business (Business)
     , ItemId
@@ -135,6 +157,13 @@ import Model
       , itemCurrency
       )
     , Offer (Offer, offerQuantity, offerPrice), Service (Service), Thumbnail
+    , InvoiceMail
+      ( InvoiceMail, invoiceMailStatus, invoiceMailTimemark, invoiceMailRecipient
+      , invoiceMailSender, invoiceMailSubject, invoiceMailBody, invoiceMailInvoice
+      , invoiceMailRecipientName, invoiceMailSenderName
+      )
+    , MailStatus (MailStatusDraft, MailStatusDelivered)
+    , _itemAmount
     )
 
 import Menu (menu)
@@ -150,7 +179,8 @@ getBillingMailHookR = do
     let googleClientSecret = appGoogleClientSecret app
     
     code <- runInputGet $ ireq textField "code"
-    
+    mid <- toSqlKey <$> runInputGet (ireq intField "state")
+
     r <- liftIO $ post "https://oauth2.googleapis.com/token"
          [ "code" := code
          , "redirect_uri" := rndr BillingMailHookR
@@ -170,18 +200,27 @@ getBillingMailHookR = do
     setSession gmailAccessToken accessToken
     setSession gmailRefreshToken refreshToken
     
-    let api = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send"
-    mail <- liftIO $ decodeUtf8 . toStrict . encode <$> renderMail'
-        ( simpleMail'
-          (Address (Just "Sergiu Starciuc") "ciukstar@gmail.com")
-          (Address (Just "Sergiu Starciuc") "ciukstar@gmail.com")
-          "Mail sample subect" "Mail sample body"
-        )
+    invoiceMail <- runDB $ selectOne $ do
+        x <- from $ table @InvoiceMail
+        where_ $ x ^. InvoiceMailId ==. val mid
+        return x
 
-    let opts = defaults & auth ?~ oauth2Bearer (encodeUtf8 accessToken)
-    _ <- liftIO $ postWith opts api (object ["raw" .= mail])
+    case invoiceMail of
+      Just (Entity _ (InvoiceMail iid _ _ recipient rname sender sname subj body)) -> do
+          mail <- liftIO $ decodeUtf8 . toStrict . encode <$> renderMail'
+              ( simpleMail'
+                (Address rname recipient)
+                (Address sname sender)
+                subj (fromStrict body)
+              )
 
-    redirect $ AdminR AdmInvoicesR
+          let opts = defaults & auth ?~ oauth2Bearer (encodeUtf8 accessToken)
+          _ <- liftIO $ postWith opts gmailApi (object ["raw" .= mail])
+          addMessageI info MsgMessageSent
+          redirect $ AdminR $ AdmInvoiceR iid
+      Nothing -> do
+          addMessageI info MsgMessageNotSent
+          redirect $ AdminR AdmInvoicesR
 
 
 postAdmInvoiceSendmailR :: InvoiceId -> Handler Html
@@ -195,30 +234,108 @@ postAdmInvoiceSendmailR iid = do
             where_ $ x ^. InvoiceId ==. val iid
             return ((c,e),x)
         return (fst . fst <$> p,snd . fst <$> p,snd <$> p)
-        
+
+    items <- runDB $ select $ do
+        x <- from $ table @Item
+        where_ $ x ^. ItemInvoice ==. val iid
+        return x
+    
     ((fr2,_),_) <- runFormPost $ formInvoiceSendmail customer employee invoice
     case fr2 of
-      FormSuccess (to,fr,subject,body) -> do
+      FormSuccess (recipient,sender,subj,body) -> do
+
+          now <- liftIO getCurrentTime
+
+          let imail = InvoiceMail
+                  { invoiceMailInvoice = iid
+                  , invoiceMailStatus = MailStatusDraft
+                  , invoiceMailTimemark = now
+                  , invoiceMailRecipient = recipient
+                  , invoiceMailRecipientName = (userFullName . entityVal =<< customer)
+                                               <|> (userName . entityVal <$> customer)
+                  , invoiceMailSender = sender
+                  , invoiceMailSenderName = staffName . entityVal <$> employee
+                  , invoiceMailSubject = subj
+                  , invoiceMailBody = unTextarea body
+                  }
+
+          mid <- runDB $ insert imail
+          app <- appSettings <$> getYesod
+          let googleClientId = appGoogleClientId app
+          let googleClientSecret = appGoogleClientSecret app
 
           accessToken <- lookupSession gmailAccessToken
-          _refreshToken <- lookupSession gmailRefreshToken
-          mail <- liftIO $ decodeUtf8 . toStrict . encode <$> renderMail'
-              ( simpleMail'
-                (Address ((userFullName . entityVal =<< customer) <|> (userName . entityVal <$> customer)) to)
-                (Address (staffName . entityVal <$> employee) fr)
-                subject (fromStrict (unTextarea body))
-              )
+          refreshToken <- lookupSession gmailRefreshToken          
 
-          case accessToken of
-            Just token -> do
-                let api = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send"
+          case (accessToken,refreshToken) of
+            (Just atoken,Just rtoken) -> do
+                msgRndr <- (toHtml .) <$> getMessageRender
+                urlRndr <- getUrlRenderParams
+                let m = simpleMailInMemory
+                      (Address (invoiceMailRecipientName imail) (invoiceMailRecipient imail))
+                      (Address (invoiceMailSenderName imail) (invoiceMailSender imail))
+                      (invoiceMailSubject imail)
+                      (fromStrict $ invoiceMailBody imail)
+                      (renderHtml $ renderIvoiceBody customer employee invoice items msgRndr urlRndr)
+                      [ ( "application/pdf", "invoice.pdf"
+                        , renderIvoicePdf (invoicePdf customer employee invoice items)
+                        )
+                      ]
+                mail <- liftIO $ decodeUtf8 . toStrict . encode <$> renderMail' m
 
-                let opts = defaults & auth ?~ oauth2Bearer (encodeUtf8 token)
-                _ <- liftIO $ postWith opts api (object ["raw" .= mail])
-                redirect $ AdminR $ AdmInvoiceR iid
-                
-            Nothing -> do
-                googleClientId <- appGoogleClientId . appSettings <$> getYesod
+                let opts = defaults & auth ?~ oauth2Bearer (encodeUtf8 atoken)
+                response <- liftIO $ tryAny $ postWith opts gmailApi (object ["raw" .= mail])
+
+
+                case response of
+                  Left e@(SomeException _) -> case fromException e of
+                    Just (HttpExceptionRequest _ (StatusCodeException r' _)) -> do
+                        case r' L.^. responseStatus . statusCode of
+                          401 -> do
+                              refreshResponse <- liftIO $ post "https://oauth2.googleapis.com/token"
+                                  [ "refresh_token" := rtoken
+                                  , "client_id" := googleClientId
+                                  , "client_secret" := googleClientSecret
+                                  , "grant_type" := ("refresh_token" :: Text)
+                                  ]
+
+                              let newAccessToken = refreshResponse L.^. responseBody . key "access_token" . _String
+                              
+                              setSession gmailAccessToken newAccessToken
+    
+                              _ <- liftIO $ postWith
+                                  (defaults & auth ?~ oauth2Bearer (encodeUtf8 newAccessToken))
+                                  gmailApi
+                                  (object ["raw" .= mail])
+
+                              now' <- liftIO getCurrentTime
+                              runDB $ update $ \x -> do
+                                  set x [ InvoiceMailStatus =. val MailStatusDelivered
+                                        , InvoiceMailTimemark =. val now'
+                                        ]
+                                  where_ $ x ^. InvoiceMailId ==. val mid
+                              addMessageI info MsgMessageSent
+                              redirect $ AdminR $ AdmInvoiceR iid
+                          _ -> do
+                              addMessageI info MsgMessageNotSent
+                              redirect $ AdminR $ AdmInvoiceR iid
+                    _other -> do
+                        addMessageI info MsgMessageNotSent
+                        redirect $ AdminR $ AdmInvoiceR iid
+                  Right _ok -> do
+
+                    now' <- liftIO getCurrentTime
+                    runDB $ update $ \x -> do
+                        set x [ InvoiceMailStatus =. val MailStatusDelivered
+                              , InvoiceMailTimemark =. val now'
+                              ]
+                        where_ $ x ^. InvoiceMailId ==. val mid
+                    addMessageI info MsgMessageSent
+
+                    redirect $ AdminR $ AdmInvoiceR iid
+
+            _notokes -> do
+
                 rndr <- getUrlRender
                 r <- liftIO $ post "https://accounts.google.com/o/oauth2/v2/auth"
                     [ "redirect_uri" := rndr BillingMailHookR
@@ -227,18 +344,135 @@ postAdmInvoiceSendmailR iid = do
                     , "client_id" := googleClientId
                     , "scope" := ("https://www.googleapis.com/auth/gmail.send" :: Text)
                     , "access_type" := ("offline" :: Text)
+                    , "state" := pack (show $ fromSqlKey mid)
                     ]
-                    
-                return $ preEscapedToHtml $ decodeUtf8 $ toStrict (r L.^. responseBody) 
-      _ -> redirect $ AdminR $ AdmInvoiceR iid
+
+                return $ preEscapedToHtml $ decodeUtf8 $ toStrict (r L.^. responseBody)
+      _formNotSuccess -> redirect $ AdminR $ AdmInvoiceR iid
 
 
+invoicePdf :: Maybe (Entity User)
+           -> Maybe (Entity Staff)
+           -> Maybe (Entity Invoice)
+           -> [Entity Item]
+           -> PDF ()
+invoicePdf customer employee invoice items = do
+    page <- addPage Nothing
+    drawWithPage page $ do
+        strokeColor red
+        setWidth 0.5
+        stroke $ Rectangle (10 :+ 0) (200 :+ 300)
+
+
+renderIvoicePdf :: PDF () -> L.ByteString
+renderIvoicePdf = pdfByteString
+    standardDocInfo { author = "Sergiu Starciuc"
+                    , subject = "Invoice"
+                    , compressed = True
+                    , viewerPreferences = standardViewerPrefs { displayDoctitle = True }
+                    }
+    (PDFRect 0 0 612 792)
+    
+    
+renderIvoiceBody :: Maybe (Entity User)
+                 -> Maybe (Entity Staff)
+                 -> Maybe (Entity Invoice)
+                 -> [Entity Item]
+                 -> HtmlUrlI18n AppMessage (Route App)
+renderIvoiceBody customer employee invoice items = [ihamlet|
+<h1>_{MsgAppName}
+<h2>_{MsgInvoice}
+$maybe Entity _ (User uname _ _ _ _ _ cname cemail) <- customer
+  $maybe Entity _ (Staff ename _ _ _ eemail _) <- employee
+    $maybe Entity _ (Invoice _ _ no status day due) <- invoice
+      <dl>
+        <dt>_{MsgInvoiceNumber}
+        <dd>#{no}
+
+        <dt>_{MsgBillTo}
+        <dd>
+          $maybe name <- cname
+            #{name}
+          $nothing
+            #{uname}
+          $maybe email <- cemail
+            <div>
+              <small>#{email}
+
+        <dt>_{MsgBilledFrom}
+        <dd>
+          #{ename}
+          $maybe email <- eemail
+            <div>
+              <small>#{email}
+          
+        <dt>_{MsgInvoiceDate}
+        <dd>#{show day}
+
+        <dt>_{MsgDueDate}
+        <dd>
+          $maybe due <- due
+            #{show due}
+
+        <dt>_{MsgStatus}
+        <dd>
+          $case status
+            $of InvoiceStatusDraft
+              _{MsgDraft}
+            $of InvoiceStatusOpen
+              _{MsgOpen}
+            $of InvoiceStatusPaid
+              _{MsgPaid}
+            $of InvoiceStatusUncollectible
+              _{MsgUncollectible}
+            $of InvoiceStatusVoid
+              _{MsgVoid}
+
+        <dt>_{MsgAmount}
+        <dd>#{show amount}
+
+<h2>_{MsgDetails}
+<table>
+  <thead>
+    <tr>
+      <th>_{MsgQuantity}
+      <th>_{MsgPrice}
+      <th>_{MsgTax}
+      <th>_{MsgVat}
+      <th>_{MsgAmount}
+      <th>_{MsgCurrency}
+  <tbody>
+  $forall Entity _ (Item _ _ q p t v a c) <- items
+    <tr>
+      <td>#{show q}
+      <td>#{show p}
+      <td>
+        $maybe tax <- t
+          #{show tax}
+      <td>
+        $maybe vat <- v
+          #{show vat}
+      <td>#{show a}
+      <td>
+        $maybe currency <- c
+          #{currency}
+|]
+    where
+      amount = items & sumOf (folded . to entityVal . _itemAmount) 
+
+
+
+    
 gmailAccessToken :: Text
 gmailAccessToken = "gmail_access_token"
 
 
 gmailRefreshToken :: Text
 gmailRefreshToken = "gmail_refresh_token"
+
+
+gmailApi :: String
+gmailApi = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send"
 
 
 formInvoiceSendmail :: Maybe (Entity User) -> Maybe (Entity Staff) -> Maybe (Entity Invoice)
@@ -312,7 +546,7 @@ postAdmInvoiceItemDeleteR iid xid = do
           runDB $ delete xid
           addMessageI info MsgRecordDeleted
           redirect $ AdminR $ AdmInvoiceItemsR iid
-      _ -> do
+      _x -> do
           addMessageI info MsgActionCancelled
           redirect $ AdminR $ AdmInvoiceItemsR iid
 

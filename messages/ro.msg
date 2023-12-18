@@ -1,3 +1,5 @@
+MessageNotSent: Mesajul nu a fost trimis
+MessageSent: Mesaj trimis
 BodyEmail: Mesaj
 SubjectEmail: Subiect
 FromEmail: De la

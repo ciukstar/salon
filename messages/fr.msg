@@ -1,3 +1,5 @@
+MessageNotSent: Message non envoyé
+MessageSent: Message envoyé
 BodyEmail: Corps
 SubjectEmail: Sujet
 FromEmail: De

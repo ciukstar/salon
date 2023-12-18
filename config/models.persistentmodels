@@ -1,4 +1,14 @@
 
+InvoiceMail
+  invoice InvoiceId OnDeleteCascade
+  status MailStatus
+  timemark UTCTime
+  recipient Text
+  recipientName Text Maybe
+  sender Text
+  senderName Text Maybe
+  subject Text
+  body Text
 
 ItemBook
   item ItemId OnDeleteCascade

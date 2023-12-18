@@ -71,6 +71,12 @@ data DayType = Weekday | Weekend | Holiday
     deriving (Show, Read, Eq, Ord)
 derivePersistField "DayType"
 
+
+data MailStatus = MailStatusDraft | MailStatusBounced | MailStatusDelivered
+  deriving (Show, Read, Eq)
+derivePersistField "MailStatus"
+
+
 data ServiceStatus = ServiceStatusPulished | ServiceStatusUnpublished
   deriving (Show, Read, Eq)
 
@@ -214,6 +220,16 @@ makeLensesFor [ ("serviceName","_serviceName")
               , ("serviceDescr","_serviceDescr")
               , ("serviceGroup","_serviceGroup")
               ] ''Service
+
+makeLensesFor [ ("itemOffer","_itemOffer")
+              , ("itemInvoice","_itemInvoice")
+              , ("itemQuantity","_itemQuantity")
+              , ("itemPrice","_itemPrice")
+              , ("itemTax","_itemTax")
+              , ("itemVat","_itemVat")
+              , ("itemAmount","_itemAmount")
+              , ("itemCurrency","_itemCurrency")
+              ] ''Item
 
 
 instance PathPiece Month where
