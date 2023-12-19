@@ -2,6 +2,7 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE LambdaCase #-}
 
 module Admin.Billing
   ( getAdmInvoicesR
@@ -29,7 +30,7 @@ import Control.Exception.Safe
     ( tryAny, SomeException (SomeException), Exception (fromException))
 import Control.Lens ((?~), sumOf, folded, to)
 import qualified Control.Lens as L ((^.), (^?))
-import Control.Monad (join)
+import Control.Monad (join, forM_)
 import Control.Monad.IO.Class (liftIO)
 import Data.Aeson (object, (.=))
 import Data.Aeson.Lens (AsValue(_String), key, AsNumber (_Integer))
@@ -40,23 +41,29 @@ import Data.ByteString.Base64.Lazy (encode)
 import Data.Complex (Complex ((:+)))
 import Data.Fixed (Centi)
 import Data.Function ((&))
-import Data.Maybe (isJust)
+import Data.Maybe (isJust, fromMaybe)
 import Data.Text (Text, pack, unpack)
 import Data.Text.Encoding (encodeUtf8, decodeUtf8)
 import Data.Text.Lazy (fromStrict)
 import Data.Time.Clock (getCurrentTime, UTCTime (utctDay))
 import Graphics.PDF
     ( pdfByteString, PDFDocumentInfo (author), standardViewerPrefs
-    , PDFRect (PDFRect), PDF, addPage, drawWithPage
-    , strokeColor, red, setWidth, Shape (stroke), Rectangle (Rectangle)
+    , PDFRect (PDFRect), PDF, addPage, drawWithPage, AnyFont, black
+    , Rectangle (Rectangle), PDFFont (PDFFont), mkStdFont, startNewLine
+    , FontName (Times_Roman, Times_Bold), setFont, drawText, textStart
+    , displayText
     )
 import Graphics.PDF.Document
     ( standardDocInfo, PDFDocumentInfo (subject, compressed, viewerPreferences)
     , PDFViewerPreferences (displayDoctitle)
     )
-import Network.Mail.Mime
-    ( Address (Address), simpleMail', renderMail', simpleMailInMemory
+import Graphics.PDF.Typesetting
+    ( drawTextBox, paragraph, setJustification, txt, Orientation(NE)
+    , Justification(LeftJustification)
+    , StandardParagraphStyle(NormalParagraph), StandardStyle(Font)
     )
+import Network.Mail.Mime
+    ( Mail, Address (Address), renderMail', simpleMailInMemory )
 import Network.HTTP.Client
     ( HttpExceptionContent(StatusCodeException)
     , HttpException (HttpExceptionRequest)
@@ -99,14 +106,14 @@ import Yesod.Persist
     )
 import Yesod.Persist.Core (YesodPersist(runDB))
 import Database.Esqueleto.Experimental
-    ( select, from, table, where_, innerJoin, on, Value (unValue, Value), max_, desc
+    ( select, from, table, where_, innerJoin, on, Value (unValue, Value), max_
     , (==.), (^.), (:&)((:&)), (?.), (=.)
     , orderBy, asc, fromSqlKey, selectOne, val, isNothing_, not_, just, leftJoin
-    , toSqlKey, subSelect, sum_, SqlExpr, coalesceDefault, update, set
+    , toSqlKey, subSelect, sum_, SqlExpr, coalesceDefault, update, set, desc
     )
 
 import Foundation
-    ( Handler, Widget
+    ( Handler, Widget, App (appSettings)
     , Route
       ( AuthR, PhotoPlaceholderR, AccountPhotoR, ProfileR, AdminR, StaticR
       , ServiceThumbnailR, BillingMailHookR
@@ -130,7 +137,7 @@ import Foundation
       , MsgAmount, MsgCurrency, MsgThumbnail, MsgRecordDeleted, MsgFromEmail
       , MsgActionCancelled, MsgRecordEdited, MsgSend, MsgToEmail, MsgBodyEmail
       , MsgSubjectEmail, MsgMessageSent, MsgMessageNotSent, MsgAppName
-      ), App (appSettings)
+      )
     )
 
 import Model
@@ -148,7 +155,7 @@ import Model
       , StaffUser, InvoiceNumber, ItemId, ItemInvoice, OfferService, ServiceId
       , ServiceName, ThumbnailService, ThumbnailAttribution, BusinessCurrency
       , OfferId, ItemOffer, ItemAmount, InvoiceMailId, InvoiceMailStatus
-      , InvoiceMailTimemark
+      , InvoiceMailTimemark, InvoiceMailInvoice
       )
     , Staff (Staff, staffName, staffEmail), InvoiceId, Business (Business)
     , ItemId
@@ -200,25 +207,41 @@ getBillingMailHookR = do
     setSession gmailAccessToken accessToken
     setSession gmailRefreshToken refreshToken
     
-    invoiceMail <- runDB $ selectOne $ do
-        x <- from $ table @InvoiceMail
-        where_ $ x ^. InvoiceMailId ==. val mid
-        return x
+    (invoiceMail,customer,employee,invoice) <- do
+        p <- runDB $ selectOne $ do
+            x :& i :& c :& e <- from $ table @InvoiceMail
+                `innerJoin` table @Invoice `on` (\(x :& i) -> x ^. InvoiceMailInvoice ==. i ^. InvoiceId)
+                `innerJoin` table @User `on` (\(_ :& i :& c) -> i ^. InvoiceCustomer ==. c ^. UserId)
+                `innerJoin` table @Staff `on` (\(_ :& i :& _ :& e) -> i ^. InvoiceStaff ==. e ^. StaffId)                
+            where_ $ x ^. InvoiceMailId ==. val mid
+            return (((x,i),c),e)
+        return (fst . fst . fst <$> p,snd . fst <$> p,snd <$> p,snd . fst . fst <$> p)
+        
+    items <- case invoice of
+      Just (Entity iid _) -> runDB $ select $ do
+          x <- from $ table @Item
+          where_ $ x ^. ItemInvoice ==. val iid
+          return x
+      Nothing -> return []
+          
+    timesRoman <- liftIO $ mkStdFont Times_Roman
+    timesBold <- liftIO $ mkStdFont Times_Bold
 
-    case invoiceMail of
-      Just (Entity _ (InvoiceMail iid _ _ recipient rname sender sname subj body)) -> do
-          mail <- liftIO $ decodeUtf8 . toStrict . encode <$> renderMail'
-              ( simpleMail'
-                (Address rname recipient)
-                (Address sname sender)
-                subj (fromStrict body)
-              )
+    case (invoiceMail,timesRoman,timesBold) of
+      (Just (Entity _ imail),Right fr,Right fb) -> do
+          urlRndr <- getUrlRenderParams
+          transMsg <- getMessageRender
+          msgRndr <- (toHtml .) <$> getMessageRender
+          let html = renderIvoiceBody customer employee invoice items msgRndr urlRndr
+              pdf = renderIvoicePdf (invoicePdf customer employee invoice items transMsg (PDFRect 0 0 612 792) fr fb)
+              mail = buildMail imail html pdf
+          raw <- liftIO $ decodeUtf8 . toStrict . encode <$> renderMail' mail
 
           let opts = defaults & auth ?~ oauth2Bearer (encodeUtf8 accessToken)
-          _ <- liftIO $ postWith opts gmailApi (object ["raw" .= mail])
+          _ <- liftIO $ postWith opts gmailApi (object ["raw" .= raw])
           addMessageI info MsgMessageSent
-          redirect $ AdminR $ AdmInvoiceR iid
-      Nothing -> do
+          redirect $ AdminR $ AdmInvoiceR (invoiceMailInvoice imail)
+      _otherwise -> do
           addMessageI info MsgMessageNotSent
           redirect $ AdminR AdmInvoicesR
 
@@ -260,31 +283,31 @@ postAdmInvoiceSendmailR iid = do
                   }
 
           mid <- runDB $ insert imail
-          app <- appSettings <$> getYesod
-          let googleClientId = appGoogleClientId app
-          let googleClientSecret = appGoogleClientSecret app
+          app <- getYesod
+          langs <- languages
+          
+          let transMsg = renderMessage app langs :: AppMessage -> Text
+          let googleClientId = appGoogleClientId $ appSettings app
+              googleClientSecret = appGoogleClientSecret $ appSettings app
 
           accessToken <- lookupSession gmailAccessToken
-          refreshToken <- lookupSession gmailRefreshToken          
+          refreshToken <- lookupSession gmailRefreshToken
+          
+          timesRoman <- liftIO $ mkStdFont Times_Roman
+          timesBold <- liftIO $ mkStdFont Times_Bold
 
-          case (accessToken,refreshToken) of
-            (Just atoken,Just rtoken) -> do
+          case ((accessToken,refreshToken),(timesRoman,timesBold)) of
+            ((Just atoken,Just rtoken),(Right fr,Right fb)) -> do
                 msgRndr <- (toHtml .) <$> getMessageRender
                 urlRndr <- getUrlRenderParams
-                let m = simpleMailInMemory
-                      (Address (invoiceMailRecipientName imail) (invoiceMailRecipient imail))
-                      (Address (invoiceMailSenderName imail) (invoiceMailSender imail))
-                      (invoiceMailSubject imail)
-                      (fromStrict $ invoiceMailBody imail)
-                      (renderHtml $ renderIvoiceBody customer employee invoice items msgRndr urlRndr)
-                      [ ( "application/pdf", "invoice.pdf"
-                        , renderIvoicePdf (invoicePdf customer employee invoice items)
-                        )
-                      ]
-                mail <- liftIO $ decodeUtf8 . toStrict . encode <$> renderMail' m
+                let html = renderIvoiceBody customer employee invoice items msgRndr urlRndr
+                    pdf = renderIvoicePdf (invoicePdf customer employee invoice items transMsg (PDFRect 0 0 612 792) fr fb)
+                    mail = buildMail imail html pdf
+                    
+                raw <- liftIO $ decodeUtf8 . toStrict . encode <$> renderMail' mail
 
                 let opts = defaults & auth ?~ oauth2Bearer (encodeUtf8 atoken)
-                response <- liftIO $ tryAny $ postWith opts gmailApi (object ["raw" .= mail])
+                response <- liftIO $ tryAny $ postWith opts gmailApi (object ["raw" .= raw])
 
 
                 case response of
@@ -306,7 +329,7 @@ postAdmInvoiceSendmailR iid = do
                               _ <- liftIO $ postWith
                                   (defaults & auth ?~ oauth2Bearer (encodeUtf8 newAccessToken))
                                   gmailApi
-                                  (object ["raw" .= mail])
+                                  (object ["raw" .= raw])
 
                               now' <- liftIO getCurrentTime
                               runDB $ update $ \x -> do
@@ -334,7 +357,7 @@ postAdmInvoiceSendmailR iid = do
 
                     redirect $ AdminR $ AdmInvoiceR iid
 
-            _notokes -> do
+            _notokens -> do
 
                 rndr <- getUrlRender
                 r <- liftIO $ post "https://accounts.google.com/o/oauth2/v2/auth"
@@ -351,18 +374,175 @@ postAdmInvoiceSendmailR iid = do
       _formNotSuccess -> redirect $ AdminR $ AdmInvoiceR iid
 
 
+buildMail :: InvoiceMail -> Html -> L.ByteString -> Mail
+buildMail imail html pdf = simpleMailInMemory
+    (Address (invoiceMailRecipientName imail) (invoiceMailRecipient imail))
+    (Address (invoiceMailSenderName imail) (invoiceMailSender imail))
+    (invoiceMailSubject imail)
+    (fromStrict $ invoiceMailBody imail)
+    (renderHtml html)
+    [("application/pdf", "invoice.pdf", pdf)] 
+
+
 invoicePdf :: Maybe (Entity User)
            -> Maybe (Entity Staff)
            -> Maybe (Entity Invoice)
            -> [Entity Item]
-           -> PDF ()
-invoicePdf customer employee invoice items = do
+           -> (AppMessage -> Text)
+           -> PDFRect -> AnyFont -> AnyFont -> PDF ()
+invoicePdf customer employee invoice items trans (PDFRect x _ _ y') fontr fontb = do
+    
+    let tfont = PDFFont fontb 32
+        hfont = PDFFont fontb 18
+        rfont = PDFFont fontr 14
+        bfont = PDFFont fontb 14
+        sfont = PDFFont fontr 10
+    
+    let mt@ml = 72 :: Double
+    
     page <- addPage Nothing
     drawWithPage page $ do
-        strokeColor red
-        setWidth 0.5
-        stroke $ Rectangle (10 :+ 0) (200 :+ 300)
+        drawText $ do
+            setFont tfont
+            textStart (x + ml) (y' - mt)
+            displayText $ trans MsgAppName
+        drawText $ do
+            startNewLine
+            setFont hfont
+            textStart (x + ml) (y' - mt - 1 * 30)
+            displayText $ trans MsgInvoice
+        drawText $ do
+            startNewLine
+            setFont bfont
+            textStart (x + ml) (y' - mt - 2 * 30)
+            displayText $ trans MsgInvoiceNumber
+            displayText ": "
+            setFont rfont
+            displayText $ maybe "" (pack . show . invoiceNumber . entityVal) invoice
+        drawText $ do
+            startNewLine
+            setFont bfont
+            textStart (x + ml) (y' - mt - 3 * 30)
+            displayText $ trans MsgBillTo
+            displayText ": "
+            setFont rfont
+            displayText $ fromMaybe "" (((userFullName . entityVal) =<< customer) <|> userName . entityVal <$> customer)
+            setFont sfont
+            displayText $ maybe "" (\email -> " (" <> email <> ")") ((userEmail . entityVal) =<< customer)
+        drawText $ do
+            startNewLine
+            setFont bfont
+            textStart (x + ml) (y' - mt - 4 * 30)
+            displayText $ trans MsgBilledFrom
+            displayText ": "
+            setFont rfont
+            displayText $ maybe "" (staffName . entityVal) employee
+            setFont sfont
+            displayText $ maybe "" (\email -> " (" <> email <> ")") ((staffEmail . entityVal) =<< employee)
+        drawText $ do
+            startNewLine
+            setFont bfont
+            textStart (x + ml) (y' - mt - 5 * 30)
+            displayText $ trans MsgInvoiceDate
+            displayText ": "
+            setFont rfont
+            displayText $ maybe "" (pack . show . invoiceDay . entityVal) invoice
+        drawText $ do
+            startNewLine
+            setFont bfont
+            textStart (x + ml) (y' - mt - 6 * 30)
+            displayText $ trans MsgDueDate
+            displayText ": "
+            setFont rfont
+            displayText $ maybe "" (pack . show) (invoiceDueDay . entityVal =<< invoice)
+        drawText $ do
+            startNewLine
+            setFont bfont
+            textStart (x + ml) (y' - mt - 7 * 30)
+            displayText $ trans MsgStatus
+            displayText ": "
+            setFont rfont
+            displayText $ maybe "" (trans . (\case
+                                                  InvoiceStatusDraft -> MsgDraft
+                                                  InvoiceStatusOpen -> MsgOpen
+                                                  InvoiceStatusPaid -> MsgPaid
+                                                  InvoiceStatusUncollectible -> MsgUncollectible
+                                                  InvoiceStatusVoid -> MsgVoid
+                                            ) . invoiceStatus . entityVal) invoice
+        drawText $ do
+            startNewLine
+            setFont bfont
+            textStart (x + ml) (y' - mt - 8 * 30)
+            displayText $ trans MsgAmount
+            displayText ": "
+            setFont rfont
+            displayText $ pack $ show (items & sumOf (folded . to entityVal . _itemAmount))
+            
+        drawText $ do
+            startNewLine
+            setFont hfont
+            textStart (x + ml) (y' - mt - 9 * 30)
+            displayText $ trans MsgDetails
+    
+        let fontBold = Font bfont black black
+            fontSmall = Font sfont black black
 
+        let dx1 = x + ml
+            dy1 = y' - mt - 10 * 30
+            
+        let (Rectangle (x0 :+ y0) _,hq) = drawTextBox dx1 dy1 (dx1 + 78) 30 NE NormalParagraph fontBold $ do
+                setJustification LeftJustification
+                paragraph $ txt $ trans MsgQuantity
+            
+        let (Rectangle (x1 :+ _) _,hp) = drawTextBox (x0 + 78) dy1 (x0 + 78) 30 NE NormalParagraph fontBold $ do
+                setJustification LeftJustification
+                paragraph $ txt $ trans MsgPrice
+            
+        let (Rectangle (x2 :+ _) _,ht) = drawTextBox (x1 + 78) dy1 (x1 + 78) 30 NE NormalParagraph fontBold $ do
+                setJustification LeftJustification
+                paragraph $ txt $ trans MsgTax
+            
+        let (Rectangle (x3 :+ _) _,hv) = drawTextBox (x2 + 78) dy1 (x2 + 78) 30 NE NormalParagraph fontBold $ do
+                setJustification LeftJustification
+                paragraph $ txt $ trans MsgVat
+            
+        let (Rectangle (x4 :+ _) _,ha) = drawTextBox (x3 + 78) dy1 (x3 + 78) 30 NE NormalParagraph fontBold $ do
+                setJustification LeftJustification
+                paragraph $ txt $ trans MsgAmount
+            
+        let (_,hc) = drawTextBox (x4 + 78) dy1 (x4 + 78) 30 NE NormalParagraph fontBold $ do
+                setJustification LeftJustification
+                paragraph $ txt $ trans MsgCurrency
+        
+        hq >> hp >> ht >> hv >> ha >> hc
+        
+        forM_ (zip [1 ..] items) $ \(i,Entity _ (Item _ _ q p t v a c)) -> do
+            let (_,v1) = drawTextBox (x0 + 0 * 78) (y0 - i * 30) (x0 + 78) 30 NE NormalParagraph fontSmall $ do
+                    setJustification LeftJustification
+                    paragraph $ txt $ pack $ show q
+                        
+            let (_,v2) = drawTextBox (x0 + 1 * 78) (y0 - i * 30) (x0 + 78) 30 NE NormalParagraph fontSmall $ do
+                    setJustification LeftJustification
+                    paragraph $ txt $ pack $ show p
+                        
+            let (_,v3) = drawTextBox (x0 + 2 * 78) (y0 - i * 30) (x0 + 78) 30 NE NormalParagraph fontSmall $ do
+                    setJustification LeftJustification
+                    paragraph $ txt $ maybe "" (pack . show) t
+                        
+            let (_,v4) = drawTextBox (x0 + 3 * 78) (y0 - i * 30) (x0 + 78) 30 NE NormalParagraph fontSmall $ do
+                    setJustification LeftJustification
+                    paragraph $ txt $ maybe "" (pack . show) v
+                        
+            let (_,v5) = drawTextBox (x0 + 4 * 78) (y0 - i * 30) (x0 + 78) 30 NE NormalParagraph fontSmall $ do
+                    setJustification LeftJustification
+                    paragraph $ txt $ pack $ show a
+                        
+            let (_,v6) = drawTextBox (x0 + 5 * 78) (y0 - i * 30) (x0 + 78) 30 NE NormalParagraph fontSmall $ do
+                    setJustification LeftJustification
+                    paragraph $ txt $ fromMaybe "" c
+                        
+            v1 >> v2 >> v3 >> v4 >> v5 >> v6
+            
 
 renderIvoicePdf :: PDF () -> L.ByteString
 renderIvoicePdf = pdfByteString
