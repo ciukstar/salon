@@ -146,6 +146,8 @@ instance Yesod App where
     
     isAuthorized BillingMailHookR _ = return Authorized
     
+    isAuthorized (AdminR (AdmInvoiceMailDeleteR _ _)) _ = isAdmin
+    isAuthorized (AdminR (AdmInvoiceMailR _ _)) _ = isAdmin
     isAuthorized (AdminR (AdmInvoiceSendmailR _)) _ = isAdmin
     isAuthorized (AdminR (AdmInvoiceItemDeleteR _ _)) _ = isAdmin
     isAuthorized r@(AdminR (AdmInvoiceItemEditR _ _)) _ = setUltDest r >> isAdmin

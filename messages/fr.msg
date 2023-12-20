@@ -1,3 +1,9 @@
+Message: Message
+Sender: Expéditeur
+Recipient: Destinataire
+NoMailYet: Il n'y a pas encore de courrier
+Mail: Mail
+PaymentDueDate: Date d'échéance
 MessageNotSent: Message non envoyé
 MessageSent: Message envoyé
 BodyEmail: Corps

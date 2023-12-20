@@ -1,3 +1,9 @@
+Message: Message
+Sender: Sender
+Recipient: Recipient
+NoMailYet: There is no mail yet
+Mail: Mail
+PaymentDueDate: Payment due date
 MessageNotSent: Message not sent
 MessageSent: Message sent
 BodyEmail: Body

@@ -1,0 +1,10 @@
+
+main
+  .mdc-tab-bar
+    background-color: var(--mdc-theme-background)
+    .mdc-tab.mdc-tab--active
+      .mdc-tab__text-label
+        color: var(--mdc-theme-on-primary)
+      .mdc-tab-indicator.mdc-tab-indicator--active
+        .mdc-tab-indicator__content--underline
+          border-color: var(--mdc-theme-on-primary)

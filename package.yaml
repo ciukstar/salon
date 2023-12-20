@@ -1,5 +1,12 @@
-name:    salon
-version: "0.0.0"
+name:       salon
+version:    "0.0.0"
+synopsis:   Beauty Salon Web Application
+category:   Application
+author:     Sergiu Starciuc
+maintainer: ciukstar@gmail.com
+license:    MIT
+github:     ciukstar/salon
+homepage:   https://salon-w3cpovaqka-de.a.run.app/resources/docs
 
 dependencies:
 

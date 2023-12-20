@@ -1,3 +1,9 @@
+Message: Сообщение
+Sender: Отправитель
+Recipient: Получатель
+NoMailYet: Почты пока нет
+Mail: Почта
+PaymentDueDate: Срок оплаты 
 MessageNotSent: Сообщение не отправлено
 MessageSent: Сообщение отправлено
 BodyEmail: Текст

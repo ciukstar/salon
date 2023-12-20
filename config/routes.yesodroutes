@@ -84,7 +84,9 @@
 
 /admin AdminR:
 
-    /mail/invoices/#InvoiceId AdmInvoiceSendmailR POST
+    /invoices/#InvoiceId/mail/#InvoiceMailId/delete AdmInvoiceMailDeleteR POST
+    /invoices/#InvoiceId/mail/#InvoiceMailId 	    AdmInvoiceMailR       GET
+    /invoices/#InvoiceId/mail                	    AdmInvoiceSendmailR   GET POST
 
     /invoices/#InvoiceId/items/#ItemId/delete    AdmInvoiceItemDeleteR POST
     /invoices/#InvoiceId/form/items/#ItemId/edit AdmInvoiceItemEditR   GET POST

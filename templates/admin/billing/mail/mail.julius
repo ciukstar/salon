@@ -1,0 +1,15 @@
+
+Array.from(
+  document.querySelectorAll('time[datetime]')
+).forEach(function (x) {
+  x.textContent = new Date(x.getAttribute('datetime')).toLocaleDateString(
+    navigator.language,
+    { weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: "numeric",
+      minute: "numeric"
+    }
+  );
+});

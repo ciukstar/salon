@@ -45,50 +45,36 @@
             <span.mdc-tab__ripple>
             <span.mdc-tab__focus-ring>
 
-  $if null items
+  $if null mail
     <figure style="text-align:center">
       <span style="font-size:5rem;color:var(--mdc-theme-primary)">&varnothing;
       <figcaption>
-        _{MsgNoInvoiceItemsYet}.
+        _{MsgNoMailYet}.
   $else
     <nav.mdc-list data-mdc-auto-init=MDCList>
-      $forall (i,Entity xid (Item _ _ xname quantity _ _ _ amount currency)) <- items
-        <a.mdc-list-item href=@{AdminR $ AdmInvoiceItemR iid xid}
+      $forall Entity mid (InvoiceMail _ status timemark recipient _ _ _ subject _) <- mail
+        <a.mdc-list-item href=@{AdminR $ AdmInvoiceMailR iid mid}
           .mdc-list-item--with-leading-icon
           .mdc-list-item--with-three-lines
           .mdc-list-item--with-trailing-icon>
           <span.mdc-list-item__ripple>
-          <span.mdc-list-item__start>#{i}
+          <span.mdc-list-item__start>
+            $case status
+              $of MailStatusDraft
+                <i.material-symbols-outlined>drafts
+              $of MailStatusBounced
+                <i.material-symbols-outlined>error
+              $of MailStatusDelivered
+                <i.material-symbols-outlined>mark_email_read
           <span.mdc-list-item__content>
             <div.mdc-list-item__primary-text>
-              #{xname}
+              #{recipient}
             <div.mdc-list-item__secondary-text>
-              _{MsgQuantity}: #{show quantity}
+              $with dt <- iso8601Show timemark
+                <time datetime=#{dt}>#{dt}
             <div.mdc-list-item__secondary-text>
-              $with amount <- show amount
-                $maybe currency <- currency
-                  <span.currency data-value=#{amount} data-currency=#{currency}>
-                    #{show amount} #{currency}
-                $nothing
-                  <span.currency data-value=#{amount}>
-                    #{show amount}
+              #{subject}
           <span.mdc-list-item__end>
             <i.material-symbols-outlined>arrow_forward_ios
         <div.mdc-list-divider role=separator>
-
-  <div.mdc-touch-target-wrapper ##{fabAddInvoiceItem}>
-    <a.mdc-fab.mdc-fab--touch role=button href=@{AdminR $ AdmInvoiceItemCreateR iid}>
-      <span.mdc-fab__ripple>
-      <span.mdc-fab__focus-ring>
-      <span.mdc-fab__icon.material-symbols-outlined>add
-      <span.mdc-fab__touch>
-
-$forall (_,msg) <- filter (((==) info) . fst) msgs
-  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar style="bottom:5rem">
-    <div.mdc-snackbar__surface>
-      <div.mdc-snackbar__label>#{msg}
-      <div.mdc-snackbar__actions>
-        <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
-          <span.mdc-icon-button__ripple>
-          <span.mdc-icon-button__focus-ring>
-          <i.material-symbols-outlined>close
+    

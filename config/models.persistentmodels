@@ -19,6 +19,7 @@ ItemBook
 Item
   offer OfferId OnDeleteCascade
   invoice InvoiceId OnDeleteCascade
+  name Text
   quantity Int
   price Centi
   tax Centi Maybe

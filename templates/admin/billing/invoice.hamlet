@@ -52,6 +52,16 @@
               <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
             <span.mdc-tab__ripple>
             <span.mdc-tab__focus-ring>
+          <a.mdc-tab href=@{AdminR $ AdmInvoiceSendmailR iid} role=tab tabindex=0
+            :curr == Just (AdminR $ AdmInvoiceSendmailR iid):.mdc-tab--active
+            :curr == Just (AdminR $ AdmInvoiceSendmailR iid):aria-selected=true>
+            <span.mdc-tab__content>
+              <span.mdc-tab__text-label>_{MsgMail}
+            <span.mdc-tab-indicator
+              :curr == Just (AdminR $ AdmInvoiceSendmailR iid):.mdc-tab-indicator--active>
+              <span.mdc-tab-indicator__content.mdc-tab-indicator__content--underline>
+            <span.mdc-tab__ripple>
+            <span.mdc-tab__focus-ring>
 
   $maybe (Entity _ (Invoice _ _ no status day due),Entity _ customer,Entity _ employee,a) <- invoice
     <div.mdc-data-table>

@@ -1,3 +1,9 @@
+Message: Mesaj
+Sender: Expeditor
+Recipient: Destinatar
+NoMailYet: Nu există încă niciun e-mail
+Mail: Poșta
+PaymentDueDate: Data scadentă
 MessageNotSent: Mesajul nu a fost trimis
 MessageSent: Mesaj trimis
 BodyEmail: Mesaj

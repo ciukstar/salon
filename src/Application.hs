@@ -130,7 +130,10 @@ import Admin.Billing
     , getAdmInvoiceItemEditR
     , postAdmInvoiceItemEditR
     , postAdmInvoiceItemDeleteR
+    , getAdmInvoiceSendmailR
     , postAdmInvoiceSendmailR
+    , getAdmInvoiceMailR
+    , postAdmInvoiceMailDeleteR
     , getBillingMailHookR
     )
 

@@ -20,14 +20,14 @@
 
 <main.mdc-top-app-bar--fixed-adjust>
 
-  $maybe (Entity _ (Item _ _ q p t v a c),Entity _ (Service sname _ _ _ _ _)) <- item
+  $maybe Entity _ (Item _ _ xname q p t v a c) <- item
     <div.mdc-data-table>
       <div.mdc-data-table__container>
         <table.mdc-data-table__table>
           <tbody.mdc-data-table__content>
             <tr.mdc-data-table__row>
-              <th.mdc-data-table__cell scope=row>_{MsgInvoiceItem}
-              <td.mdc-data-table__cell>#{sname}
+              <th.mdc-data-table__cell scope=row>_{MsgTheName}
+              <td.mdc-data-table__cell>#{xname}
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgQuantity}
               <td.mdc-data-table__cell>#{show q}
