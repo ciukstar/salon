@@ -37,5 +37,9 @@ Array.from(
 window.mdc.autoInit();
 
 Array.from(
+  document.querySelectorAll('div.mdc-banner')
+).map(x => x.MDCBanner).forEach(function (x) { x.open(); });
+
+Array.from(
   document.querySelectorAll('aside.mdc-snackbar')
 ).map(x => x.MDCSnackbar).forEach(function (x) { x.open(); });
