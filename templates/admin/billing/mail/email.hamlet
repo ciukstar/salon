@@ -17,7 +17,7 @@
 
 <main.mdc-top-app-bar--fixed-adjust>
 
-  $forall Entity _ (InvoiceMail _ status timemark recip recipName sender senderName subject body) <- email
+  $forall Entity _ (InvoiceMail _ status timemark recip recipName sender senderName subject body html pdf) <- email
     <div.mdc-data-table>
       <div.mdc-data-table__container>
         <table.mdc-data-table__table>
@@ -64,7 +64,27 @@
               
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgMessage}
-              <td.mdc-data-table__cell>#{body}
+              <td.mdc-data-table__cell>
+                $maybe message <- unTextarea <$> body
+                  #{message}
+              
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgSendAsHtml}
+              <td.mdc-data-table__cell>
+                $case html
+                  $of True
+                    _{MsgYes}
+                  $of False
+                    _{MsgNo}
+              
+            <tr.mdc-data-table__row>
+              <th.mdc-data-table__cell scope=row>_{MsgAttachPdf}
+              <td.mdc-data-table__cell>
+                $case pdf
+                  $of True
+                    _{MsgYes}
+                  $of False
+                    _{MsgNo}
 
 
 <div.mdc-dialog ##{dlgInvoiceMailDelete} data-mdc-auto-init=MDCDialog>

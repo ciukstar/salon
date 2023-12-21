@@ -52,7 +52,7 @@
         _{MsgNoMailYet}.
   $else
     <nav.mdc-list data-mdc-auto-init=MDCList>
-      $forall Entity mid (InvoiceMail _ status timemark recipient _ _ _ subject _) <- mail
+      $forall Entity mid (InvoiceMail _ status timemark recipient _ _ _ subject _ _ _) <- mail
         <a.mdc-list-item href=@{AdminR $ AdmInvoiceMailR iid mid}
           .mdc-list-item--with-leading-icon
           .mdc-list-item--with-three-lines

@@ -28,7 +28,7 @@
 
 <main.mdc-top-app-bar--fixed-adjust>
 
-  $forall (_,msg) <- filter (((/=) info . fst)) msgs
+  $forall (_,msg) <- filter (((==) warn . fst)) msgs
     <div.mdc-banner role=banner data-mdc-auto-init=MDCBanner>
       <div.mdc-banner__content role=alertdialog aria-live=assertive>
         <div.mdc-banner__graphic-text-wrapper>
@@ -86,7 +86,18 @@
               <td.mdc-data-table__cell>#{no}
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgStatus}
-              <td.mdc-data-table__cell>#{show status}
+              <td.mdc-data-table__cell>
+                $case status
+                  $of InvoiceStatusDraft
+                    _{MsgDraft}
+                  $of InvoiceStatusOpen
+                    _{MsgOpen}
+                  $of InvoiceStatusPaid
+                    _{MsgPaid}
+                  $of InvoiceStatusVoid
+                    _{MsgVoid}
+                  $of InvoiceStatusUncollectible
+                    _{MsgUncollectible}
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgBillTo}
               <td.mdc-data-table__cell>
@@ -135,7 +146,7 @@
                         #{amount}
 
 
-$forall (_,msg) <- filter (((==) info) . fst) msgs
+$forall (_,msg) <- filter (((/=) warn) . fst) msgs
   <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
     <div.mdc-snackbar__surface>
       <div.mdc-snackbar__label>#{msg}

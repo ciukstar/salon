@@ -1,3 +1,5 @@
+SendAsHtml: Trimite ca HTML
+AttachPdf: Atașează PDF
 Message: Mesaj
 Sender: Expeditor
 Recipient: Destinatar

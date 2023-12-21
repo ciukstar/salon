@@ -8,7 +8,9 @@ InvoiceMail
   sender Text
   senderName Text Maybe
   subject Text
-  body Text
+  body Textarea Maybe
+  html Bool
+  pdf Bool
 
 ItemBook
   item ItemId OnDeleteCascade

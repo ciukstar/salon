@@ -1,3 +1,5 @@
+SendAsHtml: Envoyer en HTML
+AttachPdf: Joindre un PDF
 Message: Message
 Sender: Expéditeur
 Recipient: Destinataire

@@ -1,3 +1,5 @@
+SendAsHtml: Отправить как HTML
+AttachPdf: Прикрепить PDF-файл
 Message: Сообщение
 Sender: Отправитель
 Recipient: Получатель
