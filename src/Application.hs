@@ -120,6 +120,7 @@ import Admin.Billing
     , getAdmInvoiceR
     , getAdmInvoiceEditR
     , postAdmInvoiceR
+    , getAdmInvoiceReportR
     , postAdmInvoiceDeleteR
     , getAdmInvoiceItemsR
     , postAdmInvoiceItemsR

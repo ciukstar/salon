@@ -13,7 +13,7 @@ L'application [« Salon »](https://salonfr-w3cpovaqka-de.a.run.app) offre la po
 
 Les services à annoncer sont définis et publiés dans la section [« Services »](https://salonfr-w3cpovaqka-de.a.run.app/admin/services) du groupe « Données ». Si nécessaire, les services peuvent être définis comme une hiérarchie de groupes et de sous-services.
 
-Chaque service peut avoir plusieurs offres avec le prix correspondant. Les offres sont définies pour chaque service dans la rubrique « Services » du groupe « Données ».
+Chaque service peut avoir plusieurs offres avec des prix correspondants. Les offres sont définies pour chaque service dans la rubrique « Services » du groupe « Données ».
 
 Une fois le service et ses offres définis, le service peut être publié. La prestation et les offres seront présentées au client dans la rubrique [« Services »](https://salonfr-w3cpovaqka-de.a.run.app/services) et disponibles à la réservation dans la rubrique [« Prenez rendez-vous »](https://salonfr-w3cpovaqka-de.a.run.app/book).
 
@@ -59,7 +59,12 @@ Tous les utilisateurs peuvent devenir clients par simple inscription et utilisat
 ...
 
 ## Facture
-...
+
+Une facture peut être créée manuellement dans la rubrique [« Factures »](https://salonfr-w3cpovaqka-de.a.run.app/admin/billing/invoices) en fournissant son détail et les éléments qui la composent.
+
+Après avoir créé une nouvelle facture et ajouté ses éléments, la facture peut être envoyée au client à une adresse e-mail spécifiée.
+
+De plus, la facture peut être téléchargée au format PDF ou HTML et envoyée au client par d'autres moyens de communication.
 
 # Intégration avec des API externes
 

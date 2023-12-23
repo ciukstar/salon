@@ -1,3 +1,7 @@
+Total: Total
+AsPdf: PDF
+AsHtml: HTML
+Download: Télécharger
 SendAsHtml: Envoyer en HTML
 AttachPdf: Joindre un PDF
 Message: Message
@@ -412,7 +416,7 @@ Doc001 hrefHome: L'application <a href=#{hrefHome}>« Salon »</a> offre la poss
 
 Doc002 hrefServices: Les services à annoncer sont définis et publiés dans la section <a href=#{hrefServices}>« Services »</a> du groupe « Données ». Si nécessaire, les services peuvent être définis comme une hiérarchie de groupes et de sous-services.
 
-Doc003: Chaque service peut avoir plusieurs offres avec des prix et des devises correspondants. Les offres sont définies pour chaque Service dans la rubrique « Services » du groupe « Données ».
+Doc003: Chaque service peut avoir plusieurs offres avec des prix correspondants. Les offres sont définies pour chaque Service dans la rubrique « Services » du groupe « Données ».
 
 Doc004 hrefServices hrefBook: Une fois le service et ses offres définis, le service peut être publié. La prestation et les offres seront présentées au client dans la rubrique <a href=#{hrefServices}>« Services »</a> et disponibles à la réservation dans la rubrique <a href=#{hrefBook}>« Prenez rendez-vous »</a>.
 
@@ -455,3 +459,9 @@ Doc015: Intégration avec des API externes
 Doc016 href: Pour simuler un paiement réussi, utilisez les cartes de test de la <a href=#{href}>liste suivante</a>.
 
 Doc017 href: Pour simuler les paiements refusés par l'émetteur, utilisez les cartes de test de la <a href=#{href}>liste suivante</a>.
+
+Doc018 href: Une facture peut être créée manuellement dans la rubrique <a href=#{href}>« Factures »</a> en fournissant son détail et les éléments qui la composent.
+
+Doc019: Après avoir créé une nouvelle facture et ajouté ses éléments, la facture peut être envoyée au client à une adresse e-mail spécifiée.
+
+Doc020: De plus, la facture peut être téléchargée au format PDF ou HTML et envoyée au client par d'autres moyens de communication.

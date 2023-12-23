@@ -1,3 +1,7 @@
+Total: Total
+AsPdf: PDF
+AsHtml: HTML
+Download: Download
 SendAsHtml: Send as HTML
 AttachPdf: Attach PDF
 Message: Message
@@ -410,7 +414,7 @@ Doc001 hrefHome@Text: The <a href=#{hrefHome}>"Salon"</a> application provides t
 
 Doc002 hrefServices@Text: The services to be advertised are defined and published in section <a href=#{hrefServices}>"Services"</a> of group "Data". Optionally, services can be defined as a hierarchy of groups and subservices.
 
-Doc003: Each service can have multiple offers with corresponding prices and currencies. Offers are defined for each Service in the “Services” section in the “Data” group.
+Doc003: Each service can have multiple offers with corresponding prices. Offers are defined for each Service in the “Services” section in the “Data” group.
 
 Doc004 hrefServices@Text hrefBook@Text: Once the service and its offerings are defined, the service can be published. The service and offers will be displayed to the customer in the section <a href=#{hrefServices}>"Services"</a> and available for booking in the section <a href=#{hrefBook}>"Book appointment"</a>.
 
@@ -453,3 +457,9 @@ Doc015: Integration with external APIs
 Doc016 href@Text: To simulate a successful payment, use test cards from the <a href=#{href}>following list</a>.
 
 Doc017 href@Text: To simulate payments that the issuer declines, use test cards from the <a href=#{href}>following list</a>.
+
+Doc018 href@Text: An invoice can be created manually in the <a href=#{href}>“Invoices”</a> section by providing its details and the constituent items.
+
+Doc019: After creating a new invoice and adding its elements, the invoice can be sent to the customer to a specified email address.
+
+Doc020: Additionally, the invoice can be downloaded in PDF or HTML format and sent to the customer by other means of communication.

@@ -13,7 +13,7 @@ The ["Salon"](https://salon-w3cpovaqka-de.a.run.app) application provides the op
 
 The services to be advertised are defined and published in section ["Services"](https://salon-w3cpovaqka-de.a.run.app/admin/services) of group "Data". Optionally, services can be defined as a hierarchy of groups and subservices.
 
-Each service can have several offers with the corresponding price. Offers are defined for each service in the “Services” section in the “Data” group.
+Each service can have multiple offers with corresponding prices. Offers are defined for each service in the “Services” section in the “Data” group.
 
 Once the service and its offerings are defined, the service can be published. The service and offers will be displayed to the customer in the section ["Services"](https://salon-w3cpovaqka-de.a.run.app/services) and available for booking in the section ["Book appointment"](https://salon-w3cpovaqka-de.a.run.app/book).
 
@@ -59,7 +59,12 @@ All users can become customers by simply registering and using the services offe
 ...
 
 ## Invoice
-...
+
+An invoice can be created manually in the [“Invoices”](https://salon-w3cpovaqka-de.a.run.app/admin/billing/invoices) section by providing its details and the constituent items.
+
+After creating a new invoice and adding its elements, the invoice can be sent to the customer to a specified email address.
+
+Additionally, the invoice can be downloaded in PDF or HTML format and sent to the customer by other means of communication.
 
 # Integration with external APIs
 

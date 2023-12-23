@@ -9,19 +9,39 @@
       <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgInvoice}
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end.mdc-theme--text-primary-on-light>
     
-      <button.mdc-icon-button type=button title=_{MsgSend}
+      <button.mdc-top-app-bar__action-item.mdc-icon-button type=button title=_{MsgSend}
         onclick="document.getElementById('#{dlgInvoiceSendmail}').MDCDialog.open()">
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>send
+
+      <div.mdc-top-app-bar__action-item.mdc-menu-surface--anchor>
+        <button.mdc-icon-button type=button title=_{MsgDownload}
+          onclick="document.getElementById('#{menuDownload}').MDCMenuSurface.open()">
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>download
+        <div.mdc-menu.mdc-menu-surface data-mdc-auto-init=MDCMenuSurface ##{menuDownload}>
+          <nav.mdc-deprecated-list.mdc-deprecated-list--icon-list
+            role=menu aria-hidden=true aria-orientation=vertical tabindex=-1>
+            <a.mdc-deprecated-list-item role=menuitem target=_blank
+              href=@?{(AdminR $ AdmInvoiceReportR iid,[("_accept","text/html")])}>
+              <span.mdc-deprecated-list-item__ripple>
+              <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>code
+              <span.mdc-deprecated-list-item__text>_{MsgAsHtml}
+            <a.mdc-deprecated-list-item role=menuitem target=_blank
+              href=@?{(AdminR $ AdmInvoiceReportR iid,[("_accept","application/pdf")])}>
+              <span.mdc-deprecated-list-item__ripple>
+              <i.mdc-deprecated-list-item__graphic.material-symbols-outlined>picture_as_pdf
+              <span.mdc-deprecated-list-item__text>_{MsgAsPdf}
         
-      <button.mdc-icon-button type=button title=_{MsgDel}
+      <button.mdc-top-app-bar__action-item.mdc-icon-button type=button title=_{MsgDel}
         onclick="document.getElementById('#{dlgInvoiceDelete}').MDCDialog.open()">
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>delete
         
-      <a.mdc-icon-button href=@{AdminR $ AdmInvoiceEditR iid} role=button title=_{MsgEdit}>
+      <a.mdc-top-app-bar__action-item.mdc-icon-button href=@{AdminR $ AdmInvoiceEditR iid} role=button title=_{MsgEdit}>
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>edit
@@ -76,7 +96,7 @@
             <span.mdc-tab__ripple>
             <span.mdc-tab__focus-ring>
 
-  $maybe (Entity _ (Invoice _ _ no status day due),Entity _ customer,Entity _ employee,a) <- invoice
+  $maybe Entity _ (Invoice _ _ no status day due) <- invoice
     <div.mdc-data-table>
       <div.mdc-data-table__container>
         <table.mdc-data-table__table>
@@ -101,14 +121,15 @@
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgBillTo}
               <td.mdc-data-table__cell>
-                $maybe cname <- userFullName customer
-                  #{cname}
-                $nothing
-                  #{userName customer}
-                $maybe email <- userEmail customer
-                  <div>
-                    <small style="color:var(--theme-text-small-hint-on-light)">
-                      #{email}
+                $maybe Entity _ customer <- customer
+                  $maybe cname <- userFullName customer
+                    #{cname}
+                  $nothing
+                    #{userName customer}
+                  $maybe email <- userEmail customer
+                    <div>
+                      <small style="color:var(--theme-text-small-hint-on-light)">
+                        #{email}
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgBilledFrom}
               <td.mdc-data-table__cell>
@@ -121,7 +142,8 @@
                     <small style="color:var(--theme-text-small-hint-on-light)">
                       #{unTextarea addr}
                 $nothing
-                  #{staffName employee}
+                  $maybe Entity _ employee <- employee
+                    #{staffName employee}
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgInvoiceDate}
               <td.mdc-data-table__cell>
@@ -136,7 +158,7 @@
             <tr.mdc-data-table__row>
               <th.mdc-data-table__cell scope=row>_{MsgAmount}
               <td.mdc-data-table__cell>
-                $with Value amount <- a
+                $maybe Value amount <- amount
                   $with amount <- show amount
                     $maybe Entity _ (Business _ _ currency _ _ _ _ _ _) <- business
                       <span.currency data-value=#{amount} data-currency=#{currency}>

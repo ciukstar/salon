@@ -1,3 +1,7 @@
+Total: Total
+AsPdf: PDF
+AsHtml: HTML
+Download: Descarcă
 SendAsHtml: Trimite ca HTML
 AttachPdf: Atașează PDF
 Message: Mesaj
@@ -412,7 +416,7 @@ Doc001 hrefHome: Aplicația <a href=#{hrefHome}>„Salon”</a> oferă posibilit
 
 Doc002 hrefServices: Serviciile care vor fi promovate sunt definite și publicate în secțiunea <a href=#{hrefServices}>„Servicii”</a> din grupul „Date”. Dacă este necesar, serviciile pot fi definite ca o ierarhie de grupuri și subservicii.
 
-Doc003: Fiecare serviciu poate avea mai multe oferte cu prețuri și valute corespunzătoare. Ofertele sunt definite pentru fiecare Serviciu în secțiunea „Servicii” din grupul „Date”.
+Doc003: Fiecare serviciu poate avea mai multe oferte cu prețuri corespunzătoare. Ofertele sunt definite pentru fiecare Serviciu în secțiunea „Servicii” din grupul „Date”.
 
 Doc004 hrefServices hrefBook: Odată ce serviciul și ofertele sale sunt definite, serviciul poate fi publicat. Serviciul și ofertele vor fi afișate clientului în secțiunea <a href=#{hrefServices}>„Servicii”</a> și disponibile pentru rezervare în secțiunea <a href=#{hrefBook}>„Rezervă o programare”</a>.
 
@@ -455,3 +459,9 @@ Doc015: Integrare cu API-uri externe
 Doc016 href: Pentru a simula o plată reușită, utilizați carduri de test din <a href=#{href}>lista următoare</a>.
 
 Doc017 href: Pentru a simula plățile pe care emitentul le refuză, utilizați carduri de testare din <a href=#{href}>următoarea listă</a>.
+
+Doc018 href: O factură poate fi creată manual în secțiunea <a href=#{href}>„Facturi”</a>, furnizând detaliile acesteia și elementele constitutive.
+
+Doc019: După crearea unei noi facturi și adăugarea elementelor acesteia, factura poate fi trimisă clientului la o adresă de e-mail specificată.
+
+Doc020: În plus, factura poate fi descărcată în format PDF sau HTML și trimisă clientului prin alte mijloace de comunicare.

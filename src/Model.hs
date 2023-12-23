@@ -16,6 +16,7 @@
 
 module Model where
 
+import Control.Monad (Monad, mapM)
 import Data.Ord (Ord)
 import Data.Proxy (Proxy)
 import Data.Time
@@ -29,7 +30,7 @@ import Data.Time.Calendar.Month (Month (MkMonth))
 import Data.Time.Clock (UTCTime, NominalDiffTime)
 import Prelude (Integer, Int, fromIntegral, Double)
 import Data.Either (Either (Left, Right))
-import Data.Bool (Bool)
+import Data.Bool (Bool (True))
 import Data.Fixed ( Centi )
 import Data.Function ((.),($))
 import Data.Maybe (Maybe (Just))
@@ -39,18 +40,28 @@ import ClassyPrelude.Yesod
     , derivePersistField, PersistValue (PersistUTCTime)
     , truncate
     )
+import Graphics.PDF
+    ( pdfByteString, PDFDocumentInfo (author), standardViewerPrefs
+    , PDFRect (PDFRect), PDF
+    )
+import Graphics.PDF.Document
+    ( displayDoctitle, viewerPreferences, compressed, subject, standardDocInfo )
 import Yesod.Auth.HashDB (HashDBUser (userPasswordHash, setPasswordHash))
+import Yesod.Core.Content
+    ( ToContent (toContent), Content, ToTypedContent (toTypedContent)
+    , HasContentType (getContentType), TypedContent (TypedContent)
+    )
 import Yesod.Core.Dispatch
     ( PathMultiPiece, toPathMultiPiece, fromPathMultiPiece
     , PathPiece, toPathPiece, fromPathPiece
     )
+import Yesod.Core.Types (ContentType)
 import Data.Text (pack, unpack)
 import Text.Hamlet (Html)
 import Text.Show (Show, show)
 import Text.Read (Read, readMaybe, read)
 import Data.Eq (Eq)
 import Data.Functor ((<$>))
-import Control.Monad (mapM)
 import Database.Esqueleto.Experimental (SqlString)
 import Database.Persist.Class (PersistField, toPersistValue, fromPersistValue)
 import Database.Persist.Quasi (lowerCaseSettings)
@@ -269,3 +280,28 @@ instance SqlString Textarea
 
 ultDestKey :: Text
 ultDestKey = "_ULT"
+
+
+mimePdf :: ContentType
+mimePdf = "application/pdf"
+
+
+instance ToContent (PDF ()) where
+    toContent :: PDF () -> Content
+    toContent = toContent . pdfByteString
+        standardDocInfo { author = "Starciuc Sergiu"
+                        , subject = "Invoice"
+                        , compressed = True
+                        , viewerPreferences = standardViewerPrefs { displayDoctitle = True }
+                        }
+        (PDFRect 0 0 612 792)
+
+
+instance ToTypedContent (PDF ()) where
+    toTypedContent :: PDF () -> TypedContent
+    toTypedContent = TypedContent mimePdf . toContent
+
+
+instance HasContentType (PDF ()) where
+    getContentType :: Monad m => m (PDF ()) -> ContentType
+    getContentType _ = mimePdf

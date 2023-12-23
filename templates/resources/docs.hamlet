@@ -84,8 +84,9 @@
       ...
 
     <div.mdc-typography--headline5>_{MsgInvoice}
-    <p>
-      ...
+    <p>#{trans $ MsgDoc018 (rndr $ AdminR AdmInvoicesR)}
+    <p>_{MsgDoc019}
+    <p>_{MsgDoc020}
 
     <div.mdc-typography--headline4>_{MsgDoc015}
     <ul>

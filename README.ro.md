@@ -13,7 +13,7 @@ Aplicația [„Salon”](https://salonro-w3cpovaqka-de.a.run.app) oferă posibil
 
 Serviciile care vor fi promovate sunt definite și publicate în secțiunea [„Servicii”](https://salonro-w3cpovaqka-de.a.run.app/admin/services) din grupul „Date”. Dacă este necesar, serviciile pot fi definite ca o ierarhie de grupuri și subservicii.
 
-Fiecare serviciu poate avea mai multe oferte cu prețul corespunzător. Ofertele sunt definite pentru fiecare serviciu în secțiunea „Servicii” din grupul „Date”.
+Fiecare serviciu poate avea mai multe oferte cu prețuri corespunzătoare. Ofertele sunt definite pentru fiecare serviciu în secțiunea „Servicii” din grupul „Date”.
 
 Odată ce serviciul și ofertele sale sunt definite, serviciul poate fi publicat. Serviciul și ofertele vor fi afișate clientului în secțiunea [„Servicii”](https://salonro-w3cpovaqka-de.a.run.app/services) și disponibile pentru rezervare în secțiunea [„Rezervă o programare”](https://salonro-w3cpovaqka-de.a.run.app/book).
 
@@ -59,7 +59,12 @@ Toți utilizatorii pot deveni clienți prin simpla înregistrare și utilizarea 
 ...
 
 ## Factură
-...
+
+O factură poate fi creată manual în secțiunea [„Facturi”](https://salonro-w3cpovaqka-de.a.run.app/admin/billing/invoices), furnizând detaliile acesteia și elementele constitutive.
+
+După crearea unei noi facturi și adăugarea elementelor acesteia, factura poate fi trimisă clientului la o adresă de e-mail specificată.
+
+În plus, factura poate fi descărcată în format PDF sau HTML și trimisă clientului prin alte mijloace de comunicare.
 
 # Integrare cu API-uri externe
 * Gateway de plată: [Stripe](https://stripe.com/)

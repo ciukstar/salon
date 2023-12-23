@@ -96,6 +96,7 @@
     /billing/form/invoices/#InvoiceId/edit 	 AdmInvoiceEditR       GET
     /billing/form/invoices/create 	   	 AdmInvoiceCreateR     GET
     /billing/invoices/#InvoiceId/delete	   	 AdmInvoiceDeleteR     POST
+    /billing/invoices/#InvoiceId/report   	 AdmInvoiceReportR     GET
     /billing/invoices/#InvoiceId  	   	 AdmInvoiceR	       GET POST
     /billing/invoices 	     	  	   	 AdmInvoicesR	       GET POST
     

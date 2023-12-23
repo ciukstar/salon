@@ -23,7 +23,7 @@ import Foundation
       )
     , AdminR
       ( AdmServicesR, BusinessR, UsersR, BusinessAboutR, BusinessContactR
-      , BusinessHoursR, BrandR
+      , BusinessHoursR, BrandR, AdmInvoicesR
       )
     , AppMessage
       ( MsgDocumentation, MsgPhoto, MsgNavigationMenu, MsgLogin, MsgUserProfile
@@ -35,6 +35,7 @@ import Foundation
       , MsgDoc0062, MsgDoc0063, MsgDoc0064, MsgDoc0065, MsgDoc0066, MsgDoc0067
       , MsgDoc0068, MsgDoc007, MsgDoc008, MsgDoc009, MsgDoc010, MsgDoc011
       , MsgDoc012 , MsgDoc013, MsgDoc014, MsgDoc015, MsgDoc016, MsgDoc017
+      , MsgDoc018, MsgDoc019, MsgDoc020
       )
     )
 

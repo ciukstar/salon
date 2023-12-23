@@ -3,6 +3,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE InstanceSigs #-}
 
 module Admin.Billing
   ( getAdmInvoicesR
@@ -11,6 +13,7 @@ module Admin.Billing
   , getAdmInvoiceR
   , getAdmInvoiceEditR
   , postAdmInvoiceR
+  , getAdmInvoiceReportR
   , postAdmInvoiceDeleteR
   , getAdmInvoiceItemsR
   , postAdmInvoiceItemsR
@@ -31,9 +34,9 @@ module Admin.Billing
 import Control.Applicative ((<|>))
 import Control.Exception.Safe
     ( tryAny, SomeException (SomeException), Exception (fromException))
-import Control.Lens ((?~), sumOf, folded, to, ix)
+import Control.Lens ((?~), sumOf, folded, to, ix, _Just)
 import qualified Control.Lens as L ((^.), (^?))
-import Control.Monad (join, forM_)
+import Control.Monad (join, forM)
 import Control.Monad.IO.Class (liftIO)
 import Data.Aeson (object, (.=))
 import Data.Aeson.Lens (AsValue(_String), key, AsNumber (_Integer))
@@ -45,6 +48,7 @@ import Data.Complex (Complex ((:+)))
 import Data.Fixed (Centi)
 import Data.Function ((&))
 import Data.Maybe (isJust, fromMaybe, maybeToList)
+import qualified Data.List.Safe as LS (last)
 import Data.Text (Text, pack, unpack, toUpper)
 import Data.Text.Encoding (encodeUtf8, decodeUtf8)
 import Data.Text.Lazy (fromStrict)
@@ -56,7 +60,7 @@ import Graphics.PDF
     , PDFRect (PDFRect), PDF, addPage, drawWithPage, AnyFont, black
     , Rectangle (Rectangle), PDFFont (PDFFont), mkStdFont, strokeColor
     , FontName (Times_Roman, Times_Bold), setWidth, Shape (stroke), Line (Line)
-    , setStrokeAlpha
+    , setStrokeAlpha, white
     )
 import Graphics.PDF.Document
     ( standardDocInfo, PDFDocumentInfo (subject, compressed, viewerPreferences)
@@ -89,7 +93,8 @@ import Yesod.Core
     , MonadHandler (liftHandler), redirect, addMessageI, getMessages
     , getCurrentRoute, lookupPostParam, whamlet, RenderMessage (renderMessage)
     , getYesod, languages, lookupSession, getUrlRender, setSession
-    , getMessageRender, getUrlRenderParams, addMessage
+    , getMessageRender, getUrlRenderParams, addMessage, TypedContent
+    , selectRep, provideRep, notFound
     )
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Form.Functions
@@ -97,7 +102,7 @@ import Yesod.Form.Functions
     )
 import Yesod.Form.Input (runInputGet, iopt, ireq)
 import Yesod.Form.Types
-    ( MForm, FormResult (FormSuccess), Field
+    ( MForm, FormResult (FormSuccess, FormFailure, FormMissing), Field
     , FieldView (fvInput, fvErrors, fvLabel, fvId)
     , FieldSettings (FieldSettings, fsLabel, fsTooltip, fsId, fsName, fsAttrs)
     )
@@ -130,6 +135,7 @@ import Foundation
       , AdmInvoiceItemCreateR, AdmInvoiceItemCreateR, AdmInvoiceItemCreateR
       , AdmInvoiceItemR, AdmInvoiceItemEditR, AdmInvoiceItemDeleteR
       , AdmInvoiceSendmailR, AdmInvoiceMailR, AdmInvoiceMailDeleteR
+      , AdmInvoiceReportR
       )
     , AppMessage
       ( MsgInvoices, MsgLogin, MsgPhoto, MsgUserProfile, MsgNavigationMenu
@@ -143,9 +149,10 @@ import Foundation
       , MsgAmount, MsgCurrency, MsgThumbnail, MsgRecordDeleted, MsgFromEmail
       , MsgActionCancelled, MsgRecordEdited, MsgSend, MsgToEmail, MsgBodyEmail
       , MsgSubjectEmail, MsgMessageSent, MsgMessageNotSent, MsgAppName, MsgTime
-      , MsgTheName, MsgPaymentDueDate, MsgMail, MsgNoMailYet, MsgEmail
+      , MsgTheName, MsgPaymentDueDate, MsgMail, MsgNoMailYet, MsgEmail, MsgAsPdf
       , MsgRecipient, MsgSender, MsgMessage, MsgInvalidFormData, MsgSendAsHtml
-      , MsgAttachPdf, MsgYes, MsgNo
+      , MsgAttachPdf, MsgYes, MsgNo, MsgDownload, MsgAsHtml, MsgInvalidValue
+      , MsgTotal
       )
     )
 
@@ -180,7 +187,7 @@ import Model
       )
     , InvoiceMailId
     , MailStatus (MailStatusDraft, MailStatusBounced, MailStatusDelivered)
-    , _itemAmount, _itemCurrency
+    , _itemAmount, _itemCurrency, _itemVat, _itemTax, _itemQuantity
     )
 
 import Menu (menu)
@@ -464,7 +471,7 @@ buildMail imail html pdf = simpleMailInMemory
     (Address (invoiceMailRecipientName imail) (invoiceMailRecipient imail))
     (Address (invoiceMailSenderName imail) (invoiceMailSender imail))
     (invoiceMailSubject imail)
-    (TL.empty)
+    TL.empty
     (maybe (fromStrict $ maybe "" unTextarea . invoiceMailBody $ imail) renderHtml html)
     (maybeToList $ (,,) "application/pdf" "invoice.pdf" <$> pdf)
 
@@ -681,43 +688,119 @@ invoicePdf customer employee invoice items trans (PDFRect x _ x' y') fontr fontb
         headerCurrency
                      
         
-        forM_ (zip [1 ..] items) $ \(i,Entity _ (Item _ _ name q p t v a c)) -> do
+        lastRow <- LS.last <$> forM (zip [1 ..] items) ( \(i,Entity _ (Item _ _ name q p t v a c)) -> do
             
-            let (Rectangle _ (_ :+ y''),v1) =
+            let (r1@(Rectangle _ (_ :+ b1')),v1) =
                     drawTextBox x21 (y21 - i * 30) (x21' - x21) 30 NE NormalParagraph fontSmall $ do
                         setJustification LeftJustification
                         paragraph $ txt name
             v1
             
-            let (_,v2) = drawTextBox x22 y'' (x22' - x22) 30 NE NormalParagraph fontSmall $ do
+            let (r2,v2) = drawTextBox x22 b1' (x22' - x22) 30 NE NormalParagraph fontSmall $ do
                     setJustification LeftJustification
                     paragraph $ txt $ pack $ show q
             v2
             
-            let (_,v3) = drawTextBox x23 y'' (x23' - x23) 30 NE NormalParagraph fontSmall $ do
+            let (r3,v3) = drawTextBox x23 b1' (x23' - x23) 30 NE NormalParagraph fontSmall $ do
                     setJustification LeftJustification
                     paragraph $ txt $ pack $ show p
             v3
             
-            let (_,v4) = drawTextBox x24 y'' (x24' - x24) 30 NE NormalParagraph fontSmall $ do
+            let (r4,v4) = drawTextBox x24 b1' (x24' - x24) 30 NE NormalParagraph fontSmall $ do
                     setJustification LeftJustification
                     paragraph $ txt $ maybe "" (pack . show) t
             v4
             
-            let (_,v5) = drawTextBox x25 y'' (x25' - x25) 30 NE NormalParagraph fontSmall $ do
+            let (r5,v5) = drawTextBox x25 b1' (x25' - x25) 30 NE NormalParagraph fontSmall $ do
                     setJustification LeftJustification
                     paragraph $ txt $ maybe "" (pack . show) v
             v5
             
-            let (_,v6) = drawTextBox x26 y'' (x26' - x26) 30 NE NormalParagraph fontSmall $ do
+            let (r6,v6) = drawTextBox x26 b1' (x26' - x26) 30 NE NormalParagraph fontSmall $ do
                     setJustification LeftJustification
                     paragraph $ txt $ pack $ show a
             v6
             
-            let (_,v7) = drawTextBox x27 y'' (x27' - x27) 30 NE NormalParagraph fontSmall $ do
+            let (r7,v7) = drawTextBox x27 b1' (x27' - x27) 30 NE NormalParagraph fontSmall $ do
                     setJustification LeftJustification
                     paragraph $ txt $ fromMaybe "" c
             v7
+
+            return (r1,r2,r3,r4,r5,r6,r7) )
+
+        case lastRow of
+          Just ( Rectangle (a1 :+ b1) (a1' :+ _)
+               , Rectangle (a2 :+ _) (a2' :+ _)
+               , Rectangle (a3 :+ _) (a3' :+ _)
+               , Rectangle (a4 :+ _) (a4' :+ _)
+               , Rectangle (a5 :+ _) (a5' :+ _)
+               , Rectangle (a6 :+ _) (a6' :+ _)
+               , Rectangle (a7 :+ _) (a7' :+ _)) -> do
+
+            let (Rectangle (x28 :+ y28) (x28' :+ _),total) =
+                    drawTextBox a1 (b1 - 30) (a7' - a1) 30 NE NormalParagraph fontTitle $ do
+                        setJustification LeftJustification
+                        paragraph $ txt $ trans MsgTotal
+            total
+            
+            strokeColor black
+            setStrokeAlpha 0.3
+            setWidth 1
+            stroke (Line x28 y28 x28' y28)
+
+
+            let (r1@(Rectangle _ (x29' :+ y29')),_) =
+                    drawTextBox x28 (y28 - 20) (a1' - a1) 30 NE NormalParagraph fontSmallBold $ do
+                        setJustification LeftJustification
+                        paragraph $ txt $ trans MsgTotal
+                        
+            strokeColor white
+            setStrokeAlpha 0
+            setWidth 0
+            stroke r1
+
+            let (Rectangle _ (x30' :+ y30'),footerQuantity) =
+                    drawTextBox x29' y29' (a2' - a2) 30 NE NormalParagraph fontSmallBold $ do
+                        setJustification LeftJustification
+                        paragraph $ txt $ pack $ show $ items & sumOf (folded . to entityVal . _itemQuantity)
+            footerQuantity
+
+            let (r3@(Rectangle _ (x31' :+ y31')),_) =
+                    drawTextBox x30' y30' (a3' - a3) 30 NE NormalParagraph fontSmallBold $ do
+                        setJustification LeftJustification
+                        paragraph $ txt $ trans MsgPrice
+              
+            strokeColor white
+            setStrokeAlpha 0
+            setWidth 0
+            stroke r3
+
+            let (Rectangle _ (x32' :+ y32'),footerTax) =
+                    drawTextBox x31' y31' (a4' - a4) 30 NE NormalParagraph fontSmallBold $ do
+                        setJustification LeftJustification
+                        paragraph $ txt $ pack $ show $ items & sumOf (folded . to entityVal . _itemTax . _Just)
+            footerTax
+
+            let (Rectangle _ (x33' :+ y33'),footerVat) =
+                    drawTextBox x32' y32' (a5' - a5) 30 NE NormalParagraph fontSmallBold $ do
+                        setJustification LeftJustification
+                        paragraph $ txt $ pack $ show $ items & sumOf (folded . to entityVal . _itemVat . _Just)
+            footerVat
+
+            let (Rectangle _ (x34' :+ y34'),footerAmount) =
+                    drawTextBox x33' y33' (a6' - a6) 30 NE NormalParagraph fontSmallBold $ do
+                        setJustification LeftJustification
+                        paragraph $ txt $ pack $ show $ items & sumOf (folded . to entityVal . _itemAmount)
+            footerAmount
+
+            let (_,footerCurrency) =
+                    drawTextBox x34' y34' (a7' - a7) 30 NE NormalParagraph fontSmallBold $ do
+                        setJustification LeftJustification
+                        paragraph $ txt $ fromMaybe " " (join $ items L.^? ix 0 . to entityVal . _itemCurrency)
+                            
+            footerCurrency
+            
+          Nothing -> return ()
             
 
 renderIvoicePdf :: PDF () -> BSL.ByteString
@@ -744,15 +827,15 @@ $maybe Entity _ (User uname _ _ _ _ _ cname cemail) <- customer
       <table cellspacing=0 cellpadding=10 border=0>
         <tbody>
           <tr>
-            <td>
+            <td style="vertical-align:text-top">
               <div style="font-weight:bold;text-transform:uppercase">
                 _{MsgInvoiceNumber}
               <div>#{no}
-            <td>
+            <td style="vertical-align:text-top">
               <div style="font-weight:bold;text-transform:uppercase">
                 _{MsgInvoiceDate}
               <div>#{show day}
-            <td>
+            <td style="vertical-align:text-top">
               <div style="font-weight:bold;text-transform:uppercase">
                 _{MsgStatus}
               <div>
@@ -769,7 +852,7 @@ $maybe Entity _ (User uname _ _ _ _ _ cname cemail) <- customer
                     _{MsgVoid}
 
           <tr>
-            <td>
+            <td style="vertical-align:text-top">
               <div style="font-weight:bold;text-transform:uppercase">
                 _{MsgBillTo}
               <div>
@@ -780,19 +863,19 @@ $maybe Entity _ (User uname _ _ _ _ _ cname cemail) <- customer
                 $maybe email <- cemail
                   <div>
                     <small>#{email}
-            <td>
+            <td style="vertical-align:text-top">
               <div style="font-weight:bold;text-transform:uppercase">
                 _{MsgPaymentDueDate}
               <div>
                 $maybe due <- due
                   #{show due}
-            <td>
+            <td style="vertical-align:text-top">
               <div style="font-weight:bold;text-transform:uppercase">
                 _{MsgAmount}
               <div>#{show amount}
 
           <tr>
-            <td>
+            <td style="vertical-align:text-top">
               <div style="font-weight:bold;text-transform:uppercase">
                 _{MsgBilledFrom}
               <div>
@@ -800,8 +883,8 @@ $maybe Entity _ (User uname _ _ _ _ _ cname cemail) <- customer
                 $maybe email <- eemail
                   <div>
                     <small>#{email}
-            <td>
-            <td>
+            <td style="vertical-align:text-top">
+            <td style="vertical-align:text-top">
               <div style="font-weight:bold;text-transform:uppercase">
                 _{MsgCurrency}
               <div>
@@ -831,8 +914,26 @@ $maybe Entity _ (User uname _ _ _ _ _ cname cemail) <- customer
         <td style="border:1px solid rgba(0,0,0,0.3);padding:1rem">
           $maybe currency <- c
             #{currency}
+  <tfoot>
+    <tr>
+      <th style="border:1px solid rgba(0,0,0,0.3);padding:1rem">_{MsgTotal}
+      <th style="border:1px solid rgba(0,0,0,0.3);padding:1rem">
+        #{show quantity}  
+      <th style="border:1px solid rgba(0,0,0,0.3);padding:1rem">
+      <th style="border:1px solid rgba(0,0,0,0.3);padding:1rem">
+        #{show tax}
+      <th style="border:1px solid rgba(0,0,0,0.3);padding:1rem">
+        #{show vat}
+      <th style="border:1px solid rgba(0,0,0,0.3);padding:1rem">
+        #{show amount}
+      <th style="border:1px solid rgba(0,0,0,0.3);padding:1rem">
+        $maybe c <- currency
+          #{c}
 |]
     where
+      quantity = items & sumOf (folded . to entityVal . _itemQuantity)
+      tax = items & sumOf (folded . to entityVal . _itemTax . _Just)
+      vat = items & sumOf (folded . to entityVal . _itemVat . _Just)
       amount = items & sumOf (folded . to entityVal . _itemAmount)
       currency = join $ items L.^? ix 0 . to entityVal . _itemCurrency
 
@@ -1006,7 +1107,7 @@ postAdmInvoiceItemR iid xid = do
           runDB $ replace xid r
           addMessageI info MsgRecordEdited
           redirect $ AdminR $ AdmInvoiceItemR iid xid
-      _ -> defaultLayout $ do
+      _otherwise -> defaultLayout $ do
           setTitleI MsgInvoiceItem
           $(widgetFile "admin/billing/items/edit")
 
@@ -1055,7 +1156,7 @@ postAdmInvoiceItemsR iid = do
           runDB $ insert_ r
           addMessageI info MsgRecordAdded
           redirect $ AdminR $ AdmInvoiceItemsR iid
-      _ -> defaultLayout $ do
+      _otherwise -> defaultLayout $ do
           setTitleI MsgInvoiceItem
           $(widgetFile "admin/billing/items/create")
 
@@ -1229,7 +1330,9 @@ formItemCreate iid offer service item extra = do
         , fsAttrs = [("class","mdc-text-field__input")]
         } ((itemCurrency . entityVal <$> item) <|> pure currency)
 
-    let r = Item <$> offerR <*> pure iid <*> nameR <*> quantityR <*> priceR <*> taxR <*> vatR <*> amountR <*> currencyR
+    let r = Item <$> offerR <*> pure iid <*> nameR <*> quantityR <*> priceR
+                 <*> taxR <*> vatR <*> amountR <*> currencyR
+            
     let w = $(widgetFile "admin/billing/items/form-create")
     return (r,w)
 
@@ -1307,47 +1410,75 @@ postAdmInvoiceR iid = do
           runDB $ replace iid r
           addMessageI info MsgRecordEdited
           redirect $ AdminR $ AdmInvoiceR iid
-      _ -> defaultLayout $ do
+      _otherwise -> defaultLayout $ do
           setTitleI MsgInvoice
           $(widgetFile "admin/billing/edit")
 
 
+getAdmInvoiceReportR :: InvoiceId -> Handler TypedContent
+getAdmInvoiceReportR iid = do
+    (customer,employee,invoice) <- do
+        p <- runDB $ selectOne $ do
+            x :& c :& e <- from $ table @Invoice
+                `innerJoin` table @User `on` (\(x :& c) -> x ^. InvoiceCustomer ==. c ^. UserId)
+                `innerJoin` table @Staff `on` (\(x :& _ :& e) -> x ^. InvoiceStaff ==. e ^. StaffId)
+            where_ $ x ^. InvoiceId ==. val iid
+            return ((c,e),x)
+        return (fst . fst <$> p,snd . fst <$> p,snd <$> p)
+        
+    items <- runDB $ select $ do
+        x <- from $ table @Item
+        where_ $ x ^. ItemInvoice ==. val iid
+        orderBy [asc (x ^. ItemId)]
+        return x
+        
+    msgRender <- getMessageRender
+    urlRender <- getUrlRenderParams
+
+    selectRep $ do
+        provideRep $ do
+            timesRoman <- liftIO $ mkStdFont Times_Roman
+            timesBold <- liftIO $ mkStdFont Times_Bold
+            case (timesRoman,timesBold) of
+              (Right fr,Right fb) -> 
+                  return $ invoicePdf customer employee invoice items msgRender (PDFRect 0 0 612 792) fr fb
+              _otherwise -> notFound
+        provideRep $ do
+            return $ renderIvoiceHtml customer employee invoice items (toHtml . msgRender) urlRender
+
+
 getAdmInvoiceR :: InvoiceId -> Handler Html
 getAdmInvoiceR iid = do
+    (customer,employee,invoice,amount) <- do
+        p <- runDB $ selectOne $ do
+            x :& c :& e <- from $ table @Invoice
+                `innerJoin` table @User `on` (\(x :& c) -> x ^. InvoiceCustomer ==. c ^. UserId)
+                `innerJoin` table @Staff `on` (\(x :& _ :& e) -> x ^. InvoiceStaff ==. e ^. StaffId)
+            where_ $ x ^. InvoiceId ==. val iid
+
+            let a :: SqlExpr (Value (Maybe Centi))
+                a = subSelect $ do
+                    i <- from $ table @Item
+                    where_ $ i ^. ItemInvoice ==. x ^. InvoiceId
+                    return $ coalesceDefault [sum_ (i ^. ItemAmount)] (val 0)
+                
+            return (((c,e),x),coalesceDefault [a] (val 0))
+        return ( fst . fst . fst <$> p
+               , snd . fst . fst <$> p
+               , snd . fst <$> p
+               , snd <$> p
+               )
 
     business <- runDB $ selectOne $ from $ table @Business
-
-    invoice <- runDB $ selectOne $ do
-        x :& c :& e <- from $ table @Invoice
-            `innerJoin` table @User `on` (\(x :& c) -> x ^. InvoiceCustomer ==. c ^. UserId)
-            `innerJoin` table @Staff `on` (\(x :& _ :& e) -> x ^. InvoiceStaff ==. e ^. StaffId)
-
-        let a :: SqlExpr (Value (Maybe Centi))
-            a = subSelect $ do
-                i <- from $ table @Item
-                where_ $ i ^. ItemInvoice ==. x ^. InvoiceId
-                return $ coalesceDefault [sum_ (i ^. ItemAmount)] (val 0)
-            
-        where_ $ x ^. InvoiceId ==. val iid
-        return (x,c,e,coalesceDefault [a] (val 0))
 
     curr <- getCurrentRoute
     dlgInvoiceDelete <- newIdent
     msgs <- getMessages
     (fw,et) <- generateFormPost formInvoiceDelete
-        
-    (fw2,et2) <- do
-        (cust,empl,inv) <- do
-            p <- runDB $ selectOne $ do
-                x :& c :& e <- from $ table @Invoice
-                    `innerJoin` table @User `on` (\(x :& c) -> x ^. InvoiceCustomer ==. c ^. UserId)
-                    `innerJoin` table @Staff `on` (\(x :& _ :& e) -> x ^. InvoiceStaff ==. e ^. StaffId)
-                where_ $ x ^. InvoiceId ==. val iid
-                return ((c,e),x)
-            return (fst . fst <$> p,snd . fst <$> p,snd <$> p)
-        generateFormPost $ formInvoiceSendmail iid cust empl inv
-    
+    (fw2,et2) <- generateFormPost $ formInvoiceSendmail iid customer employee invoice
+
     dlgInvoiceSendmail <- newIdent
+    menuDownload <- newIdent
     formSendmailInvoice <- newIdent
     defaultLayout $ do
         setTitleI MsgInvoice
@@ -1370,7 +1501,7 @@ postAdmInvoicesR = do
           runDB $ insert_ r
           addMessageI info MsgRecordAdded
           redirect $ AdminR AdmInvoicesR
-      _ -> defaultLayout $ do
+      _otherwise -> defaultLayout $ do
           setTitleI MsgInvoice
           $(widgetFile "admin/billing/create")
 
@@ -1434,7 +1565,15 @@ formInvoice invoice extra = do
         , fsAttrs = [("class","mdc-text-field__input")]
         } ((invoiceNumber . entityVal <$> invoice) <|> Just nextNumber)
 
-    (statusR,statusV) <- mreq hiddenField FieldSettings
+    msgRender <- liftHandler getMessageRender
+
+    let f :: FormResult (Maybe a) -> FormResult a
+        f (FormSuccess (Just a)) = FormSuccess a
+        f (FormSuccess Nothing) = FormFailure [msgRender MsgInvalidValue]
+        f (FormFailure xs) = FormFailure xs
+        f FormMissing = FormMissing
+
+    (statusR,statusV) <- first (f . (readMaybe <$>)) <$> mreq hiddenField FieldSettings
         { fsLabel = SomeMessage MsgStatus
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = []
@@ -1464,7 +1603,7 @@ formInvoice invoice extra = do
         orderBy [asc (x ^. StaffName)]
         return x
 
-    return ( Invoice <$> custR <*> emplR <*> noR <*> (read <$> statusR) <*> dayR <*> dueR
+    return ( Invoice <$> custR <*> emplR <*> noR <*> statusR <*> dayR <*> dueR
            , $(widgetFile "admin/billing/form")
            )
   where
