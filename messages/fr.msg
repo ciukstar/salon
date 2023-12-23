@@ -1,8 +1,15 @@
+StoreWithSecretManager: Stocker avec Google Secret Manager
+StoreInDatabase: Stocker dans la base de données
+ClearSettings: Effacer
+Initialize: Initialiser
+Tokens: Jetons
 Total: Total
 AsPdf: PDF
 AsHtml: HTML
 Download: Télécharger
+SentAsHtml: Envoyé en HTML
 SendAsHtml: Envoyer en HTML
+PdfAttached: PDF ci-joint
 AttachPdf: Joindre un PDF
 Message: Message
 Sender: Expéditeur

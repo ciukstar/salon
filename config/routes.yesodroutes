@@ -84,6 +84,8 @@
 
 /admin AdminR:
 
+    /tokens TokensR GET
+
     /invoices/#InvoiceId/mail/#InvoiceMailId/delete AdmInvoiceMailDeleteR POST
     /invoices/#InvoiceId/mail/#InvoiceMailId 	    AdmInvoiceMailR       GET
     /invoices/#InvoiceId/mail                	    AdmInvoiceSendmailR   GET POST

@@ -1,8 +1,15 @@
+StoreWithSecretManager: Stocați cu Google Secret Manager
+StoreInDatabase: Stocați în baza de date
+ClearSettings: Ștergeți
+Initialize: Inițializează
+Tokens: Jetoane
 Total: Total
 AsPdf: PDF
 AsHtml: HTML
 Download: Descarcă
+SentAsHtml: Trimis ca HTML
 SendAsHtml: Trimite ca HTML
+PdfAttached: PDF atașat
 AttachPdf: Atașează PDF
 Message: Mesaj
 Sender: Expeditor

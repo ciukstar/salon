@@ -33,14 +33,14 @@ import Foundation
     , AdminR
       ( BrandR, UsersR, AdmStaffR, AdmServicesR
       , BusinessR, BusinessHoursR, BusinessCalendarR, BusinessAboutR
-      , BusinessContactR, AdmInvoicesR
+      , BusinessContactR, AdmInvoicesR, TokensR
       )
     , AppMessage
       ( MsgSourceCode, MsgDocumentation, MsgContactUs, MsgAboutUs, MsgSalon
       , MsgMyAppointments, MsgServices, MsgBookAppointment, MsgWelcome, MsgUsers
       , MsgStaff, MsgData, MsgResources, MsgRequests, MsgBusiness, MsgClose
       , MsgAnalytics, MsgWorkload, MsgCustomerRanking, MsgServiceRanking
-      , MsgInvoices
+      , MsgInvoices, MsgTokens
       )
     )
 
@@ -54,6 +54,7 @@ import Settings (widgetFile)
 
 menu :: Widget
 menu = do
+    
     user <- maybeAuth
 
     empl <- liftHandler $ runDB $ selectOne $ do

@@ -1,8 +1,15 @@
+StoreWithSecretManager: Store with Google Secret Manager
+StoreInDatabase: Store in database
+ClearSettings: Clear
+Initialize: Initialize
+Tokens: Tokens
 Total: Total
 AsPdf: PDF
 AsHtml: HTML
 Download: Download
+SentAsHtml: Sent as HTML
 SendAsHtml: Send as HTML
+PdfAttached: PDF attached
 AttachPdf: Attach PDF
 Message: Message
 Sender: Sender

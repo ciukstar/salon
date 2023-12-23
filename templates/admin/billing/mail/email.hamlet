@@ -63,13 +63,15 @@
               <td.mdc-data-table__cell>#{subject}
               
             <tr.mdc-data-table__row>
-              <th.mdc-data-table__cell scope=row>_{MsgMessage}
+              <th.mdc-data-table__cell scope=row>
+                _{MsgMessage}
               <td.mdc-data-table__cell>
                 $maybe message <- unTextarea <$> body
                   #{message}
               
             <tr.mdc-data-table__row>
-              <th.mdc-data-table__cell scope=row>_{MsgSendAsHtml}
+              <th.mdc-data-table__cell scope=row>
+                _{MsgSentAsHtml}
               <td.mdc-data-table__cell>
                 $case html
                   $of True
@@ -78,7 +80,8 @@
                     _{MsgNo}
               
             <tr.mdc-data-table__row>
-              <th.mdc-data-table__cell scope=row>_{MsgAttachPdf}
+              <th.mdc-data-table__cell scope=row>
+                _{MsgPdfAttached}
               <td.mdc-data-table__cell>
                 $case pdf
                   $of True

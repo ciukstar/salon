@@ -1,0 +1,15 @@
+
+main
+  .mdc-card
+    margin-top: 1rem
+    .mdc-card-wrapper__text-section:first-child
+      padding: 1rem 1rem 0 1rem
+      .card-title
+        font-size: var(--mdc-typography-headline6-font-size, 1.25rem)
+        font-weight: var(--mdc-typography-headline6-font-weight, 500)
+      .card-subtitle
+        font-size: var(--mdc-typography-body2-font-size, 0.875rem)
+        font-weight: var(--mdc-typography-body2-font-weight, 400)
+        opacity: 0.6
+    .mdc-card-wrapper__text-section
+      padding: 1.2rem 1rem 0 1rem

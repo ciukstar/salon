@@ -152,7 +152,7 @@ import Foundation
       , MsgTheName, MsgPaymentDueDate, MsgMail, MsgNoMailYet, MsgEmail, MsgAsPdf
       , MsgRecipient, MsgSender, MsgMessage, MsgInvalidFormData, MsgSendAsHtml
       , MsgAttachPdf, MsgYes, MsgNo, MsgDownload, MsgAsHtml, MsgInvalidValue
-      , MsgTotal
+      , MsgTotal, MsgSentAsHtml, MsgPdfAttached
       )
     )
 
@@ -173,7 +173,8 @@ import Model
       , OfferId, ItemOffer, ItemAmount, InvoiceMailId, InvoiceMailStatus
       , InvoiceMailTimemark, InvoiceMailInvoice
       )
-    , Staff (Staff, staffName, staffEmail), InvoiceId, Business (Business)
+    , Staff (Staff, staffName, staffEmail), InvoiceId
+    , Business (Business, businessEmail, businessFullName)
     , ItemId, Thumbnail
     , Item
       ( Item, itemOffer, itemQuantity, itemPrice, itemTax, itemVat, itemAmount
@@ -967,26 +968,30 @@ formInvoiceSendmail iid customer employee invoice extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (userFullName . entityVal <$> customer)
+
+    business <- liftHandler $ runDB $ selectOne $ from $ table @Business
         
     (fromR,fromV) <- mreq emailField FieldSettings
         { fsLabel = SomeMessage MsgFromEmail
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
-        } (staffEmail . entityVal =<< employee)
+        } ((businessEmail . entityVal =<< business) <|> (staffEmail . entityVal =<< employee))
         
     (senderR,senderV) <- mopt textField FieldSettings
         { fsLabel = SomeMessage MsgSender
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
-        } (Just (staffName . entityVal <$> employee))
+        } ( Just ((unTextarea <$>) . businessFullName . entityVal =<< business)
+            <|> Just (staffName . entityVal <$> employee)
+          )
 
-    trans <- getYesod >>= \a -> languages >>= \l -> return (renderMessage a l)
+    msgRender <- getMessageRender
         
     (subjectR,subjectV) <- mreq textField FieldSettings
         { fsLabel = SomeMessage MsgSubjectEmail
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
-        } ( (((trans MsgInvoice <> " ") <> trans MsgNumberSign) <>)
+        } ( (((msgRender MsgInvoice <> " ") <> msgRender MsgNumberSign) <>)
             . pack . show . invoiceNumber . entityVal <$> invoice
           )
         

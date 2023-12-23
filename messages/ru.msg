@@ -1,8 +1,15 @@
+StoreWithSecretManager: Хранить с помощью Google Secret Manager
+StoreInDatabase: Хранить в базе данных
+ClearSettings: Сбросить
+Initialize: Инициализировать
+Tokens: Токены
 Total: Всего
 AsPdf: PDF
 AsHtml: HTML
 Download: Скачать
+SentAsHtml: Отправлено как HTML
 SendAsHtml: Отправить как HTML
+PdfAttached: PDF прилагается
 AttachPdf: Прикрепить PDF-файл
 Message: Сообщение
 Sender: Отправитель
