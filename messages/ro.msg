@@ -1,5 +1,8 @@
-StoreWithSecretManager: Stocați cu Google Secret Manager
-StoreInDatabase: Stocați în baza de date
+Initialization: Inițializare
+StoreType: Tipul de stocare
+UserSession: Sesiunea de utilizator
+GoogleSecretManager: Google Secret Manager
+Database: Baza de date
 ClearSettings: Ștergeți
 Initialize: Inițializează
 Tokens: Jetoane

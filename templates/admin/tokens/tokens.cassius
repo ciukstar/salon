@@ -1,7 +1,7 @@
 
 main
   .mdc-card
-    margin-top: 1rem
+    margin: 1rem
     .mdc-card-wrapper__text-section:first-child
       padding: 1rem 1rem 0 1rem
       .card-title
@@ -12,4 +12,12 @@ main
         font-weight: var(--mdc-typography-body2-font-weight, 400)
         opacity: 0.6
     .mdc-card-wrapper__text-section
-      padding: 1.2rem 1rem 0 1rem
+      padding: 1rem
+      .card-content
+        form
+          display: flex
+          flex-direction: column
+          gap: 1rem
+          .mdc-radio .mdc-radio__native-control:enabled:checked+.mdc-radio__background
+            .mdc-radio__outer-circle, .mdc-radio__inner-circle
+              border-color: var(--theme-accent,#018786)

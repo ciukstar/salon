@@ -1,4 +1,6 @@
+
 ^{menu}
+
 <header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
   <div.mdc-top-app-bar__row>
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
@@ -23,25 +25,45 @@
 
 
 <main.mdc-top-app-bar--fixed-adjust>
+
+  $forall (_,msg) <- filter ((==) warn . fst) msgs
+    <div.mdc-banner role=banner data-mdc-auto-init=MDCBanner>
+      <div.mdc-banner__content role=alertdialog aria-live=assertive>
+        <div.mdc-banner__graphic-text-wrapper>
+          <div.mdc-banner__graphic role=img style="background-color:var(--mdc-theme-error)">
+            <i.mdc-banner__icon.material-symbols-outlined>warning
+          <div.mdc-banner__text>
+            #{msg}
+        <div.mdc-banner__actions>
+          <button.mdc-banner__primary-action.mdc-icon-button type=button>
+            <span.mdc-icon-button__ripple>
+            <i.material-symbols-outlined>close
+
   <div.mdc-card>
     <div.mdc-card-wrapper__text-section>
       <div.card-title>Gmail API
-      <div.card-subtitle>Initialization
+      <div.card-subtitle>_{MsgInitialization}
     <div.mdc-card-wrapper__text-section>
-      <div.card-content>
-        <div>
-          <label>
-            <input type=radio>
-              _{MsgStoreWithSecretManager}
-        <div>
-          <label>
-            <input type=radio>
-              _{MsgStoreInDatabase}
+      <fielset.card-content>
+        <legend>_{MsgStoreType}
+        <form method=post action=@{AdminR TokensR} enctype=#{et} ##{formStoreType}>
+          ^{fw}
     <div.mdc-card__actions>
-      <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--outlined>
+      <button.mdc-card__action.mdc-card__action--button.mdc-button>
         <div.mdc-button__ripple>
         <span.mdc-button__label>_{MsgClearSettings}
-      <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--raised>
+      <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--raised
+        type=submit form=#{formStoreType}>
         <div.mdc-button__ripple>
         <span.mdc-button__label>_{MsgInitialize}
-       
+
+$forall (_,msg) <- filter ((/=) warn . fst) msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
+    <div.mdc-snackbar__surface role=status aria-relevant=additions>
+      <div.mdc-snackbar__label aria-atomic=false>
+        #{msg}
+      <div.mdc-snackbar__actions aria-atomic=true>
+        <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>close

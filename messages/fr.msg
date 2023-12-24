@@ -1,5 +1,8 @@
-StoreWithSecretManager: Stocker avec Google Secret Manager
-StoreInDatabase: Stocker dans la base de données
+Initialization: Initialisation
+StoreType: Type de stockage
+UserSession: Session utilisateur
+GoogleSecretManager: Google Secret Manager
+Database: Base de données
 ClearSettings: Effacer
 Initialize: Initialiser
 Tokens: Jetons

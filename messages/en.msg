@@ -1,5 +1,8 @@
-StoreWithSecretManager: Store with Google Secret Manager
-StoreInDatabase: Store in database
+Initialization: Initialization
+StoreType: Store type
+UserSession: User session
+GoogleSecretManager: Google Secret Manager
+Database: Database
 ClearSettings: Clear
 Initialize: Initialize
 Tokens: Tokens

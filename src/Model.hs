@@ -71,6 +71,13 @@ import Database.Persist.Types
     )
 import Database.Persist.Sql (fromSqlKey, toSqlKey, PersistFieldSql, sqlType)
 import Control.Lens (makeLensesFor)
+                
+
+data StoreType = StoreTypeGoogleSecretManager
+               | StoreTypeDatabase
+               | StoreTypeSession
+    deriving (Show, Read, Eq, Ord)
+derivePersistField "StoreType"
 
 
 data PayMethod = PayAtVenue | PayNow

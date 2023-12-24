@@ -1,5 +1,8 @@
-StoreWithSecretManager: Хранить с помощью Google Secret Manager
-StoreInDatabase: Хранить в базе данных
+Initialization: Инициализация
+StoreType: Тип хранилища
+UserSession: Пользовательская сессия
+GoogleSecretManager: Google Secret Manager
+Database: База данных
 ClearSettings: Сбросить
 Initialize: Инициализировать
 Tokens: Токены

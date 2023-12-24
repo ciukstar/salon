@@ -1,6 +1,17 @@
 
+Store
+  token TokenId OnDeleteCascade
+  key Text
+  val Text
+  UniqueStore token key
+
+Token
+  api Text
+  store StoreType
+  UniqueToken api
+
 InvoiceMail
-  invoice InvoiceId OnDeleteCascade
+  invoice InvoiceId OnDeleteCascade 
   status MailStatus
   timemark UTCTime
   recipient Text
