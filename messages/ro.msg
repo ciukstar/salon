@@ -1,3 +1,4 @@
+InvalidStoreType: Tip de stocare nevalid
 Initialization: Inițializare
 StoreType: Tipul de stocare
 UserSession: Sesiunea de utilizator

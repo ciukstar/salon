@@ -84,7 +84,9 @@
 
 /admin AdminR:
 
-    /tokens TokensR GET POST
+    /tokens/gmail/hook GMailApiHookR GET
+    /tokens/gmail      TokensGMailR  POST
+    /tokens 	       TokensR       GET
 
     /invoices/#InvoiceId/mail/#InvoiceMailId/delete AdmInvoiceMailDeleteR POST
     /invoices/#InvoiceId/mail/#InvoiceMailId 	    AdmInvoiceMailR       GET

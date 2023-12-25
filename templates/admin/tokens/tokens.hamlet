@@ -46,7 +46,7 @@
     <div.mdc-card-wrapper__text-section>
       <fielset.card-content>
         <legend>_{MsgStoreType}
-        <form method=post action=@{AdminR TokensR} enctype=#{et} ##{formStoreType}>
+        <form method=post action=@{AdminR TokensGMailR} enctype=#{et} ##{formStoreType}>
           ^{fw}
     <div.mdc-card__actions>
       <button.mdc-card__action.mdc-card__action--button.mdc-button>

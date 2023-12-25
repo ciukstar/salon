@@ -113,7 +113,7 @@ import Handler.Stats
     , getStatsAovR, getAovDetailsR
     )
 
-import Admin.Tokens (getTokensR, postTokensR)
+import Admin.Tokens (getTokensR, postTokensGMailR, getGMailApiHookR)
 
 import Admin.Billing
     ( getAdmInvoicesR

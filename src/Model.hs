@@ -285,14 +285,6 @@ data SortOrder = SortOrderAsc | SortOrderDesc
 instance SqlString Textarea
 
 
-ultDestKey :: Text
-ultDestKey = "_ULT"
-
-
-mimePdf :: ContentType
-mimePdf = "application/pdf"
-
-
 instance ToContent (PDF ()) where
     toContent :: PDF () -> Content
     toContent = toContent . pdfByteString
@@ -312,3 +304,23 @@ instance ToTypedContent (PDF ()) where
 instance HasContentType (PDF ()) where
     getContentType :: Monad m => m (PDF ()) -> ContentType
     getContentType _ = mimePdf
+
+
+ultDestKey :: Text
+ultDestKey = "_ULT"
+
+
+mimePdf :: ContentType
+mimePdf = "application/pdf"
+
+
+gmail :: Text
+gmail = "GMAIL_API"
+
+
+gmailAccessToken :: Text
+gmailAccessToken = "gmail_access_token"
+
+
+gmailRefreshToken :: Text
+gmailRefreshToken = "gmail_refresh_token"

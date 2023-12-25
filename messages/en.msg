@@ -1,3 +1,4 @@
+InvalidStoreType: Invalid store type
 Initialization: Initialization
 StoreType: Store type
 UserSession: User session

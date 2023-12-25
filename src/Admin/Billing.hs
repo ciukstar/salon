@@ -89,12 +89,11 @@ import Text.Hamlet (Html, HtmlUrlI18n, ihamlet)
 
 import Yesod.Auth (Route (LoginR), maybeAuth)
 import Yesod.Core
-    ( Yesod(defaultLayout), newIdent, SomeMessage (SomeMessage)
+    ( Yesod(defaultLayout), TypedContent, SomeMessage (SomeMessage)
     , MonadHandler (liftHandler), redirect, addMessageI, getMessages
-    , getCurrentRoute, lookupPostParam, whamlet, RenderMessage (renderMessage)
-    , getYesod, languages, lookupSession, getUrlRender, setSession
-    , getMessageRender, getUrlRenderParams, addMessage, TypedContent
-    , selectRep, provideRep, notFound
+    , getCurrentRoute, lookupPostParam, whamlet, getYesod, lookupSession
+    , getUrlRender, setSession, getMessageRender, getUrlRenderParams
+    , addMessage, selectRep, provideRep, notFound, newIdent
     )
 import Yesod.Core.Widget (setTitleI)
 import Yesod.Form.Functions
@@ -171,7 +170,7 @@ import Model
       , StaffUser, InvoiceNumber, ItemId, ItemInvoice, OfferService, ServiceId
       , ServiceName, ThumbnailService, ThumbnailAttribution, BusinessCurrency
       , OfferId, ItemOffer, ItemAmount, InvoiceMailId, InvoiceMailStatus
-      , InvoiceMailTimemark, InvoiceMailInvoice
+      , InvoiceMailTimemark, InvoiceMailInvoice, TokenApi, TokenStore, StoreToken, StoreVal, StoreKey
       )
     , Staff (Staff, staffName, staffEmail), InvoiceId
     , Business (Business, businessEmail, businessFullName)
@@ -189,6 +188,7 @@ import Model
     , InvoiceMailId
     , MailStatus (MailStatusDraft, MailStatusBounced, MailStatusDelivered)
     , _itemAmount, _itemCurrency, _itemVat, _itemTax, _itemQuantity
+    , gmailAccessToken, gmailRefreshToken, Token (Token), gmail, StoreType (StoreTypeSession, StoreTypeDatabase, StoreTypeGoogleSecretManager), Store (Store)
     )
 
 import Menu (menu)
@@ -266,7 +266,9 @@ getBillingMailHookR = do
           raw <- liftIO $ decodeUtf8 . toStrict . encode <$> renderMail' mail
 
           let opts = defaults & auth ?~ oauth2Bearer (encodeUtf8 accessToken)
-          response <- liftIO $ tryAny $ postWith opts (gmailApi $ unpack $ invoiceMailSender imail) (object ["raw" .= raw])
+          response <- liftIO $ tryAny $ postWith opts
+              (gmailApi $ unpack $ invoiceMailSender imail)
+              (object ["raw" .= raw])
 
           case response of
             Left e@(SomeException _) -> case fromException e of
@@ -367,28 +369,46 @@ postAdmInvoiceSendmailR iid = do
       FormSuccess imail -> do
           mid <- runDB $ insert imail
           app <- getYesod
-          langs <- languages
-          
-          let transMsg = renderMessage app langs :: AppMessage -> Text
           let googleClientId = appGoogleClientId $ appSettings app
               googleClientSecret = appGoogleClientSecret $ appSettings app
 
-          accessToken <- lookupSession gmailAccessToken
-          refreshToken <- lookupSession gmailRefreshToken
+          store <- runDB $ selectOne $ do
+              x <- from $ table @Token
+              where_ $ x ^. TokenApi ==. val gmail
+              return x
+          
+          accessToken <- case store of
+            Just (Entity _ (Token _ StoreTypeGoogleSecretManager)) -> undefined
+            Just (Entity tid (Token _ StoreTypeDatabase)) -> (unValue <$>) <$> runDB ( selectOne $ do
+                x <- from $ table @Store
+                where_ $ x ^. StoreToken ==. val tid
+                where_ $ x ^. StoreKey ==. val gmailAccessToken
+                return $ x ^. StoreVal )
+                
+            _otherwise -> lookupSession gmailAccessToken
+            
+          refreshToken <- case store of
+            Just (Entity _ (Token _ StoreTypeGoogleSecretManager)) -> undefined
+            Just (Entity tid (Token _ StoreTypeDatabase)) -> (unValue <$>) <$> runDB ( selectOne $ do
+                x <- from $ table @Store
+                where_ $ x ^. StoreToken ==. val tid
+                where_ $ x ^. StoreKey ==. val gmailRefreshToken
+                return $ x ^. StoreVal )
+            _otherwise -> lookupSession gmailRefreshToken
           
           timesRoman <- liftIO $ mkStdFont Times_Roman
           timesBold <- liftIO $ mkStdFont Times_Bold
 
           case ((accessToken,refreshToken),(timesRoman,timesBold)) of
             ((Just atoken,Just rtoken),(Right fr,Right fb)) -> do
-                msgRndr <- (toHtml .) <$> getMessageRender
+                msgRender <- getMessageRender
                 urlRndr <- getUrlRenderParams
                 let html = if invoiceMailHtml imail
-                        then Just $ renderIvoiceHtml customer employee invoice items msgRndr urlRndr
+                        then Just $ renderIvoiceHtml customer employee invoice items (toHtml . msgRender) urlRndr
                         else Nothing
                     pdf = if invoiceMailPdf imail
                         then pure $ renderIvoicePdf
-                             ( invoicePdf customer employee invoice items transMsg (PDFRect 0 0 612 792) fr fb
+                             ( invoicePdf customer employee invoice items msgRender (PDFRect 0 0 612 792) fr fb
                              )
                           else Nothing
                     mail = buildMail imail html pdf
@@ -937,14 +957,6 @@ $maybe Entity _ (User uname _ _ _ _ _ cname cemail) <- customer
       vat = items & sumOf (folded . to entityVal . _itemVat . _Just)
       amount = items & sumOf (folded . to entityVal . _itemAmount)
       currency = join $ items L.^? ix 0 . to entityVal . _itemCurrency
-
-
-gmailAccessToken :: Text
-gmailAccessToken = "gmail_access_token"
-
-
-gmailRefreshToken :: Text
-gmailRefreshToken = "gmail_refresh_token"
 
 
 gmailApi :: String -> String

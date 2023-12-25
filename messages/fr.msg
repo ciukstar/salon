@@ -1,3 +1,4 @@
+InvalidStoreType: Type de stockage invalide
 Initialization: Initialisation
 StoreType: Type de stockage
 UserSession: Session utilisateur

@@ -144,8 +144,10 @@ instance Yesod App where
         
 
     
-    isAuthorized BillingMailHookR _ = return Authorized
-        
+    isAuthorized BillingMailHookR _ = return Authorized    
+    isAuthorized (AdminR GMailApiHookR) _ = return Authorized
+    
+    isAuthorized (AdminR TokensGMailR) _ = isAdmin
     isAuthorized r@(AdminR TokensR) _ = setUltDest r >> isAdmin
     
     isAuthorized (AdminR (AdmInvoiceMailDeleteR _ _)) _ = isAdmin

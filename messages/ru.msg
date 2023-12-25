@@ -1,3 +1,4 @@
+InvalidStoreType: Неверный тип хранилища
 Initialization: Инициализация
 StoreType: Тип хранилища
 UserSession: Пользовательская сессия
