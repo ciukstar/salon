@@ -84,9 +84,10 @@
 
 /admin AdminR:
 
-    /tokens/gmail/hook GMailApiHookR GET
-    /tokens/gmail      TokensGMailR  POST
-    /tokens 	       TokensR       GET
+    /tokens/gmail/hook  GMailApiHookR     GET
+    /tokens/gmail/clear TokensGMailClearR POST
+    /tokens/gmail       TokensGMailR      POST
+    /tokens 	        TokensR           GET
 
     /invoices/#InvoiceId/mail/#InvoiceMailId/delete AdmInvoiceMailDeleteR POST
     /invoices/#InvoiceId/mail/#InvoiceMailId 	    AdmInvoiceMailR       GET
@@ -201,3 +202,5 @@
 /photo-placeholder PhotoPlaceholderR GET
 /favicon.ico FaviconR GET
 /robots.txt RobotsR GET
+
+/sitemap.xml SitemapR GET

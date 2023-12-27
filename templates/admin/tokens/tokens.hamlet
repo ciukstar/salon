@@ -49,7 +49,10 @@
         <form method=post action=@{AdminR TokensGMailR} enctype=#{et} ##{formStoreType}>
           ^{fw}
     <div.mdc-card__actions>
-      <button.mdc-card__action.mdc-card__action--button.mdc-button>
+      <form method=post action=@{AdminR TokensGMailClearR} enctype=#{et2} ##{formStoreTypeClear}>
+        ^{fw2}
+      <button.mdc-card__action.mdc-card__action--button.mdc-button
+        type=submit form=#{formStoreTypeClear}>
         <div.mdc-button__ripple>
         <span.mdc-button__label>_{MsgClearSettings}
       <button.mdc-card__action.mdc-card__action--button.mdc-button.mdc-button--raised

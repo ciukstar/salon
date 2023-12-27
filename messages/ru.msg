@@ -1,3 +1,4 @@
+Cleared: Очищено
 InvalidStoreType: Неверный тип хранилища
 Initialization: Инициализация
 StoreType: Тип хранилища

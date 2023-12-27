@@ -58,6 +58,8 @@ import Demo.DemoDataEN (populateEN)
 -- Import all relevant handler modules here.
 -- Don't forget to add new modules to your cabal file!
 
+import Handler.Sitemap (getSitemapR)
+
 import Handler.Scratch
     ( getScratchInitR
     , postScratchInitR
@@ -113,7 +115,9 @@ import Handler.Stats
     , getStatsAovR, getAovDetailsR
     )
 
-import Admin.Tokens (getTokensR, postTokensGMailR, getGMailApiHookR)
+import Admin.Tokens
+    ( getTokensR, postTokensGMailR, getGMailApiHookR, postTokensGMailClearR
+    )
 
 import Admin.Billing
     ( getAdmInvoicesR

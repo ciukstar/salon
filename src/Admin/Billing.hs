@@ -170,7 +170,8 @@ import Model
       , StaffUser, InvoiceNumber, ItemId, ItemInvoice, OfferService, ServiceId
       , ServiceName, ThumbnailService, ThumbnailAttribution, BusinessCurrency
       , OfferId, ItemOffer, ItemAmount, InvoiceMailId, InvoiceMailStatus
-      , InvoiceMailTimemark, InvoiceMailInvoice, TokenApi, TokenStore, StoreToken, StoreVal, StoreKey
+      , InvoiceMailTimemark, InvoiceMailInvoice, TokenApi, StoreToken, StoreVal
+      , StoreKey
       )
     , Staff (Staff, staffName, staffEmail), InvoiceId
     , Business (Business, businessEmail, businessFullName)
@@ -188,7 +189,9 @@ import Model
     , InvoiceMailId
     , MailStatus (MailStatusDraft, MailStatusBounced, MailStatusDelivered)
     , _itemAmount, _itemCurrency, _itemVat, _itemTax, _itemQuantity
-    , gmailAccessToken, gmailRefreshToken, Token (Token), gmail, StoreType (StoreTypeSession, StoreTypeDatabase, StoreTypeGoogleSecretManager), Store (Store)
+    , gmailAccessToken, gmailRefreshToken, Token (Token), gmail
+    , StoreType ( StoreTypeDatabase, StoreTypeGoogleSecretManager )
+    , Store
     )
 
 import Menu (menu)
@@ -378,7 +381,9 @@ postAdmInvoiceSendmailR iid = do
               return x
           
           accessToken <- case store of
-            Just (Entity _ (Token _ StoreTypeGoogleSecretManager)) -> undefined
+            Just (Entity _ (Token _ StoreTypeGoogleSecretManager)) -> do
+                Just . pack <$> liftIO ( readFile "/at/gmail_access_token" )
+                
             Just (Entity tid (Token _ StoreTypeDatabase)) -> (unValue <$>) <$> runDB ( selectOne $ do
                 x <- from $ table @Store
                 where_ $ x ^. StoreToken ==. val tid
@@ -388,7 +393,9 @@ postAdmInvoiceSendmailR iid = do
             _otherwise -> lookupSession gmailAccessToken
             
           refreshToken <- case store of
-            Just (Entity _ (Token _ StoreTypeGoogleSecretManager)) -> undefined
+            Just (Entity _ (Token _ StoreTypeGoogleSecretManager)) -> do
+                Just . pack <$> liftIO ( readFile "/rt/gmail_refresh_token" )
+                
             Just (Entity tid (Token _ StoreTypeDatabase)) -> (unValue <$>) <$> runDB ( selectOne $ do
                 x <- from $ table @Store
                 where_ $ x ^. StoreToken ==. val tid

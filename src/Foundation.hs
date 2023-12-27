@@ -130,6 +130,8 @@ instance Yesod App where
     isAuthorized (StaticR _) _ = return Authorized
     
     isAuthorized (AuthR _) _ = return Authorized
+
+    isAuthorized SitemapR _ = return Authorized
     isAuthorized HomeR _ = return Authorized
     isAuthorized FaviconR _ = return Authorized
     isAuthorized RobotsR _ = return Authorized
@@ -147,6 +149,7 @@ instance Yesod App where
     isAuthorized BillingMailHookR _ = return Authorized    
     isAuthorized (AdminR GMailApiHookR) _ = return Authorized
     
+    isAuthorized (AdminR TokensGMailClearR) _ = isAdmin
     isAuthorized (AdminR TokensGMailR) _ = isAdmin
     isAuthorized r@(AdminR TokensR) _ = setUltDest r >> isAdmin
     
@@ -469,7 +472,7 @@ isEmployee = do
                     msgs <- getMessages
                     $(widgetFile "auth/403empl")
                 sendResponseStatus status403 r
-            _ -> return Authorized
+            Just _ -> return Authorized
 
 
 formLogin :: Route App -> Widget
