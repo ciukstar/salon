@@ -58,7 +58,6 @@ import Demo.DemoDataEN (populateEN)
 -- Import all relevant handler modules here.
 -- Don't forget to add new modules to your cabal file!
 
-import Handler.Sitemap (getSitemapR)
 
 import Handler.Scratch
     ( getScratchInitR
@@ -212,6 +211,7 @@ import Admin.Services
     )
 import Handler.Common
     ( getFaviconR, getRobotsR, getPhotoPlaceholderR
+    , getSitemapR, getWebAppManifestR
     )
 
 

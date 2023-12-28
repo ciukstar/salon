@@ -96,7 +96,7 @@ populateRU = do
                             , businessTz = "Europe/Moscow"
                             , businessPhone = Just "+7 (958) 759-52-25"
                             , businessMobile = Just "940(8537)418-74-67"
-                            , businessEmail = Just "salon@mail.ru"
+                            , businessEmail = Just "ciukstar@gmail.com"
                             }
 
     b <- insert business

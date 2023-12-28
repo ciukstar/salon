@@ -104,7 +104,7 @@ populateFR = do
                             , businessTz = "Europe/Paris"
                             , businessPhone = Just "+33-775-552-652"
                             , businessMobile = Just "+33-655-537-079"
-                            , businessEmail = Just "salon@mail.fr"
+                            , businessEmail = Just "ciukstar@gmail.com"
                             }
 
     b <- insert business

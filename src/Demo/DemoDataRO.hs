@@ -102,7 +102,7 @@ populateRO = do
                             , businessTz = "Europe/Bucharest"
                             , businessPhone = Just "+40768469474"
                             , businessMobile = Just "+40769859190"
-                            , businessEmail = Just "salon@mail.ro"
+                            , businessEmail = Just "ciukstar@gmail.com"
                             }
 
     b <- insert business

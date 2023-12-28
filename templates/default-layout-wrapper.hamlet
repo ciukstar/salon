@@ -11,6 +11,7 @@ $doctype 5
     <meta name="author" content="Sergiu Starciuc, ciukstar@gmail.com">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="theme-color" content="#FEDBD0">
+    <link rel="manifest" href=@{WebAppManifestR}>
     $maybe Entity rid (Brand bid _ _ _ _ _ _ ico mime _) <- brand
       $maybe _ <- ico
         $maybe mime <- mime

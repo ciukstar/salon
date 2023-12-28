@@ -104,7 +104,7 @@ populateEN = do
                             , businessTz = "Europe/London"
                             , businessPhone = Just "020-7736-6600"
                             , businessMobile = Just "567-274-7469"
-                            , businessEmail = Just "salon@mail.uk"
+                            , businessEmail = Just "ciukstar@gmail.com"
                             }
 
     b <- insert business

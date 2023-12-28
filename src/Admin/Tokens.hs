@@ -45,7 +45,7 @@ import Foundation
 
 import Network.Wreq
     ( FormParam ((:=)), post, responseStatus, statusCode, responseBody, defaults
-    , auth, oauth2Bearer, postWith
+    , auth, oauth2Bearer, postWith, deleteWith
     )
 
 import Text.Blaze.Html (preEscapedToHtml)
@@ -81,6 +81,8 @@ import Model
 
 import Menu (menu)
 import Settings (widgetFile, AppSettings (appGoogleClientId, appGoogleClientSecret))
+import Text.Printf (printf)
+import Data.Bifunctor (Bifunctor(first))
 
 
 getGMailApiHookR :: Handler Html
@@ -123,18 +125,27 @@ getGMailApiHookR = do
           addMessageI info MsgRecordEdited
           redirect $ AdminR TokensR
       Just x@StoreTypeGoogleSecretManager -> do
-
-          let apis = [ ( "https://secretmanager.googleapis.com/v1/projects/salon-395815/secrets/gmail_access_token:addVersion"
-                       , accessToken
-                       )
-                     , ( "https://secretmanager.googleapis.com/v1/projects/salon-395815/secrets/gmail_refresh_token:addVersion"
-                       , refreshToken
-                       )
-                     ]
           
           let opts = defaults & auth L.?~ oauth2Bearer (encodeUtf8 accessToken)
 
-          forM_ apis $ \(api,secret) -> do
+          let apic :: [String]
+              apic = printf "https://secretmanager.googleapis.com/v1/projects/salon-395815/secrets?secretId=%s"
+                  <$> [ "gmail_access_token" :: String
+                      , "gmail_refresh_token" :: String
+                      ]
+
+          forM_ apic $ \api -> do
+              liftIO $ tryAny $ postWith opts api
+                  (object [ "replication" .= object [ "automatic" .= object []] ])
+
+
+          let apiv :: [(String,Text)]
+              apiv = first (printf "https://secretmanager.googleapis.com/v1/projects/salon-395815/secrets/%s:addVersion")
+                  <$> [ ("gmail_access_token",accessToken) :: (String,Text)
+                      , ("gmail_refresh_token",refreshToken) :: (String,Text)
+                      ]
+
+          forM_ apiv $ \(api,secret) -> do
               liftIO $ tryAny $ postWith opts api
                   (object [ "payload" .= object [ "data" .= decodeUtf8 (B64.encode (encodeUtf8 secret)) ]])
           
@@ -167,7 +178,18 @@ postTokensGMailClearR = do
           addMessageI info MsgRecordDeleted
           redirect $ AdminR TokensR
       (FormSuccess (),Just (Entity tid (Token _ StoreTypeGoogleSecretManager))) -> do
-          undefined
+          let accessToken = undefined
+          let opts = defaults & auth L.?~ oauth2Bearer (encodeUtf8 accessToken)
+
+          let apic :: [String]
+              apic = printf "https://secretmanager.googleapis.com/v1/projects/salon-395815/secrets/%s"
+                  <$> [ "gmail_access_token" :: String
+                      , "gmail_refresh_token" :: String
+                      ]
+
+          forM_ apic $ \api -> do
+              liftIO $ tryAny $ deleteWith opts api
+              
           runDB $ delete tid
           addMessageI info MsgRecordDeleted
           redirect $ AdminR TokensR

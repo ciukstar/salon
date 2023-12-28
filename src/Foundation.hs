@@ -130,7 +130,8 @@ instance Yesod App where
     isAuthorized (StaticR _) _ = return Authorized
     
     isAuthorized (AuthR _) _ = return Authorized
-
+    
+    isAuthorized WebAppManifestR _ = return Authorized
     isAuthorized SitemapR _ = return Authorized
     isAuthorized HomeR _ = return Authorized
     isAuthorized FaviconR _ = return Authorized
@@ -145,7 +146,6 @@ instance Yesod App where
     isAuthorized r@(StatsR (AovDetailsR {})) _         = setUltDest r >> isAnalyst    
         
 
-    
     isAuthorized BillingMailHookR _ = return Authorized    
     isAuthorized (AdminR GMailApiHookR) _ = return Authorized
     

@@ -39,7 +39,7 @@ import qualified Control.Lens as L ((^.), (^?))
 import Control.Monad (join, forM)
 import Control.Monad.IO.Class (liftIO)
 import Data.Aeson (object, (.=))
-import Data.Aeson.Lens (AsValue(_String), key, AsNumber (_Integer))
+import Data.Aeson.Lens (AsValue(_String), key)
 import Data.Bifunctor (Bifunctor(first, second))
 import Data.ByteString (toStrict)
 import qualified Data.ByteString.Lazy as BSL (ByteString)
@@ -81,6 +81,7 @@ import Network.Wreq
     ( post, FormParam ((:=)), responseBody, responseStatus, statusCode
     , postWith, defaults, auth, oauth2Bearer
     )
+import System.Directory (doesFileExist)
 import Text.Blaze.Html (preEscapedToHtml, toHtml)
 import Text.Blaze.Html.Renderer.Text (renderHtml)
 import Text.Printf (printf)
@@ -217,13 +218,8 @@ getBillingMailHookR = do
          , "grant_type" := ("authorization_code" :: Text)
          ]
 
-    let _status = r L.^. responseStatus . statusCode
-
     let accessToken = r L.^. responseBody . key "access_token" . _String
     let refreshToken = r L.^. responseBody . key "refresh_token" . _String
-    let _tokenType = r L.^. responseBody . key "token_type" . _String
-    let _scope = r L.^. responseBody . key "scope" . _String
-    let _expiresIn = r L.^? responseBody . key "expires_in" . _Integer
 
     setSession gmailAccessToken accessToken
     setSession gmailRefreshToken refreshToken
@@ -379,12 +375,19 @@ postAdmInvoiceSendmailR iid = do
               x <- from $ table @Token
               where_ $ x ^. TokenApi ==. val gmail
               return x
+
+          let at = "/at/gmail_access_token"
+              rt = "/rt/gmail_refresh_token"
+
+          secrets <-  liftIO $ and <$> forM [at,rt] doesFileExist
           
-          accessToken <- case store of
-            Just (Entity _ (Token _ StoreTypeGoogleSecretManager)) -> do
-                Just . pack <$> liftIO ( readFile "/at/gmail_access_token" )
+          accessToken <- case (store,secrets) of
+            (Nothing,True) -> Just . pack <$> liftIO ( readFile at )
+            
+            (Just (Entity _ (Token _ StoreTypeGoogleSecretManager)),True) -> do
+                Just . pack <$> liftIO ( readFile at )
                 
-            Just (Entity tid (Token _ StoreTypeDatabase)) -> (unValue <$>) <$> runDB ( selectOne $ do
+            (Just (Entity tid (Token _ StoreTypeDatabase)),_) -> (unValue <$>) <$> runDB ( selectOne $ do
                 x <- from $ table @Store
                 where_ $ x ^. StoreToken ==. val tid
                 where_ $ x ^. StoreKey ==. val gmailAccessToken
@@ -392,11 +395,12 @@ postAdmInvoiceSendmailR iid = do
                 
             _otherwise -> lookupSession gmailAccessToken
             
-          refreshToken <- case store of
-            Just (Entity _ (Token _ StoreTypeGoogleSecretManager)) -> do
-                Just . pack <$> liftIO ( readFile "/rt/gmail_refresh_token" )
+          refreshToken <- case (store,secrets) of
+            (Nothing,True) -> Just . pack <$> liftIO ( readFile rt )
+            (Just (Entity _ (Token _ StoreTypeGoogleSecretManager)),True) -> do
+                Just . pack <$> liftIO ( readFile rt )
                 
-            Just (Entity tid (Token _ StoreTypeDatabase)) -> (unValue <$>) <$> runDB ( selectOne $ do
+            (Just (Entity tid (Token _ StoreTypeDatabase)),_) -> (unValue <$>) <$> runDB ( selectOne $ do
                 x <- from $ table @Store
                 where_ $ x ^. StoreToken ==. val tid
                 where_ $ x ^. StoreKey ==. val gmailRefreshToken
