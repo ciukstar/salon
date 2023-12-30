@@ -1,66 +1,45 @@
-<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
-  <div.mdc-top-app-bar__row.mdc-theme--background>
-    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
-      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=#{ult} role=button title=_{MsgBack}>
+
+<div ##{loginFormWrapper}>
+  <h4.mdc-typography--headline6>_{MsgSignInToYourAccount}
+        
+  <form method=POST action=@{route} ##{loginForm}>
+    <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
+      .mdc-text-field--with-trailing-icon>
+      <span.mdc-text-field__ripple>
+      <span.mdc-floating-label>_{MsgUsername}
+      <input.mdc-text-field__input type=text name=username autocomplete=username required>
+      <button.mdc-icon-button.mdc-text-field__icon.mdc-text-field__icon--trailing tabindex=0 type=button
+        title=_{MsgDemoUserAccounts} onclick="document.getElementById('dlgSampleCreds').MDCDialog.open()">
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
-        <i.material-symbols-outlined>arrow_back
-      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgAuthentication}
+        <i.material-symbols-outlined>demography
+      <span.mdc-line-ripple>
 
-<main.mdc-top-app-bar--fixed-adjust>
+    <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
+      .mdc-text-field--label-floating.mdc-text-field--with-trailing-icon>
+      <span.mdc-text-field__ripple>
+      <span.mdc-floating-label>_{MsgPassword}
+      <input.mdc-text-field__input type=password name=password autocomplete=current-password required>
+      <button.mdc-icon-button.mdc-text-field__icon.mdc-text-field__icon--trailing tabindex=0 type=button
+        title=_{MsgDemoUserAccounts} onclick="document.getElementById('dlgSampleCreds').MDCDialog.open()">
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>demography
+      <span.mdc-line-ripple>
 
-  $forall (_,msg) <- filter (((==) anError) . fst) msgs
-    <div.mdc-banner role=banner data-mdc-auto-init=MDCBanner>
-      <div.mdc-banner__content role=alertdialog aria-live=assertive>
-        <div.mdc-banner__graphic-text-wrapper>
-          <div.mdc-banner__graphic role=img style="background-color:var(--mdc-theme-error)">
-            <i.mdc-banner__icon.material-symbols-outlined>warning
-          <div.mdc-banner__text>#{msg}
-        <div.mdc-banner__actions>
-          <button.mdc-banner__primary-action.mdc-icon-button type=button>
-            <span.mdc-icon-button__ripple>
-            <i.material-symbols-outlined>close
+    <button.mdc-button.mdc-button--raised type=submit #btnLogin>
+      <span.mdc-button__ripple>
+      <span.mdc-button__focus-ring>
+      <span.mdc-button__label>_{MsgLogin}
 
-  <div ##{loginFormWrapper}>
-    <h4.mdc-typography--headline6>_{MsgSignInToYourAccount}
-    <form method=POST action=@{route} ##{loginForm}>
-      <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
-        .mdc-text-field--with-trailing-icon>
-        <span.mdc-text-field__ripple>
-        <span.mdc-floating-label>_{MsgUsername}
-        <input.mdc-text-field__input type=text name=username autocomplete=username required>
-        <button.mdc-icon-button.mdc-text-field__icon.mdc-text-field__icon--trailing tabindex=0 type=button
-          title=_{MsgDemoUserAccounts} onclick="document.getElementById('#{dlgSampleCreds}').MDCDialog.open()">
-          <span.mdc-icon-button__ripple>
-          <span.mdc-icon-button__focus-ring>
-          <i.material-symbols-outlined>demography
-        <span.mdc-line-ripple>
+  <p ##{pCreateAccount}>
+    <small.hint>_{MsgDoNotHaveAnAccount}
+    <a.mdc-button.mdc-button--outlined href=@{AccountR} role=button>
+      <span.mdc-button__ripple>
+      <span.mdc-button__focus-ring>
+      <span.mdc-button__label>_{MsgCreateNewAccount}
 
-      <label.mdc-text-field.mdc-text-field--filled data-mdc-auto-init=MDCTextField
-        .mdc-text-field--label-floating.mdc-text-field--with-trailing-icon>
-        <span.mdc-text-field__ripple>
-        <span.mdc-floating-label>_{MsgPassword}
-        <input.mdc-text-field__input type=password name=password autocomplete=current-password required>
-        <button.mdc-icon-button.mdc-text-field__icon.mdc-text-field__icon--trailing tabindex=0 type=button
-          title=_{MsgDemoUserAccounts} onclick="document.getElementById('#{dlgSampleCreds}').MDCDialog.open()">
-          <span.mdc-icon-button__ripple>
-          <span.mdc-icon-button__focus-ring>
-          <i.material-symbols-outlined>demography
-        <span.mdc-line-ripple>
-
-      <button.mdc-button.mdc-button--raised type=submit #btnLogin>
-        <span.mdc-button__ripple>
-        <span.mdc-button__focus-ring>
-        <span.mdc-button__label>_{MsgLogin}
-
-    <p ##{pCreateAccount}>
-      <small.hint>_{MsgDoNotHaveAnAccount}
-      <a.mdc-button.mdc-button--outlined href=@{AccountR} role=button>
-        <span.mdc-button__ripple>
-        <span.mdc-button__focus-ring>
-        <span.mdc-button__label>_{MsgCreateNewAccount}
-
-<div.mdc-dialog ##{dlgSampleCreds} data-mdc-auto-init=MDCDialog>
+<div.mdc-dialog #dlgSampleCreds data-mdc-auto-init=MDCDialog>
   <div.mdc-dialog__container>
     <div.mdc-dialog__surface role=dialog aria-modal=true tabindex=-1>
       <div.mdc-dialog__header>
@@ -76,7 +55,8 @@
                   :not (admin || analyst):.mdc-list-item--with-two-lines>
                   <span.mdc-list-item__ripple>
                   <span.mdc-list-item__start>
-                    <img src=@{AccountPhotoR uid} style="clip-path:circle(50%)" width=48 height=48 alt=_{MsgPhoto}
+                    <img src=@{AccountPhotoR uid} width=48 height=48 loading=lazy
+                      alt=_{MsgPhoto} style="clip-path:circle(50%)" 
                       onerror="this.src = '@{PhotoPlaceholderR}'">
                   <span.mdc-list-item__content>
                     <div.mdc-list-item__primary-text>#{uname}
@@ -118,25 +98,3 @@
           <span.mdc-button__label>_{MsgSelect}
       
   <div.mdc-dialog__scrim>
-
-
-$forall (_,msg) <- filter (((/=) anError) . fst) msgs
-  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
-    <div.mdc-snackbar__surface>
-      <div.mdc-snackbar__label>#{msg}
-      <div.mdc-snackbar__actions>
-        <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
-          <span.mdc-icon-button__ripple>
-          <span.mdc-icon-button__focus-ring>
-          <i.material-symbols-outlined>close
-
-<footer.demo>
-  <small.hint>
-    <sup>*
-    _{MsgDemoSampleOne}
-    <button.mdc-icon-button.mdc-text-field__icon.mdc-text-field__icon--trailing tabindex=0 type=button
-            title=_{MsgDemoUserAccounts} onclick="document.getElementById('#{dlgSampleCreds}').MDCDialog.open()">
-            <span.mdc-icon-button__ripple>
-            <span.mdc-icon-button__focus-ring>
-            <i.material-symbols-outlined>demography
-    _{MsgDemoSampleTwo}

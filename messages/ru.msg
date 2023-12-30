@@ -1,3 +1,4 @@
+SignInWithGoogle: Войти через Google
 Cleared: Очищено
 InvalidStoreType: Неверный тип хранилища
 Initialization: Инициализация

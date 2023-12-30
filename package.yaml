@@ -64,6 +64,7 @@ dependencies:
 - http-client
 - safe-exceptions
 - HPDF
+- yesod-auth-oauth2
 
 
 # The library contains all of our application code. The executable

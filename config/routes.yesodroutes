@@ -200,8 +200,8 @@
 /auth   AuthR   Auth   getAuth
 
 /photo-placeholder PhotoPlaceholderR GET
-/favicon.ico FaviconR GET
-/robots.txt RobotsR GET
+/favicon.ico       FaviconR 	     GET
+/robots.txt        RobotsR  	     GET
 
 /manifest.json WebAppManifestR GET
 /sitemap.xml   SitemapR        GET

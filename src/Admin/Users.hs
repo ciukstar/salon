@@ -82,16 +82,16 @@ import Foundation
 import Model
     ( UserId
     , User
-      ( User, userName, userPassword, userFullName, userEmail, userAdmin
+      ( User, userName, userFullName, userEmail, userAdmin
       , userAnalyst, userBlocked, userRemoved
       )
     , UserPhoto (UserPhoto)
     , EntityField
       ( UserId, UserName, UserFullName, UserEmail, UserPhotoPhoto
       , UserPhotoMime, UserPassword, UserAdmin, StaffUser, UserAnalyst
-      , UserBlocked, UserRemoved
+      , UserBlocked, UserRemoved, UserAuthType
       )
-    , Staff
+    , Staff, AuthenticationType (UserAuthTypePassword)
     )
 
 import Settings.StaticFiles (img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg)
@@ -177,7 +177,7 @@ postUserPwdResetR uid = do
       FormSuccess (r,_) -> do
           pwd <- liftIO $ decodeUtf8 <$> makePassword (encodeUtf8 r) 17
           runDB $ update $ \x -> do
-              set x [UserPassword =. val pwd]
+              set x [UserPassword =. val (pure pwd)]
               where_ $ x ^. UserId ==. val uid
           addMessageI "info" MsgPasswordChanged
           redirect $ AdminR $ UserR uid
@@ -233,7 +233,7 @@ $case r
               <i.material-symbols-outlined>close            
   $of _
   
-$maybe Entity uid (User name _ _ _ _ _ _ _) <- user
+$maybe Entity uid (User name _ _ _ _ _ _ _ _) <- user
   <figure>
     <img src=@{AccountPhotoR uid} width=56 heigt=56 alt=_{MsgPhoto}>
     <figcaption>
@@ -286,9 +286,10 @@ postUserR uid = do
         return x
     ((fr,fw),et) <- runFormPost $ formUserEdit user
     case fr of
-      FormSuccess (User name _ admin analyst blocked removed fname email,mfi) -> do
+      FormSuccess (User name auth _ admin analyst blocked removed fname email,mfi) -> do
           runDB $ update $ \x -> do
               set x [ UserName =. val name
+                    , UserAuthType =. val auth
                     , UserAdmin =. val admin
                     , UserAnalyst =. val analyst
                     , UserBlocked =. val blocked
@@ -328,8 +329,8 @@ postUsersR :: Handler Html
 postUsersR = do
     ((fr,fw),et) <- runFormPost formUserCreate
     case fr of
-      FormSuccess (r,mfi) -> do
-          uid <- setPassword (userPassword r) r >>= \u -> runDB $ insert u
+      FormSuccess (r@(User _ _ (Just pass) _ _ _ _ _ _),mfi) -> do
+          uid <- setPassword pass r >>= \u -> runDB $ insert u
           addMessageI "info" MsgRecordAdded
           case mfi of
             Just fi -> do
@@ -413,7 +414,7 @@ formUserCreate extra = do
         } Nothing
 
     let r = (,)
-            <$> ( User <$> nameR <*> passR
+            <$> ( User <$> nameR <*> pure UserAuthTypePassword <*> (pure <$> passR)
                   <*> adminR <*> analystR <*> blockedR <*> removedR
                   <*> fnameR <*> emailR
                 ) <*> photoR
@@ -539,7 +540,7 @@ formUserEdit user extra = do
         } Nothing
 
     let r = (,)
-            <$> ( User <$> nameR <*> FormSuccess "Nothing"
+            <$> ( User <$> nameR <*> pure UserAuthTypePassword <*> pure (pure "NOTHING")
                   <*> adminR <*> analystR <*> blockedR <*> removedR
                   <*> fnameR <*> emailR
                 )

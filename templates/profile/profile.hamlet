@@ -53,7 +53,7 @@
             <span.mdc-icon-button__ripple>
             <i.material-symbols-outlined>close
 
-  $maybe Entity uid (User uname _ _ _ _ _ fname email) <- user
+  $maybe Entity uid (User uname _ _ _ _ _ _ fname email) <- user
     <figure>
       <img src=@{AccountPhotoR uid} height=56 width=56 style="clip-path:circle(50%)" alt=_{MsgPhoto}
         loading=lazy onerror="this.src = '@{PhotoPlaceholderR}'">
@@ -85,7 +85,7 @@
       <span.mdc-button__focus-ring>
       <span.mdc-button__label>_{MsgLogin}
 
-  $maybe Entity _ (User _ _ admin analyst _ _ _ _) <- user
+  $maybe Entity _ (User _ _ _ _ admin analyst _ _ _) <- user
     $if admin || analyst
       <details.mdc-list data-mdc-auto-init=MDCList
         ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">

@@ -28,7 +28,7 @@ import Foundation
     , ResourcesR (DocsR), AppMessage (MsgAppName, MsgMetaDescription)
     )
 import Settings.StaticFiles
-    (img_salon_512_png, img_salon_1024_png, img_salon_512_maskable_png)
+    (img_salon_512_png, img_salon_512_maskable_png)
 import Yesod.Core
     ( TypedContent (TypedContent), ToContent (toContent)
     , typePlain, cacheSeconds, typeSvg

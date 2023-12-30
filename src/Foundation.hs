@@ -12,14 +12,20 @@
 
 module Foundation where
 
+import Control.Lens (filtered, folded, _2, (^?), to)
+import Control.Monad.Logger (LogSource)
 import Import.NoFoundation
+import Data.Aeson.Lens (key, AsValue (_String))
+import qualified Data.ByteString.Lazy as BSL (toStrict)
+import qualified Data.List.Safe as LS (head)
 import Data.Kind            (Type)
 import qualified Data.Text as T (pack)
 import Data.Time.Calendar.Month (Month)
+import qualified Network.Wreq as W (get, responseHeader, responseBody)
 import Text.Hamlet          (hamletFile)
 import Text.Jasmine         (minifym)
-import Control.Monad.Logger (LogSource)
 
+import Yesod.Auth.OAuth2.Google (oauth2GoogleScopedWidget)
 import Yesod.Default.Util   (addStaticContentExternal)
 import Yesod.Core.Types     (Logger)
 import qualified Yesod.Core.Unsafe as Unsafe
@@ -33,7 +39,6 @@ import Yesod.Auth.Message
 import Yesod.Form.I18n.English (englishFormMessage)
 import Yesod.Form.I18n.French (frenchFormMessage)
 import Yesod.Form.I18n.Russian (russianFormMessage)
-import qualified Data.List.Safe as LS
 import Database.Persist.Sql (ConnectionPool, runSqlPool, fromSqlKey)
 import qualified Database.Esqueleto.Experimental as E ((==.), exists)
 import Database.Esqueleto.Experimental
@@ -41,6 +46,7 @@ import Database.Esqueleto.Experimental
     , (^.), (:&) ((:&))
     , just, orderBy, asc, unionAll_, not_, val, isNothing_
     )
+
 
 -- | The foundation datatype for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
@@ -126,11 +132,11 @@ instance Yesod App where
     isAuthorized (ScratchR ScratchTwoR) _ = return Authorized
     isAuthorized (ScratchR ScratchOneR) _ = return Authorized
     isAuthorized (ScratchR ScratchInitR) _ = return Authorized
-    
+
     isAuthorized (StaticR _) _ = return Authorized
-    
+
     isAuthorized (AuthR _) _ = return Authorized
-    
+
     isAuthorized WebAppManifestR _ = return Authorized
     isAuthorized SitemapR _ = return Authorized
     isAuthorized HomeR _ = return Authorized
@@ -143,16 +149,16 @@ instance Yesod App where
     isAuthorized r@(StatsR (WorkloadEmplMonthR _ _)) _ = setUltDest r >> isAnalyst
     isAuthorized r@(StatsR (WorkloadEmplDayR _ _)) _   = setUltDest r >> isAnalyst
     isAuthorized r@(StatsR StatsAovR) _                = setUltDest r >> isAnalyst
-    isAuthorized r@(StatsR (AovDetailsR {})) _         = setUltDest r >> isAnalyst    
-        
+    isAuthorized r@(StatsR (AovDetailsR {})) _         = setUltDest r >> isAnalyst
 
-    isAuthorized BillingMailHookR _ = return Authorized    
+
+    isAuthorized BillingMailHookR _ = return Authorized
     isAuthorized (AdminR GMailApiHookR) _ = return Authorized
-    
+
     isAuthorized (AdminR TokensGMailClearR) _ = isAdmin
     isAuthorized (AdminR TokensGMailR) _ = isAdmin
     isAuthorized r@(AdminR TokensR) _ = setUltDest r >> isAdmin
-    
+
     isAuthorized (AdminR (AdmInvoiceMailDeleteR _ _)) _ = isAdmin
     isAuthorized (AdminR (AdmInvoiceMailR _ _)) _ = isAdmin
     isAuthorized (AdminR (AdmInvoiceSendmailR _)) _ = isAdmin
@@ -249,7 +255,7 @@ instance Yesod App where
     isAuthorized r@(AdminR (BusinessContactCreateR _)) _ = setUltDest r >> isAdmin
     isAuthorized r@(AdminR (BusinessContactEditR _ _)) _ = setUltDest r >> isAdmin
     isAuthorized (AdminR (BusinessContactDeleteR _ _)) _ = isAdmin
-    
+
     isAuthorized ContactR _ = return Authorized
 
     isAuthorized BookEndR _ = return Authorized
@@ -274,7 +280,7 @@ instance Yesod App where
     isAuthorized r@(BookingsCalendarR _) _ = setUltDest r >> isAuthenticated
     isAuthorized r@(BookingsDayListR _ _) _ = setUltDest r >> isAuthenticated
     isAuthorized r@(BookingItemR {}) _ = setUltDest r >> isAuthenticated
-    
+
 
     isAuthorized r@(RequestsR {}) _ = setUltDest r >> isEmployee
     isAuthorized r@(RequestR {}) _ = setUltDest r >> isEmployee
@@ -288,12 +294,12 @@ instance Yesod App where
     isAuthorized r@(TasksDayListR {}) _ = setUltDest r >> isEmployee
     isAuthorized r@(TaskItemR {}) _ = setUltDest r >> isEmployee
     isAuthorized r@(TaskHistR {}) _ = setUltDest r >> isEmployee
-    
+
     isAuthorized (ProfileR _) _ = isAuthenticated
     isAuthorized (ProfileEditR _) _ = isAuthenticated
     isAuthorized (ProfileRemoveR _) _ = isAuthenticated
-    
-    
+
+
     isAuthorized AccountR _ = return Authorized
     isAuthorized (AccountPhotoR _) _ = return Authorized
 
@@ -355,12 +361,23 @@ instance YesodPersist App where
         master <- getYesod
         runSqlPool action $ appConnPool master
 
+
 instance YesodPersistRunner App where
     getDBRunner :: Handler (DBRunner App, Handler ())
     getDBRunner = defaultGetDBRunner appConnPool
 
+
 instance YesodAuth App where
     type AuthId App = UserId
+
+    authLayout :: (MonadHandler m, HandlerSite m ~ App) => WidgetFor App () -> m Html
+    authLayout w = liftHandler $ defaultLayout $ do
+        ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$>  lookupSession ultDestKey
+        setTitleI MsgAuthentication
+        let anError = "error"
+        msgs <- getMessages
+        $(widgetFile "auth/layout")
+
 
     -- Where to send a user after successful login
     loginDest :: App -> Route App
@@ -375,20 +392,76 @@ instance YesodAuth App where
     redirectToReferer _ = True
 
     authenticate :: (MonadHandler m, HandlerSite m ~ App) => Creds App -> m (AuthenticationResult App)
-    authenticate creds = liftHandler $ do
-        user <- runDB $ selectOne $ do
-            x <- from $ table @User
-            where_ $ x ^. UserName E.==. val (credsIdent creds)
-            where_ $ not_ $ x ^. UserBlocked
-            where_ $ not_ $ x ^. UserRemoved
-            return x
-        return $ case user of
-            Just (Entity uid _) -> Authenticated uid
-            Nothing -> UserError InvalidLogin
+    authenticate (Creds plugin ident extra) = liftHandler $ do
+        case plugin of
+          "google" -> do
+              let atoken :: Maybe Text
+                  atoken = extra ^? folded . filtered ((== "accessToken") . fst) . _2
+              let name :: Maybe Text
+                  name = extra ^? folded . filtered ((== "userResponse") . fst) . _2 . key "name" . _String
+              let sub :: Maybe Text
+                  sub = extra ^? folded . filtered ((== "userResponse") . fst) . _2 . key "sub" . _String
+              let picture :: Maybe Text
+                  picture = extra ^? folded . filtered ((== "userResponse") . fst) . _2 . key "picture" . _String
+              let email :: Maybe Text
+                  email = extra ^? folded . filtered ((== "userResponse") . fst) . _2 . key "email" . _String
 
-    -- You can add other plugins like Google Email, email or OAuth here
+              case (atoken,sub) of
+                (Just at,Just gid) -> do
+                    Entity uid _ <- runDB $ upsert User { userName = gid
+                                                        , userAuthType = UserAuthTypeGoogle
+                                                        , userPassword = Nothing
+                                                        , userAdmin = False
+                                                        , userAnalyst = False
+                                                        , userBlocked = False
+                                                        , userRemoved = False
+                                                        , userFullName = name
+                                                        , userEmail = email
+                                                        }
+                                    [UserEmail =. email]
+                    _ <- runDB $ upsert UserCred { userCredUser = uid
+                                                 , userCredName = "google_access_token"
+                                                 , userCredVal = at
+                                                 }
+                         [UserCredVal =. at]
+
+                    case picture of
+                      Just src -> do
+                          r <- liftIO $ W.get (unpack src)
+                          case (r ^? W.responseHeader "Content-Type" . to decodeUtf8, BSL.toStrict <$> r ^? W.responseBody) of
+                              (Just mime, Just bs) -> do
+                                  liftIO $ print mime
+                                  liftIO $ print bs
+                                  _ <- runDB $ upsert UserPhoto { userPhotoUser = uid
+                                                                , userPhotoMime = mime
+                                                                , userPhotoPhoto = bs
+                                                                }
+                                       [UserPhotoMime =. mime, UserPhotoPhoto =. bs]
+                                  return ()
+                              _otherwise -> return ()
+                          return ()
+                      Nothing -> return ()
+                    return $ Authenticated uid
+                _otherwise -> return $ UserError InvalidLogin
+
+          "hashdb" -> do
+              user <- runDB $ selectOne $ do
+                  x <- from $ table @User
+                  where_ $ x ^. UserName E.==. val ident
+                  where_ $ not_ $ x ^. UserBlocked
+                  where_ $ not_ $ x ^. UserRemoved
+                  return x
+              return $ case user of
+                Just (Entity uid _) -> Authenticated uid
+                Nothing -> UserError InvalidLogin
+          _ -> return $ UserError InvalidLogin
+
     authPlugins :: App -> [AuthPlugin App]
-    authPlugins _ = [authHashDBWithForm formLogin (Just . UniqueUser)]
+    authPlugins app = [ authHashDBWithForm formLogin (Just . UniqueUser)
+                      , oauth2GoogleScopedWidget googleButton ["email","openid","profile"]
+                            (appGoogleClientId . appSettings $ app)
+                            (appGoogleClientSecret . appSettings $ app)
+                      ]
 
     renderAuthMessage :: App -> [Text] -> AuthMessage -> Text
     renderAuthMessage _ [] = defaultMessage
@@ -421,7 +494,7 @@ isAdmin = do
                 msgs <- getMessages
                 $(widgetFile "auth/403")
             sendResponseStatus status403 r
-        Just (Entity _ (User _ _ True _ False False _ _)) -> return Authorized
+        Just (Entity _ (User _ _ _ True _ False False _ _)) -> return Authorized
         _ -> do
             r <- defaultLayout $ do
                 setTitleI MsgAuthorizationRequired
@@ -440,7 +513,7 @@ isAnalyst = do
                 msgs <- getMessages
                 $(widgetFile "auth/403")
             sendResponseStatus status403 r
-        Just (Entity _ (User _ _ _ True False False _ _)) -> return Authorized
+        Just (Entity _ (User _ _ _ _ True False False _ _)) -> return Authorized
         _ -> do
             r <- defaultLayout $ do
                 setTitleI MsgAuthorizationRequired
@@ -475,10 +548,121 @@ isEmployee = do
             Just _ -> return Authorized
 
 
+googleButton :: Widget
+googleButton = do
+    toWidget [cassius|
+.gsi-material-button
+    -moz-user-select: none
+    -webkit-user-select: none
+    -ms-user-select: none
+    -webkit-appearance: none
+    background-color: WHITE
+    background-image: none
+    border: 1px solid #747775
+    -webkit-border-radius: 4px
+    border-radius: 4px
+    -webkit-box-sizing: border-box
+    box-sizing: border-box
+    color: #1f1f1f
+    cursor: pointer
+    font-family: 'Roboto', arial, sans-serif
+    font-size: 14px
+    height: 40px
+    letter-spacing: 0.25px
+    outline: none
+    overflow: hidden
+    padding: 0 12px
+    position: relative
+    text-align: center
+    -webkit-transition: background-color .218s, border-color .218s, box-shadow .218s
+    transition: background-color .218s, border-color .218s, box-shadow .218s
+    vertical-align: middle
+    white-space: nowrap
+    width: auto
+    max-width: 400px
+    min-width: min-content
+
+.gsi-material-button .gsi-material-button-icon
+    height: 20px
+    margin-right: 12px
+    min-width: 20px
+    width: 20px
+
+.gsi-material-button .gsi-material-button-content-wrapper
+    -webkit-align-items: center
+    align-items: center
+    display: flex
+    -webkit-flex-direction: row
+    flex-direction: row
+    -webkit-flex-wrap: nowrap
+    flex-wrap: nowrap
+    height: 100%
+    justify-content: center
+    position: relative
+    width: 100%
+
+.gsi-material-button .gsi-material-button-contents
+    -webkit-flex-grow: 0
+    flex-grow: 0
+    font-family: 'Roboto', arial, sans-serif
+    font-weight: 500
+    overflow: hidden
+    text-overflow: ellipsis
+    vertical-align: top
+
+.gsi-material-button .gsi-material-button-state
+    -webkit-transition: opacity .218s
+    transition: opacity .218s
+    bottom: 0
+    left: 0
+    opacity: 0
+    position: absolute
+    right: 0
+    top: 0
+
+.gsi-material-button:disabled
+    cursor: default
+    background-color: #ffffff61
+    border-color: #1f1f1f1f
+
+.gsi-material-button:disabled .gsi-material-button-contents
+    opacity: 38%
+
+.gsi-material-button:disabled .gsi-material-button-icon
+    opacity: 38%
+
+.gsi-material-button:not(:disabled):active .gsi-material-button-state,
+.gsi-material-button:not(:disabled):focus .gsi-material-button-state
+    background-color: #303030
+    opacity: 12%
+
+.gsi-material-button:not(:disabled):hover
+    -webkit-box-shadow: 0 1px 2px 0 rgba(60, 64, 67, .30), 0 1px 3px 1px rgba(60, 64, 67, .15)
+    box-shadow: 0 1px 2px 0 rgba(60, 64, 67, .30), 0 1px 3px 1px rgba(60, 64, 67, .15)
+
+.gsi-material-button:not(:disabled):hover .gsi-material-button-state
+    background-color: #303030
+    opacity: 8%
+
+|]
+    [whamlet|
+<button.gsi-material-button>
+  <div.gsi-material-button-state>
+  <div.gsi-material-button-content-wrapper>
+    <div.gsi-material-button-icon>
+      <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: block;">
+        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z">
+        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z">
+        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z">
+        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z">
+        <path fill="none" d="M0 0h48v48H0z">
+    <span.gsi-material-button-contents>_{MsgSignInWithGoogle}
+    <span style="display: none;">_{MsgSignInWithGoogle}
+|]
+
+
 formLogin :: Route App -> Widget
 formLogin route = do
-    ult <- getUrlRender >>= \rndr -> fromMaybe (rndr HomeR) <$>  lookupSession ultDestKey
-    msgs <- getMessages
     users <- liftHandler $ unval <$> runDB (select $ do
         x :& y <- from $
             do x <- from $ table @User
@@ -506,12 +690,10 @@ formLogin route = do
     loginFormWrapper <- newIdent
     loginForm <- newIdent
     pCreateAccount <- newIdent
-    dlgSampleCreds <- newIdent
     $(widgetFile "auth/form")
 
   where
       unval = (bimap (bimap (bimap (bimap unValue unValue) unValue) unValue) unValue <$>)
-      anError = "error"
 
 
 instance YesodAuthPersist App

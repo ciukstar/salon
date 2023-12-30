@@ -1,3 +1,4 @@
+SignInWithGoogle: Connectez-vous avec Google
 Cleared: Effacé
 InvalidStoreType: Type de stockage invalide
 Initialization: Initialisation

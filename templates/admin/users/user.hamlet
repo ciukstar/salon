@@ -40,7 +40,7 @@
   <div.mdc-dialog__scrim>
 
 <main.mdc-top-app-bar--fixed-adjust>
-  $maybe Entity uid (User uname _ admin analyst blocked deleted fname email) <- user
+  $maybe Entity uid (User uname _ _ admin analyst blocked deleted fname email) <- user
     <figure #figureUserPhoto>
       <img width=56 height=56 src=@{AccountPhotoR uid} alt=_{MsgPhoto} loading=lazy>
       <figcaption>

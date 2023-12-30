@@ -256,7 +256,7 @@ getBookPayNowR uid = do
     rndr <- getUrlRenderParams
 
     let confirmParams = encodeToLazyText $ object $ case user of
-          Just (Entity _ (User _ _ _ _ _ _ _ (Just email))) ->
+          Just (Entity _ (User _ _ _ _ _ _ _ _ (Just email))) ->
               [ "return_url"    .= rndr (BookPayCompletionR uid) stati
               , "receipt_email" .= email
               ]

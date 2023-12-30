@@ -144,9 +144,16 @@ UserPhoto
   mime Text
   UniqueUserPhoto user
 
+UserCred
+  user UserId OnDeleteCascade
+  name Text
+  val Text
+  UniqueUserCred user name
+
 User
   name Text
-  password Text
+  authType AuthenticationType
+  password Text Maybe
   admin Bool
   analyst Bool
   blocked Bool
@@ -155,6 +162,7 @@ User
   email Text Maybe
   UniqueUser name
   deriving Typeable
+
 
 Brand
   business BusinessId OnDeleteCascade

@@ -71,6 +71,11 @@ import Database.Persist.Types
     )
 import Database.Persist.Sql (fromSqlKey, toSqlKey, PersistFieldSql, sqlType)
 import Control.Lens (makeLensesFor)
+
+
+data AuthenticationType = UserAuthTypePassword | UserAuthTypeGoogle
+    deriving (Show, Read, Eq, Ord)
+derivePersistField "AuthenticationType"
                 
 
 data StoreType = StoreTypeGoogleSecretManager
@@ -272,10 +277,10 @@ instance PathMultiPiece Services where
 
 instance HashDBUser User where
     userPasswordHash :: User -> Maybe Text
-    userPasswordHash = Just . userPassword
+    userPasswordHash = userPassword
 
     setPasswordHash :: Text -> User -> User
-    setPasswordHash h u = u { userPassword = h }
+    setPasswordHash h u = u { userPassword = Just h }
 
 
 data SortOrder = SortOrderAsc | SortOrderDesc

@@ -31,7 +31,7 @@ import Database.Persist ( PersistStoreWrite(insert_, insert) )
 import Model
     ( User
       ( User, userName, userPassword, userAdmin, userAnalyst, userBlocked
-      , userRemoved, userEmail, userFullName
+      , userRemoved, userEmail, userFullName, userAuthType
       )
     , UserPhoto (UserPhoto, userPhotoUser, userPhotoPhoto, userPhotoMime)
     , Service
@@ -77,7 +77,7 @@ import Model
       ( ContactUs, contactUsBusiness, contactUsShowSchedule, contactUsHtml
       , contactUsShowMap, contactUsLongitude, contactUsLatitude, contactUsShowAddress
       )
-    , DayType (Weekday), PayMethod (PayAtVenue)
+    , DayType (Weekday), PayMethod (PayAtVenue), AuthenticationType (UserAuthTypePassword)
     )
 import Data.FileEmbed (embedFile)
 import Demo.DemoPhotos
@@ -169,7 +169,8 @@ populateFR = do
 
     pass <- liftIO $ makePassword "root" 17
     insert_ $ User { userName = "root"
-                   , userPassword = decodeUtf8 pass
+                   , userAuthType = UserAuthTypePassword
+                   , userPassword = pure $ decodeUtf8 pass
                    , userAdmin = True
                    , userAnalyst = True
                    , userBlocked = False
@@ -180,7 +181,8 @@ populateFR = do
 
     pass1 <- liftIO $ makePassword "martinl" 17
     let user1 = User { userName = "martinl"
-                     , userPassword = decodeUtf8 pass1
+                     , userAuthType = UserAuthTypePassword
+                     , userPassword = pure $ decodeUtf8 pass1
                      , userAdmin = False
                      , userAnalyst = True
                      , userBlocked = False
@@ -239,7 +241,8 @@ populateFR = do
 
     pass2 <- liftIO $ makePassword "bernardj" 17
     let user2 = User { userName = "bernardj"
-                     , userPassword = decodeUtf8 pass2
+                     , userAuthType = UserAuthTypePassword
+                     , userPassword = pure $ decodeUtf8 pass2
                      , userAdmin = True
                      , userAnalyst = False
                      , userBlocked = False
@@ -271,7 +274,8 @@ populateFR = do
 
     pass3 <- liftIO $ makePassword "thomasgr" 17
     let user3 = User { userName = "thomasgr"
-                     , userPassword = decodeUtf8 pass3
+                     , userAuthType = UserAuthTypePassword
+                     , userPassword = pure $ decodeUtf8 pass3
                      , userAdmin = False
                      , userAnalyst = False
                      , userBlocked = False
@@ -304,7 +308,8 @@ populateFR = do
 
     pass4 <- liftIO $ makePassword "robertle" 17
     let user4 = User { userName = "robertle"
-                     , userPassword = decodeUtf8 pass4
+                     , userAuthType = UserAuthTypePassword
+                     , userPassword = pure $ decodeUtf8 pass4
                      , userAdmin = False
                      , userAnalyst = False
                      , userBlocked = False
@@ -337,7 +342,8 @@ populateFR = do
 
     pass5 <- liftIO $ makePassword "richardal" 17
     let user5 = User { userName = "richardal"
-                     , userPassword = decodeUtf8 pass5
+                     , userAuthType = UserAuthTypePassword
+                     , userPassword = pure $ decodeUtf8 pass5
                      , userAdmin = False
                      , userAnalyst = False
                      , userBlocked = False
@@ -399,7 +405,8 @@ populateFR = do
 
     pass8 <- liftIO $ makePassword "moreaul" 17
     let user8 = User { userName = "moreaul"
-                     , userPassword = decodeUtf8 pass8
+                     , userAuthType = UserAuthTypePassword
+                     , userPassword = pure $ decodeUtf8 pass8
                      , userAdmin = True
                      , userAnalyst = True
                      , userBlocked = False
@@ -501,7 +508,8 @@ populateFR = do
 
     pass11 <- liftIO $ makePassword "michelrc" 17
     let user11 = User { userName = "michelrc"
-                      , userPassword = decodeUtf8 pass11
+                      , userAuthType = UserAuthTypePassword
+                      , userPassword = pure $ decodeUtf8 pass11
                       , userAdmin = False
                       , userAnalyst = False
                       , userBlocked = False
@@ -3015,7 +3023,8 @@ Mise en forme du corps : Abdomen et taille, hanches et cuisses, jambes et bras
 
     pass6 <- liftIO $ makePassword "bernardl" 17
     c1 <- insert $ User { userName = "bernardl"
-                        , userPassword = decodeUtf8 pass6
+                        , userAuthType = UserAuthTypePassword
+                        , userPassword = pure $ decodeUtf8 pass6
                         , userAdmin = False
                         , userAnalyst = False
                         , userBlocked = False
@@ -3059,7 +3068,8 @@ Mise en forme du corps : Abdomen et taille, hanches et cuisses, jambes et bras
 
     pass7 <- liftIO $ makePassword "bardota" 17
     c2 <- insert $ User { userName = "bardota"
-                        , userPassword = decodeUtf8 pass7
+                        , userAuthType = UserAuthTypePassword
+                        , userPassword = pure $ decodeUtf8 pass7
                         , userAdmin = False
                         , userAnalyst = False
                         , userBlocked = False

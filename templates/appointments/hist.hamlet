@@ -15,7 +15,7 @@
       <figcaption>
         _{MsgNoHistoryYet}.
   $else
-    $forall (Entity _ (Hist _ _ logtime day time addr tzo tz status rname ename),Entity _ (User uname _ _ _ _ _ fname _)) <- hist
+    $forall (Entity _ (Hist _ _ logtime day time addr tzo tz status rname ename),Entity _ (User uname _ _ _ _ _ _ fname _)) <- hist
       $with (color,icon,label,title) <- resolveBookStatus status
         <details.mdc-list data-mdc-auto-init=MDCList
           ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">

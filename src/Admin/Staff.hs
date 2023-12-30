@@ -163,7 +163,7 @@ import Model
     , ServiceId, Service (Service)
     , UserId,  User (User), UserPhoto (UserPhoto)
     , EmplStatus (EmplStatusUnavailable, EmplStatusAvailable)
-    , SortOrder (SortOrderAsc, SortOrderDesc)
+    , SortOrder (SortOrderAsc, SortOrderDesc), AuthenticationType (UserAuthTypePassword)
     )
 
 import Settings.StaticFiles (img_add_photo_alternate_FILL0_wght400_GRAD0_opsz48_svg)
@@ -663,7 +663,10 @@ formUser empl extra = do
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
         } (staffEmail . entityVal <$> empl)
-    let r = User <$> nameR <*> passR <*> adminR <*> analystR <*> blockedR <*> deletedR <*> fnameR <*> emailR
+        
+    let r = User <$> nameR <*> pure UserAuthTypePassword <*> (pure <$> passR) <*> adminR
+            <*> analystR <*> blockedR <*> deletedR <*> fnameR <*> emailR
+            
     let w = [whamlet|
 #{extra}
 $forall v <- [nameV,passV]

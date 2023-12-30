@@ -18,7 +18,7 @@
 
     <div.mdc-select__menu.mdc-menu.mdc-menu-surface.mdc-menu-surface--fullwidth>
       <ul.mdc-deprecated-list.mdc-deprecated-list--image-list role=listbox>
-        $forall Entity cid (User uname _ _ _ _ _ fname _) <- customers
+        $forall Entity cid (User uname _ _ _ _ _ _ fname _) <- customers
           <li.mdc-deprecated-list-item role=option data-value=#{fromSqlKey cid} aria-selected=false>
             <span.mdc-deprecated-list-item__ripple>
             <span.mdc-deprecated-list-item__graphic>

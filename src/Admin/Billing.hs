@@ -853,7 +853,7 @@ renderIvoiceHtml :: Maybe (Entity User)
 renderIvoiceHtml customer employee invoice items = [ihamlet|
 <h1>_{MsgAppName}
 <h2>_{MsgInvoice}  
-$maybe Entity _ (User uname _ _ _ _ _ cname cemail) <- customer
+$maybe Entity _ (User uname _ _ _ _ _ _ cname cemail) <- customer
   $maybe Entity _ (Staff ename _ _ _ eemail _) <- employee
     $maybe Entity _ (Invoice _ _ no status day due) <- invoice
       <table cellspacing=0 cellpadding=10 border=0>

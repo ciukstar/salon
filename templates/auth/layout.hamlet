@@ -1,0 +1,44 @@
+<header.mdc-top-app-bar.mdc-top-app-bar--fixed data-mdc-auto-init=MDCTopAppBar>
+  <div.mdc-top-app-bar__row.mdc-theme--background>
+    <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-start>
+      <a.mdc-top-app-bar__navigation-icon.mdc-icon-button href=#{ult} role=button title=_{MsgBack}>
+        <span.mdc-icon-button__ripple>
+        <span.mdc-icon-button__focus-ring>
+        <i.material-symbols-outlined>arrow_back
+      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgAuthentication}
+
+<main.mdc-top-app-bar--fixed-adjust>
+  $forall (_,msg) <- filter (((==) anError) . fst) msgs
+    <div.mdc-banner role=banner data-mdc-auto-init=MDCBanner>
+      <div.mdc-banner__content role=alertdialog aria-live=assertive>
+        <div.mdc-banner__graphic-text-wrapper>
+          <div.mdc-banner__graphic role=img style="background-color:var(--mdc-theme-error)">
+            <i.mdc-banner__icon.material-symbols-outlined>warning
+          <div.mdc-banner__text>#{msg}
+        <div.mdc-banner__actions>
+          <button.mdc-banner__primary-action.mdc-icon-button type=button>
+            <span.mdc-icon-button__ripple>
+            <i.material-symbols-outlined>close
+
+  ^{w}
+
+
+<footer.demo>
+  <small.hint>
+    <sup>*
+    _{MsgDemoSampleOne}
+    <i.material-symbols-outlined title=_{MsgDemoUserAccounts} tabindex=0
+      onclick="document.getElementById('dlgSampleCreds').MDCDialog.open()">
+      demography
+    _{MsgDemoSampleTwo}
+
+
+$forall (_,msg) <- filter (((/=) anError) . fst) msgs
+  <aside.mdc-snackbar data-mdc-auto-init=MDCSnackbar>
+    <div.mdc-snackbar__surface>
+      <div.mdc-snackbar__label>#{msg}
+      <div.mdc-snackbar__actions>
+        <button.mdc-snackbar__dismiss.mdc-icon-button type=button>
+          <span.mdc-icon-button__ripple>
+          <span.mdc-icon-button__focus-ring>
+          <i.material-symbols-outlined>close

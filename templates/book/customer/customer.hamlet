@@ -28,7 +28,7 @@
 
 <main.mdc-top-app-bar--prominent-fixed-adjust>
 
-  $maybe Entity uid (User uname _ _ _ _ _ fname email) <- user
+  $maybe Entity uid (User uname _ _ _ _ _ _ fname email) <- user
 
     <details.mdc-list open
       ontoggle="this.querySelector('summary i.expand').textContent = this.open ? 'expand_less' : 'expand_more'">

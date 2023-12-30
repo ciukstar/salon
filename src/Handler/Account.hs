@@ -73,7 +73,7 @@ import Model
       ( UserPhotoUser, StaffUser, RoleStaff, RoleName, UserId, UserFullName
       , UserEmail, UserPhotoPhoto, UserPhotoMime, UserRemoved
       )
-    , Staff (Staff), Role
+    , Staff (Staff), Role, AuthenticationType (UserAuthTypePassword)
     )
 
 import Database.Esqueleto.Experimental
@@ -208,8 +208,8 @@ postAccountR :: Handler Html
 postAccountR = do
     ((fr,widget),enctype) <- runFormPost $ formAccount Nothing
     case fr of
-      FormSuccess (user,mfi) -> do
-          uid <- setPassword (userPassword user) user >>= \u -> runDB $ insert u
+      FormSuccess (user@(User _ _ (Just pass) _ _ _ _ _ _),mfi) -> do
+          uid <- setPassword pass user >>= \u -> runDB $ insert u
           case mfi of
             Just fi -> do
                 bs <- fileSourceByteString fi
@@ -246,7 +246,7 @@ formAccount user extra = do
         { fsLabel = SomeMessage MsgPassword
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
         , fsAttrs = [("class","mdc-text-field__input")]
-        } (userPassword <$> user)
+        } (userPassword =<< user)
     (fnameR,fnameV) <- mopt textField FieldSettings
         { fsLabel = SomeMessage MsgFullName
         , fsTooltip = Nothing, fsId = Nothing, fsName = Nothing
@@ -264,8 +264,8 @@ formAccount user extra = do
         } Nothing
 
     let r = (,)
-            <$> ( User <$> nameR <*> passR
-                  <*> FormSuccess False <*> FormSuccess False <*> FormSuccess False <*> FormSuccess False
+            <$> ( User <$> nameR <*> pure UserAuthTypePassword <*> (pure <$> passR)
+                  <*> pure False <*> pure False <*> pure False <*> pure False
                   <*> fnameR <*> emailR
                 )
             <*> photoR

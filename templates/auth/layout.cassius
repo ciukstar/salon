@@ -1,0 +1,16 @@
+
+main
+  display: flex
+  flex-direction: column
+  align-items: center
+  gap: 1rem
+
+footer.demo
+  width: 100%
+  position: absolute
+  bottom: 0
+  text-align: center
+  small.hint
+    line-height: 1
+    font-style: italic
+    color: var(--theme-text-small-hint-on-light)
