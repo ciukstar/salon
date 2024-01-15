@@ -2,6 +2,15 @@
 header.mdc-top-app-bar
   div.mdc-top-app-bar__row
     transition: height 0.3s ease-out
+    h1
+      margin: 0
+      white-space: inherit
+      overflow: inherit
+      text-overflow: inherit
+      line-height: inherit
+      font-size: var(--mdc-typography-headline6-font-size, 1.25rem)
+      font-family: var(--mdc-typography-headline6-font-family, var(--mdc-typography-font-family, Roboto, sans-serif))
+      font-weight: var(--mdc-typography-headline6-font-weight, 500)
     
 main
   ##{sectionPriceTag}

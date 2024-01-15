@@ -416,8 +416,8 @@ Service: Услуга
 Services: Услуги
 Salon: Салон
 AppName: Салон
-MetaKeywords: салон, красоты, приложение
-MetaDescription: Приложение Салон Красоты
+MetaKeywords: салон, красоты, веб, приложение
+MetaDescription: Прогрессивное веб-приложение для салонов красоты.
 
 
 DemoSampleOne: Нажмите на значок

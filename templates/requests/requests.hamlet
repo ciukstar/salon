@@ -9,7 +9,7 @@
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>menu
-      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
+      <h1.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
         _{MsgRequests}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end>

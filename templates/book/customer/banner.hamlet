@@ -10,7 +10,7 @@
         <div #divStepCounter style="margin-bottom:1rem;overflow:hidden">
           <small>
             <small>_{MsgStepNofM 4 5}
-        <div style="white-space:inherit;overflow:inherit;text-overflow:inherit;line-height:inherit">
+        <h1>
           _{MsgCustomerInformation}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end>

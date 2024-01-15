@@ -1,4 +1,9 @@
 
+header.mdc-top-app-bar
+  div.mdc-top-app-bar__row
+    h1
+      margin: 0
+
 ##{dlgProfileRemove}
   .mdc-dialog__content
     small.hint

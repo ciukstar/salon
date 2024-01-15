@@ -416,8 +416,8 @@ Service: Service
 Services: Services
 Salon: Salon
 AppName: Salon
-MetaKeywords: beauté, salon, application
-MetaDescription: Application de salon de beauté
+MetaKeywords: beauté, salon, web, application
+MetaDescription: Application web progressive pour salons de beauté.
 
 
 DemoSampleOne: Cliquez sur l'icône

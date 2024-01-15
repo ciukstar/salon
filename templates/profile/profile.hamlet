@@ -5,7 +5,7 @@
         <span.mdc-icon-button__ripple>
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>arrow_back
-      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgUserProfile}
+      <h1.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgUserProfile}
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end>
       <button.mdc-icon-button.mdc-theme--text-primary-on-light type=button title=_{MsgRemove}
         onclick="document.getElementById('#{dlgProfileRemove}').MDCDialog.open()">

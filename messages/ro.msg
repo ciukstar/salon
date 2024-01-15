@@ -416,8 +416,8 @@ Service: Serviciu
 Services: Servicii
 Salon: Salon
 AppName: Salon
-MetaKeywords: frumusețe, salon, aplicație
-MetaDescription: Aplicația salon de frumusețe
+MetaKeywords: frumusețe, salon, web, aplicație
+MetaDescription: Aplicație web progresivă pentru saloane de frumusețe.
 
 
 DemoSampleOne: Faceți clic pe pictograma

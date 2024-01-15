@@ -20,6 +20,8 @@ $doctype 5
       $maybe _ <- ico
         $maybe mime <- mime
           <link rel=icon type=#{mime} href=@{AdminR $ BrandIcoR bid rid}>
+    $nothing
+      <link rel=icon type="image/x-icon" href=@{FaviconR}>
     
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">

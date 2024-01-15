@@ -1,4 +1,9 @@
 
+header.mdc-top-app-bar
+  div.mdc-top-app-bar__row
+    h1
+      margin: 0
+
 main
   margin: 0 1rem
   display: flex

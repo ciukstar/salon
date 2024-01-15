@@ -7,7 +7,7 @@
           <span.mdc-icon-button__ripple>
           <spam.mdc-icon-button__focus-ring>
           <i.material-symbols-outlined>arrow_back
-        <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgOffer}
+        <h1.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>_{MsgOffer}
 
 <main.mdc-top-app-bar--fixed-adjust>
 

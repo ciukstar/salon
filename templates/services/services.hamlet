@@ -5,7 +5,7 @@
       <button.mdc-top-app-bar__navigation-icon.mdc-icon-button #btnMainMenu title=_{MsgNavigationMenu}>
         <span.mdc-icon-button__ripple>
         <i.material-symbols-outlined>menu
-      <span.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
+      <h1.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
         _{MsgServices}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end>
