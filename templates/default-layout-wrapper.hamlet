@@ -22,7 +22,8 @@ $doctype 5
           <link rel=icon type=#{mime} href=@{AdminR $ BrandIcoR bid rid}>
     $nothing
       <link rel=icon type="image/x-icon" href=@{FaviconR}>
-    
+   
+    <link rel=icon type="image/svg+xml" href=@{StaticR img_salon_120x120_svg}> 
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
     <link href="https://unpkg.com/material-components-web@14.0.0/dist/material-components-web.min.css" rel="stylesheet">
