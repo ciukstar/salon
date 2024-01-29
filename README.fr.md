@@ -88,6 +88,16 @@ De plus, la facture peut être téléchargée au format PDF ou HTML et envoyée 
   ENV: YESOD_GOOGLE_CLIENT_ID, YESOD_GOOGLE_CLIENT_SECRET
   ```
 
+## Optimisation du moteur de recherche
+
+* [Google SEO](https://search.google.com/search-console)
+
+  ```$YESOD_GOOGLE_SITE_VERIFICATION```
+
+* [Yandex SEO](https://webmaster.yandex.com/welcome)
+
+  ```$YESOD_YANDEX_VERIFICATION```
+
 
 ## Diagramme ERD
 

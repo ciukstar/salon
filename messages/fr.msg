@@ -1,3 +1,4 @@
+SearchEngineOptimization: Optimisation du moteur de recherche
 SignInWithGoogle: Connectez-vous avec Google
 Cleared: Effacé
 InvalidStoreType: Type de stockage invalide

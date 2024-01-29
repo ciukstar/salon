@@ -86,6 +86,16 @@
   ENV: YESOD_GOOGLE_CLIENT_ID, YESOD_GOOGLE_CLIENT_SECRET
   ```
 
+## Поисковая оптимизация
+
+* [Яндекс Вебмастер](https://webmaster.yandex.ru/welcome)
+
+  ```$YESOD_YANDEX_VERIFICATION```
+
+* [Google SEO](https://search.google.com/search-console)
+
+  ```$YESOD_GOOGLE_SITE_VERIFICATION```
+
 ## ER-диаграмма
 
 ![Диаграмма отношений сущностей](static/img/Salon-ERD.svg)

@@ -1,3 +1,4 @@
+SearchEngineOptimization: Search Engine Optimization
 SignInWithGoogle: Sign in with Google
 Cleared: Cleared
 InvalidStoreType: Invalid store type

@@ -11,8 +11,10 @@ $doctype 5
     <meta name="author" content="Sergiu Starciuc, ciukstar@gmail.com">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="theme-color" content="#FEDBD0">
-    <meta name="google-site-verification" content="a5AUtJixuZ1_hbHg7AbmclYAYk5AkZylPeIFRsesEXI">
-    <meta name="yandex-verification" content="92c10516dea08e0b" />
+    $maybe gsv <- appGoogleSiteVerification $ appSettings master
+      <meta name="google-site-verification" content=#{gsv}>
+    $maybe yv <- appYandexVerification $ appSettings master
+      <meta name="yandex-verification" content=#{yv}>
     
     <link rel="manifest" href=@{WebAppManifestR}>
     

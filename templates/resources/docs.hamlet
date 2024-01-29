@@ -113,6 +113,19 @@
           <small>
             <code>ENV: YESOD_GOOGLE_CLIENT_ID, YESOD_GOOGLE_CLIENT_SECRET
 
+    <div.mdc-typography--headline4>_{MsgSearchEngineOptimization}
+    <ul>
+      <li>
+        <a href="https://search.google.com/search-console" target=_blank>Google SEO
+        <p>
+          <small>
+            <code>&dollar;YESOD_GOOGLE_SITE_VERIFICATION
+      <li>
+        <a href="https://webmaster.yandex.com/welcome" target=_blank>Yandex SEO
+        <p>
+          <small>
+            <code>&dollar;YESOD_YANDEX_VERIFICATION
+
     <div.mdc-typography--headline4>
       _{MsgErdDiagram}
     <img #imgErdDiagram src=@{StaticR img_Salon_ERD_svg} alt=_{MsgErdDiagram} loading=lazy>

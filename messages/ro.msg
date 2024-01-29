@@ -1,3 +1,4 @@
+SearchEngineOptimization: Optimizare motor de căutare
 SignInWithGoogle: Conectați-vă cu Google
 Cleared: S-a șters
 InvalidStoreType: Tip de stocare nevalid

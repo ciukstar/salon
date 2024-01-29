@@ -63,11 +63,13 @@ data AppSettings = AppSettings
 
     , appAuthDummyLogin         :: Bool
     -- ^ Indicate if auth dummy login should be enabled.
-    , appMapboxPk           :: Text
-    , appStripePk           :: Text
-    , appStripeSk           :: Text
-    , appGoogleClientId     :: Text
-    , appGoogleClientSecret :: Text
+    , appMapboxPk               :: Text
+    , appStripePk               :: Text
+    , appStripeSk               :: Text
+    , appGoogleSiteVerification :: Maybe Text
+    , appGoogleClientId         :: Text
+    , appGoogleClientSecret     :: Text
+    , appYandexVerification     :: Maybe Text
     }
 
 instance FromJSON AppSettings where
@@ -97,13 +99,15 @@ instance FromJSON AppSettings where
         appCopyright              <- o .:  "copyright"
         appAnalytics              <- o .:? "analytics"
 
-        appAuthDummyLogin         <- o .:? "auth-dummy-login"      .!= dev
+        appAuthDummyLogin         <- o .:? "auth-dummy-login" .!= dev
                                      
         appMapboxPk               <- o .:  "mapbox-pk"
         appStripePk               <- o .:  "stripe-pk"
         appStripeSk               <- o .:  "stripe-sk"
+        appGoogleSiteVerification <- o .:  "google-site-verification"
         appGoogleClientId         <- o .:  "google-client-id"
         appGoogleClientSecret     <- o .:  "google-client-secret"
+        appYandexVerification     <- o .:  "yandex-verification"
                                      
 
         return AppSettings {..}

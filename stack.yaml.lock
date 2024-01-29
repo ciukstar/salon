@@ -27,8 +27,8 @@ packages:
     hackage: stripe-haskell-2.6.2@sha256:4ad015702e65b3219b9f2db10b8ae35873254a149f7b735c5d3e6250d7b641a1,1130
 snapshots:
 - completed:
-    sha256: 1b4c2669e26fa828451830ed4725e4d406acc25a1fa24fcc039465dd13d7a575
-    size: 714100
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/22/6.yaml
+    sha256: 7b975b104cb3dbf0c297dfd01f936a4d2ee523241dd0b1ae960522b833fe3027
+    size: 714096
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/22/7.yaml
   original:
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/22/6.yaml
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/22/7.yaml

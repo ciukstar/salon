@@ -86,6 +86,16 @@ Additionally, the invoice can be downloaded in PDF or HTML format and sent to th
   ENV: YESOD_GOOGLE_CLIENT_ID, YESOD_GOOGLE_CLIENT_SECRET
   ```
 
+## Search Engine Optimization
+
+* [Google SEO](https://search.google.com/search-console)
+
+  ```$YESOD_GOOGLE_SITE_VERIFICATION```
+
+* [Yandex SEO](https://webmaster.yandex.com/welcome)
+
+  ```$YESOD_YANDEX_VERIFICATION```
+  
 ## ERD Diagram
 
 ![Entity Relationship Diagram](static/img/Salon-ERD.svg)

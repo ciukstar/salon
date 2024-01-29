@@ -1,3 +1,4 @@
+SearchEngineOptimization: Поисковая оптимизация
 SignInWithGoogle: Войти через Google
 Cleared: Очищено
 InvalidStoreType: Неверный тип хранилища

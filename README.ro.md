@@ -86,6 +86,16 @@ După crearea unei noi facturi și adăugarea elementelor acesteia, factura poat
   ENV: YESOD_GOOGLE_CLIENT_ID, YESOD_GOOGLE_CLIENT_SECRET
   ```
 
+## Optimizare motor de căutare
+
+* [Google SEO](https://search.google.com/search-console)
+
+  ```$YESOD_GOOGLE_SITE_VERIFICATION```
+
+* [Yandex SEO](https://webmaster.yandex.com/welcome)
+
+  ```$YESOD_YANDEX_VERIFICATION```
+
 
 ## Diagrama ERD
 

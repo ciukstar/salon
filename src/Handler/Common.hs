@@ -23,7 +23,7 @@ import Foundation
     ( Handler
     , Route
       ( HomeR, ServicesR, BookOffersR, BookingsCalendarR, AboutUsR
-      , ContactR, ResourcesR, StaticR
+      , ContactR, ResourcesR, StaticR, FaviconR
       )
     , ResourcesR (DocsR), AppMessage (MsgAppName, MsgMetaDescription)
     )
@@ -67,6 +67,7 @@ getWebAppManifestR = do
 
 getSitemapR :: Handler TypedContent
 getSitemapR = sitemap $ do
+    yield $ SitemapUrl FaviconR Nothing (Just Monthly) (Just 0.5)
     yield $ SitemapUrl (ResourcesR DocsR) Nothing (Just Monthly) (Just 1.0)
     yield $ SitemapUrl HomeR Nothing (Just Monthly) (Just 1.0)
     yield $ SitemapUrl ServicesR Nothing (Just Monthly) (Just 0.9)
