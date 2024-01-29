@@ -93,6 +93,10 @@ De plus, la facture peut être téléchargée au format PDF ou HTML et envoyée 
 * [Google SEO](https://search.google.com/search-console)
 
   ```$YESOD_GOOGLE_SITE_VERIFICATION```
+  
+* [Bing SEO](https://www.bing.com/webmasters)
+
+  ```$YESOD_MS_VALIDATE```
 
 * [Yandex SEO](https://webmaster.yandex.com/welcome)
 

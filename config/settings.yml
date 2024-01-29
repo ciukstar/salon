@@ -44,6 +44,7 @@ google-site-verification: "_env:YESOD_GOOGLE_SITE_VERIFICATION"
 google-client-id: "_env:YESOD_GOOGLE_CLIENT_ID:xxx"
 google-client-secret: "_env:YESOD_GOOGLE_CLIENT_SECRET:xxx"
 yandex-verification: "_env:YESOD_YANDEX_VERIFICATION"
+msvalidate: "_env:YESOD_MS_VALIDATE"
 
 copyright: Insert copyright statement here
 #analytics: UA-YOURCODE

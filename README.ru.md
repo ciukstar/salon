@@ -91,6 +91,10 @@
 * [Яндекс Вебмастер](https://webmaster.yandex.ru/welcome)
 
   ```$YESOD_YANDEX_VERIFICATION```
+  
+* [Bing SEO](https://www.bing.com/webmasters)
+
+  ```$YESOD_MS_VALIDATE```
 
 * [Google SEO](https://search.google.com/search-console)
 

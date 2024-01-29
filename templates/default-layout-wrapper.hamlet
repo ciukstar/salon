@@ -13,6 +13,8 @@ $doctype 5
     <meta name="theme-color" content="#FEDBD0">
     $maybe gsv <- appGoogleSiteVerification $ appSettings master
       <meta name="google-site-verification" content=#{gsv}>
+    $maybe msv <- appMsValidate $ appSettings master
+      <meta name="msvalidate.01" content=#{msv}>
     $maybe yv <- appYandexVerification $ appSettings master
       <meta name="yandex-verification" content=#{yv}>
     

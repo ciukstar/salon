@@ -70,6 +70,7 @@ data AppSettings = AppSettings
     , appGoogleClientId         :: Text
     , appGoogleClientSecret     :: Text
     , appYandexVerification     :: Maybe Text
+    , appMsValidate             :: Maybe Text
     }
 
 instance FromJSON AppSettings where
@@ -108,7 +109,7 @@ instance FromJSON AppSettings where
         appGoogleClientId         <- o .:  "google-client-id"
         appGoogleClientSecret     <- o .:  "google-client-secret"
         appYandexVerification     <- o .:  "yandex-verification"
-                                     
+        appMsValidate             <- o .:  "msvalidate"                                     
 
         return AppSettings {..}
 

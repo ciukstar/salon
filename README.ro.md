@@ -91,6 +91,10 @@ După crearea unei noi facturi și adăugarea elementelor acesteia, factura poat
 * [Google SEO](https://search.google.com/search-console)
 
   ```$YESOD_GOOGLE_SITE_VERIFICATION```
+  
+* [Bing SEO](https://www.bing.com/webmasters)
+
+  ```$YESOD_MS_VALIDATE```
 
 * [Yandex SEO](https://webmaster.yandex.com/welcome)
 
