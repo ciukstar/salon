@@ -416,6 +416,7 @@ AboutUs: À propos de nous
 Service: Service
 Services: Services
 Salon: Salon
+AppDescription: Application web progressive pour salons de beauté
 AppName: Salon
 MetaKeywords: beauté, salon, web, application
 MetaDescription: Application web progressive pour salons de beauté.
@@ -426,6 +427,8 @@ DemoSampleTwo: pour obtenir une liste des comptes d'utilisateurs de démonstrati
 
 
 Documentation: Documentation
+AppDocumentation: Documentation de l'application
+
 Doc001 hrefHome: L'application <a href=#{hrefHome}>« Salon »</a> offre la possibilité de publier et d'annoncer les services des propriétaires de salons de beauté sur le Web.
 
 Doc002 hrefServices: Les services à annoncer sont définis et publiés dans la section <a href=#{hrefServices}>« Services »</a> du groupe « Données ». Si nécessaire, les services peuvent être définis comme une hiérarchie de groupes et de sous-services.

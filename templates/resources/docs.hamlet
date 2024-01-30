@@ -7,7 +7,7 @@
         <span.mdc-icon-button__focus-ring>
         <i.material-symbols-outlined>menu
       <h1.mdc-top-app-bar__title.mdc-theme--text-primary-on-light>
-        _{MsgDocumentation}
+        _{MsgAppDocumentation}
 
     <section.mdc-top-app-bar__section.mdc-top-app-bar__section--align-end>
       $maybe Entity uid _ <- user
@@ -24,7 +24,7 @@
       
 <main.mdc-top-app-bar--prominent-fixed-adjust>
   $with trans <- preEscapedToMarkup . renderMessage app langs
-    <div.mdc-typography--headline4>_{MsgAppName}
+    <div.mdc-typography--headline4>_{MsgAppDescription}
     <p>#{trans $ MsgDoc001 (rndr HomeR)}
     <div.mdc-typography--headline4>_{MsgOverview}
     <p>#{trans $ MsgDoc002 (rndr $ AdminR $ AdmServicesR (Services []))}

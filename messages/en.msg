@@ -416,6 +416,7 @@ AboutUs: About Us
 Service: Service
 Services: Services
 Salon: Salon
+AppDescription: Progressive web application for beauty salons
 AppName: Salon
 MetaKeywords: beauty, salon, web, application
 MetaDescription: Progressive web application for beauty salons.
@@ -423,7 +424,9 @@ MetaDescription: Progressive web application for beauty salons.
 DemoSampleOne: Click on the
 DemoSampleTwo: icon to get a list of demo accounts
 
-Documentation: Docs
+Documentation: Documentation
+AppDocumentation: App Documentation
+
 Doc001 hrefHome@Text: The <a href=#{hrefHome}>"Salon"</a> application provides the opportunity to publish and advertise the services of beauty salon owners on the web.
 
 Doc002 hrefServices@Text: The services to be advertised are defined and published in section <a href=#{hrefServices}>"Services"</a> of group "Data". Optionally, services can be defined as a hierarchy of groups and subservices.

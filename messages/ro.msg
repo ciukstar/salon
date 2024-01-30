@@ -416,6 +416,7 @@ AboutUs: Despre noi
 Service: Serviciu
 Services: Servicii
 Salon: Salon
+AppDescription: Aplicație web progresivă pentru saloane de frumusețe
 AppName: Salon
 MetaKeywords: frumusețe, salon, web, aplicație
 MetaDescription: Aplicație web progresivă pentru saloane de frumusețe.
@@ -426,6 +427,8 @@ DemoSampleTwo: pentru a obține o listă de conturi de utilizator demonstrative
 
 
 Documentation: Documentație
+AppDocumentation: Documentația aplicației
+
 Doc001 hrefHome: Aplicația <a href=#{hrefHome}>„Salon”</a> oferă posibilitatea de a publica și de a face publicitate serviciilor proprietarilor de saloane de înfrumusețare pe web.
 
 Doc002 hrefServices: Serviciile care vor fi promovate sunt definite și publicate în secțiunea <a href=#{hrefServices}>„Servicii”</a> din grupul „Date”. Dacă este necesar, serviciile pot fi definite ca o ierarhie de grupuri și subservicii.
