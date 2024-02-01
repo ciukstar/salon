@@ -24,17 +24,19 @@
       
 <main.mdc-top-app-bar--prominent-fixed-adjust>
   $with trans <- preEscapedToMarkup . renderMessage app langs
-    <div.mdc-typography--headline4>_{MsgAppDescription}
+
+    <h4.mdc-typography--headline4>_{MsgAppDescription}
     <p>#{trans $ MsgDoc001 (rndr HomeR)}
-    <div.mdc-typography--headline4>_{MsgOverview}
+    
+    <h4.mdc-typography--headline4>_{MsgOverview}
     <p>#{trans $ MsgDoc002 (rndr $ AdminR $ AdmServicesR (Services []))}
     <p>_{MsgDoc003}
     <p>#{trans $ MsgDoc004 (rndr ServicesR) (rndr BookOffersR)}
 
-    <div.mdc-typography--headline4>
+    <h4.mdc-typography--headline4>
       _{MsgBasicEntities}
 
-    <div.mdc-typography--headline5>_{MsgBusiness}
+    <h5.mdc-typography--headline5>_{MsgBusiness}
     <p>#{trans $ MsgDoc005 (rndr $ AdminR BusinessR)}
     <p>
       $maybe Entity bid _ <- business
@@ -62,7 +64,7 @@
         
     <p>_{MsgDoc007}
 
-    <div.mdc-typography--headline5>_{MsgUser}
+    <h5.mdc-typography--headline5>_{MsgUser}
     <p>#{trans $ MsgDoc008 (rndr AccountR)}
     <p>#{trans $ MsgDoc009 (rndr $ AdminR UsersR)}
     <p>_{MsgDoc010}
@@ -71,24 +73,24 @@
     <p>_{MsgDoc013}
     <p>_{MsgDoc014}
 
-    <div.mdc-typography--headline5>_{MsgStaff}
+    <h5.mdc-typography--headline5>_{MsgStaff}
     <p>
       ...
 
-    <div.mdc-typography--headline5>_{MsgService}
+    <h5.mdc-typography--headline5>_{MsgService}
     <p>
       ...
       
-    <div.mdc-typography--headline5>_{MsgOffer}
+    <h5.mdc-typography--headline5>_{MsgOffer}
     <p>
       ...
 
-    <div.mdc-typography--headline5>_{MsgInvoice}
+    <h5.mdc-typography--headline5>_{MsgInvoice}
     <p>#{trans $ MsgDoc018 (rndr $ AdminR AdmInvoicesR)}
     <p>_{MsgDoc019}
     <p>_{MsgDoc020}
 
-    <div.mdc-typography--headline4>_{MsgDoc015}
+    <h4.mdc-typography--headline4>_{MsgDoc015}
     <ul>
       <li>
         _{MsgPaymentGateway}:
@@ -113,7 +115,7 @@
           <small>
             <code>ENV: YESOD_GOOGLE_CLIENT_ID, YESOD_GOOGLE_CLIENT_SECRET
 
-    <div.mdc-typography--headline4>_{MsgSearchEngineOptimization}
+    <h4.mdc-typography--headline4>_{MsgSearchEngineOptimization}
     <ul>
       <li>
         <a href="https://search.google.com/search-console" target=_blank>Google SEO
@@ -131,19 +133,27 @@
           <small>
             <code>&dollar;YESOD_YANDEX_VERIFICATION
 
-    <div.mdc-typography--headline4>
+    <h4.mdc-typography--headline4>
       _{MsgErdDiagram}
     <img #imgErdDiagram src=@{StaticR img_Salon_ERD_svg} alt=_{MsgErdDiagram} loading=lazy>
 
-    <div.mdc-typography--headline4>
+    <h4.mdc-typography--headline4>
       _{MsgBookingStateDiagram}
     <img #imgBookingStateDiagram src=@{StaticR img_Booking_State_Diagram_svg} 
       alt=_{MsgBookingStateDiagram} loading=lazy>
 
-    <div.mdc-typography--headline4>
+    <h4.mdc-typography--headline4>
       _{MsgAppointmentStateDiagram}
     <img #imgAppointmentStateDiagram src=@{StaticR img_Appointment_State_Transition_svg} 
       alt=_{MsgAppointmentStateDiagram} loading=lazy>
+      
+    <h4.mdc-typography--headline4>
+      _{MsgSourceCode}
+    <p>#{trans $ MsgDoc021 "https://github.com/ciukstar/salon"}
+    
+    <h4.mdc-typography--headline4>
+      _{MsgIssueTracking}
+    <p>#{trans $ MsgDoc022 "https://github.com/ciukstar/salon/issues"}
 
 
 $forall (_,msg) <- msgs

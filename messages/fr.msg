@@ -1,3 +1,5 @@
+ProjectRepo: Le référentiel du projet
+IssueTracking: Signalement de bogues
 SearchEngineOptimization: Optimisation du moteur de recherche
 SignInWithGoogle: Connectez-vous avec Google
 Cleared: Effacé
@@ -482,3 +484,7 @@ Doc018 href: Une facture peut être créée manuellement dans la rubrique <a hre
 Doc019: Après avoir créé une nouvelle facture et ajouté ses éléments, la facture peut être envoyée au client à une adresse e-mail spécifiée.
 
 Doc020: De plus, la facture peut être téléchargée au format PDF ou HTML et envoyée au client par d'autres moyens de communication.
+
+Doc021 href: <a href=#{href} target=_blank>Le référentiel du projet</a> sur GitHub.
+
+Doc022 href: Veuillez noter que l'application actuellement en cours d'exécution est une application de démonstration. Toutes les actions sont autorisées et encouragées. <a href=#{href} target=_blank>Signalez les bugs</a> sur GitHub.

@@ -1,3 +1,5 @@
+ProjectRepo: Depozitul de proiect
+IssueTracking: Raportarea erorilor
 SearchEngineOptimization: Optimizare motor de căutare
 SignInWithGoogle: Conectați-vă cu Google
 Cleared: S-a șters
@@ -482,3 +484,7 @@ Doc018 href: O factură poate fi creată manual în secțiunea <a href=#{href}>�
 Doc019: După crearea unei noi facturi și adăugarea elementelor acesteia, factura poate fi trimisă clientului la o adresă de e-mail specificată.
 
 Doc020: În plus, factura poate fi descărcată în format PDF sau HTML și trimisă clientului prin alte mijloace de comunicare.
+
+Doc021 href: <a href=#{href} target=_blank>Depozitul de proiect</a> pe GitHub.
+
+Doc022 href: Vă rugăm să rețineți că aplicația care rulează în prezent este o aplicație demonstrativă. Orice acțiune este permisă și încurajată. <a href=#{href} target=_blank>Raportați erori</a> pe GitHub.

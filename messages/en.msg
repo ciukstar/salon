@@ -1,3 +1,5 @@
+ProjectRepo: Project repository
+IssueTracking: Issue tracking
 SearchEngineOptimization: Search Engine Optimization
 SignInWithGoogle: Sign in with Google
 Cleared: Cleared
@@ -480,3 +482,7 @@ Doc018 href@Text: An invoice can be created manually in the <a href=#{href}>“I
 Doc019: After creating a new invoice and adding its elements, the invoice can be sent to the customer to a specified email address.
 
 Doc020: Additionally, the invoice can be downloaded in PDF or HTML format and sent to the customer by other means of communication.
+
+Doc021 href@Text: <a href=#{href} target=_blank>Project repository</a> on GitHub.
+
+Doc022 href@Text: Please note that the application currently running is a demo application. Any actions are allowed and encouraged. <a href=#{href} target=_blank>Report issues</a> on GitHub.
