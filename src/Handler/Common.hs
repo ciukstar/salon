@@ -67,20 +67,9 @@ getWebAppManifestR = do
 
 getSitemapR :: Handler TypedContent
 getSitemapR = sitemap $ do
-    yield $ SitemapUrl FaviconR Nothing (Just Monthly) (Just 0.5)
     yield $ SitemapUrl (ResourcesR DocsR) Nothing (Just Monthly) (Just 1.0)
     yield $ SitemapUrl HomeR Nothing (Just Monthly) (Just 1.0)
-    yield $ SitemapUrl ServicesR Nothing (Just Monthly) (Just 0.9)
-    yield $ SitemapUrl BookOffersR Nothing (Just Monthly) (Just 0.8)
     
-    today <- utctDay <$> liftIO getCurrentTime
-    let (y,m,_) = toGregorian today
-        month = YearMonth y m
-        
-    yield $ SitemapUrl (BookingsCalendarR month) Nothing (Just Monthly) (Just 0.7)
-    yield $ SitemapUrl AboutUsR Nothing (Just Monthly) (Just 0.6)
-    yield $ SitemapUrl ContactR Nothing (Just Monthly) (Just 0.6)
-
 
 getPhotoPlaceholderR :: Handler TypedContent
 getPhotoPlaceholderR = do
